@@ -1,0 +1,308 @@
+<?php
+
+namespace ShipFlex\Component;
+
+use ShipFlex\Utils;
+use ShipFlex\Cart_Total;
+
+if (!defined('ABSPATH')) {
+	exit;
+}
+
+/**
+ * Cart_Products class
+ */
+final class Cart_Products {
+
+	/**
+	 * Hold all cart settings options
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private static $hold_options = array();
+
+	/**
+	 * Get options settings
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function get_options() {
+		if (!empty(self::$hold_options)) {
+			return self::$hold_options;
+		}
+
+		$product_settings_options = array();
+		foreach (Utils::get_product_taxonomies() as $tax_key => $taxonomy) {
+			$product_settings_options['taxonomy:' . $tax_key] = $taxonomy;
+		}
+
+		$product_settings_options = apply_filters('shipflex/cart_products/options', $product_settings_options);
+		self::$hold_options = Utils::priority_rearrange($product_settings_options);
+		return self::$hold_options;
+	}
+
+	/**
+	 * VueJS component of cart products settings
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function output_component() { ?>
+		<template id="shipflex-cart-products-input">
+			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
+				<option value="">{{ firstOptionLabel }}</option>
+				<option
+					v-for="(option, option_value) in options"
+					:key="option_value"
+					:value="option_value">{{get_option_label(option_value)}}</option>
+			</select>
+
+			<select v-model="operator" v-if="false === hide_operator">
+				<option value="any_in_list" v-if="!is_operator_disabled('any_in_list')"><?php esc_html_e('Any in list', 'shipflex') ?></option>
+				<option value="all_in_list" v-if="!is_operator_disabled('all_in_list')"><?php esc_html_e('All in list', 'shipflex') ?></option>
+				<option value="not_in_list" v-if="!is_operator_disabled('not_in_list')"><?php esc_html_e('Not in the list', 'shipflex') ?></option>
+			</select>
+
+			<template v-for="(option, option_value) in options" :key="'dropdown_' + option_value">
+				<select2-dropdown
+					:type="based_on"
+					:placeholder="option?.label"
+					v-if="based_on == option_value"
+					:initial-value="get_value(option?.model)"
+					@update="(value) => set_value(value, option.model)">
+				</select2-dropdown>
+			</template>
+		</template>
+<?php
+	}
+
+	/**
+	 * Setting of Based on
+	 * 
+	 * @var string
+	 */
+	public $based_on = 'of_the_cart';
+
+	/**
+	 * Hold operator
+	 * 
+	 * @var string
+	 */
+	public $operator = 'any_in_list';
+
+	/**
+	 * Hold object group like- post_type, taxonomy, etc
+	 * 
+	 * @var string
+	 */
+	public $object_group = '';
+
+	/**
+	 * Hold object name like registered post type name,  product_cat
+	 * 
+	 * @var string
+	 */
+	public $object_name = '';
+
+	/**
+	 * Hold model values
+	 * 
+	 * @var array
+	 */
+	public $model_values = [];
+
+	/**
+	 * Hold cart items
+	 * 
+	 * @var array
+	 */
+	public $cart_items = [];
+
+	/**
+	 * Extra data
+	 * 
+	 * @var array
+	 */
+	public $extra_data = [];
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct($options) {
+		if (!is_array($options)) {
+			return;
+		}
+
+		$this->cart_items = Cart_Total::get_cart_items();
+		if (empty($options['based_on'])) {
+			$options['based_on'] = 'of_the_cart';
+		}
+
+		$options = wp_parse_args($options, array('based_on' => 'of_the_cart', 'operator' => 'any_in_list'));
+		foreach ($options as $model => $value) {
+			if (!empty($model)) {
+				$this->{$model} = $value;
+			}
+		}
+
+		$object_info = explode(':', $this->based_on);
+		if (!empty($object_info[0])) {
+			$this->object_group = trim($object_info[0]);
+		}
+
+		if (!empty($object_info[1])) {
+			$this->object_name = $object_info[1];
+		}
+
+		$this->set_model_values();
+	}
+
+	/**
+	 * isset magic method
+	 * 
+	 * @since 1.0.0
+	 * @param string $key
+	 * @param boolean
+	 */
+	public function __isset($key) {
+		return isset($this->extra_data[$key]);
+	}
+
+	/**
+	 * Set magic method
+	 * 
+	 * @since 1.0.0
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function __set($key, $value) {
+		$this->extra_data[$key] = $value;
+	}
+
+	/**
+	 * Get magic method
+	 * 
+	 * @since 1.0.0
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function __get($key) {
+		return isset($this->extra_data[$key]) ? $this->extra_data[$key] : null;
+	}
+
+	/**
+	 * Check if supported based on
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function is_supported_based_on() {
+		$supported_option_keys = array_keys(self::get_options());
+		$supported_option_keys[] = 'of_the_cart';
+		return in_array($this->based_on, $supported_option_keys);
+	}
+
+	/**
+	 * Set model values
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_model_values() {
+		if (!$this->is_supported_based_on()) {
+			return;
+		}
+
+		$options = self::get_options();
+		if (!isset($options[$this->based_on]['model'])) {
+			return;
+		}
+
+		$model_key = $options[$this->based_on]['model'];
+		if (!isset($this->{$model_key}) || !is_array($this->{$model_key})) {
+			return;
+		}
+
+		$this->model_values = $this->{$model_key};
+	}
+
+	/**
+	 * Check if condition has provided product id
+	 * 
+	 * @since 1.0.0
+	 * @return boolean
+	 */
+	public function is_eligible_product($product_id, $variation_id = 0) {
+		if (!$this->is_supported_based_on()) {
+			return false;
+		}
+
+		$configured_options = self::get_options();
+
+		$eligible_product = false;
+		if ('of_the_cart' == $this->based_on) {
+			$eligible_product = true;
+		} else {
+			$compare_values = array();
+			if ('taxonomy' === $this->object_group && !empty($this->object_name)) {
+				$terms = get_the_terms($product_id, $this->object_name);
+				if (is_array($terms)) {
+					$compare_values = array_map(fn($term) => $term->term_id, $terms);
+				}
+			}
+
+			$compare_values = apply_filters('shipflex/cart_products/is_eligible_product/compare_values', $compare_values, $product_id, $variation_id, $this);
+			$matched_values = array_intersect($this->model_values, $compare_values);
+
+			$current_option = false;
+			if (!empty($this->based_on)) {
+				$current_option = $configured_options[$this->based_on];
+			}
+
+			if (isset($current_option['disabled_operators']) && is_array($current_option['disabled_operators'])) {
+				$disabled_operators = $current_option['disabled_operators'];
+				if (in_array($this->operator, $disabled_operators)) {
+					$this->operator = 'any_in_list';
+				}
+			}
+
+			if (isset($current_option['hide_operator']) && true == $current_option['hide_operator']) {
+				$eligible_product = count($matched_values) > 0;
+			} else {
+				if ('any_in_list' === $this->operator) {
+					$eligible_product = count($matched_values) > 0;
+				}
+
+				if ('not_in_list' === $this->operator) {
+					$eligible_product = count($matched_values) === 0;
+				}
+
+				if ('all_in_list' === $this->operator) {
+					$eligible_product = count($matched_values) == count($this->model_values);
+				}
+			}
+		}
+
+		return apply_filters('shipflex/cart_products/is_eligible_product', $eligible_product, $product_id, $variation_id, $this);
+	}
+
+	/**
+	 * Get matched cart items keys
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_matched_cart_items_keys() {
+		$matched_cart_items_keys = array();
+		foreach ($this->cart_items as $cart_item_key => $cart_item) {
+			$eligible_product = $this->is_eligible_product($cart_item['product_id'], $cart_item['variation_id']);
+			if ($eligible_product) {
+				$matched_cart_items_keys[] = $cart_item_key;
+			}
+		}
+
+		return $matched_cart_items_keys;
+	}
+}
