@@ -1,15 +1,11 @@
 import Utils from './utils.min.js?v=@@VERSION';
-
-import Select2_Dropdown from './modules/select2-dropdown.min.js?v=@@VERSION';
-
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
+import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Cart_Products_Input from './component/cart-products-input.min.js?v=@@VERSION';
-
 
 const $ = jQuery;
 const { __ } = wp.i18n;
-
 
 const helper_models = {
 	saving: false,
