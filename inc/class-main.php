@@ -64,6 +64,7 @@ final class Main {
 		// Load Features
 		require_once ShipFlex_PATH . 'inc/features/class-general.php';
 		require_once ShipFlex_PATH . 'inc/features/class-adjust-cost.php';
+		require_once ShipFlex_PATH . 'inc/features/class-visibility-condition.php';
 
 
 		if (is_admin()) {

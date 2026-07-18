@@ -255,13 +255,33 @@ final class Form_Control {
 	}
 
 	/**
+	 * Output row open tag
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_open_row() {
+		echo '<tr ' . wp_kses($this->output_row_attributes(), $this->allow_vue_attrs()) . '>';
+	}
+
+	/**
+	 * Output row close tag
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_close_row() {
+		echo '</tr>';
+	}
+
+	/**
 	 * Output content before input options
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
 	public function output_before_input_options() {
-		echo '<tr ' . wp_kses($this->output_row_attributes(), $this->allow_vue_attrs()) . '>';
+		$this->output_open_row();
 
 		echo '<th';
 		if (!empty($this->options['classes']['label_heading'])) {
@@ -308,7 +328,9 @@ final class Form_Control {
 			call_user_func($option_note_callback);
 		}
 
-		echo '</td></tr>';
+		echo '</td>';
+
+		$this->output_close_row();
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace ShipFlex\Feature;
 
 use ShipFlex\Feature;
+use ShipFlex\Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -23,22 +24,40 @@ final class Adjust_Cost extends Feature {
 	/**
 	 * Constructor.
 	 */
-	public function __construct() {
+	public function __construct($data = null) {
 	}
 
 	/**
-	 * Add reward configuration of order discount to the reward types list
+	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
 	protected function get_configuration() {
 		return array(
-			'priority' => 5,
+			'priority' => 10,
 			'base_model' => 'adjust_shipping_cost',
 			'name' => esc_html__('Adjust Shipping Cost', 'shipflex'),
 			'description' => esc_html__('Adjust Shipping Cost of exists', 'shipflex'),
 		);
+	}
+
+	/**
+	 * Add settings field of rule editor
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
+	}
+
+	/**
+	 * Output settings fields of rule editor
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_rule_editor(Settings_Fields $settings_fields) {
 	}
 }
 

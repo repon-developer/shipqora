@@ -56,6 +56,7 @@ final class Rule_Editor {
 			}
 
 			$values['rule_models'] = $shipflex_rule->get_models();
+
 			error_log(print_r($values['rule_models'], true));
 		}
 
@@ -175,6 +176,7 @@ final class Rule_Editor {
 	 * @return void
 	 */
 	public function screen_editor() {
+		$registered_features = Feature::get_features();
 		$settings_fields = Settings_Fields::get_instance('rule-editor') ?>
 		<div id="shipflex" class="wrap shipflex-rule-editor">
 			<div class="shipflex-loading-app" v-if="loading">
@@ -203,6 +205,12 @@ final class Rule_Editor {
 
 						<?php $settings_fields->output_fields('general'); ?>
 					</table>
+
+					<?php foreach ($registered_features as $feature_id => $feature_configuration) : ?>
+						<template v-if="active_features?.includes('<?php echo esc_attr($feature_id)  ?>')">
+							<?php $feature_configuration['instance']->output_rule_editor($settings_fields); ?>
+						</template>
+					<?php endforeach; ?>
 
 					<footer class="form-footer">
 						<button class="button button-primary button-large" :class="{'in-progress': saving}" @click.prevent="save_reward()">

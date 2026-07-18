@@ -29,6 +29,7 @@ class Feature {
 
 		$configuration = $feature_instance->get_configuration();
 		$configuration['class_name'] = $feature_class;
+		$configuration['instance'] = $feature_instance;
 
 		self::$features[$feature_instance->get_id()] = $configuration;
 	}
@@ -131,5 +132,23 @@ class Feature {
 	public function get_configuration_value($key) {
 		$configuration = $this->get_configuration();
 		return isset($configuration[$key]) ? $configuration[$key] : null;
+	}
+
+	/**
+	 * Add settings field of rule editor
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
+	}
+
+	/**
+	 * Output settings fields of rule editor
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_rule_editor(Settings_Fields $settings_fields) {
 	}
 }

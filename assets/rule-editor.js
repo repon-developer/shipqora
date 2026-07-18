@@ -1,148 +1,15 @@
 import Utils from './utils.min.js?v=@@VERSION';
-import Input_Product from './modules/input-product.min.js?v=@@VERSION';
+
 import Select2_Dropdown from './modules/select2-dropdown.min.js?v=@@VERSION';
-import Cart_Products_Input from './modules/cart-products-input.min.js?v=@@VERSION';
+
+import Condition_Group from './component/condition.min.js?v=@@VERSION';
+import Input_Product from './component/input-product.min.js?v=@@VERSION';
+import Cart_Products_Input from './component/cart-products-input.min.js?v=@@VERSION';
 
 
 const $ = jQuery;
 const { __ } = wp.i18n;
 
-const Condition = {
-	template: '#shipflex-condition',
-
-	props: {
-		condition: {
-			type: Object,
-			required: true
-		},
-
-		number: {
-			type: Number,
-			required: true
-		}
-	},
-
-	data() {
-		return {
-			value: '',
-			value2: '',
-			type: 'cart:subtotal',
-			id: Utils.generate_uuid(),
-			user_operator: 'any_in_list',
-			cart_operator: 'greater_than',
-			cart_products_operator: 'any_in_list',
-			billing_shipping_operator: 'any_in_list',
-			...shipflex_admin.condition_models,
-			...this.condition
-		}
-	},
-
-	computed: {
-		condition_data() {
-			return JSON.stringify(this.$data);
-		},
-
-		get_states() {
-			return wcSettings.countryStates;
-		},
-
-		cart_products_prefix() {
-			const cart_prefixes = {
-				'cart:subtotal': __('Subtotal of', 'shipflex'),
-				'cart:total_quantity': __('Total quantity of', 'shipflex'),
-				'cart:total_weight': __('Total weight of', 'shipflex'),
-				'cart:total_volume': __('Total volume of', 'shipflex'),
-			}
-
-			return cart_prefixes?.[this.type] ? cart_prefixes?.[this.type] : '';
-		}
-	},
-
-	created() {
-		this.$parent.conditions[this.number] = JSON.parse(this.condition_data)
-	},
-
-	watch: {
-		condition_data(data) {
-			this.$parent.conditions[this.number] = JSON.parse(data)
-		}
-	},
-
-	methods: {
-		...wp.hooks.applyFilters('shipflex.condition.methods', {}),
-
-		set_value(value, model_key) {
-			this[model_key] = value;
-		},
-
-		delete_condition() {
-			const response = confirm(__('Do you want to delete this condition?', 'shipflex'))
-			if (response) {
-				this.$parent.conditions.splice(this.number, 1);
-			}
-		}
-	},
-}
-
-const Condition_Group = {
-	template: '#shipflex-condition-group',
-
-	components: {
-		'condition': Condition
-	},
-
-	props: {
-		group: {
-			type: Object,
-			required: true
-		},
-
-		number: {
-			type: Number,
-			required: true
-		}
-
-	},
-
-	data() {
-		return {
-			conditions: [],
-			match_type: 'all',
-			id: Utils.generate_uuid(),
-			...this.group
-		}
-	},
-
-	computed: {
-		group_data() {
-			const data = JSON.parse(JSON.stringify(this.$data));
-			return JSON.stringify(data)
-		}
-	},
-
-	watch: {
-		group_data() {
-			this.$root.condition_groups[this.number] = JSON.parse(this.group_data)
-		}
-	},
-
-	methods: {
-		add_condition() {
-			if (!Array.isArray(this.conditions)) {
-				this.conditions = Array();
-			}
-
-			this.conditions.push({ id: Utils.generate_uuid() })
-		},
-
-		delete_group() {
-			const response = confirm(__('Do you want to delete this group?', 'shipflex'))
-			if (response) {
-				this.$root.condition_groups.splice(this.number, 1);
-			}
-		}
-	}
-}
 
 const helper_models = {
 	saving: false,
@@ -222,6 +89,28 @@ const ShipFlex_Rule_Editor = {
 
 		add_shipping_instance() {
 			this.shipping_instances.push(0);
+		},
+
+		remove_shipping_instance(index_no) {
+			this.shipping_instances?.splice(index_no, 1);
+		},
+
+		update_shipping_instance(instance_id, index_no) {
+			this.shipping_instances[index_no] = instance_id || 0;
+		},
+
+		add_collection(model_keys, value_type) {
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
+				collections = Array()
+			}
+
+			let default_value = {}
+			if ('condition_group' == value_type) {
+				default_value = { id: Utils.generate_uuid() }
+			}
+
+			collections.push({ ...default_value })
 		},
 
 		validate_save_data() {

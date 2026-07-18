@@ -187,7 +187,6 @@
 	padding-left: 0;
 }
 
-
 #shipflex.wrap .form-footer .review-request {
 	margin-top: 20px;
 }
@@ -851,15 +850,15 @@ ul.shipflex-repeater {
 	background-color: #bb0303;
 }
 
-.shipflex-repeater.condition-groups-repeater {
+.shipflex-repeater.shipflex-repeater-condition-groups {
 	margin-bottom: 10px;
 }
 
-.shipflex-repeater.condition-groups-repeater>.repeater-item {
+.shipflex-repeater.shipflex-repeater-condition-groups>.repeater-item {
 	width: 100% !important;
 }
 
-.shipflex-repeater.condition-groups-repeater>.repeater-item:not(.repeater-item-separator) {
+.shipflex-repeater.shipflex-repeater-condition-groups>.repeater-item:not(.repeater-item-separator) {
 	padding: 15px;
 	display: block;
 	position: relative;
@@ -867,11 +866,11 @@ ul.shipflex-repeater {
 	background-color: #fbfbfb;
 }
 
-.shipflex-repeater.condition-groups-repeater>.repeater-item.repeater-item-separator:after {
+.shipflex-repeater.shipflex-repeater-condition-groups>.repeater-item.repeater-item-separator:after {
 	background-color: #fff !important;
 }
 
-.shipflex-repeater.condition-groups-repeater .repeater-item .btn-delete-item.btn-delete-group {
+.shipflex-repeater.shipflex-repeater-condition-groups .repeater-item .btn-delete-item.btn-delete-group {
 	top: 15px;
 	cursor: pointer;
 	color: #c11010;
@@ -884,7 +883,7 @@ ul.shipflex-repeater {
 	background-color: #fff;
 }
 
-.shipflex-repeater.condition-groups-repeater>.repeater-item .btn-delete-item.btn-delete-group:hover {
+.shipflex-repeater.shipflex-repeater-condition-groups>.repeater-item .btn-delete-item.btn-delete-group:hover {
 	color: #c50202 !important;
 }
 
@@ -1010,6 +1009,10 @@ ul.shipflex-repeater {
 
 #shipflex .shipflex-box .box-header h3 {
 	margin: 0;
+}
+
+#shipflex .shipflex-box .box-content {
+	padding: 15px;
 }
 
 #shipflex .shipflex-box>table.table-shipflex-form {

@@ -38,7 +38,7 @@ const Utils = {
 
 		clearTimeout(toast_timer)
 		toast_timer = setTimeout(() => this.app.show_toast_message = false, 3500)
-	},
+	}
 }
 
 export default Utils;
