@@ -37,25 +37,39 @@ final class ShipFlex_Rule {
 	public $title = '';
 
 	/**
+	 * Hold all shipping instances ids
+	 * 
+	 * @var array
+	 */
+	private $shipping_instances = [];
+
+	/**
+	 * Hold all active features
+	 * 
+	 * @var array
+	 */
+	private $active_features = [];
+
+	/**
+	 * Hold all feature settings
+	 * 
+	 * @var array
+	 */
+	private $feature_settings = [];
+
+	/**
 	 * Status of rule
 	 * 
 	 * @var string
 	 */
-	public $status = 'development';
+	private $status = 'development';
 
 	/**
 	 * Conditions of this rule
 	 * 
 	 * @var array
 	 */
-	public $conditions = [];
-
-	/**
-	 * Settings of this rule
-	 * 
-	 * @var array
-	 */
-	public $settings = [];
+	private $meta_data = [];
 
 	/**
 	 * Created time of this rule
@@ -65,20 +79,13 @@ final class ShipFlex_Rule {
 	public $created_at = '';
 
 	/**
-	 * Meta data
-	 * 
-	 * @var array
-	 */
-	public $meta_data = [];
-
-	/**
 	 * Get array properties
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_array_properties() {
-		return array('conditions', 'settings');
+	public function get_json_properties() {
+		return array('shipping_instances', 'active_features', 'feature_settings', 'meta_data');
 	}
 
 	/**
@@ -94,7 +101,7 @@ final class ShipFlex_Rule {
 			return;
 		}
 
-		$array_properties = $this->get_array_properties();
+		$array_properties = $this->get_json_properties();
 		while ($key = current($array_properties)) {
 			if (array_key_exists($key, $data)) {
 				$this->{$key} = Utils::json_string_to_array($data[$key]);
@@ -189,9 +196,9 @@ final class ShipFlex_Rule {
 		global $wpdb;
 
 		$data = get_object_vars($this);
-		unset($data['meta_data']);
+		unset($data['meta_data']['new_id']);
 
-		$array_properties = $this->get_array_properties();
+		$array_properties = $this->get_json_properties();
 		while ($key = current($array_properties)) {
 			$data[$key] = wp_json_encode($this->{$key}, JSON_UNESCAPED_UNICODE);
 			next($array_properties);
@@ -220,17 +227,11 @@ final class ShipFlex_Rule {
 	 */
 	public function get_models() {
 		$rule_data = get_object_vars($this);
-		$clean_properties = array('meta_data', 'created_at');
-		while ($key = current($clean_properties)) {
-			unset($rule_data[$key]);
-			next($clean_properties);
-		}
+		unset($rule_data['created_at'], $rule_data['meta_data']);
 
-		$rule_models = apply_filters('shipflex/rule_models', array(
-			'conditions' => array(),
-			'condition_groups_match' => 'any',
-		));
+		$rule_editor_settings = Settings_Fields::get_instance('rule-editor');
 
+		$rule_models = apply_filters('shipflex/rule_models', $rule_editor_settings->get_models());
 		return (object) Utils::deep_merge_arrays($rule_models, array_merge($this->meta_data, $rule_data));
 	}
 }

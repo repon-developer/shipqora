@@ -66,6 +66,7 @@ final class Select2 {
 				v-model="value"
 				ref="select2_dropdown"
 				:multiple="multiple">
+				<slot name="slot-options"></slot>
 				<optgroup v-if="has_option_group" v-for="(group_label, group_code) in option_groups" :label="group_label" :key="group_code">
 					<option v-for="(option_label, option_value) in get_group_options(group_code)" :value="option_value" v-html="option_label" :key="option_value"></option>
 				</optgroup>
@@ -187,6 +188,40 @@ final class Select2 {
 		}
 
 		wp_send_json_success(apply_filters('shipflex/select2/' . $object_type . '/results', $results));
+	}
+
+	/**
+	 * Get shipping instances
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_shipping_instances($values, $object_slug, $search_term) {
+		$shipping_instances = array();
+
+		$zones = \WC_Shipping_Zones::get_zones();
+		foreach ($zones as $zone) {
+			foreach ($zone['shipping_methods'] as $method) {
+				if ($method->enabled) {
+					$shipping_instances[] = array(
+						'id' => $method->instance_id,
+						'name' => sprintf('%s - %s', $zone['zone_name'], $method->get_title())
+					);
+				}
+			}
+		}
+
+		$default_zone = new \WC_Shipping_Zone(0);
+		foreach ($default_zone->get_shipping_methods() as $method) {
+			if ($method->enabled) {
+				$shipping_instances[] = array(
+					'id' => $method->instance_id,
+					'name' => sprintf('Rest of the world - %s', $method->get_title())
+				);
+			}
+		}
+
+		return $shipping_instances;
 	}
 
 	/**

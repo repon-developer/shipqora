@@ -280,13 +280,6 @@ const Select2_Dropdown = {
 			}).on('change', function () {
 				self.value = $(this).val()
 			})
-
-			$(this.$refs.select2_dropdown).on('select2:open', function () {
-				$('body').find('.shipflex-select2-dropdown').removeClass('rule-status-active');
-				$('body').find('.shipflex-select2-dropdown').removeClass('rule-status-disable');
-				$('body').find('.shipflex-select2-dropdown').removeClass('rule-status-development');
-				$('body').find('.shipflex-select2-dropdown').addClass('rule-status-' + self.$root.status);
-			})
 		}
 	}
 }

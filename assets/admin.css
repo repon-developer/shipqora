@@ -38,10 +38,26 @@
 	box-sizing: border-box;
 }
 
-#shipflex.shipflex-rule-development,
-.select2-dropdown.shipflex-select2-dropdown.rule-status-development {
-	--primaryColor: #d7840d;
-	--primaryColorLight: #f0b35d;
+
+#shipflex,
+.select2-dropdown.shipflex-select2-dropdown {
+	--inputHeight: 40px;
+	--borderRadius: 4px;
+	--primaryColor: #4C2DC1;
+	--borderColor: #b5b5b5;
+	--primaryColorLight: #6D4AFF;
+}
+
+#shipflex.wrap {
+	margin: 0;
+	padding: 20px;
+	position: relative;
+
+}
+
+#shipflex .shipflex-wp-heading {
+	display: flex;
+	align-items: center;
 }
 
 .shipflex-content-loader {
@@ -171,20 +187,6 @@
 	padding-left: 0;
 }
 
-#shipflex {
-	--inputHeight: 34px;
-}
-
-#shipflex.wrap {
-	margin: 0;
-	padding: 20px;
-	position: relative;
-}
-
-#shipflex .shipflex-wp-heading {
-	display: flex;
-	align-items: center;
-}
 
 #shipflex.wrap .form-footer .review-request {
 	margin-top: 20px;
@@ -237,11 +239,8 @@
 }
 
 #shipflex select {
-	line-height: calc(var(--inputHeight) - 2px);
-}
-
-#shipflex select {
 	padding-inline-end: 30px !important;
+	line-height: calc(var(--inputHeight) - 2px);
 }
 
 #shipflex select[multiple] {
@@ -384,7 +383,6 @@
 	background-color: var(--primaryColor);
 }
 
-
 #shipflex a {
 	box-shadow: none !important;
 }
@@ -409,6 +407,28 @@
 	margin-block: 10px;
 }
 
+#shipflex.wrap .shipflex-loading-app {
+	display: flex;
+	row-gap: 15px;
+	font-size: 25px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	margin-inline-start: -160px;
+}
+
+#shipflex.wrap .shipflex-loading-app .shipflex-loading-spinner {
+	--size: 40px;
+	margin-inline-start: -15px;
+}
+
+#shipflex.wrap:has(.shipflex-loading-app) {
+	min-height: 85vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 #shipflex .field-row {
 	row-gap: 10px;
 	display: flex;
@@ -416,6 +436,7 @@
 	column-gap: 3px;
 	align-items: center;
 }
+
 
 #shipflex .shipflex-editor-container {
 	max-width: 1200px;
@@ -582,8 +603,6 @@ table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 	border-radius: var(--borderRadius);
 }
 
-
-
 #shipflex .select2-container--default .select2-selection--single {
 	border-radius: var(--borderRadius);
 }
@@ -628,8 +647,6 @@ table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 .select2-dropdown.shipflex-select2-dropdown {
 	border-radius: var(--borderRadius)
 }
-
-
 
 .select2-dropdown.shipflex-select2-dropdown .select2-search__field {
 	margin: 0;
@@ -721,6 +738,12 @@ table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 	row-gap: 7px;
 	margin-bottom: 7px;
 	flex-direction: column;
+}
+
+ul.shipflex-repeater {
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
 
 .shipflex-repeater .repeater-item {

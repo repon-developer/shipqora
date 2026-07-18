@@ -162,10 +162,7 @@ const ShipFlex_Rule_Editor = {
 		return {
 			id: 0,
 			title: '',
-			settings: {},
-			conditions: [],
 			status: 'development',
-			condition_groups_match: 'any',
 
 			...helper_models,
 			...shipflex_admin.rule_models
@@ -175,15 +172,13 @@ const ShipFlex_Rule_Editor = {
 	created() {
 		Utils.app = this;
 
-		if (!Array.isArray(this.conditions)) {
-			this.conditions = []
+		if (!Array.isArray(this.active_features)) {
+			this.active_features = []
 		}
 
-		this.conditions.forEach((group, index) => {
-			if (!group?.id) {
-				this.conditions[index].id = Utils.generate_uuid()
-			}
-		})
+		if (!Array.isArray(this.shipping_instances)) {
+			this.shipping_instances = []
+		}
 	},
 
 	computed: {
@@ -196,20 +191,9 @@ const ShipFlex_Rule_Editor = {
 
 	watch: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.watch', {}),
-
-		status(new_status, prev_status) {
-			this.handle_rule_form(new_status, prev_status);
-		}
 	},
 
 	mounted() {
-		const settings_data = this.get_root_element.data('settings');
-
-		console.log(settings_data)
-		this.id = settings_data?.id || 0;
-
-		this.handle_rule_form(this.status);
-
 		const self = this;
 		$(document).keyup(function (e) {
 			if (e.key === "Escape") {
@@ -229,19 +213,15 @@ const ShipFlex_Rule_Editor = {
 		this.loading = false;
 	},
 
+	updated() {
+		console.log(this.$data);
+	},
+
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
 
-		handle_rule_form(new_status, prev_status) {
-			$('body').addClass('shipflex-status-' + new_status);
-			$('body').removeClass('shipflex-status-' + prev_status);
-
-			$('#shipflex').addClass('shipflex-rule-' + new_status)
-			$('#shipflex').removeClass('shipflex-rule-' + prev_status)
-		},
-
-		is_highlight_section(section_name) {
-			return this?.highlighted_section?.name == section_name;
+		add_shipping_instance() {
+			this.shipping_instances.push(0);
 		},
 
 		validate_save_data() {
@@ -320,46 +300,6 @@ const ShipFlex_Rule_Editor = {
 			})
 
 		},
-
-		add_new_reward_tier(model_key, reward_type = null) {
-			if (!Array.isArray(this[model_key])) {
-				this[model_key] = Array();
-			}
-
-			let default_values = { id: Utils.generate_uuid() };
-
-			const reward_type_line_default_values = shipflex_admin.rewards_configuration?.[reward_type]?.badge_default_values;
-			if (typeof reward_type_line_default_values === 'object') {
-				default_values = { ...default_values, ...reward_type_line_default_values };
-			}
-
-			this[model_key].push(default_values)
-		},
-
-		duplicate_reward_tier(model_key, item_no, duplicate_data) {
-			const duplicate_item = { ...duplicate_data, id: Utils.generate_uuid() };
-			this[model_key].splice(item_no, 0, duplicate_item);
-		},
-
-		delete_reward_tier(modal_key, item_no) {
-			this[modal_key].splice(item_no, 1);
-		},
-
-		add_condition_group() {
-			if (!Array.isArray(this.condition_groups)) {
-				this.condition_groups = Array();
-			}
-
-			this.condition_groups.push({
-				conditions: [{}],
-				match_type: 'all',
-				id: Utils.generate_uuid(),
-			})
-		},
-
-		set_sidebar(sidebar_id) {
-			this.current_sidebar = sidebar_id;
-		}
 	}
 }
 

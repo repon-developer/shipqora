@@ -56,7 +56,9 @@ final class Rule_Editor {
 			}
 
 			$values['rule_models'] = $shipflex_rule->get_models();
+			error_log(print_r($values['rule_models'], true));
 		}
+
 
 		return $values;
 	}
@@ -173,11 +175,9 @@ final class Rule_Editor {
 	 * @return void
 	 */
 	public function screen_editor() {
-		$rule_id = isset($_GET['id']) ? sanitize_text_field(wp_unslash($_GET['id'])) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$rule_settings = array('id' => $rule_id); ?>
-
-		<div id="shipflex" class="wrap shipflex-rule-editor" data-settings="<?php echo esc_attr(wp_json_encode($rule_settings)) ?>">
-			<div class="loading-setting-app" v-if="loading">
+		$settings_fields = Settings_Fields::get_instance('rule-editor') ?>
+		<div id="shipflex" class="wrap shipflex-rule-editor">
+			<div class="shipflex-loading-app" v-if="loading">
 				<div class="shipflex-loading-spinner"></div>
 				<div><?php esc_html_e('Loading...', 'shipflex') ?></div>
 			</div>
@@ -185,13 +185,13 @@ final class Rule_Editor {
 			<template v-if="!loading">
 				<div class="shipflex-wp-heading">
 					<h1 class="wp-heading-inline"><?php esc_html_e('Edit Rule', 'shipflex') ?></h1>
-					<a class="button" href="<?php menu_page_url('shipflex-edit') ?>"><?php esc_html_e('Add Rule', 'shipflex') ?></a>
+					<a class="button" href="<?php menu_page_url('shipflex-edit') ?>"><?php esc_html_e('Add a Rule', 'shipflex') ?></a>
 				</div>
 				<hr class="wp-header-end">
 
 				<div class="shipflex-editor-container">
 					<div class="rule-title">
-						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Please enter a title for this reward item', 'shipflex') ?>">
+						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Please enter a rule title', 'shipflex') ?>">
 					</div>
 
 					<table class="table-shipflex-form">
@@ -200,8 +200,9 @@ final class Rule_Editor {
 								<td colspan="2"><?php esc_html_e('General Settings', 'shipflex') ?></td>
 							</tr>
 						</thead>
+
+						<?php $settings_fields->output_fields('general'); ?>
 					</table>
-					
 
 					<footer class="form-footer">
 						<button class="button button-primary button-large" :class="{'in-progress': saving}" @click.prevent="save_reward()">
@@ -243,6 +244,6 @@ final class Rule_Editor {
 				</div>
 			</template>
 		</div>
-	<?php
+<?php
 	}
 }

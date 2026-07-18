@@ -132,6 +132,16 @@ final class Form_Control {
 	}
 
 	/**
+	 * Allow VueJS attributes
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function allow_vue_attrs() {
+		return array('v-model' => true, 'v-if' => true, ':class' => true);
+	}
+
+	/**
 	 * Add attribute
 	 * 
 	 * @since 1.0.0
@@ -371,7 +381,7 @@ final class Form_Control {
 	public function select_dropdown($model_suffix = null) {
 		$options = $this->get_option('options');
 		if (!is_array($options) || count($options) == 0) {
-			return;
+			throw new \Exception('You need to declare options.');
 		}
 
 		echo '<select ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . '>';
@@ -390,13 +400,13 @@ final class Form_Control {
 	public function multiple_options($model_suffix = null) {
 		$options = $this->get_option('options');
 		if (!is_array($options) || count($options) == 0) {
-			return;
+			throw new \Exception('You need to declare options.');
 		}
 
 		$option_type = $this->get_option('option_type');
 		$model_key = $this->get_model_key($model_suffix);
 		if (!in_array($option_type, array('radio', 'checkbox'))) {
-			return;
+			throw new \Exception('You need to declare option_type - radio or checkbox.');
 		}
 
 		$this->add_attribute('type', $option_type);

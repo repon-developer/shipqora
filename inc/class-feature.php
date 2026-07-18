@@ -9,7 +9,14 @@ if (!defined('ABSPATH')) {
 /**
  * Feature class
  */
-final class Feature {
+class Feature {
+
+	/**
+	 * Hold all registered features
+	 * 
+	 * @var array
+	 */
+	private static $features = array();
 
 	/**
 	 * Get available reward types configurations
@@ -17,31 +24,23 @@ final class Feature {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public static function get_rewards_configuration($add_general = false) {
-		$rewards_configuration = apply_filters('shipflex/rewards_configuration', array());
+	public static function add_feature($feature_class) {
+		$feature_instance = new $feature_class();
 
-		if ($add_general) {
-			$rewards_configuration['general'] = array(
-				'priority' => 0,
-				'base_model' => 'general_settings',
-				'predefined_badge_templates' => array(
-					'general-product-listing' => array(
-						'model_key' => 'general_settings.product_listing_badge',
-						'label' => __('General - Product Listing Badge', 'shipflex'),
-					),
+		$configuration = $feature_instance->get_configuration();
+		$configuration['class_name'] = $feature_class;
 
-					'general-single-product' => array(
-						'model_key' => 'general_settings.single_product_badge',
-						'label' => __('General - Single Product Badge', 'shipflex'),
-						'allow_badge_templates' => array(
-							'general-product-listing'
-						)
-					)
-				)
-			);
-		}
+		self::$features[$feature_instance->get_id()] = $configuration;
+	}
 
-		uasort($rewards_configuration, function ($a, $b) {
+	/**
+	 * Get all registered features
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function get_features() {
+		uasort(self::$features, function ($a, $b) {
 			if (!isset($a['priority'])) {
 				$a['priority'] = 10;
 			}
@@ -53,16 +52,22 @@ final class Feature {
 			return $a['priority'] > $b['priority'] ? 1 : -1;
 		});
 
-
-		return $rewards_configuration;
+		return self::$features;
 	}
 
 	/**
-	 * Constructor.
+	 * Hold the feature key of current feature
+	 * 
+	 * @var string
 	 */
-	public function __construct($data = array()) {
-		
-	}
+	protected $feature_id = '';
+
+	/**
+	 * Hold all extra value
+	 * 
+	 * @var array
+	 */
+	protected $meta_data = [];
 
 	/**
 	 * isset magic method
@@ -98,17 +103,33 @@ final class Feature {
 	}
 
 	/**
-	 * Get all condition groups
+	 * Get feature id
+	 * 
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public function get_id() {
+		return $this->feature_id;
+	}
+
+	/**
+	 * Get feature configuration
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_conditions() {
-		$groups = $this->condition_groups;
-		if (!is_array($groups)) {
-			$groups = array();
-		}
+	protected function get_configuration() {
+		return array();
+	}
 
-		return $groups;
+	/**
+	 * Get value of feature configuration
+	 * 
+	 * @since 1.0.0
+	 * @return mixed
+	 */
+	public function get_configuration_value($key) {
+		$configuration = $this->get_configuration();
+		return isset($configuration[$key]) ? $configuration[$key] : null;
 	}
 }

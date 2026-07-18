@@ -49,8 +49,10 @@ final class Main {
 	 */
 	public function load_files() {
 		require_once ShipFlex_PATH . 'inc/class-core.php';
+		require_once ShipFlex_PATH . 'inc/class-feature.php';
 		require_once ShipFlex_PATH . 'inc/class-cart-total.php';
 		require_once ShipFlex_PATH . 'inc/class-form-control.php';
+		require_once ShipFlex_PATH . 'inc/class-settings-fields.php';
 		require_once ShipFlex_PATH . 'inc/class-shipflex-rule.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-main.php';
 
@@ -58,6 +60,10 @@ final class Main {
 		require_once ShipFlex_PATH . 'inc/components/class-select2.php';
 		// require_once ShipFlex_PATH . 'inc/components/class-reward.php';
 		require_once ShipFlex_PATH . 'inc/components/class-cart-products.php';
+
+		// Load Features
+		require_once ShipFlex_PATH . 'inc/features/class-general.php';
+		require_once ShipFlex_PATH . 'inc/features/class-adjust-cost.php';
 
 
 		if (is_admin()) {
