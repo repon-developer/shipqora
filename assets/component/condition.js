@@ -93,7 +93,7 @@ const Condition_Group = {
 		}
 	},
 
-	emits: ['update'],
+	emits: ['update', 'delete'],
 
 	data() {
 		return {
@@ -129,9 +129,9 @@ const Condition_Group = {
 		},
 
 		delete_group() {
-			const response = confirm(__('Do you want to delete this group?', 'shipflex'))
+			const response = confirm(__('Do you want to delete this condition group?', 'shipflex'))
 			if (response) {
-				this.$root.condition_groups.splice(this.number, 1);
+				this.$emit('delete');
 			}
 		}
 	}

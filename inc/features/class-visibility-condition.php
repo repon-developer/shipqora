@@ -96,6 +96,7 @@ final class Visibility_Condition extends Feature {
 					<div class="repeater-item">
 						<condition-group
 							:group="group"
+							@delete="delete_collection('visibility_condition.conditions', index)"
 							@update="(group_data) => visibility_condition.conditions[index] = group_data">
 						</condition-group>
 					</div>

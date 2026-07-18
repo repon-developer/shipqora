@@ -109,6 +109,15 @@ const ShipFlex_Rule_Editor = {
 			collections.push({ ...default_value })
 		},
 
+		delete_collection(model_keys, index_no) {
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
+				return;
+			}
+
+			collections.splice(index_no, 1)
+		},
+
 		validate_save_data() {
 			if ('after' == this.date_validity && !this?.start_date) {
 				this.highlighted_section.name = 'date-validity';
