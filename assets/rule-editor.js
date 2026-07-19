@@ -1,4 +1,4 @@
-import Utils from './utils.min.js?v=@@VERSION';
+import { Utils } from './global-module.min.js?v=@@VERSION';
 import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';

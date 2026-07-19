@@ -132,6 +132,7 @@ final class Adjust_Cost extends Feature {
 		<tbody>
 			<template
 				is="vue:feature-adjust-shipping-cost"
+				:feature-data="adjust_shipping_cost.lite_tier"
 				@update="(value) => adjust_shipping_cost.lite_tier = value">
 			</template>
 		</tbody>

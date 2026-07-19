@@ -1,4 +1,5 @@
-import Utils from '../utils.min.js?v=@@VERSION';
+import { Utils } from '../global-module.min.js?v=@@VERSION';
+
 const $ = jQuery;
 const { __ } = wp.i18n;
 let hold_select2_options = [];
