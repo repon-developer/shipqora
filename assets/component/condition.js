@@ -97,11 +97,8 @@ const Condition_Group = {
 
 	data() {
 		return {
-			match_type: 'all',
 			id: Utils.generate_uuid(),
-			conditions: [
-				{ id: Utils.generate_uuid() }
-			],
+			conditions: [{ id: Utils.generate_uuid() }],
 			...this.group
 		}
 	},

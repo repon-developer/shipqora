@@ -66,7 +66,7 @@ final class Admin {
 		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'), 5);
 
 		add_filter('script_loader_tag', array($this, 'handle_script_loader_tag'), 100, 3);
-		add_action('wp_ajax_shipflex/save_reward_rule', array($this, 'save_rule'));
+		add_action('wp_ajax_shipflex/save_rule', array($this, 'save_rule'));
 	}
 
 	/**
@@ -132,11 +132,11 @@ final class Admin {
 	 * @return void
 	 */
 	public function save_rule() {
-		if (!isset($_POST['id'])  || !isset($_POST['nonce']) || !isset($_POST['reward-data'])) {
+		if (!isset($_POST['id'])  || !isset($_POST['nonce']) || !isset($_POST['data'])) {
 			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipflex')));
 		}
 
-		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipflex/save_reward_rule_nonce')) {
+		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipflex/save_rule_nonce')) {
 			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipflex')));
 		}
 
@@ -144,29 +144,21 @@ final class Admin {
 			wp_send_json_error(array('message' => esc_html__('You do not have permission to save data.', 'shipflex')));
 		}
 
-		$reward_data = array();
-		parse_str(wp_kses_post(wp_unslash($_POST['reward-data'])), $parsed_data);
-		if (isset($parsed_data['data'])) {
-			$reward_data = json_decode($parsed_data['data'], true);
-		}
+		$rule_data = json_decode(sanitize_text_field(wp_unslash($_POST['data'])), true);
 
-		if (!is_array($reward_data) || empty($reward_data)) {
+		if (!is_array($rule_data) || empty($rule_data)) {
 			wp_send_json_error(array('message' => esc_html__('Invalid data.', 'shipflex')));
 		}
 
-		if (isset($_POST['lang'])) {
-			Multilingual::switch_language(sanitize_key($_POST['lang']));
-		}
+		$rule = new ShipFlex_Rule($rule_data);
+		$rule->set_id(sanitize_text_field(wp_unslash($_POST['id'])));
+		$rule->save();
 
-		$reward = new Reward($reward_data);
-		$reward->id = sanitize_text_field(wp_unslash($_POST['id']));
-		$reward->save();
-
-		$new_edit_url = add_query_arg('id', $reward->get_id(), admin_url('admin.php?page=shipflex-edit'));
+		$new_edit_url = add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipflex-edit'));
 		wp_send_json_success(array(
-			'id' => $reward->get_id(),
+			'id' => $rule->get_id(),
 			'edit_url' => $new_edit_url,
-			'is_new' => $reward->is_new(),
+			'is_new' => $rule->is_new(),
 		));
 	}
 

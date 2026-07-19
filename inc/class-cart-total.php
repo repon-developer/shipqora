@@ -46,6 +46,17 @@ final class Cart_Total {
 	}
 
 	/**
+	 * Get cart item total
+	 * 
+	 * @since 1.0.0
+	 * @return float
+	 */
+	public static function get_cart_item_subtotal($cart_item) {
+		$amounts = array($cart_item['line_subtotal'], $cart_item['line_subtotal_tax']);
+		return round(array_sum($amounts));
+	}
+
+	/**
 	 * Hold cart items
 	 * 
 	 * @var array
@@ -53,53 +64,23 @@ final class Cart_Total {
 	private $cart_items = [];
 
 	/**
+	 * Hold cart items keys for return values
+	 * 
+	 * @var array
+	 */
+	private $cart_items_keys = [];
+
+	/**
 	 * Constructor
 	 */
-	public function __construct() {
+	public function __construct($cart_items_keys = null) {
 		$this->cart_items = self::get_cart_items();
-	}
 
-	/**
-	 * Get cart item of product_id and variation id
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	private function get_cart_items_of_product($product_id, $variation_id = 0) {
-		$cart_items = array_filter($this->cart_items, function ($cart_item) use ($product_id, $variation_id) {
-			$found = true;
-			if ($cart_item['product_id'] != $product_id) {
-				$found = false;
-			}
+		if (!is_array($cart_items_keys)) {
+			$cart_items_keys = array_keys($this->cart_items);
+		}
 
-			if ($variation_id > 0 && $cart_item['variation_id'] != $variation_id) {
-				$found = false;
-			}
-
-			return $found;
-		});
-
-		return $cart_items;
-	}
-
-	/**
-	 * Get cart items keys of product_id and variation id
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	private function _get_cart_items_keys($product_id, $variation_id = 0) {
-		return array_keys($this->get_cart_items_of_product($product_id, $variation_id));
-	}
-
-	/**
-	 * Get cart items keys
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_cart_items_keys() {
-		return $this->cart_items_keys;
+		$this->cart_items_keys = $cart_items_keys;
 	}
 
 	/**
@@ -114,6 +95,23 @@ final class Cart_Total {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Get filtered cart items of cart total
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_filtered_cart_items() {
+		$cart_items = $this->cart_items;
+		foreach ($cart_items as $cart_item_key => $cart_item) {
+			if (!in_array($cart_item_key, $this->cart_items_keys)) {
+				unset($cart_items[$cart_item_key]);
+			}
+		}
+
+		return $cart_items;
 	}
 
 	/**

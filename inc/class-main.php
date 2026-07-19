@@ -58,8 +58,7 @@ final class Main {
 
 		/* Load components */
 		require_once ShipFlex_PATH . 'inc/components/class-select2.php';
-		// require_once ShipFlex_PATH . 'inc/components/class-reward.php';
-		require_once ShipFlex_PATH . 'inc/components/class-cart-products.php';
+		require_once ShipFlex_PATH . 'inc/components/class-cart-option.php';
 
 		// Load Features
 		require_once ShipFlex_PATH . 'inc/features/class-general.php';

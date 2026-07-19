@@ -1,8 +1,8 @@
 import Utils from './utils.min.js?v=@@VERSION';
+import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
-import Cart_Products_Input from './component/cart-products-input.min.js?v=@@VERSION';
 
 const $ = jQuery;
 const { __ } = wp.i18n;
@@ -10,6 +10,7 @@ const { __ } = wp.i18n;
 const helper_models = {
 	saving: false,
 	loading: true,
+	once_modals: [],
 	toast_message: null,
 	current_modal: null,
 	show_toast_message: false,
@@ -17,10 +18,6 @@ const helper_models = {
 }
 
 const ShipFlex_Rule_Editor = {
-	components: {
-		'condition-group': Condition_Group
-	},
-
 	data() {
 		return {
 			id: 0,
@@ -28,7 +25,7 @@ const ShipFlex_Rule_Editor = {
 			status: 'development',
 
 			...helper_models,
-			...shipflex_admin.rule_models
+			...shipflex_admin.rule_data
 		}
 	},
 
@@ -74,39 +71,24 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
+
+		console.log(shipflex_admin.rule_data)
 	},
 
 	updated() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
 
-		add_shipping_instance() {
-			this.shipping_instances.push(0);
-		},
-
-		remove_shipping_instance(index_no) {
-			this.shipping_instances?.splice(index_no, 1);
-		},
-
-		update_shipping_instance(instance_id, index_no) {
-			this.shipping_instances[index_no] = instance_id || 0;
-		},
-
-		add_collection(model_keys, value_type) {
+		add_collection(model_keys, value = null) {
 			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
 			if (!Array.isArray(collections)) {
 				collections = Array()
 			}
 
-			let default_value = {}
-			if ('condition_group' == value_type) {
-				default_value = { id: Utils.generate_uuid() }
-			}
-
-			collections.push({ ...default_value })
+			collections.push(value)
 		},
 
 		delete_collection(model_keys, index_no) {
@@ -137,33 +119,32 @@ const ShipFlex_Rule_Editor = {
 			return true;
 		},
 
-		save_reward() {
+		save_rule() {
 			if (!this.title?.length) {
-				return Utils.set_toast_message(__('Please enter reward title.', 'shipflex'));
+				return Utils.set_toast_message(__('Please enter rule title.', 'shipflex'));
 			}
 
 			if (this.title?.length > 200) {
-				return Utils.set_toast_message(__('The reward title must be within 200 characters.', 'shipflex'));
+				return Utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipflex'));
 			}
 
 			if (!this.validate_save_data()) {
-				return;
+				//return;
 			}
 
 			this.saving = true;
 
-			const reward_data = JSON.parse(JSON.stringify(this.$data));
-			delete reward_data.id;
+			const rule_data = JSON.parse(JSON.stringify(this.$data));
+			delete rule_data.id;
 			for (const key in helper_models) {
-				delete reward_data[key];
+				delete rule_data[key];
 			}
 
 			const formData = new FormData();
 			formData.append('id', this.id);
-			formData.append('lang', shipflex_admin.current_lang);
-			formData.append('nonce', shipflex_admin.save_reward_rule_nonce);
-			formData.append('action', 'shipflex/save_reward_rule');
-			formData.append('reward-data', new URLSearchParams({ data: JSON.stringify(reward_data) }))
+			formData.append('nonce', shipflex_admin.save_rule_nonce);
+			formData.append('action', 'shipflex/save_rule');
+			formData.append('data', JSON.stringify(rule_data))
 
 			fetch(shipflex_admin.ajax_url, {
 				method: 'POST',
@@ -171,7 +152,7 @@ const ShipFlex_Rule_Editor = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while saving the reward data.', 'shipflex'));
+					throw new Error(__('Something went wrong while saving the rule data.', 'shipflex'));
 				}
 
 				if (false === result.success) {
@@ -183,7 +164,7 @@ const ShipFlex_Rule_Editor = {
 				}
 
 				this.id = result.data.id;
-				Utils.set_toast_message(__('Successfully saved reward.', 'shipflex'), 'success');
+				Utils.set_toast_message(__('Successfully saved rule.', 'shipflex'), 'success');
 
 				if (true === result.data.is_new) {
 					window.location = result.data.edit_url
@@ -201,9 +182,10 @@ if ($('.shipflex-rule-editor').length) {
 	const ShipFlex_Rule_Editor_App = Vue.createApp(ShipFlex_Rule_Editor).use(sortablejs)
 
 	const components = wp.hooks.applyFilters('shipflex.rule_editor_components', {
+		'cart-option': Cart_Option,
 		'input-product': Input_Product,
+		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
-		'cart-product-input': Cart_Products_Input,
 	});
 
 	for (const key in components) {

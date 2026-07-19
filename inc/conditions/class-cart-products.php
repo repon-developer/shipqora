@@ -4,7 +4,6 @@ namespace ShipFlex\Condition;
 
 use ShipFlex\Utils;
 use ShipFlex\Cart_Total;
-use ShipFlex\Session_Reward;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -188,3 +187,5 @@ final class Cart_Products {
 <?php
 	}
 }
+
+new Cart_Products();

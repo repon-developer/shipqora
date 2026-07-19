@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
  * Feature class
  */
 class Feature {
-
+	
 	/**
 	 * Hold all registered features
 	 * 
@@ -26,12 +26,7 @@ class Feature {
 	 */
 	public static function add_feature($feature_class) {
 		$feature_instance = new $feature_class();
-
-		$configuration = $feature_instance->get_configuration();
-		$configuration['class_name'] = $feature_class;
-		$configuration['instance'] = $feature_instance;
-
-		self::$features[$feature_instance->get_id()] = $configuration;
+		self::$features[$feature_instance->get_id()] = $feature_instance;
 	}
 
 	/**
@@ -42,15 +37,7 @@ class Feature {
 	 */
 	public static function get_features() {
 		uasort(self::$features, function ($a, $b) {
-			if (!isset($a['priority'])) {
-				$a['priority'] = 10;
-			}
-
-			if (!isset($b['priority'])) {
-				$b['priority'] = 10;
-			}
-
-			return $a['priority'] > $b['priority'] ? 1 : -1;
+			return $a->get_configuration_value('priority') > $b->get_configuration_value('priority') ? 1 : -1;
 		});
 
 		return self::$features;
@@ -69,6 +56,19 @@ class Feature {
 	 * @var array
 	 */
 	protected $meta_data = [];
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct($data = null) {
+		if (!is_array($data)) {
+			return;
+		}
+		
+		foreach ($data as $key => $value) {
+			$this->{$key} = $value;
+		}
+	}
 
 	/**
 	 * isset magic method

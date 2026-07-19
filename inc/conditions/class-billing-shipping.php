@@ -3,7 +3,6 @@
 namespace ShipFlex\Condition;
 
 use ShipFlex\Utils;
-use ShipFlex\Session_Reward;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -267,10 +266,6 @@ final class Billing_Shipping {
 	<?php
 	}
 
-
-
-
-
 	/**
 	 * Add country template
 	 * 
@@ -294,3 +289,5 @@ final class Billing_Shipping {
 <?php
 	}
 }
+
+new Billing_Shipping();

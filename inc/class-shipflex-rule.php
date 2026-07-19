@@ -18,8 +18,29 @@ final class ShipFlex_Rule {
 	 */
 	public static function get($id) {
 		global $wpdb;
-		$reward_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return new self($reward_data);
+		$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return new self($rule_data);
+	}
+
+	/**
+	 * Get rule by instance ID
+	 * 
+	 * @return ShipFlex_Rule
+	 */
+	public static function get_from_instance($instance_id, $status = null) {
+		global $wpdb;
+
+		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
+		$prepared_sql .= $wpdb->prepare(" AND JSON_CONTAINS(shipping_instances, %s)", wp_json_encode((string) $instance_id));
+
+		if (current_user_can('manage_woocommerce')) {
+			$prepared_sql .= " AND status IN ('active', 'development')";
+		} else {
+			$prepared_sql .= " AND status = 'active'";
+		}
+
+		$rule_data = $wpdb->get_row($prepared_sql, ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return new self($rule_data);
 	}
 
 	/**
@@ -27,7 +48,7 @@ final class ShipFlex_Rule {
 	 * 
 	 * @var int
 	 */
-	public $id = 0;
+	private $id = 0;
 
 	/**
 	 * Title of rule
@@ -65,7 +86,7 @@ final class ShipFlex_Rule {
 	private $status = 'development';
 
 	/**
-	 * Conditions of this rule
+	 * Hold all data of current rule
 	 * 
 	 * @var array
 	 */
@@ -93,10 +114,6 @@ final class ShipFlex_Rule {
 	 */
 	public function __construct($data = array()) {
 		$this->created_at = gmdate('Y-m-d H:i:s');
-		if (is_object($data)) {
-			$data = (array) $data;
-		}
-
 		if (!is_array($data)) {
 			return;
 		}
@@ -111,8 +128,16 @@ final class ShipFlex_Rule {
 			next($array_properties);
 		}
 
+		$features_base_models = array_map(function ($feature) {
+			return $feature->get_configuration_value('base_model');
+		}, Feature::get_features());
+
 		foreach ($data as $key => $value) {
-			$this->{$key} = $value;
+			if (in_array($key, $features_base_models)) {
+				$this->feature_settings[$key] = $value;
+			} else {
+				$this->{$key} = $value;
+			}
 		}
 
 		$this->id = absint($this->id);
@@ -152,7 +177,17 @@ final class ShipFlex_Rule {
 	}
 
 	/**
-	 * Get current reward id
+	 * Set current rule ID
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_id($rule_id) {
+		$this->id = absint($rule_id);
+	}
+
+	/**
+	 * Get current rule id
 	 * 
 	 * @since 1.0.0
 	 * @return int
@@ -187,7 +222,7 @@ final class ShipFlex_Rule {
 	}
 
 	/**
-	 * Save reward
+	 * Save rule
 	 * 
 	 * @since 1.0.0
 	 * @return integer
@@ -196,7 +231,7 @@ final class ShipFlex_Rule {
 		global $wpdb;
 
 		$data = get_object_vars($this);
-		unset($data['meta_data']['new_id']);
+		unset($data['meta_data']);
 
 		$array_properties = $this->get_json_properties();
 		while ($key = current($array_properties)) {
@@ -227,11 +262,47 @@ final class ShipFlex_Rule {
 	 */
 	public function get_models() {
 		$rule_data = get_object_vars($this);
-		unset($rule_data['created_at'], $rule_data['meta_data']);
+		unset($rule_data['created_at'], $rule_data['meta_data'], $rule_data['feature_settings']);
+		foreach ($this->feature_settings as $feature_id => $feature_data) {
+			$rule_data[$feature_id] = $feature_data;
+		}
 
 		$rule_editor_settings = Settings_Fields::get_instance('rule-editor');
 
 		$rule_models = apply_filters('shipflex/rule_models', $rule_editor_settings->get_models());
 		return (object) Utils::deep_merge_arrays($rule_models, array_merge($this->meta_data, $rule_data));
+	}
+
+	/**
+	 * Check if provide feature is enabled or not
+	 * 
+	 * @since 1.0.0
+	 * @return boolean
+	 */
+	public function is_feature_enabled($feature_id) {
+		return in_array($feature_id, $this->active_features);
+	}
+
+	/**
+	 * Get feature instance of provided feature id
+	 * 
+	 * @since 1.0.0
+	 * @return object
+	 */
+	public function get_feature_instance($feature_id) {
+		$registered_features = Feature::get_features();
+		if (!isset($registered_features[$feature_id])) {
+			return false;
+		}
+
+		$feature_instance = $registered_features[$feature_id];
+		$base_model = $feature_instance->get_configuration_value('base_model');
+
+		if (!isset($this->feature_settings[$base_model]) || !is_array($this->feature_settings[$base_model])) {
+			return false;
+		}
+
+		$class_name = get_class($feature_instance);
+		return new $class_name($this->feature_settings[$base_model]);
 	}
 }

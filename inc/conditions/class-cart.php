@@ -2,10 +2,9 @@
 
 namespace ShipFlex\Condition;
 
-use ShipFlex\Cart_Total;
 use ShipFlex\Utils;
-use ShipFlex\Session_Reward;
-use ShipFlex\Component\Cart_Products;
+use ShipFlex\Cart_Total;
+use ShipFlex\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -35,7 +34,7 @@ final class Cart {
 			'value' => '',
 			'value2' => '',
 			'cart_operator' => 'greater_than',
-			'cart_cart_products' => array()
+			'cart_cart_option' => array()
 		));
 	}
 
@@ -98,10 +97,6 @@ final class Cart {
 	 * @return boolean
 	 */
 	public function validate_cart_condition($matched, $condition) {
-		if (Session_Reward::get_instance()->is_context('product')) {
-			return true;
-		}
-
 		if (!in_array($condition['type'], array('cart:subtotal', 'cart:total_quantity', 'cart:total_weight', 'cart:total_volume'))) {
 			return $matched;
 		}
@@ -109,9 +104,9 @@ final class Cart {
 		$operator = $condition['cart_operator'];
 		$value_one = floatval($condition['value']);
 		$value_two = isset($condition['value2']) ? floatval($condition['value2']) : 0.00;
+		$cart_option_data = isset($condition['cart_cart_option']) ? $condition['cart_cart_option'] : null;
 
-		$cart_products_data = isset($condition['cart_cart_products']) ? $condition['cart_cart_products'] : null;
-		$cart_products = new Cart_Products($cart_products_data);
+		$cart_option = new Cart_Option($cart_option_data);
 
 		$type_total_keys = array(
 			'cart:subtotal' => null,
@@ -122,7 +117,7 @@ final class Cart {
 
 		$compare_value = 0.00;
 		if (array_key_exists($condition['type'], $type_total_keys)) {
-			$cart_total = new Cart_Total();
+			$cart_total = new Cart_Total($cart_option->get_matched_cart_items_keys());
 			$compare_value = $cart_total->get_total($type_total_keys[$condition['type']]);
 		}
 
@@ -172,13 +167,16 @@ final class Cart {
 			<input type="number" v-model="value" placeholder="<?php echo '0.00'; ?>" step="0.001">
 			<input v-if="cart_operator == 'between'" type="number" v-model="value2" :min="value" placeholder="<?php echo '0.00'; ?>" step="0.001">
 
-			<cart-product-input
-				:settings="cart_cart_products"
-				@change="(value) => cart_cart_products = value"
+			<cart-option
+				:settings="cart_cart_option"
+				@change="(value) => cart_cart_option = value"
 				first-option-label="<?php esc_attr_e('of the cart', 'shipflex') ?>"
 				option-label="<?php esc_attr_e('of the cart in the selected {{option_label}}', 'shipflex') ?>">
-			</cart-product-input>
+			</cart-option>
 		</template>
 <?php
 	}
 }
+
+
+new Cart();

@@ -4,6 +4,7 @@ namespace ShipFlex\Feature;
 
 use ShipFlex\Feature;
 use ShipFlex\Form_Control;
+use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
 
 if (!defined('ABSPATH')) {
@@ -23,9 +24,21 @@ final class Visibility_Condition extends Feature {
 	protected $feature_id = 'visibility-condition';
 
 	/**
+	 * Hold available condition groups
+	 * 
+	 * @var array
+	 */
+	protected $condition_groups = [];
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct($data = null) {
+		if (!is_array($data)) {
+			return;
+		}
+
+		parent::__construct($data);
 	}
 
 	/**
@@ -54,9 +67,9 @@ final class Visibility_Condition extends Feature {
 		$settings_fields->add_setting('conditions', array(
 			'priority' => 10,
 			'default_value' => array(),
-			'model_key' => 'visibility_condition.conditions',
 			'callback' => array($this, 'visibility_condition'),
 			'label' => esc_html__('Active Features', 'shipflex'),
+			'model_key' => 'visibility_condition.condition_groups',
 			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
 			'option_note' => esc_html__('These settings control the discount type, value, and how the discount is applied during checkout.', 'shipflex'),
 		), $this->get_id());
@@ -90,25 +103,40 @@ final class Visibility_Condition extends Feature {
 	public function visibility_condition(Form_Control $form_control) {
 		$form_control->output_open_row(); ?>
 		<td colspan="2">
-			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="visibility_condition.conditions?.length > 0">
-				<template v-for="(group, index) in visibility_condition.conditions" :key="group.id">
+			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="visibility_condition.condition_groups?.length > 0">
+				<template v-for="(group, index) in visibility_condition.condition_groups" :key="group?.id">
 					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
 					<div class="repeater-item">
 						<condition-group
 							:group="group"
-							@delete="delete_collection('visibility_condition.conditions', index)"
-							@update="(group_data) => visibility_condition.conditions[index] = group_data">
+							@delete="delete_collection('visibility_condition.condition_groups', index)"
+							@update="(group_data) => visibility_condition.condition_groups[index] = group_data">
 						</condition-group>
 					</div>
 				</template>
 			</div>
 
-			<button class="button" :class="{'button-large-dashed button-full-width': !visibility_condition.conditions?.length}" @click.prevent="add_collection('visibility_condition.conditions', 'condition_group')">
+			<button class="button" :class="{'button-large-dashed button-full-width': !visibility_condition.condition_groups?.length}" @click.prevent="add_collection('visibility_condition.condition_groups')">
 				<?php esc_html_e('Add condition group', 'shipflex') ?>
 			</button>
 		</td>
 <?php
 		$form_control->output_close_row();
+	}
+
+	/**
+	 * Modify shipping rates
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function manage_shipping_rate($shipping_rate) {
+		$condition_matched = Main::get_instance()->is_matched_conditions($this->condition_groups);
+		if ($condition_matched) {
+			return $shipping_rate;
+		}
+
+		return false;
 	}
 }
 

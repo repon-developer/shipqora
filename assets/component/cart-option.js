@@ -2,8 +2,8 @@ import Utils from '../utils.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
-const Cart_Products_Input = {
-	template: '#shipflex-cart-products-input',
+const Cart_Option = {
+	template: '#shipflex-cart-option-component',
 	props: {
 		settings: {
 			required: true
@@ -26,14 +26,14 @@ const Cart_Products_Input = {
 		return {
 			based_on: '',
 			operator: 'any_in_list',
-			...shipflex_admin.cart_products_models,
+			...shipflex_admin.cart_option_models,
 			...this.settings
 		}
 	},
 
 	computed: {
 		options() {
-			return shipflex_admin.cart_products_options;
+			return shipflex_admin.cart_options;
 		},
 
 		cart_option_data() {
@@ -47,7 +47,7 @@ const Cart_Products_Input = {
 				return true;
 			}
 
-			const option_settings = shipflex_admin.cart_products_options?.[this.based_on];
+			const option_settings = shipflex_admin.cart_options?.[this.based_on];
 			if (true === option_settings?.hide_operator) {
 				return true;
 			}
@@ -82,16 +82,16 @@ const Cart_Products_Input = {
 		},
 
 		handle_cart_option_click() {
-			const modal_name = 'cart-product-option-advanced';
-			if (Utils.has_key() || this.$root.once_modals_shown?.includes(modal_name)) {
+			const modal_name = 'cart-option-advanced';
+			if (Utils.has_key() || this.$root.once_modals?.includes(modal_name)) {
 				return;
 			}
 
 			this.$root.current_modal = modal_name;
-			this.$root.once_modals_shown.push(modal_name);
+			this.$root.once_modals.push(modal_name);
 			jQuery(this.$refs.cart_option_dropdown).blur();
 		}
 	}
 }
 
-export default Cart_Products_Input;
+export default Cart_Option;

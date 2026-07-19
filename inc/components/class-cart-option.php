@@ -10,9 +10,9 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Cart_Products class
+ * Cart Option class
  */
-final class Cart_Products {
+final class Cart_Option {
 
 	/**
 	 * Hold all cart settings options
@@ -38,19 +38,40 @@ final class Cart_Products {
 			$product_settings_options['taxonomy:' . $tax_key] = $taxonomy;
 		}
 
-		$product_settings_options = apply_filters('shipflex/cart_products/options', $product_settings_options);
+		$product_settings_options = apply_filters('shipflex/cart_option/options', $product_settings_options);
 		self::$hold_options = Utils::priority_rearrange($product_settings_options);
 		return self::$hold_options;
 	}
 
 	/**
-	 * VueJS component of cart products settings
+	 * Implement require styles and scripts of cart option
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
+	public static function enqueue_scripts($values, $source) {
+		if (Utils::is_plugin_screen('rule-editor') && 'localize' == $source) {
+			$cart_options = self::get_options();
+			$values['cart_options'] = $cart_options;
+
+			foreach ($cart_options as $type_key => $option) {
+				if (!empty($option['model'])) {
+					$values['cart_option_models'][$option['model']] = array();
+				}
+			}
+		}
+
+		return $values;
+	}
+
+	/**
+	 * VueJS component of cart option
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
 	public static function output_component() { ?>
-		<template id="shipflex-cart-products-input">
+		<template id="shipflex-cart-option-component">
 			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
 				<option value="">{{ firstOptionLabel }}</option>
 				<option
@@ -114,13 +135,6 @@ final class Cart_Products {
 	public $model_values = [];
 
 	/**
-	 * Hold cart items
-	 * 
-	 * @var array
-	 */
-	public $cart_items = [];
-
-	/**
 	 * Extra data
 	 * 
 	 * @var array
@@ -135,7 +149,6 @@ final class Cart_Products {
 			return;
 		}
 
-		$this->cart_items = Cart_Total::get_cart_items();
 		if (empty($options['based_on'])) {
 			$options['based_on'] = 'of_the_cart';
 		}
@@ -253,7 +266,7 @@ final class Cart_Products {
 				}
 			}
 
-			$compare_values = apply_filters('shipflex/cart_products/is_eligible_product/compare_values', $compare_values, $product_id, $variation_id, $this);
+			$compare_values = apply_filters('shipflex/cart_option/is_eligible_product/compare_values', $compare_values, $product_id, $variation_id, $this);
 			$matched_values = array_intersect($this->model_values, $compare_values);
 
 			$current_option = false;
@@ -285,7 +298,7 @@ final class Cart_Products {
 			}
 		}
 
-		return apply_filters('shipflex/cart_products/is_eligible_product', $eligible_product, $product_id, $variation_id, $this);
+		return apply_filters('shipflex/cart_option/is_eligible_product', $eligible_product, $product_id, $variation_id, $this);
 	}
 
 	/**
@@ -296,7 +309,7 @@ final class Cart_Products {
 	 */
 	public function get_matched_cart_items_keys() {
 		$matched_cart_items_keys = array();
-		foreach ($this->cart_items as $cart_item_key => $cart_item) {
+		foreach (Cart_Total::get_cart_items() as $cart_item_key => $cart_item) {
 			$eligible_product = $this->is_eligible_product($cart_item['product_id'], $cart_item['variation_id']);
 			if ($eligible_product) {
 				$matched_cart_items_keys[] = $cart_item_key;
@@ -306,3 +319,5 @@ final class Cart_Products {
 		return $matched_cart_items_keys;
 	}
 }
+
+add_filter('shipflex/admin_enqueue_scripts', array(Cart_Option::class, 'enqueue_scripts'), 10, 2);

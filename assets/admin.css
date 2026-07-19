@@ -746,6 +746,7 @@ ul.shipflex-repeater {
 }
 
 .shipflex-repeater .repeater-item {
+	margin: 0;
 	row-gap: 5px;
 	column-gap: 3px;
 	flex-wrap: wrap;

@@ -169,3 +169,5 @@ final class User {
 <?php
 	}
 }
+
+new User();

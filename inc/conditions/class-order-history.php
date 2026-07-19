@@ -93,3 +93,5 @@ final class Order_History {
 		return $matched;
 	}
 }
+
+new Order_History();

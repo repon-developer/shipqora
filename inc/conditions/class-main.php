@@ -12,6 +12,70 @@ if (!defined('ABSPATH')) {
 class Main {
 
 	/**
+	 * VueJS component of cart option
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function output_component() {
+		$main_condition = self::get_instance(); ?>
+		<template id="shipflex-condition">
+			<select v-model="type">
+				<?php
+				foreach ($main_condition->get_groups() as $group_key => $group_label) {
+					$conditions = $main_condition->get_types_by_group($group_key);
+					if (count($conditions) == 0) {
+						continue;
+					}
+
+					echo '<optgroup label="' . esc_attr($group_label) . '">';
+					foreach ($conditions as $key => $condition) {
+						echo '<option value="' . esc_attr($key) . '">' . esc_html($condition['label']) . ' </option>';
+					}
+					echo '</optgroup>';
+				} ?>
+			</select>
+
+			<?php
+			$rendered_templates = array();
+			foreach ($main_condition->get_types() as $type_key => $condition_type) {
+				if (!isset($condition_type['template']) || !is_callable($condition_type['template'])) {
+					continue;
+				}
+
+				$model_key = !empty($condition_type['model_key']) ? $condition_type['model_key'] : '';
+				$template_id = md5($model_key . maybe_serialize($condition_type['template']));
+				if (!in_array($template_id, $rendered_templates)) {
+					$rendered_templates[] = $template_id;
+					call_user_func($condition_type['template'], $condition_type, $type_key);
+				}
+			} ?>
+
+			<div class="tools">
+				<span @click="delete_condition()" class="btn-delete-item dashicons dashicons-no-alt"></span>
+			</div>
+		</template>
+
+		<template id="shipflex-condition-group">
+			<span @click="delete_group()" class="btn-delete-item btn-delete-group dashicons dashicons-trash"></span>
+
+			<div class="shipflex-repeater" v-if="conditions?.length">
+				<template v-for="(condition, index) in conditions" :key="condition.id">
+					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipflex') ?>"></div>
+					<div class="repeater-item">
+						<condition :condition="condition" :number="index"></condition>
+					</div>
+				</template>
+			</div>
+
+			<a class="button button-small" href="#" @click.prevent="add_condition()">
+				<?php esc_html_e('Add condition', 'shipflex') ?>
+			</a>
+		</template>
+<?php
+	}
+
+	/**
 	 * Hold the current instance of condition
 	 * 
 	 * @since 1.0.0
@@ -34,68 +98,32 @@ class Main {
 	}
 
 	/**
-	 * Hold instance of condition groups
-	 * 
-	 * @since 1.0.0
-	 * @var array
-	 */
-	public $condition_groups = array();
-
-	/**
 	 * Hold all condition types
 	 * 
 	 * @since 1.0.0
 	 * @var array
 	 */
-	public $condition_types = array();
+	public $types = array();
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
+		$this->load_files();
+	}
+
+	/**
+	 * Load all condition files
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function load_files() {
 		require_once ShipFlex_PATH . 'inc/conditions/class-cart.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-user.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-order-history.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-cart-products.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-billing-shipping.php';
-
-		$this->condition_groups['cart'] = new Cart();
-		$this->condition_groups['user'] = new User();
-		$this->condition_groups['cart-products'] = new Cart_Products();
-		$this->condition_groups['order-history'] = new Order_History();
-		$this->condition_groups['billing-shipping'] = new Billing_Shipping();
-	}
-
-	/**
-	 * Get condition types
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_condition_types() {
-		if (empty($this->condition_types) || !is_array($this->condition_types)) {
-			$this->condition_types = apply_filters('shipflex/condition/types', array());
-		}
-
-		return $this->condition_types;
-	}
-
-	/**
-	 * Get condition models
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_models() {
-		$models = array();
-		foreach ($this->get_condition_types() as $condition_type) {
-			if (!empty($condition_type['model_key'])) {
-				$default_value = isset($condition_type['default_value']) ? $condition_type['default_value'] : null;
-				$models[$condition_type['model_key']] = $default_value;
-			}
-		}
-
-		return apply_filters('shipflex/condition/models', $models);
 	}
 
 	/**
@@ -117,7 +145,37 @@ class Main {
 		));
 	}
 
+	/**
+	 * Get condition types
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_types() {
+		if (empty($this->types) || !is_array($this->types)) {
+			$this->types = apply_filters('shipflex/condition/types', array());
+		}
 
+		return $this->types;
+	}
+
+	/**
+	 * Get condition models
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_models() {
+		$models = array();
+		foreach ($this->get_types() as $condition_type) {
+			if (!empty($condition_type['model_key'])) {
+				$default_value = isset($condition_type['default_value']) ? $condition_type['default_value'] : null;
+				$models[$condition_type['model_key']] = $default_value;
+			}
+		}
+
+		return apply_filters('shipflex/condition/models', $models);
+	}
 
 	/**
 	 * Get condition types of group
@@ -126,7 +184,7 @@ class Main {
 	 * @return array
 	 */
 	public function get_types_by_group($group) {
-		$condition_types = $this->get_condition_types();
+		$condition_types = $this->get_types();
 
 		$group_condition_types = [];
 		foreach ($condition_types as $key => $condition) {
@@ -140,6 +198,42 @@ class Main {
 
 		uasort($group_condition_types, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : -1);
 		return $group_condition_types;
+	}
+
+	/**
+	 * Match group and conditions
+	 * 
+	 * @since 1.0.0
+	 * @return boolean
+	 */
+	public function is_matched_conditions($condition_groups) {
+		if (empty($condition_groups) || !is_array($condition_groups)) {
+			return true;
+		}
+
+		$condition_types = $this->get_types();
+
+		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types) {
+			if (!isset($group_data['conditions']) || !is_array($group_data['conditions'])) {
+				return true;
+			}
+
+			$conditions = array_filter($group_data['conditions'], function ($condition) use ($condition_types) {
+				$condition = wp_parse_args($condition, array('type' => '', 'value' => '', 'value2' => ''));
+				$current_type = $condition['type'];
+
+				$validated_condition = false;
+				if (isset($condition_types[$current_type]['validate_callback']) && is_callable($condition_types[$current_type]['validate_callback'])) {
+					$validated_condition = call_user_func($condition_types[$current_type]['validate_callback'], false, $condition, $this);
+				}
+
+				return apply_filters('shipflex/condition/' . $current_type . '/validate', $validated_condition, $condition, $this);
+			});
+
+			return count($group_data['conditions']) === count($conditions);
+		});
+
+		return count($condition_groups) > 0;
 	}
 }
 
