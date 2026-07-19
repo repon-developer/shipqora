@@ -67,6 +67,15 @@ final class Rule_Editor {
 			return;
 		}
 
+		$registered_features = Feature::get_features();
+		foreach ($registered_features as $feature_id => $feature_instance) {
+			if (method_exists($feature_instance, 'output_component')) {
+				echo '<template id="shipflex-' . esc_attr($feature_id) . '-feature-component">';
+				$feature_instance->output_component();
+				echo '</template>';
+			}
+		}
+
 		Condition\Main::output_component();
 		Component\Cart_Option::output_component(); ?>
 

@@ -64,7 +64,7 @@ final class Visibility_Condition extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('conditions', array(
+		$settings_fields->add_setting('condition-groups', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'callback' => array($this, 'visibility_condition'),
@@ -125,18 +125,13 @@ final class Visibility_Condition extends Feature {
 	}
 
 	/**
-	 * Modify shipping rates
+	 * Visible shipping rate or not based on condition
 	 * 
 	 * @since 1.0.0
-	 * @return void
+	 * @return boolean
 	 */
-	public function manage_shipping_rate($shipping_rate) {
-		$condition_matched = Main::get_instance()->is_matched_conditions($this->condition_groups);
-		if ($condition_matched) {
-			return $shipping_rate;
-		}
-
-		return false;
+	public function visible_shipping_rate() {
+		return Main::get_instance()->is_matched_conditions($this->condition_groups);
 	}
 }
 

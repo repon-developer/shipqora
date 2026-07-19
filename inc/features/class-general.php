@@ -20,17 +20,68 @@ final class General {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action('init', array($this, 'add_rule_editor_settings_fields'), 1);
+		add_action('init', array($this, 'add_settings_fields'), 1);
 		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 20, 2);
 	}
 
 	/**
-	 * Add settings fields of rule editor
+	 * Modify shipping rates
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function modify_shipping_rates($rates, $package) {
+		$features = Feature::get_features();
+
+		if (isset($features['visibility-condition'])) {
+			unset($features['visibility-condition']);
+			$rates = array_filter($rates, function ($shipping_rate) {
+				$shipflex_rule = ShipFlex_Rule::get_from_instance($shipping_rate->get_instance_id());
+				if ($shipflex_rule->exists()) {
+					if ($shipflex_rule->is_feature_enabled('visibility-condition')) {
+						$visibility_condition = $shipflex_rule->get_feature_instance('visibility-condition');
+						if ($visibility_condition) {
+							return $visibility_condition->visible_shipping_rate();
+						}
+					}
+				}
+
+				return true;
+			});
+		}
+
+		array_walk($rates, function (&$shipping_rate) use ($features) {
+			$shipflex_rule = ShipFlex_Rule::get_from_instance($shipping_rate->get_instance_id());
+			if (!$shipflex_rule->exists()) {
+				return;
+			}
+
+			foreach ($features as $feature_id => $feature_instance) {
+				if (!$shipflex_rule->is_feature_enabled($feature_id)) {
+					continue;
+				}
+
+				$rule_feature = $shipflex_rule->get_feature_instance($feature_id);
+				if ($rule_feature) {
+					$shipping_rate = $rule_feature->modify_shipping_rate($shipping_rate);
+				}
+			}
+		});
+
+
+
+		error_log(print_r($rates, true));
+
+		return $rates;
+	}
+
+	/**
+	 * Add settings fields of rule editor and features component
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_rule_editor_settings_fields() {
+	public function add_settings_fields() {
 		$editor_settings_fields = Settings_Fields::get_instance('rule-editor');
 
 		$editor_settings_fields->add_setting('shipping_instances', array(
@@ -69,6 +120,11 @@ final class General {
 
 		foreach ($registered_features as $feature_id => $feature_instance) {
 			$feature_instance->add_editor_settings_fields($editor_settings_fields);
+
+			if (method_exists($feature_instance, 'add_component_settings_fields')) {
+				$component_settings_fields = Settings_Fields::get_instance($feature_id);
+				$feature_instance->add_component_settings_fields($component_settings_fields);
+			}
 		}
 	}
 
@@ -104,41 +160,6 @@ final class General {
 
 <?php
 		$form_control->output_after_input_options();
-	}
-
-	/**
-	 * Modify shipping rates
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function modify_shipping_rates($rates, $package) {
-		$features = Feature::get_features();
-
-		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipflex_rule = ShipFlex_Rule::get_from_instance($shipping_rate->get_instance_id());
-			if (!$shipflex_rule->exists()) {
-				return;
-			}
-
-			if ($shipflex_rule->is_feature_enabled('visibility-condition') && isset($features['visibility-condition'])) {
-				$visibility_condition = $shipflex_rule->get_feature_instance('visibility-condition');
-
-				if ($visibility_condition) {
-					$shipping_rate = $visibility_condition->manage_shipping_rate($shipping_rate);
-				}
-			}
-		});
-
-		foreach ($rates as $rate_id => $rate) {
-			if (!is_a($rate, 'WC_Shipping_Rate')) {
-				unset($rates[$rate_id]);
-			}
-		}
-
-		error_log(print_r($rates, true));
-
-		return $rates;
 	}
 }
 

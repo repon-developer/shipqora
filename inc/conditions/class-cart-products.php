@@ -66,11 +66,6 @@ final class Cart_Products {
 	 * @return boolean
 	 */
 	public function validate_condition($matched, $condition) {
-		$session_reward = Session_Reward::get_instance();
-		if ($session_reward->is_context('product')) {
-			return true;
-		}
-
 		$cart_total = new Cart_Total();
 		$cart_items = $cart_total->get_cart_items();
 

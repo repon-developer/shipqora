@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
  * Feature class
  */
 class Feature {
-	
+
 	/**
 	 * Hold all registered features
 	 * 
@@ -64,7 +64,7 @@ class Feature {
 		if (!is_array($data)) {
 			return;
 		}
-		
+
 		foreach ($data as $key => $value) {
 			$this->{$key} = $value;
 		}
@@ -132,6 +132,16 @@ class Feature {
 	public function get_configuration_value($key) {
 		$configuration = $this->get_configuration();
 		return isset($configuration[$key]) ? $configuration[$key] : null;
+	}
+
+	/**
+	 * Get model key after add  base model as a prefix
+	 * 
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public function get_model_key($model_key) {
+		return $this->get_configuration_value('base_model') . '.' . $model_key;
 	}
 
 	/**
