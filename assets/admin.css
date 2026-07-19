@@ -38,10 +38,9 @@
 	box-sizing: border-box;
 }
 
-
 #shipflex,
 .select2-dropdown.shipflex-select2-dropdown {
-	--inputHeight: 40px;
+	--inputHeight: 36px;
 	--borderRadius: 4px;
 	--primaryColor: #4C2DC1;
 	--borderColor: #b5b5b5;
@@ -251,6 +250,7 @@
 }
 
 #shipflex .button {
+	--inputHeight: 36px;
 	min-height: 0;
 	position: relative;
 	text-align: center;
@@ -276,8 +276,8 @@
 }
 
 #shipflex .button-large-dashed {
-	--inputHeight: 50px;
-	font-size: 18px;
+	--inputHeight: 40px;
+	font-size: 16px;
 	min-width: 200px;
 	border-style: dashed;
 }
@@ -574,6 +574,39 @@ table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 	margin: 3px;
 	border: none;
 }
+
+table.table-shipflex-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
+	border-bottom-color: #cfcfcf;
+}
+
+table.table-shipflex-form tr.row-group-heading :is(th, td) {
+	padding: 0px !important;
+	font-size: 15px;
+	font-weight: 500;
+	vertical-align: middle;
+	background-color: #f1f1f1;
+	border-bottom-color: #dbdbdb;
+}
+
+table.table-shipflex-form tr.row-group-heading .heading-line {
+	display: flex;
+	min-height: 40px;
+	align-items: center;
+	padding: 7px 14px;
+}
+
+table.table-shipflex-form tr.row-group-heading .heading-line ul.codiepress-cart-rewards-tab {
+	margin-inline-start: auto;
+	margin-block: -7px !important;
+}
+
+table.table-shipflex-form tr.row-group-heading .action {
+	display: flex;
+	column-gap: 4px;
+	margin-inline-start: auto;
+	margin-inline-end: -4px;
+}
+
 
 #shipflex button.button-large {
 	height: auto;

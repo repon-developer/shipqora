@@ -50,7 +50,13 @@ final class Rule_Editor {
 
 			$values['rule_data'] = $shipflex_rule->get_models();
 
-			//error_log(print_r($values, true));
+			$registered_features = Feature::get_features();
+			foreach ($registered_features as $feature_id => $feature_instance) {
+				$settings_fields = Settings_Fields::get_instance($feature_id);
+				$values['features'][$feature_id] = $settings_fields->get_models();
+			}
+
+			error_log(print_r($values, true));
 		}
 
 		return $values;

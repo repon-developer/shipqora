@@ -44,7 +44,7 @@ final class Adjust_Cost extends Feature {
 			'priority' => 10,
 			'base_model' => 'adjust_shipping_cost',
 			'name' => esc_html__('Adjust Shipping Cost', 'shipflex'),
-			'editor_box_title' => esc_html__('Adjust Shipping Cost', 'shipflex'),
+			'editor_box_title' => esc_html__('Adjust Shipping Cost Settings', 'shipflex'),
 			'description' => esc_html__('Adjust Shipping Cost of exists', 'shipflex'),
 		);
 	}
@@ -69,17 +69,17 @@ final class Adjust_Cost extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<table class="table-shipflex-form table-shipflex-adjust-shipping-cost-form">
-			<thead>
-				<tr>
-					<td colspan="2">
-						Line Number #{{lineNumber}}
-					</td>
-				</tr>
-			</thead>
+		<tr class="row-group-heading">
+			<td colspan="2">
+				<div class="heading-line">
+					Line #{{lineNumber}}
+				</div>
+			</td>
+		</tr>
 
-			<?php $settings_fields->output_fields('line-item-settings') ?>
-		</table>
+		<template v-if="!collapse">
+			<?php $settings_fields->output_fields('line-item') ?>
+		</template>
 	<?php
 	}
 
@@ -90,15 +90,17 @@ final class Adjust_Cost extends Feature {
 	 * @return void
 	 */
 	public function output_rule_editor(Settings_Fields $settings_fields) { ?>
-		<div class="shipflex-box">
-			<div class="box-header">
-				<h3><?php echo esc_html($this->get_configuration_value('editor_box_title')) ?></h3>
-			</div>
+		<table class="table-shipflex-form table-shipflex-adjust-shipping-cost-form">
+			<thead>
+				<tr>
+					<td colspan="2">
+						<?php echo esc_html($this->get_configuration_value('editor_box_title')) ?>
+					</td>
+				</tr>
+			</thead>
 
-			<div class="box-content">
-				<?php $settings_fields->output_fields($this->get_id()); ?>
-			</div>
-		</div>
+			<?php $settings_fields->output_fields($this->get_id()); ?>
+		</table>
 	<?php
 	}
 
@@ -111,8 +113,8 @@ final class Adjust_Cost extends Feature {
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('conditions', array(
 			'priority' => 10,
-			'default_value' => array([], []),
-			'model_key' => $this->get_model_key('line_items'),
+			'default_value' => array(),
+			'model_key' => $this->get_model_key('lite_tier'),
 			'label' => esc_html__('Active Features', 'shipflex'),
 			'callback' => array($this, 'line_item_setting_field'),
 			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
@@ -127,15 +129,12 @@ final class Adjust_Cost extends Feature {
 	 * @return void
 	 */
 	public function line_item_setting_field() { ?>
-		<feature-adjust-shipping-cost
-			v-for="(line_item, index) in adjust_shipping_cost.line_items">
-		</feature-adjust-shipping-cost>
-
-		<!-- <template
-			line-data="<?php echo esc_attr($this->get_model_key('line_items')) ?>"
-			is="vue:feature-adjust-shipping-cost"
-			@update="(value) => free_shipping_line = value">
-		</template> -->
+		<tbody>
+			<template
+				is="vue:feature-adjust-shipping-cost"
+				@update="(value) => adjust_shipping_cost.lite_tier = value">
+			</template>
+		</tbody>
 
 	<?php
 	}
@@ -147,16 +146,29 @@ final class Adjust_Cost extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-
 		$settings_fields->add_setting('adjust-shipping-cost', array(
 			'priority' => 1000,
-			'default_value' => array(),
-			'model_key' => 'sdfsfsfsf',
-			'label' => esc_html__('Active Features', 'shipflex'),
+			'label' => esc_html__('Adjust Shipping Cost', 'shipflex'),
 			'callback' => array($this, 'adjust_cost_setting_field'),
 			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
 			'option_note' => esc_html__('These settings control the discount type, value, and how the discount is applied during checkout.', 'shipflex'),
-		), 'line-item-settings');
+			'related_models' => array(
+				'adjust_amount' => '',
+				'adjust_type' => 'multiply',
+			)
+		), 'line-item');
+
+		$settings_fields->add_setting('min-max-shipping-cost', array(
+			'priority' => 1000,
+			'label' => esc_html__('Min/Max Shipping Cost', 'shipflex'),
+			'callback' => array($this, 'min_max_shipping_cost_setting_field'),
+			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
+			'option_note' => esc_html__('These settings control the discount type, value, and how the discount is applied during checkout.', 'shipflex'),
+			'related_models' => array(
+				'min_shipping_cost' => '',
+				'max_shipping_cost' => '',
+			)
+		), 'line-item');
 
 		$settings_fields->add_setting('condition-groups', array(
 			'priority' => 1000,
@@ -166,7 +178,7 @@ final class Adjust_Cost extends Feature {
 			'callback' => array($this, 'condition_group_setting_field'),
 			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
 			'option_note' => esc_html__('These settings control the discount type, value, and how the discount is applied during checkout.', 'shipflex'),
-		), 'line-item-settings');
+		), 'line-item');
 	}
 
 	/**
@@ -178,8 +190,30 @@ final class Adjust_Cost extends Feature {
 	public function adjust_cost_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<input type="number">
-			sfsf
+			<select v-model="adjust_type">
+				<option value="multiply"><?php esc_html_e('Multiply', 'shipflex') ?></option>
+				<option value="divide"><?php esc_html_e('Divide', 'shipflex') ?></option>
+				<option value="subtract"><?php esc_html_e('Subtract', 'shipflex') ?></option>
+			</select>
+			<input type="number" v-model="adjust_amount" placeholder="<?php esc_html_e('Amount', 'shipflex') ?>">
+			<span v-if="'multiply' == adjust_type || 'divide' == adjust_type">%</span>
+
+		</div>
+	<?php
+		$form_control->output_after_input_options();
+	}
+
+	/**
+	 * Setting field for min/max shipping cost
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function min_max_shipping_cost_setting_field(Form_Control $form_control) {
+		$form_control->output_before_input_options(); ?>
+		<div class="field-row">
+			<input type="number" v-model="min_shipping_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
+			<input type="number" v-model="max_shipping_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
 		</div>
 	<?php
 		$form_control->output_after_input_options();
@@ -200,14 +234,14 @@ final class Adjust_Cost extends Feature {
 					<div class="repeater-item">
 						<condition-group
 							:group="group"
-							@delete="delete_collection('condition_groups', index)"
+							@delete="delete_condition(index)"
 							@update="(group_data) => condition_groups[index] = group_data">
 						</condition-group>
 					</div>
 				</template>
 			</div>
 
-			<button class="button" :class="{'button-large-dashed button-full-width': !condition_groups?.length}" @click.prevent="add_collection('condition_groups')">
+			<button class="button" :class="{'button-large-dashed button-full-width': !condition_groups?.length}" @click.prevent="add_condition_group()">
 				<?php esc_html_e('Add condition group', 'shipflex') ?>
 			</button>
 		</td>
