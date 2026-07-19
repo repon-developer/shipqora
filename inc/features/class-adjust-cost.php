@@ -42,10 +42,10 @@ final class Adjust_Cost extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 10,
-			'base_model' => 'adjust_shipping_cost',
-			'name' => esc_html__('Adjust Shipping Cost', 'shipflex'),
-			'editor_box_title' => esc_html__('Adjust Shipping Cost Settings', 'shipflex'),
-			'description' => esc_html__('Adjust Shipping Cost of exists', 'shipflex'),
+			'base_model' => 'shipping_cost_adjustment',
+			'name' => esc_html__('Shipping Cost Adjustment', 'shipflex'),
+			'editor_box_title' => esc_html__('Shipping Cost Adjustment Settings', 'shipflex'),
+			'description' => esc_html__("Adjust the shipping cost of the selected shipping methods based on this rule's conditions.", 'shipflex'),
 		);
 	}
 

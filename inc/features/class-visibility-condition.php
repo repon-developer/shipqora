@@ -51,9 +51,9 @@ final class Visibility_Condition extends Feature {
 		return array(
 			'priority' => 5,
 			'base_model' => 'visibility_condition',
-			'name' => esc_html__('Visibility Condition', 'shipflex'),
-			'editor_box_title' => esc_html__('Visibility Conditions', 'shipflex'),
-			'description' => esc_html__('Adjust Shipping Cost of exists', 'shipflex'),
+			'name' => esc_html__('Show Shipping Methods', 'shipflex'),
+			'editor_box_title' => esc_html__('Shipping Methods Conditions', 'shipflex'),
+			'description' => esc_html__("Control which shipping methods are available to customers when this rule's conditions are met.", 'shipflex'),
 		);
 	}
 

@@ -110,15 +110,15 @@ final class Admin {
 			add_action("load-$shipflex_menu", array($this->rule_list, 'screen_option'));
 		}
 
-		$add_reward_label = esc_html__('Add New Rule', 'shipflex');
+		$add_rule_label = esc_html__('Add Rule', 'shipflex');
 		if (!empty($_GET['id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$add_reward_label = esc_html__('Edit Reward Rule', 'shipflex');
+			$add_rule_label = esc_html__('Edit Rule', 'shipflex');
 		}
 
 		add_submenu_page(
 			'shipflex',
 			esc_html__('Edit Rule', 'shipflex'),
-			$add_reward_label,
+			$add_rule_label,
 			'manage_woocommerce',
 			'shipflex-edit',
 			array(new Rule_Editor(), 'screen_editor')

@@ -90,9 +90,9 @@ final class General {
 			'model_key' => 'shipping_instances',
 			'callback' => array($this, 'shipping_instance_setting_field'),
 			'type' => Form_Control::MULTIPLE_OPTIONS,
-			'label' => esc_html__('Discount Calculation', 'shipflex'),
-			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
-			'option_note' => esc_html__('These settings control the discount type, value, and how the discount is applied during checkout.', 'shipflex'),
+			'label' => esc_html__('Apply to Shipping Methods', 'shipflex'),
+			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipflex'),
+			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipflex'),
 		), 'general');
 
 
@@ -106,16 +106,15 @@ final class General {
 			);
 		}
 
-		$editor_settings_fields->add_setting('active_features', array(
+		$editor_settings_fields->add_setting('managed-features', array(
 			'priority' => 10,
-			'default_value' => array('visibility-condition'),
+			'default_value' => array(),
 			'model_key' => 'active_features',
 			'option_type' => 'checkbox',
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'options' => $registered_feature_options,
-			'label' => esc_html__('Active Features', 'shipflex'),
-			'label_note' => esc_html__('Configure how this reward is calculated in the above "Product Settings".', 'shipflex'),
-			'option_note' => esc_html__('These settings control the discount type, value, and how the discount is applied during checkout.', 'shipflex'),
+			'label' => esc_html__('Managed Features', 'shipflex'),
+			'label_note' => esc_html__('Select the ShipFlex features that should be applied to the selected shipping methods.', 'shipflex'),
 		), 'general');
 
 		foreach ($registered_features as $feature_id => $feature_instance) {
@@ -145,7 +144,7 @@ final class General {
 					type="shipping_instances"
 					:initial-value="instance_id"
 					@update="(value) => shipping_instances[instance_index] = value"
-					placeholder="<?php esc_html_e('Choose a Shipping Instance', 'shipflex') ?>">
+					placeholder="<?php esc_html_e('Choose a Shipping Method', 'shipflex') ?>">
 				</select2-dropdown>
 
 				<div class="tools">
@@ -155,7 +154,7 @@ final class General {
 		</ul>
 
 		<a href="#" class="button" :class="{'button-small': shipping_instances?.length > 0, 'button-large-dashed': !shipping_instances?.length}" @click.prevent="add_collection('shipping_instances')">
-			<?php esc_html_e('Add a Shipping Instance', 'shipflex') ?>
+			<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
 		</a>
 
 <?php
