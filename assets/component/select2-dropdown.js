@@ -71,7 +71,7 @@ const Select2_Dropdown = {
 		},
 
 		predefined_options() {
-			if (this.options && Array.isArray(this.options)) {
+			if (Array.isArray(this.options)) {
 				return this.options;
 			}
 
@@ -98,7 +98,7 @@ const Select2_Dropdown = {
 		},
 
 		is_ajax_based() {
-			return !(this.has_option_group || this.predefined_options?.length)
+			return !(this.has_option_group || false !== this.predefined_options)
 		},
 
 		select_option_items() {

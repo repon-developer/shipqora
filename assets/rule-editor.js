@@ -74,29 +74,27 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
-
-		console.log(this.$data);
 	},
 
 	updated() {
-		//console.log(this.$data);
+		console.log(this.$data);
 	},
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
 
-		add_collection(model_keys, value = null) {
+		add_collection(model_keys, default_value = {}) {
 			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
 			if (!Array.isArray(collections)) {
 				collections = []
 			}
 
-			collections?.push(value)
+			collections?.push(default_value)
 		},
 
 		delete_collection(model_keys, index_no) {
-			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
-			if (typeof collections === 'object' || !Array.isArray(collections)) {
+			const collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
 				return;
 			}
 

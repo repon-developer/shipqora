@@ -36,7 +36,7 @@ final class General {
 		if (isset($features['hide-shipping-methods'])) {
 			unset($features['hide-shipping-methods']);
 			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipflex_rule = ShipFlex_Rule::get_from_instance($shipping_rate->get_instance_id());
+				$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
 				if ($shipflex_rule->exists()) {
 					if ($shipflex_rule->is_feature_enabled('hide-shipping-methods')) {
 						$feature_instance = $shipflex_rule->get_feature_instance('hide-shipping-methods');
@@ -51,7 +51,7 @@ final class General {
 		}
 
 		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipflex_rule = ShipFlex_Rule::get_from_instance($shipping_rate->get_instance_id());
+			$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
 			if (!$shipflex_rule->exists()) {
 				return;
 			}
@@ -70,7 +70,7 @@ final class General {
 
 
 
-		error_log(print_r($rates, true));
+		//error_log(print_r($rates, true));
 
 		return $rates;
 	}
@@ -86,9 +86,7 @@ final class General {
 
 		$editor_settings_fields->add_setting('shipping_methods', array(
 			'priority' => 10,
-			'default_value' => array(
-				array('method_id' => 'flat_rate', 'instance_id' => '')
-			),
+			'default_value' => array(array()),
 			'model_key' => 'shipping_methods',
 			'callback' => array($this, 'shipping_methods_setting_field'),
 			'type' => Form_Control::MULTIPLE_OPTIONS,
@@ -140,15 +138,16 @@ final class General {
 		$form_control->output_before_input_options(); ?>
 
 		<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">
-			<li class="repeater-item" v-for="shipping_method in shipping_methods" :key="shipping_method?.id">
+			<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
 				<shipping-method-input
-				:settings="shipping_method">
-
+					:shipping-method="shipping_method"
+					@update="(value) => shipping_methods[index] = value"
+					@delete="delete_collection('shipping_methods', index)">
 				</shipping-method-input>
 			</li>
 		</ul>
 
-		<a href="#" class="button" :class="{'button-small': shipping_methods?.length > 0, 'button-large-dashed': !shipping_methods?.length}" @click.prevent="add_collection('shipping_methods', {})">
+		<a href="#" class="button" :class="{'button-small': shipping_methods?.length > 0, 'button-large-dashed': !shipping_methods?.length}" @click.prevent="add_collection('shipping_methods', '')">
 			<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
 		</a>
 

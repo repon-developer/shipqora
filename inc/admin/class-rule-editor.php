@@ -148,6 +148,7 @@ final class Rule_Editor {
 				:initial-value="instance_id"
 				:options="shipping_instances"
 				@update="(value) => instance_id = value"
+				v-if="loading || shipping_instances?.length"
 				placeholder="<?php esc_html_e('All shipping rates', 'shipflex') ?>">
 			</select2-dropdown>
 

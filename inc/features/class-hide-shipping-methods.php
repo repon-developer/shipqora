@@ -51,7 +51,7 @@ final class Hide_Shipping_Methods extends Feature {
 		return array(
 			'priority' => 10,
 			'base_model' => 'hide_shipping_methods',
-			'name' => esc_html__('Hide Shipping Methods', 'shipflex'),
+			'name' => esc_html__('Hide Selected Shipping Methods', 'shipflex'),
 			'section_title' => esc_html__('Hide Shipping Methods Settings', 'shipflex'),
 			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipflex'),
 		);
@@ -131,7 +131,7 @@ final class Hide_Shipping_Methods extends Feature {
 	 * @return boolean
 	 */
 	public function hide_shipping_methods() {
-		return !Main::get_instance()->is_matched_conditions($this->condition_groups);
+		return Main::get_instance()->is_matched_conditions($this->condition_groups);
 	}
 }
 

@@ -27,11 +27,18 @@ final class ShipFlex_Rule {
 	 * 
 	 * @return ShipFlex_Rule
 	 */
-	public static function get_from_instance($instance_id, $status = null) {
+	public static function get_by_shipping_method($shipping_rate) {
+		$query_string_method = wp_json_encode(join(':', array($shipping_rate->get_method_id())));
+		$query_string_instance = wp_json_encode(join(':', array($shipping_rate->get_method_id(), $shipping_rate->get_instance_id())));
+
 		global $wpdb;
 
 		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
-		$prepared_sql .= $wpdb->prepare(" AND JSON_CONTAINS(shipping_methods, %s)", wp_json_encode((string) $instance_id));
+		$prepared_sql .= $wpdb->prepare(
+			" AND (JSON_CONTAINS(shipping_methods, %s) OR JSON_CONTAINS(shipping_methods, %s))", 
+			$query_string_method,
+			$query_string_instance
+		);
 
 		if (current_user_can('manage_woocommerce')) {
 			$prepared_sql .= " AND status IN ('active', 'development')";

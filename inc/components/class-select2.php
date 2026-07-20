@@ -164,7 +164,7 @@ final class Select2 {
 				if ($product->is_type('variable')) {
 					foreach ($product->get_children() as $variation_id) {
 						$variation = wc_get_product($variation_id);
-						$data['variations'][] = array('id' => $variation_id, 'name' => $variation->get_name() . ' (' . $variation_id . ')');
+						$data['sub_options'][] = array('id' => $variation_id, 'name' => $variation->get_name() . ' (' . $variation_id . ')');
 					}
 				}
 

@@ -6,7 +6,7 @@ const { __ } = wp.i18n;
 const Shipping_Method_Input = {
 	template: '#shipflex-shipping-method-input-component',
 	props: {
-		settings: {
+		shippingMethod: {
 			type: Object,
 			default: null,
 		}
@@ -15,14 +15,15 @@ const Shipping_Method_Input = {
 	emits: ['update', 'delete'],
 
 	data() {
+		const [method_id, instance_id] = (this.shippingMethod || '').split(':');
+
 		return {
-			loading: true,
-			method_id: '',
-			instance_id: '',
+			loading: false,
+			method_id: method_id,
+			instance_id: instance_id,
 			shipping_instances: [],
-			instances_loading: false,
 			id: Utils.generate_uuid(),
-			...this.settings
+			...this.shippingMethod
 		}
 	},
 
@@ -40,26 +41,22 @@ const Shipping_Method_Input = {
 		},
 
 		shipping_method_data() {
-			const data = JSON.parse(JSON.stringify(this.$data))
-			delete data.id;
-			delete data.loading;
-			delete data.shipping_instances;
-			return data;
+			return [this.method_id, this.instance_id].filter((item) => item?.length).join(':');
 		},
 	},
 
 	watch: {
 		method_id() {
 			this.load_shipping_instances();
-			this.instance_id = (Utils.get_cache_data(this.chosen_instance_cache_key) || '');
+			this.instance_id = Utils.get_cache_data(this.chosen_instance_cache_key);
 		},
 
 		instance_id(current_instance_id) {
 			Utils.set_cache_data(this.chosen_instance_cache_key, current_instance_id);
 		},
 
-		shipping_method_data() {
-			this.$emit('update', this.shipping_method_data)
+		shipping_method_data(method_data) {
+			this.$emit('update', method_data)
 		},
 
 		shipping_instances() {
@@ -77,6 +74,10 @@ const Shipping_Method_Input = {
 		},
 
 		load_shipping_instances() {
+			if (!this.method_id?.length) {
+				return this.shipping_instances = [];
+			}
+
 			const cache_data = Utils.get_cache_data(this.cache_key);
 			if (cache_data) {
 				return this.shipping_instances = cache_data;
