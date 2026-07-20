@@ -3,8 +3,9 @@ import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
+import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
 
-import Adjust_Shipping_Cost from './features/adjust-shipping-cost.min.js?v=@@VERSION';
+import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
 
 const $ = jQuery;
 const { __ } = wp.i18n;
@@ -38,8 +39,8 @@ const ShipFlex_Rule_Editor = {
 			this.active_features = []
 		}
 
-		if (!Array.isArray(this.shipping_instances)) {
-			this.shipping_instances = []
+		if (!Array.isArray(this.shipping_methods)) {
+			this.shipping_methods = []
 		}
 	},
 
@@ -74,7 +75,7 @@ const ShipFlex_Rule_Editor = {
 
 		this.loading = false;
 
-		//console.log(shipflex_admin.rule_data)
+		console.log(this.$data);
 	},
 
 	updated() {
@@ -87,15 +88,15 @@ const ShipFlex_Rule_Editor = {
 		add_collection(model_keys, value = null) {
 			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
 			if (!Array.isArray(collections)) {
-				collections = Array()
+				collections = []
 			}
 
-			collections.push(value)
+			collections?.push(value)
 		},
 
 		delete_collection(model_keys, index_no) {
 			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
-			if (!Array.isArray(collections)) {
+			if (typeof collections === 'object' || !Array.isArray(collections)) {
 				return;
 			}
 
@@ -188,8 +189,11 @@ if ($('.shipflex-rule-editor').length) {
 		'input-product': Input_Product,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
-		'feature-adjust-shipping-cost': Adjust_Shipping_Cost,
+		'shipping-method-input': Shipping_Method_Input,
+		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
 	});
+
+	
 
 	for (const key in components) {
 		ShipFlex_Rule_Editor_App.component(key, components[key]);

@@ -31,7 +31,7 @@ final class ShipFlex_Rule {
 		global $wpdb;
 
 		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
-		$prepared_sql .= $wpdb->prepare(" AND JSON_CONTAINS(shipping_instances, %s)", wp_json_encode((string) $instance_id));
+		$prepared_sql .= $wpdb->prepare(" AND JSON_CONTAINS(shipping_methods, %s)", wp_json_encode((string) $instance_id));
 
 		if (current_user_can('manage_woocommerce')) {
 			$prepared_sql .= " AND status IN ('active', 'development')";
@@ -58,11 +58,11 @@ final class ShipFlex_Rule {
 	public $title = '';
 
 	/**
-	 * Hold all shipping instances ids
+	 * Hold all shipping methods
 	 * 
 	 * @var array
 	 */
-	private $shipping_instances = [];
+	private $shipping_methods = [];
 
 	/**
 	 * Hold all active features
@@ -106,7 +106,7 @@ final class ShipFlex_Rule {
 	 * @return array
 	 */
 	public function get_json_properties() {
-		return array('shipping_instances', 'active_features', 'feature_settings', 'meta_data');
+		return array('shipping_methods', 'active_features', 'feature_settings', 'meta_data');
 	}
 
 	/**

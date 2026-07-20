@@ -421,6 +421,15 @@
 	margin-inline-start: -15px;
 }
 
+#shipflex.wrap .shipflex-loading-app .loading-instruction {
+	font-size: 15px;
+	font-style: italic;
+	max-width: 500px;
+	line-height: 1.4;
+	text-align: center;
+	margin-top: -6px;
+}
+
 #shipflex.wrap:has(.shipflex-loading-app) {
 	min-height: 85vh;
 	display: flex;

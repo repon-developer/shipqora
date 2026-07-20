@@ -33,15 +33,15 @@ final class General {
 	public function modify_shipping_rates($rates, $package) {
 		$features = Feature::get_features();
 
-		if (isset($features['visibility-condition'])) {
-			unset($features['visibility-condition']);
+		if (isset($features['hide-shipping-methods'])) {
+			unset($features['hide-shipping-methods']);
 			$rates = array_filter($rates, function ($shipping_rate) {
 				$shipflex_rule = ShipFlex_Rule::get_from_instance($shipping_rate->get_instance_id());
 				if ($shipflex_rule->exists()) {
-					if ($shipflex_rule->is_feature_enabled('visibility-condition')) {
-						$visibility_condition = $shipflex_rule->get_feature_instance('visibility-condition');
-						if ($visibility_condition) {
-							return $visibility_condition->visible_shipping_rate();
+					if ($shipflex_rule->is_feature_enabled('hide-shipping-methods')) {
+						$feature_instance = $shipflex_rule->get_feature_instance('hide-shipping-methods');
+						if ($feature_instance) {
+							return !$feature_instance->hide_shipping_methods();
 						}
 					}
 				}
@@ -63,7 +63,7 @@ final class General {
 
 				$rule_feature = $shipflex_rule->get_feature_instance($feature_id);
 				if ($rule_feature) {
-					$shipping_rate = $rule_feature->modify_shipping_rate($shipping_rate);
+					$shipping_rate = $rule_feature->manage_shipping_rate($shipping_rate);
 				}
 			}
 		});
@@ -84,11 +84,13 @@ final class General {
 	public function add_settings_fields() {
 		$editor_settings_fields = Settings_Fields::get_instance('rule-editor');
 
-		$editor_settings_fields->add_setting('shipping_instances', array(
+		$editor_settings_fields->add_setting('shipping_methods', array(
 			'priority' => 10,
-			'default_value' => array(),
-			'model_key' => 'shipping_instances',
-			'callback' => array($this, 'shipping_instance_setting_field'),
+			'default_value' => array(
+				array('shipping_method' => 'flat_rate', 'shipping_rate' => '')
+			),
+			'model_key' => 'shipping_methods',
+			'callback' => array($this, 'shipping_methods_setting_field'),
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'label' => esc_html__('Apply to Shipping Methods', 'shipflex'),
 			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipflex'),
@@ -106,7 +108,7 @@ final class General {
 			);
 		}
 
-		$editor_settings_fields->add_setting('managed-features', array(
+		$editor_settings_fields->add_setting('managed_features', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'model_key' => 'active_features',
@@ -128,32 +130,25 @@ final class General {
 	}
 
 	/**
-	 * Output shipping instance setting field
+	 * Output shipping method setting field
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function shipping_instance_setting_field(Form_Control $form_control) {
+	public function shipping_methods_setting_field(Form_Control $form_control) {
 		$model_key = $form_control->get_model_key();
 		$form_control->output_before_input_options(); ?>
 
-		<ul class="shipflex-repeater" v-if="shipping_instances?.length" style="margin-bottom: 8px;">
-			<li class="repeater-item" v-for="(instance_id, instance_index) in shipping_instances" :key="instance_index">
-				<select2-dropdown
-					:multiple="false"
-					type="shipping_instances"
-					:initial-value="instance_id"
-					@update="(value) => shipping_instances[instance_index] = value"
-					placeholder="<?php esc_html_e('Choose a Shipping Method', 'shipflex') ?>">
-				</select2-dropdown>
+		<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">
+			<li class="repeater-item" v-for="shipping_method in shipping_methods" :key="shipping_method?.id">
+				<shipping-method-input
+				:settings="shipping_method">
 
-				<div class="tools">
-					<a href="#" @click.prevent="delete_collection('shipping_instances', instance_index)" class="btn-delete-item dashicons dashicons-no-alt"></a>
-				</div>
+				</shipping-method-input>
 			</li>
 		</ul>
 
-		<a href="#" class="button" :class="{'button-small': shipping_instances?.length > 0, 'button-large-dashed': !shipping_instances?.length}" @click.prevent="add_collection('shipping_instances')">
+		<a href="#" class="button" :class="{'button-small': shipping_methods?.length > 0, 'button-large-dashed': !shipping_methods?.length}" @click.prevent="add_collection('shipping_methods', {})">
 			<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
 		</a>
 

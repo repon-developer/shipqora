@@ -116,29 +116,42 @@ final class Select2 {
 	 */
 	public function get_select2_data() {
 		check_ajax_referer(self::NONCE_VALUE, 'security');
-		$results = $search_args = array();
 
 		$search_term = !empty($_POST['term']) ? sanitize_text_field(wp_unslash($_POST['term']))  : '';
+		$meta_data['search_term'] = $search_term;
+
 		$query_type = !empty($_POST['type']) ? sanitize_text_field(wp_unslash($_POST['type'])) : '';
 		$query_type = explode(':', $query_type);
 
-		$object_type = !empty($query_type[0]) ? $query_type[0] : '';
-		$object_slug = !empty($query_type[1]) ? $query_type[1] : '';
+		$meta_data['object_type'] = !empty($query_type[0]) ? $query_type[0] : '';
+		$meta_data['object_slug'] = !empty($query_type[1]) ? $query_type[1] : '';
 
-		$values = [];
+		$meta_data['search_values'] = [];
 		if (isset($_POST['values']) && is_array($_POST['values'])) {
-			$values = array_map('sanitize_text_field', wp_unslash($_POST['values']));
+			$meta_data['search_values'] = array_map('sanitize_text_field', wp_unslash($_POST['values']));
 		}
 
-		$method_name = 'get_' . str_replace('-', '_', $object_type);
+		$meta_data = wp_parse_args($meta_data, $_POST);
+
+		$method_name_args = array(
+			'get',
+			str_replace('-', '_', $meta_data['object_type']),
+			str_replace('-', '_', $meta_data['object_slug'])
+		);
+
+		$method_name = join('_', array_filter($method_name_args));
+
+		$results = array();
 		if (method_exists($this, $method_name)) {
-			$results = call_user_func(array($this, $method_name), $values, $object_slug, $search_term);
+			$results = call_user_func(array($this, $method_name), $meta_data);
 		}
 
-		if ('products' == $object_type || ('post_type' === $object_type && 'product' === $object_slug)) {
+		wp_send_json_success(apply_filters('shipflex/select2/results', $results, $meta_data));
+
+		if ('products' == $meta_data['object_type'] || ('post_type' === $meta_data['object_type'] && 'product' === $meta_data['object_slug'])) {
 			$search_args['limit'] = 10;
-			if (count($values) > 0) {
-				$search_args['include'] = $values;
+			if (count($meta_data['search_values']) > 0) {
+				$search_args['include'] = $meta_data['search_values'];
 			}
 
 			if (!empty($search_term)) {
@@ -160,7 +173,7 @@ final class Select2 {
 			}, $products);
 		}
 
-		if ('post_type' == $object_type && !empty($object_slug)) {
+		if ('post_type' == $meta_data['object_type'] && !empty($object_slug)) {
 			$search_args['post_type'] = $object_slug;
 			if (!empty($search_term)) {
 				$search_args['s'] = $search_term;
@@ -172,7 +185,7 @@ final class Select2 {
 			}, $posts);
 		}
 
-		if ('user' == $object_type && 'users' == $object_slug) {
+		if ('user' == $meta_data['object_type'] && 'users' == $object_slug) {
 			if (!empty($search_term)) {
 				$search_args['search'] = $search_term;
 			}
@@ -186,8 +199,6 @@ final class Select2 {
 				return array('id' => $user->ID, 'name' => $user->display_name);
 			}, $get_users);
 		}
-
-		wp_send_json_success(apply_filters('shipflex/select2/' . $object_type . '/results', $results));
 	}
 
 	/**
@@ -196,30 +207,37 @@ final class Select2 {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_shipping_instances($values, $object_slug, $search_term) {
-		$shipping_instances = array();
-
-		$zones = \WC_Shipping_Zones::get_zones();
-		foreach ($zones as $zone) {
-			foreach ($zone['shipping_methods'] as $method) {
-				if ($method->enabled) {
-					$shipping_instances[] = array(
-						'id' => $method->instance_id,
-						'name' => sprintf('%s - %s', $zone['zone_name'], $method->get_title())
-					);
-				}
-			}
+	public function get_shipping_instances($meta_data) {
+		$allow_shipping_method = false;
+		if (isset($meta_data['shipping_method'])) {
+			$allow_shipping_method = sanitize_text_field($meta_data['shipping_method']);
 		}
 
-		$default_zone = new \WC_Shipping_Zone(0);
-		foreach ($default_zone->get_shipping_methods() as $method) {
-			if ($method->enabled) {
+		$shipping_instances = array();
+
+		$shipping_zones = \WC_Shipping_Zones::get_shipping_zones();
+		$shipping_zones[] = new \WC_Shipping_Zone(0);
+
+		foreach ($shipping_zones as $zone) {
+			$shipping_methods = $zone->get_shipping_methods();
+			foreach ($shipping_methods as $shipping_method) {
+				if (!$shipping_method->enabled || ($allow_shipping_method && $shipping_method->id !== $allow_shipping_method)) {
+					continue;
+				}
+
+				$zone_name = $zone->get_zone_name();
+				if ($zone->get_id() == 0) {
+					$zone_name = esc_html__('Rest of the world', 'shipflex');
+				}
+
 				$shipping_instances[] = array(
-					'id' => $method->instance_id,
-					'name' => sprintf('Rest of the world - %s', $method->get_title())
+					'id' => $shipping_method->instance_id,
+					'name' => sprintf('%s - %s', $zone_name, $shipping_method->get_title())
 				);
 			}
 		}
+
+		//error_log(print_r($shipping_instances, true));
 
 		return $shipping_instances;
 	}

@@ -56,7 +56,7 @@ final class Rule_Editor {
 				$values['features'][$feature_id] = $settings_fields->get_models();
 			}
 
-			error_log(print_r($values, true));
+			//error_log(print_r($values, true));
 		}
 
 		return $values;
@@ -83,7 +83,20 @@ final class Rule_Editor {
 		}
 
 		Condition\Main::output_component();
-		Component\Cart_Option::output_component(); ?>
+		Component\Cart_Option::output_component();
+
+
+		$shipping_method_options = array();
+
+		$registered_shipping_methods = WC()->shipping()->get_shipping_methods();
+		foreach ($registered_shipping_methods as $shipping_id => $shipping_method) {
+			$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
+		}
+
+		unset($shipping_method_options['local_pickup'], $shipping_method_options['pickup_location']);
+		if (count($shipping_method_options) == 0) {
+			$shipping_method_options = array('empty' => esc_html__('No shipping methods', 'shipflex'));
+		} ?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">
@@ -117,10 +130,39 @@ final class Rule_Editor {
 					<a href="#" class="btn-delete-item dashicons dashicons-no-alt" @click.prevent="delete_item()"></a>
 				</div>
 			</template>
-
 		</template>
 
+		<template id="shipflex-shipping-method-input-component">
+			<div class="shipflex-content-loader" v-if="loading">
+				<div class="loader-item loader-title"></div>
+				<div class="loader-item loader-text"></div>
+				<div class="loader-item loader-text short"></div>
+			</div>
 
+			<template v-if="!loading">
+				<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading"></span>
+
+				<select v-model="shipping_method">
+					<option value=""><?php esc_html_e('Choose a shipping method', 'shipflex') ?></option>
+					<?php foreach ($shipping_method_options as $shipping_method_id => $shipping_method_title) {
+						echo '<option value="' . esc_attr($shipping_method_id) . '">' . esc_html($shipping_method_title) . '</option>';
+					} ?>
+				</select>
+
+				<select2-dropdown
+					:multiple="false"
+					type="countries"
+					:initial-value="shipping_rate"
+					@onloading="(value) => loading = value"
+					@update="(value) => shipping_rate = value"
+					placeholder="<?php esc_html_e('All shipping rates', 'shipflex') ?>">
+				</select2-dropdown>
+
+				<div class="tools">
+					<a href="#" @click.prevent="delete_item()" class="btn-delete-item dashicons dashicons-no-alt"></a>
+				</div>
+			</template>
+		</template>
 	<?php
 	}
 
@@ -137,6 +179,14 @@ final class Rule_Editor {
 			<div class="shipflex-loading-app" v-if="loading">
 				<div class="shipflex-loading-spinner"></div>
 				<div><?php esc_html_e('Loading...', 'shipflex') ?></div>
+				<div class="loading-instruction">
+					<?php 
+					printf(
+						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %ssend email%s us.', 'shipflex'),
+						'<a href="mailto:support@shipflex.com">',
+						'</a>',
+					) ?>
+				</div>
 			</div>
 
 			<template v-if="!loading">

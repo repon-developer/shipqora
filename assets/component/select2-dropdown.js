@@ -39,12 +39,12 @@ const Select2_Dropdown = {
 		}
 	},
 
-	emits: ['update', 'update-childs', 'onloading'],
+	emits: ['update', 'onloading'],
 
 	data() {
 		return {
 			loading: false,
-			hold_options: [],
+			hold_option_items: [],
 			value: this.initialValue,
 		}
 	},
@@ -70,10 +70,10 @@ const Select2_Dropdown = {
 		option_items() {
 			const predefined_options = shipflex_admin?.select2?.options?.[this.type];
 			if (typeof predefined_options === 'object') {
-				return predefined_options;
+				return Object.keys(predefined_options).map((key) => ({ id: key, name: predefined_options[key] }))
 			}
 
-			if (this.options && typeof this.options === 'object') {
+			if (this.options && Array.isArray(this.options)) {
 				return this.options;
 			}
 
@@ -94,14 +94,35 @@ const Select2_Dropdown = {
 		}
 	},
 
+	watch: {
+		type() {
+			this.load_data();
+		},
+
+		parentValue() {
+			this.load_data();
+		},
+
+		value() {
+			this.send_childs();
+			this.$emit('update', this.value);
+		},
+
+		loading() {
+			this.$emit('onloading', this.loading);
+		}
+	},
+
 	created() {
+		console.log(this.$props);
+
 		if (this.multiple && (!this.value || !Array.isArray(this.value))) {
 			this.value = Array();
 		}
 
 		const option_items = this.option_items;
 		if (option_items && typeof option_items === 'object') {
-			this.hold_options = Object.entries(option_items).map(([id, name]) => ({ id, name }))
+			this.hold_option_items = Object.entries(option_items).map(([id, name]) => ({ id, name }))
 		}
 	},
 
@@ -120,21 +141,6 @@ const Select2_Dropdown = {
 
 	updated() {
 		this.handle_select2_field();
-	},
-
-	watch: {
-		type() {
-			this.load_data();
-		},
-
-		value() {
-			this.send_childs();
-			this.$emit('update', this.value);
-		},
-
-		loading() {
-			this.$emit('onloading', this.loading);
-		}
 	},
 
 	methods: {
@@ -163,12 +169,12 @@ const Select2_Dropdown = {
 				return;
 			}
 
-			this.hold_options = Array();
+			this.hold_option_items = Array();
 
 			const cache_key = this.get_cache_key();
 			const cache_data = Utils.get_cache_data(cache_key);
 			if (cache_data) {
-				return this.hold_options = cache_data;
+				return this.hold_option_items = cache_data;
 			}
 
 			this.loading = true;
@@ -197,7 +203,7 @@ const Select2_Dropdown = {
 					throw new Error(result?.data?.message);
 				}
 
-				this.hold_options = result.data;
+				this.hold_option_items = result.data;
 				hold_select2_options = result.data;
 				this.send_childs();
 				Utils.set_cache_data(cache_key, result.data);

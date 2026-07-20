@@ -62,8 +62,9 @@ final class Main {
 
 		// Load Features
 		require_once ShipFlex_PATH . 'inc/features/class-general.php';
-		require_once ShipFlex_PATH . 'inc/features/class-adjust-cost.php';
-		require_once ShipFlex_PATH . 'inc/features/class-visibility-condition.php';
+		require_once ShipFlex_PATH . 'inc/features/class-hide-shipping-methods.php';
+		require_once ShipFlex_PATH . 'inc/features/class-shipping-cost-adjustment.php';
+		require_once ShipFlex_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 
 
 		if (is_admin()) {

@@ -47,7 +47,7 @@ const Feature_Base_Component = {
 			default: null
 		},
 
-		lineNumber: {
+		tierNo: {
 			default: 1,
 			type: Number
 		},

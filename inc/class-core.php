@@ -39,7 +39,7 @@ class Core {
 		maybe_create_table($wpdb->shipflex_rules_table, "CREATE TABLE $wpdb->shipflex_rules_table (
 			`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, 
 			`title` VARCHAR(200) NOT NULL, 
-			`shipping_instances` JSON DEFAULT NULL,
+			`shipping_methods` JSON DEFAULT NULL,
 			`active_features` JSON DEFAULT NULL,
 			`feature_settings` JSON DEFAULT NULL,
 			`meta_data` JSON DEFAULT NULL,
