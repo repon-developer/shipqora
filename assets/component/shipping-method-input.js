@@ -17,9 +17,10 @@ const Shipping_Method_Input = {
 	data() {
 		return {
 			loading: true,
-			shipping_rate: '',
-			shipping_method: '',
+			method_id: '',
+			instance_id: '',
 			shipping_instances: [],
+			instances_loading: false,
 			id: Utils.generate_uuid(),
 			...this.settings
 		}
@@ -31,7 +32,11 @@ const Shipping_Method_Input = {
 
 	computed: {
 		cache_key() {
-			return 'shipping_method_instances_' + this.shipping_method;
+			return 'shipping_method_instances_' + this.method_id;
+		},
+
+		chosen_instance_cache_key() {
+			return 'shipping_method_chosen_instance_' + this.method_id + '_' + this.id;
 		},
 
 		shipping_method_data() {
@@ -44,40 +49,44 @@ const Shipping_Method_Input = {
 	},
 
 	watch: {
-		shipping_method() {
+		method_id() {
 			this.load_shipping_instances();
+			this.instance_id = (Utils.get_cache_data(this.chosen_instance_cache_key) || '');
+		},
+
+		instance_id(current_instance_id) {
+			Utils.set_cache_data(this.chosen_instance_cache_key, current_instance_id);
 		},
 
 		shipping_method_data() {
 			this.$emit('update', this.shipping_method_data)
+		},
+
+		shipping_instances() {
+			this.loading = false;
+			Utils.set_cache_data(this.cache_key, this.shipping_instances);
 		}
 	},
 
-	mounted() {
-		// const product_variations = Utils.get_cache_data(this.get_cache_key)
-		// if (Array.isArray(product_variations)) {
-		// 	this.product_variations = product_variations;
-		// }
-	},
-
-	updated() {
-		console.log(this.$data)
-	},
-
-
-
 	methods: {
 		delete_item() {
-			const response = confirm(__('Do you want to delete this shipping line?', 'shipflex'))
+			const response = confirm(__('Do you want to delete this shipping method?', 'shipflex'))
 			if (response) {
 				this.$emit('delete')
 			}
 		},
 
 		load_shipping_instances() {
+			const cache_data = Utils.get_cache_data(this.cache_key);
+			if (cache_data) {
+				return this.shipping_instances = cache_data;
+			}
+
+			this.loading = true;
+
 			const formData = new FormData();
 			formData.append('type', 'shipping_instances')
-			formData.append('shipping_method', this.shipping_method)
+			formData.append('shipping_method', this.method_id)
 			formData.append('security', shipflex_admin?.select2.nonce)
 			formData.append('action', 'shipflex/get_select2_dropdown_data')
 
@@ -86,7 +95,6 @@ const Shipping_Method_Input = {
 				body: formData
 			}).then(async (response) => {
 				const result = await response.json();
-				console.log(result)
 				if (typeof result !== 'object' || !response.ok) {
 					throw new Error(__('Something went wrong.', 'shipflex'));
 				}
@@ -96,7 +104,6 @@ const Shipping_Method_Input = {
 				}
 
 				this.shipping_instances = result?.data || [];
-				Utils.set_cache_data(this.cache_key, result.data);
 
 			}).catch((e) => Utils.set_toast_message(e.message)).finally(() => {
 				this.loading = false;

@@ -87,7 +87,7 @@ final class General {
 		$editor_settings_fields->add_setting('shipping_methods', array(
 			'priority' => 10,
 			'default_value' => array(
-				array('shipping_method' => 'flat_rate', 'shipping_rate' => '')
+				array('method_id' => 'flat_rate', 'instance_id' => '')
 			),
 			'model_key' => 'shipping_methods',
 			'callback' => array($this, 'shipping_methods_setting_field'),

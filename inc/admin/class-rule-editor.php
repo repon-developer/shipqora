@@ -133,35 +133,27 @@ final class Rule_Editor {
 		</template>
 
 		<template id="shipflex-shipping-method-input-component">
-			<div class="shipflex-content-loader" v-if="loading">
-				<div class="loader-item loader-title"></div>
-				<div class="loader-item loader-text"></div>
-				<div class="loader-item loader-text short"></div>
+			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading"></span>
+
+			<select v-model="method_id">
+				<option value=""><?php esc_html_e('Choose a shipping method', 'shipflex') ?></option>
+				<?php foreach ($shipping_method_options as $shipping_method_id => $shipping_method_title) {
+					echo '<option value="' . esc_attr($shipping_method_id) . '">' . esc_html($shipping_method_title) . '</option>';
+				} ?>
+			</select>
+
+			<select2-dropdown
+				:multiple="false"
+				:is-loading="loading"
+				:initial-value="instance_id"
+				:options="shipping_instances"
+				@update="(value) => instance_id = value"
+				placeholder="<?php esc_html_e('All shipping rates', 'shipflex') ?>">
+			</select2-dropdown>
+
+			<div class="tools" v-if="!loading">
+				<a href="#" @click.prevent="delete_item()" class="btn-delete-item dashicons dashicons-no-alt"></a>
 			</div>
-
-			<template v-if="!loading">
-				<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading"></span>
-
-				<select v-model="shipping_method">
-					<option value=""><?php esc_html_e('Choose a shipping method', 'shipflex') ?></option>
-					<?php foreach ($shipping_method_options as $shipping_method_id => $shipping_method_title) {
-						echo '<option value="' . esc_attr($shipping_method_id) . '">' . esc_html($shipping_method_title) . '</option>';
-					} ?>
-				</select>
-
-				<select2-dropdown
-					:multiple="false"
-					type="countries"
-					:initial-value="shipping_rate"
-					@onloading="(value) => loading = value"
-					@update="(value) => shipping_rate = value"
-					placeholder="<?php esc_html_e('All shipping rates', 'shipflex') ?>">
-				</select2-dropdown>
-
-				<div class="tools">
-					<a href="#" @click.prevent="delete_item()" class="btn-delete-item dashicons dashicons-no-alt"></a>
-				</div>
-			</template>
 		</template>
 	<?php
 	}
@@ -180,7 +172,7 @@ final class Rule_Editor {
 				<div class="shipflex-loading-spinner"></div>
 				<div><?php esc_html_e('Loading...', 'shipflex') ?></div>
 				<div class="loading-instruction">
-					<?php 
+					<?php
 					printf(
 						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %ssend email%s us.', 'shipflex'),
 						'<a href="mailto:support@shipflex.com">',
