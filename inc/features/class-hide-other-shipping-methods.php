@@ -41,8 +41,8 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'priority' => 20,
 			'base_model' => 'hide_other_shipping_methods',
 			'name' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
-			'section_title' => esc_html__('Shipping Cost Adjustment Settings', 'shipflex'),
-			'description' => esc_html__('If the selected shipping methods are available on the checkout page, hide all other available shipping methods when the conditions are met.', 'shipflex'),
+			'section_title' => esc_html__('Hide Other Shipping Methods Settings', 'shipflex'),
+			'description' => esc_html__('If the selected shipping methods are available on the checkout page, hide the other selected shipping methods when the conditions are met.', 'shipflex'),
 		);
 	}
 
@@ -69,7 +69,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		<tr class="row-group-heading">
 			<td colspan="2">
 				<div class="heading-line">
-					<?php esc_html_e('Shipping Cost Adjustment', 'shipflex') ?> #{{tierNo}}
+					<?php esc_html_e('Tier', 'shipflex') ?> #{{tierNo}}
 				</div>
 			</td>
 		</tr>
@@ -108,7 +108,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_tier_item', array(
+		$settings_fields->add_setting('hide_other_shipping_methods_lite_tier', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'model_key' => $this->get_model_key('lite_tier'),
@@ -126,8 +126,8 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		<tbody>
 			<template
 				is="vue:feature-hide-other-shipping-methods"
-				:feature-data="shipping_cost_adjustment?.lite_tier"
-				@update="(value) => shipping_cost_adjustment.lite_tier = value">
+				:feature-data="hide_other_shipping_methods?.lite_tier"
+				@update="(value) => hide_other_shipping_methods.lite_tier = value">
 			</template>
 		</tbody>
 

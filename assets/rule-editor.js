@@ -6,6 +6,7 @@ import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
 
 import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
+import Hide_Other_Shipping_Methods from './features/hide-other-shipping-methods.min.js?v=@@VERSION';
 
 const $ = jQuery;
 const { __ } = wp.i18n;
@@ -21,6 +22,11 @@ const helper_models = {
 }
 
 const ShipFlex_Rule_Editor = {
+	components: {
+		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
+		'feature-hide-other-shipping-methods': Hide_Other_Shipping_Methods,
+	},
+
 	data() {
 		return {
 			id: 0,
@@ -188,10 +194,9 @@ if ($('.shipflex-rule-editor').length) {
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
 		'shipping-method-input': Shipping_Method_Input,
-		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
 	});
 
-	
+
 
 	for (const key in components) {
 		ShipFlex_Rule_Editor_App.component(key, components[key]);

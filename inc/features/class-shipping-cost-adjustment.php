@@ -72,7 +72,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 		<tr class="row-group-heading">
 			<td colspan="2">
 				<div class="heading-line">
-					<?php esc_html_e('Shipping Cost Adjustment', 'shipflex') ?> #{{tierNo}}
+					<?php esc_html_e('Tier', 'shipflex') ?> #{{tierNo}}
 				</div>
 			</td>
 		</tr>
@@ -111,7 +111,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_tier_item', array(
+		$settings_fields->add_setting('shipping_cost_adjustment_lite_tier_item', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'model_key' => $this->get_model_key('lite_tier'),
