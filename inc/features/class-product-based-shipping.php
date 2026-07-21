@@ -217,14 +217,17 @@ final class Product_Based_Shipping extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('product_source', array(
 			'priority' => 5,
+			'default_value' => (object) array(),
+			'model_key' => 'product_source',
 			'label' => esc_html__('Product Source', 'shipflex'),
 			'callback' => array($this, 'product_source_setting_field'),
 			'label_note' => esc_html__('Choose the product data to match, then select one or more items for this layer.', 'shipflex'),
 			'option_note' => esc_html__("This layer will apply only when the customer's cart contains the selected items.", 'shipflex'),
-			'related_models' => array(
-				'amount' => '',
-				'type' => 'increase_amount',
-			)
+		), 'product-layer');
+
+		$settings_fields->add_setting('exclude_products', array(
+			'priority' => 5.05,
+			'callback' => array($this, 'exclude_products_setting_field'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -240,7 +243,7 @@ final class Product_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Output adjust cost setting field
+	 * Output setting field of product source
 	 * 
 	 * @since 1.0.0
 	 * @return void
@@ -254,8 +257,29 @@ final class Product_Based_Shipping extends Feature {
 				option-label="<?php esc_html_e('{{option_label}}', 'shipflex') ?>">
 			</cart-option>
 		</div>
-<?php
+	<?php
 		$form_control->output_after_input_options();
+	}
+
+	/**
+	 * Output adjust cost setting field
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function exclude_products_setting_field() {
+		$line_button_data = array('utm_source' => 'exclude+products') ?>
+		<tr class="pro-notice-row">
+			<td colspan="2">
+				<div class="shipflex-pro-notice">
+					<h3>🚀 Want to Exclude Specific Products?</h3>
+					<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the "Product Source" and create more precise shipping cost with greater control over product eligibility.</div>
+					<div class="gap-10"></div>
+					<?php Utils::get_lite_button($line_button_data) ?>
+				</div>
+			</td>
+		</tr>
+<?php
 	}
 }
 

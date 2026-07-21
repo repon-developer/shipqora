@@ -79,6 +79,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_hook_name(...$hook_slugs) {
+		$hook_slugs = array_filter($hook_slugs);
 		array_unshift($hook_slugs, 'shipflex');
 		return join('/', $hook_slugs);
 	}
@@ -286,7 +287,7 @@ class Utils {
 	public static function get_lite_button($button_data = null) {
 		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipflex', 'utm_medium' => 'rule+editor'));
 		$button_attributes = array_map(fn($value, $attribute) => sprintf('%s="%s"', $attribute, $value), $button_data, array_keys($button_data));
-		$button_link = 'https://codiepress.com/plugins/shipflex-pro/?' . implode('&', $button_attributes);
+		$button_link = 'https://shipflexpro.com/?' . implode('&', $button_attributes);
 		$button = apply_filters('shipflex/lite_button', '<a class="button button-primary" target="_blank" href="' . esc_url($button_link) . '">' . esc_html__('Get Pro', 'shipflex') . '</a>');
 		if (!empty($button)) {
 			echo wp_kses_post($button);

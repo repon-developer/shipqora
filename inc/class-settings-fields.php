@@ -66,7 +66,7 @@ final class Settings_Fields {
 	 * @return string
 	 */
 	public function get_hook_name($suffix = '') {
-		return join('/', array_filter(array('shipflex', $this->context, $suffix)));
+		return Utils::get_hook_name($this->context, $suffix);
 	}
 
 	/**
@@ -75,9 +75,10 @@ final class Settings_Fields {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_setting($key) {
+	public function get_setting($key, $group) {
 		$key = sanitize_key($key);
-		return isset($this->settings_fields[$key]) ? $this->settings_fields[$key] : false;
+		$group = sanitize_key($group);
+		return isset($this->settings_fields[$group][$key]) ? $this->settings_fields[$group][$key] : false;
 	}
 
 	/**

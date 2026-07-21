@@ -390,6 +390,20 @@
 	display: none !important;
 }
 
+#shipflex [class*="gap-"] {
+	--gap: 10px;
+	flex: 0 0 auto !important;
+	margin-block: var(--gap) !important;
+}
+
+#shipflex .gap-10 {
+	--gap: 10px;
+}
+
+#shipflex .gap-20 {
+	--gap: 20px;
+}
+
 #shipflex.wrap .wrap-header {
 	padding: 20px;
 	margin: -20px -20px 20px;
@@ -608,7 +622,7 @@ table.table-shipflex-form tr.row-group-heading .heading-line {
 	padding: 7px 14px;
 }
 
-table.table-shipflex-form tr.row-group-heading .heading-line ul.codiepress-cart-rewards-tab {
+table.table-shipflex-form tr.row-group-heading .heading-line ul.shipflex-tab {
 	margin-inline-start: auto;
 	margin-block: -7px !important;
 }
@@ -1072,8 +1086,8 @@ ul.shipflex-repeater {
 	margin: -1px 0;
 }
 
-
 .shipflex-pro-notice {
+	text-align: center;
 	margin-top: 15px;
 	padding: 10px 15px;
 	padding-bottom: 15px;
@@ -1099,8 +1113,4 @@ ul.shipflex-repeater {
 
 .shipflex-pro-notice .button {
 	min-width: 130px
-}
-
-.shipflex-pro-notice.align-center {
-	text-align: center;
 }

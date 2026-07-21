@@ -130,14 +130,7 @@ final class Select2 {
 		}
 
 		$meta_data = wp_parse_args($meta_data, $_POST);
-
-		$method_name_args = array(
-			'get',
-			str_replace('-', '_', $meta_data['object_type']),
-			str_replace('-', '_', $meta_data['object_slug'])
-		);
-
-		$method_name = join('_', array_filter($method_name_args));
+		$method_name = 'get_' . str_replace('-', '_', $meta_data['object_type']);
 
 		$results = array();
 		if (method_exists($this, $method_name)) {
@@ -200,6 +193,27 @@ final class Select2 {
 	}
 
 	/**
+	 * Get terms of taxonomy
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_taxonomy($meta_data) {
+		if (empty($meta_data['object_slug'])) {
+			return array();
+		}
+
+		$search_args = array('hide_empty' => false, 'taxonomy' => $meta_data['object_slug']);
+		if (!empty($meta_data['search_term'])) {
+			$search_args['search'] = $meta_data['search_term'];
+		}
+
+		$search_args['include'] = $meta_data['search_values'];
+		$terms = get_terms($search_args);
+		return array_map(fn($term) => array('id' => $term->term_id, 'name' => $term->name), $terms);
+	}
+
+	/**
 	 * Get shipping instances
 	 * 
 	 * @since 1.0.0
@@ -238,27 +252,6 @@ final class Select2 {
 		//error_log(print_r($shipping_instances, true));
 
 		return $shipping_instances;
-	}
-
-	/**
-	 * Get terms of taxonomy
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_taxonomy($values, $taxonomy, $search_term) {
-		if (empty($taxonomy)) {
-			return null;
-		}
-
-		$search_args = array('hide_empty' => false, 'taxonomy' => $taxonomy);
-		if (!empty($search_term)) {
-			$search_args['search'] = $search_term;
-		}
-
-		$search_args['include'] = $values;
-		$terms = get_terms($search_args);
-		return array_map(fn($term) => array('id' => $term->term_id, 'name' => $term->name), $terms);
 	}
 
 	/**
