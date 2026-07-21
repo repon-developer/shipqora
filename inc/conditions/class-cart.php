@@ -169,9 +169,10 @@ final class Cart {
 
 			<cart-option
 				:settings="cart_cart_option"
-				@change="(value) => cart_cart_option = value"
-				first-option-label="<?php esc_attr_e('of the cart', 'shipflex') ?>"
-				option-label="<?php esc_attr_e('of the cart in the selected {{option_label}}', 'shipflex') ?>">
+				@change="(value) => cart_cart_option = value">
+				<template v-slot:based-on-first-option>
+					<option value=""><?php esc_html_e('of the cart', 'shipflex') ?></option>
+				</template>
 			</cart-option>
 		</template>
 <?php

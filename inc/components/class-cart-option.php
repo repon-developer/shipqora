@@ -38,7 +38,7 @@ final class Cart_Option {
 			$product_settings_options['taxonomy:' . $tax_key] = $taxonomy;
 		}
 
-		$product_settings_options = apply_filters('shipflex/cart_option/options', $product_settings_options);
+		$product_settings_options = apply_filters($hook_name = Utils::get_hook_name('cart-option', 'options'), $product_settings_options);
 		self::$hold_options = Utils::priority_rearrange($product_settings_options);
 		return self::$hold_options;
 	}
@@ -73,14 +73,14 @@ final class Cart_Option {
 	public static function output_component() { ?>
 		<template id="shipflex-cart-option-component">
 			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
-				<option value="">{{ firstOptionLabel }}</option>
+				<slot name="based-on-first-option"></slot>
 				<option
 					v-for="(option, option_value) in options"
 					:key="option_value"
 					:value="option_value">{{get_option_label(option_value)}}</option>
 			</select>
 
-			<select v-model="operator" v-if="false === hide_operator">
+			<select v-model="operator" v-if="false === hide_operator && !hideOperator">
 				<option value="any_in_list" v-if="!is_operator_disabled('any_in_list')"><?php esc_html_e('Any in list', 'shipflex') ?></option>
 				<option value="all_in_list" v-if="!is_operator_disabled('all_in_list')"><?php esc_html_e('All in list', 'shipflex') ?></option>
 				<option value="not_in_list" v-if="!is_operator_disabled('not_in_list')"><?php esc_html_e('Not in the list', 'shipflex') ?></option>

@@ -9,22 +9,27 @@ const Cart_Option = {
 			required: true
 		},
 
-		firstOptionLabel: {
-			type: String,
-			default: __('of the cart item', 'shipflex')
-		},
-
 		optionLabel: {
 			type: String,
-			default: __('of the cart item in the selected {{option_label}}', 'shipflex')
+			default: __('of the cart item in the selected {{option_label_lower}}', 'shipflex')
 		},
+
+		basedOn: {
+			default: '',
+			type: String,
+		},
+
+		hideOperator: {
+			default: false,
+			type: Boolean,
+		}
 	},
 
 	emits: ['change'],
 
 	data() {
 		return {
-			based_on: '',
+			based_on: this.basedOn,
 			operator: 'any_in_list',
 			...shipflex_admin.cart_option_models,
 			...this.settings
@@ -78,7 +83,8 @@ const Cart_Option = {
 		get_option_label(option_key) {
 			const option_item = this.options?.[option_key];
 			let option_text = this.optionLabel.toString();
-			return option_text.replace('{{option_label}}', option_item?.label_lower);
+			option_text = option_text.replace('{{option_label}}', option_item?.label);
+			return option_text.replace('{{option_label_lower}}', option_item?.label_lower);
 		},
 
 		handle_cart_option_click() {

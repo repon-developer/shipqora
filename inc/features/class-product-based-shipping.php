@@ -141,7 +141,7 @@ final class Product_Based_Shipping extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		 <tr class="row-group-heading">
+		<tr class="row-group-heading">
 			<td colspan="2">
 				<div class="heading-line">
 					<?php esc_html_e('Layer', 'shipflex') ?> #{{tierNo}}
@@ -183,11 +183,11 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('layer_lines', array(
+		$settings_fields->add_setting('layer_items', array(
 			'priority' => 10,
 			'default_value' => array(),
-			'model_key' => $this->get_model_key('layer_lines'),
-			'callback' => array($this, 'layer_lines_setting_field'),
+			'model_key' => $this->get_model_key('layer_items'),
+			'callback' => array($this, 'layer_items_setting_field'),
 		), $this->get_id());
 	}
 
@@ -197,12 +197,12 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function layer_lines_setting_field() { ?>
+	public function layer_items_setting_field() { ?>
 		<tbody>
 			<template
 				is="vue:feature-product-based-shipping"
-				:feature-data="product_based_shipping?.layer_lines"
-				@update="(value) => product_based_shipping.layer_lines = value">
+				:feature-data="product_based_shipping?.layer_items"
+				@update="(value) => product_based_shipping.layer_items = value">
 			</template>
 		</tbody>
 	<?php
@@ -247,14 +247,16 @@ final class Product_Based_Shipping extends Feature {
 	 */
 	public function product_source_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
-		
-
-		
-	<?php
+		<div class="field-row">
+			<cart-option
+				:hide-operator="true"
+				based-on="taxonomy:product_cat"
+				option-label="<?php esc_html_e('{{option_label}}', 'shipflex') ?>">
+			</cart-option>
+		</div>
+<?php
 		$form_control->output_after_input_options();
 	}
-
-	
 }
 
 Feature::add_feature(Product_Based_Shipping::class);
