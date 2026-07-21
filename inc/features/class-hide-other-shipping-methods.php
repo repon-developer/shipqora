@@ -43,7 +43,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'priority' => 20,
 			'base_model' => 'hide_other_shipping_methods',
 			'name' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
-			'section_title' => esc_html__('Hide Other Shipping Methods Settings', 'shipflex'),
+			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
 			'description' => esc_html__('If the selected shipping methods are available on the checkout page, hide the other selected shipping methods.', 'shipflex'),
 		);
 	}
@@ -91,16 +91,11 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<tr class="row-group-heading">
-			<td colspan="2">
-				<div class="heading-line">
-					<?php esc_html_e('Tier', 'shipflex') ?> #{{tierNo}}
-				</div>
-			</td>
-		</tr>
+		$settings_fields = Settings_Fields::get_instance($this->get_id());
+		$tier_header = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'tier-header'), null);
+		echo wp_kses_post($tier_header); ?>
 
-		<template v-if="!collapse">
+		<template v-if="!collapse && !additionalTier">
 			<?php $settings_fields->output_fields('tier-item') ?>
 		</template>
 	<?php
@@ -180,9 +175,12 @@ final class Hide_Other_Shipping_Methods extends Feature {
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
-			'callback' => array($this, 'condition_group_setting_field'),
-			'related_models' => array(
-				'condition_groups' => array(),
+			'default_value' => array(),
+			'model_key' => 'condition_groups',
+			'callback' => array(General::class, 'component_condition_group_setting_field'),
+			'extra_settings' => array(
+				'add_group_method' => 'add_condition_group()',
+				'delete_group_method' => 'delete_condition_group(index)'
 			)
 		), 'tier-item');
 	}
@@ -228,36 +226,6 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		</div>
 	<?php
 		$form_control->output_after_input_options();
-	}
-
-	/**
-	 * Output condition group setting field
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function condition_group_setting_field(Form_Control $form_control) {
-		$form_control->output_open_row(); ?>
-		<td colspan="2">
-			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="condition_groups?.length > 0">
-				<template v-for="(group, index) in condition_groups" :key="group?.id">
-					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
-					<div class="repeater-item">
-						<condition-group
-							:group="group"
-							@delete="delete_condition(index)"
-							@update="(group_data) => condition_groups[index] = group_data">
-						</condition-group>
-					</div>
-				</template>
-			</div>
-
-			<button class="button" :class="get_add_group_button_class()" @click.prevent="add_condition_group()">
-				<?php esc_html_e('Add condition group', 'shipflex') ?>
-			</button>
-		</td>
-<?php
-		$form_control->output_close_row();
 	}
 }
 

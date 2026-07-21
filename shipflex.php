@@ -4,8 +4,8 @@
  * Plugin Name: ShipFlex
  * Description: 
  * Version: 1.0.0
- * Author: Codiepress
- * Author URI: https://codiepress.com
+ * Author: ShipFlex
+ * Author URI: https://shipflexpro.com
  * Text Domain: shipflex
  * 
  * Requires Plugins: woocommerce

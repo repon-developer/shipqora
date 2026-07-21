@@ -60,15 +60,8 @@ const Base_Component = {
 			})
 		},
 
-		delete_condition(index) {
+		delete_condition_group(index) {
 			this.condition_groups.splice(index, 1)
-		},
-
-		get_add_group_button_class() {
-			return {
-				'button-full-width': !this.condition_groups?.length,
-				'button-large-dashed': !this.condition_groups?.length,
-			}
 		}
 	}
 }

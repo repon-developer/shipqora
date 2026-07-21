@@ -17,6 +17,41 @@ if (!defined('ABSPATH')) {
 final class General {
 
 	/**
+	 * Global setting field for condition group
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function component_condition_group_setting_field(Form_Control $form_control) {
+		$model_key = $form_control->get_model_key();
+
+		$add_group_method = $form_control->get_extra_setting('add_group_method');
+		$delete_group_method = $form_control->get_extra_setting('delete_group_method');
+
+		$form_control->output_open_row(); ?>
+		<td colspan="2">
+			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="<?php echo esc_attr($model_key); ?>?.length > 0">
+				<template v-for="(group, index) in <?php echo esc_attr($model_key); ?>" :key="group?.id">
+					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
+					<div class="repeater-item">
+						<condition-group
+							:group="group"
+							@delete="<?php echo esc_attr($delete_group_method) ?>"
+							@update="(group_data) => <?php echo esc_attr($model_key); ?>[index] = group_data">
+						</condition-group>
+					</div>
+				</template>
+			</div>
+
+			<button class="button" :class="{'button-large-dashed button-full-width': !<?php echo esc_attr($model_key); ?>?.length}" @click.prevent="<?php echo esc_attr($add_group_method) ?>">
+				<?php esc_html_e('Add condition group', 'shipflex') ?>
+			</button>
+		</td>
+	<?php
+		$form_control->output_close_row();
+	}
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -37,7 +72,7 @@ final class General {
 			unset($features['hide-shipping-methods']);
 			$rates = array_filter($rates, function ($shipping_rate) {
 				$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
-				if ($shipflex_rule->exists()) {					
+				if ($shipflex_rule->exists()) {
 					if ($shipflex_rule->is_feature_enabled('hide-shipping-methods')) {
 						$feature_object = $shipflex_rule->get_feature_object('hide-shipping-methods');
 						if ($feature_object) {

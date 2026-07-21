@@ -12,17 +12,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Shipping Cost Adjustment class
- */
-final class Shipping_Cost_Adjustment extends Feature {
+final class Product_Based_Shipping extends Feature {
 
 	/**
 	 * Hold the feature id of this feature
 	 * 
 	 * @var string
 	 */
-	protected $feature_id = 'shipping-cost-adjustment';
+	protected $feature_id = 'product-based-shipping';
 
 	/**
 	 * Constructor.
@@ -43,11 +40,11 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	protected function get_configuration() {
 		return array(
-			'priority' => 30,
-			'base_model' => 'shipping_cost_adjustment',
-			'name' => esc_html__('Shipping Cost Adjustment', 'shipflex'),
-			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipflex'),
-			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipflex'),
+			'priority' => 40,
+			'base_model' => 'product_based_shipping',
+			'name' => esc_html__('Product-Based Shipping', 'shipflex'),
+			'section_title' => esc_html__('Product-Based Shipping', 'shipflex'),
+			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipflex'),
 		);
 	}
 
@@ -143,11 +140,17 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id());
-		$tier_header = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'tier-header'), null);
-		echo wp_kses_post($tier_header); ?>
-		<template v-if="!collapse && !additionalTier">
-			<?php $settings_fields->output_fields('tier-item') ?>
+		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+		 <tr class="row-group-heading">
+			<td colspan="2">
+				<div class="heading-line">
+					<?php esc_html_e('Layer', 'shipflex') ?> #{{tierNo}}
+				</div>
+			</td>
+		</tr>
+
+		<template v-if="!collapse">
+			<?php $settings_fields->output_fields('product-layer') ?>
 		</template>
 	<?php
 	}
@@ -180,11 +183,11 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_tier', array(
+		$settings_fields->add_setting('layer_lines', array(
 			'priority' => 10,
 			'default_value' => array(),
-			'model_key' => $this->get_model_key('lite_tier'),
-			'callback' => array($this, 'lite_tier_setting_field'),
+			'model_key' => $this->get_model_key('layer_lines'),
+			'callback' => array($this, 'layer_lines_setting_field'),
 		), $this->get_id());
 	}
 
@@ -194,12 +197,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function lite_tier_setting_field() { ?>
+	public function layer_lines_setting_field() { ?>
 		<tbody>
 			<template
-				is="vue:feature-shipping-cost-adjustment"
-				:feature-data="shipping_cost_adjustment?.lite_tier"
-				@update="(value) => shipping_cost_adjustment.lite_tier = value">
+				is="vue:feature-product-based-shipping"
+				:feature-data="product_based_shipping?.layer_lines"
+				@update="(value) => product_based_shipping.layer_lines = value">
 			</template>
 		</tbody>
 	<?php
@@ -212,29 +215,17 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('shipping_cost_adjustment', array(
-			'priority' => 1000,
-			'label' => esc_html__('Cost Adjustment', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
+		$settings_fields->add_setting('product_source', array(
+			'priority' => 5,
+			'label' => esc_html__('Product Source', 'shipflex'),
+			'callback' => array($this, 'product_source_setting_field'),
 			'label_note' => esc_html__('Choose how the shipping cost should be adjusted and enter the value to apply.', 'shipflex'),
 			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
 			'related_models' => array(
 				'amount' => '',
 				'type' => 'increase_amount',
 			)
-		), 'tier-item');
-
-		$settings_fields->add_setting('shipping_cost_limit', array(
-			'priority' => 1000,
-			'label' => esc_html__('Shipping Cost Limits', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_limit_setting_field'),
-			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
-			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
-			'related_models' => array(
-				'min_cost' => '',
-				'max_cost' => '',
-			)
-		), 'tier-item');
+		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
@@ -245,7 +236,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'add_group_method' => 'add_condition_group()',
 				'delete_group_method' => 'delete_condition_group(index)'
 			)
-		), 'tier-item');
+		), 'product-layer');
 	}
 
 	/**
@@ -254,43 +245,16 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function shipping_cost_adjustment_setting_field(Form_Control $form_control) {
+	public function product_source_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<select v-model="type">
-				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipflex') ?></option>
-				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipflex') ?></option>
-				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipflex') ?></option>
-				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipflex') ?></option>
-				<option value="-" disabled>-------------------------</option>
-				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipflex') ?></option>
-				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipflex') ?></option>
-			</select>
+		
 
-			<template v-if="'free_shipping' !== type">
-				<input type="number" v-model="amount" min="0" placeholder="<?php esc_html_e('Amount', 'shipflex') ?>">
-				<span v-if="'increase_percentage' == type || 'decrease_percentage' == type">%</span>
-			</template>
-		</div>
+		
 	<?php
 		$form_control->output_after_input_options();
 	}
 
-	/**
-	 * Setting field for min/max shipping cost
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
-		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
-			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
-		</div>
-	<?php
-		$form_control->output_after_input_options();
-	}
+	
 }
 
-Feature::add_feature(Shipping_Cost_Adjustment::class);
+Feature::add_feature(Product_Based_Shipping::class);

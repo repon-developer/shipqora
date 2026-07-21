@@ -649,6 +649,7 @@ table.table-shipflex-form tr.row-group-heading .action {
 }
 
 #shipflex .select2-container--default .select2-selection--single {
+	border-color: var(--borderColor);
 	border-radius: var(--borderRadius);
 }
 
