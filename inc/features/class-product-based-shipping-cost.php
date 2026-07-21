@@ -12,14 +12,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Product_Based_Shipping extends Feature {
+final class Product_Based_Shipping_Cost extends Feature {
 
 	/**
 	 * Hold the feature id of this feature
 	 * 
 	 * @var string
 	 */
-	protected $feature_id = 'product-based-shipping';
+	protected $feature_id = 'product-based-shipping-cost';
 
 	/**
 	 * Constructor.
@@ -41,9 +41,9 @@ final class Product_Based_Shipping extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 40,
-			'base_model' => 'product_based_shipping',
-			'name' => esc_html__('Product-Based Shipping', 'shipflex'),
-			'section_title' => esc_html__('Product-Based Shipping', 'shipflex'),
+			'base_model' => 'product_based_shipping_cost',
+			'name' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
+			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
 			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipflex'),
 		);
 	}
@@ -200,9 +200,9 @@ final class Product_Based_Shipping extends Feature {
 	public function layer_items_setting_field() { ?>
 		<tbody>
 			<template
-				is="vue:feature-product-based-shipping"
-				:feature-data="product_based_shipping?.layer_items"
-				@update="(value) => product_based_shipping.layer_items = value">
+				is="vue:feature-product-based-shipping-cost"
+				:feature-data="product_based_shipping_cost?.layer_items"
+				@update="(value) => product_based_shipping_cost.layer_items = value">
 			</template>
 		</tbody>
 	<?php
@@ -273,7 +273,7 @@ final class Product_Based_Shipping extends Feature {
 			<td colspan="2">
 				<div class="shipflex-pro-notice">
 					<h3>🚀 Want to Exclude Specific Products?</h3>
-					<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the "Product Source" and create more precise shipping cost with greater control over product eligibility.</div>
+					<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Product Source"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
 					<div class="gap-10"></div>
 					<?php Utils::get_lite_button($line_button_data) ?>
 				</div>
@@ -283,4 +283,4 @@ final class Product_Based_Shipping extends Feature {
 	}
 }
 
-Feature::add_feature(Product_Based_Shipping::class);
+Feature::add_feature(Product_Based_Shipping_Cost::class);
