@@ -75,8 +75,8 @@ final class Cart_Option {
 			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
 				<slot name="based-on-first-option"></slot>
 				<option
-					v-for="(option, option_value) in options"
 					:key="option_value"
+					v-for="(option, option_value) in options"
 					:value="option_value">{{get_option_label(option_value)}}</option>
 			</select>
 
@@ -89,8 +89,8 @@ final class Cart_Option {
 			<template v-for="(option, option_value) in options" :key="'dropdown_' + option_value">
 				<select2-dropdown
 					:type="based_on"
-					:placeholder="option?.label"
 					v-if="based_on == option_value"
+					:placeholder="option?.placeholder"
 					:initial-value="get_value(option?.model)"
 					@update="(value) => set_value(value, option.model)">
 				</select2-dropdown>

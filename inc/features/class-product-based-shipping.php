@@ -219,8 +219,8 @@ final class Product_Based_Shipping extends Feature {
 			'priority' => 5,
 			'label' => esc_html__('Product Source', 'shipflex'),
 			'callback' => array($this, 'product_source_setting_field'),
-			'label_note' => esc_html__('Choose how the shipping cost should be adjusted and enter the value to apply.', 'shipflex'),
-			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
+			'label_note' => esc_html__('Choose the product data to match, then select one or more items for this layer.', 'shipflex'),
+			'option_note' => esc_html__("This layer will apply only when the customer's cart contains the selected items.", 'shipflex'),
 			'related_models' => array(
 				'amount' => '',
 				'type' => 'increase_amount',

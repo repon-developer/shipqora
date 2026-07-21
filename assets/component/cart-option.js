@@ -11,7 +11,7 @@ const Cart_Option = {
 
 		optionLabel: {
 			type: String,
-			default: __('of the cart item in the selected {{option_label_lower}}', 'shipflex')
+			default: __('of the cart items in the selected {{option_label_lower}}', 'shipflex')
 		},
 
 		basedOn: {

@@ -171,7 +171,7 @@ final class Cart {
 				:settings="cart_cart_option"
 				@change="(value) => cart_cart_option = value">
 				<template v-slot:based-on-first-option>
-					<option value=""><?php esc_html_e('of the cart', 'shipflex') ?></option>
+					<option value=""><?php esc_html_e('of the cart items', 'shipflex') ?></option>
 				</template>
 			</cart-option>
 		</template>

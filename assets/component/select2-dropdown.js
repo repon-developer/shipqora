@@ -75,7 +75,7 @@ const Select2_Dropdown = {
 				return this.options;
 			}
 
-			let option_data = {}
+			let option_data = null;
 			if ('countries' == this.type) {
 				option_data = wcSettings?.countries;
 			}
@@ -90,7 +90,7 @@ const Select2_Dropdown = {
 				} catch (error) {/*do nothing */ }
 			}
 
-			if (typeof option_data === 'object') {
+			if (option_data && typeof option_data === 'object') {
 				return Object?.keys(option_data)?.map((key) => ({ id: key, name: option_data[key] }))
 			}
 

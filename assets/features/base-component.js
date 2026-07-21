@@ -42,7 +42,7 @@ const Base_Component = {
 	},
 
 	mounted() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	updated() {

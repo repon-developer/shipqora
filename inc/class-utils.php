@@ -246,13 +246,20 @@ class Utils {
 
 			$start_priority += 10;
 
+			$taxonomy_lower_label = strtolower($taxonomy->label);
+
 			$taxonomies[$tax_slug] = array(
 				'slug' => $taxonomy->name,
 				'label' => $taxonomy->label,
 				'priority' => $start_priority,
 				'type' => 'taxonomy:' . $tax_slug,
-				'label_lower' => strtolower($taxonomy->label),
+				'label_lower' => $taxonomy_lower_label,
 				'model' => str_replace('-', '___', $taxonomy->name),
+				'placeholder' => sprintf(
+					/* translate: %s for taxonomy label */
+					esc_html__('Choose one or more %s', 'shipflex'),
+					$taxonomy_lower_label
+				)
 			);
 		}
 
