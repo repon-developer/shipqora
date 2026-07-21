@@ -51,6 +51,13 @@ class Feature {
 	protected $feature_id = '';
 
 	/**
+	 * Hold settings of lite tier 
+	 * 
+	 * @var array
+	 */
+	protected $lite_tier = [];
+
+	/**
 	 * Hold all extra value
 	 * 
 	 * @var array

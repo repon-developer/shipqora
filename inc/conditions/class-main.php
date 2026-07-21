@@ -2,6 +2,8 @@
 
 namespace ShipFlex\Condition;
 
+use ShipFlex\Utils;
+
 if (!defined('ABSPATH')) {
 	exit;
 }
@@ -206,19 +208,19 @@ class Main {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function is_matched_conditions($condition_groups) {
+	public function is_matched_conditions($condition_groups, $feature_object) {
 		if (empty($condition_groups) || !is_array($condition_groups)) {
 			return true;
 		}
 
 		$condition_types = $this->get_types();
 
-		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types) {
+		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types, $feature_object) {
 			if (!isset($group_data['conditions']) || !is_array($group_data['conditions'])) {
 				return true;
 			}
 
-			$conditions = array_filter($group_data['conditions'], function ($condition) use ($condition_types) {
+			$conditions = array_filter($group_data['conditions'], function ($condition) use ($condition_types, $feature_object) {
 				$condition = wp_parse_args($condition, array('type' => '', 'value' => '', 'value2' => ''));
 				$current_type = $condition['type'];
 
@@ -227,13 +229,15 @@ class Main {
 					$validated_condition = call_user_func($condition_types[$current_type]['validate_callback'], false, $condition, $this);
 				}
 
-				return apply_filters('shipflex/condition/' . $current_type . '/validate', $validated_condition, $condition, $this);
+				$hook_name = Utils::get_hook_name('condition', $current_type, 'matched');
+				return apply_filters($hook_name, $validated_condition, $condition, $feature_object);
 			});
 
 			return count($group_data['conditions']) === count($conditions);
 		});
 
-		return count($condition_groups) > 0;
+		$hook_name = Utils::get_hook_name('condition-groups', 'matched');
+		return apply_filters($hook_name, count($condition_groups) > 0, $condition_groups, $feature_object);
 	}
 }
 

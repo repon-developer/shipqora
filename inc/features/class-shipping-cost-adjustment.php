@@ -2,8 +2,10 @@
 
 namespace ShipFlex\Feature;
 
+use ShipFlex\Utils;
 use ShipFlex\Feature;
 use ShipFlex\Form_Control;
+use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
 
 if (!defined('ABSPATH')) {
@@ -57,7 +59,79 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return WC_Shipping_Rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
+		$current_shipping_cost = $shipping_rate->get_cost();
+		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'modify-shipping-rate'), array($this->lite_tier));
 
+		$tier_shipping_costs = array();
+		foreach ($tier_items as $tier_item) {
+			$tier_item = wp_parse_args($tier_item, array(
+				'type' => '',
+				'amount' => '',
+				'min_cost' => '',
+				'max_cost' => '',
+				'condition_groups' => array(),
+			));
+
+			if (empty($tier_item['type'])) {
+				continue;
+			}
+
+			$amount = trim($tier_item['amount']);
+			if (strlen($amount) == 0 && 'free_shipping' != $tier_item['type']) {
+				continue;
+			}
+
+			if ('free_shipping' == $tier_item['type']) {
+				$tier_shipping_costs[] = 0.00;
+				continue;
+			}
+
+			$matched = Main::get_instance()->is_matched_conditions($tier_item['condition_groups'], $this);
+			if (false === $matched) {
+				continue;
+			}
+
+			$amount = floatval($tier_item['amount']);
+			if ('increase_percentage' == $tier_item['type']) {
+				$amount = $current_shipping_cost + ($current_shipping_cost * $amount / 100);
+			}
+
+			if ('decrease_percentage' == $tier_item['type']) {
+				$amount = $current_shipping_cost - ($current_shipping_cost * $amount / 100);
+			}
+
+			if ('increase_amount' == $tier_item['type']) {
+				$amount = $current_shipping_cost + $amount;
+			}
+
+			if ('decrease_amount' == $tier_item['type']) {
+				$amount = $current_shipping_cost - $amount;
+			}
+
+			$min_cost = trim($tier_item['min_cost']);
+			if (strlen($min_cost) > 0) {
+				$amount = max(floatval($min_cost), $amount);
+			}
+
+			$max_cost = trim($tier_item['max_cost']);
+			if (strlen($max_cost) > 0) {
+				$amount = min(floatval($max_cost), $amount);
+			}
+
+			if ($amount < 0) {
+				$amount = 0.00;
+			}
+
+			$tier_shipping_costs[] = $amount;
+		}
+
+		if (count($tier_shipping_costs) > 0) {
+			$current_shipping_cost = max($tier_shipping_costs);
+		}
+
+		$hook_name = Utils::get_hook_name('feature', $this->get_id(), 'shipping-cost');
+		$shipping_cost = apply_filters($hook_name, $current_shipping_cost, array($tier_shipping_costs));
+		$shipping_rate->set_cost($shipping_cost);
 
 		return $shipping_rate;
 	}
@@ -134,7 +208,6 @@ final class Shipping_Cost_Adjustment extends Feature {
 				@update="(value) => shipping_cost_adjustment.lite_tier = value">
 			</template>
 		</tbody>
-
 	<?php
 	}
 
@@ -152,8 +225,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'label_note' => esc_html__('Choose how the shipping cost should be adjusted and enter the value to apply.', 'shipflex'),
 			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
 			'related_models' => array(
-				'adjustment_amount' => '',
-				'adjustment_type' => 'increase_percentage',
+				'amount' => '',
+				'type' => 'increase_percentage',
 			)
 		), 'tier-item');
 
@@ -164,8 +237,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
 			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
 			'related_models' => array(
-				'min_shipping_cost' => '',
-				'max_shipping_cost' => '',
+				'min_cost' => '',
+				'max_cost' => '',
 			)
 		), 'tier-item');
 
@@ -186,16 +259,20 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function shipping_cost_adjustment_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<select v-model="adjustment_type">
+			<select v-model="type">
 				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipflex') ?></option>
 				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipflex') ?></option>
 				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipflex') ?></option>
 				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipflex') ?></option>
+				<option value="-" disabled>---------------------------</option>
+				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipflex') ?></option>
 				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipflex') ?></option>
 			</select>
-			<input type="number" v-model="adjustment_amount" placeholder="<?php esc_html_e('Amount', 'shipflex') ?>">
-			<span v-if="'increase_percentage' == adjustment_type || 'decrease_percentage' == adjustment_type">%</span>
 
+			<template v-if="'free_shipping' !== type">
+				<input type="number" v-model="amount" min="0" placeholder="<?php esc_html_e('Amount', 'shipflex') ?>">
+				<span v-if="'increase_percentage' == type || 'decrease_percentage' == type">%</span>
+			</template>
 		</div>
 	<?php
 		$form_control->output_after_input_options();
@@ -210,8 +287,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<input type="number" v-model="min_shipping_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
-			<input type="number" v-model="max_shipping_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
+			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
+			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
 		</div>
 	<?php
 		$form_control->output_after_input_options();

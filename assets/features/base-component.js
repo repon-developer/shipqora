@@ -26,13 +26,27 @@ const Base_Component = {
 		}
 	},
 
+	computed: {
+		feature_settings_data() {
+			return JSON.parse(JSON.stringify(this.$data));
+		}
+	},
+
+	watch: {
+		feature_settings_data: {
+			deep: true,
+			handler(data) {
+				this.$emit('update', data)
+			}
+		}
+	},
+
 	mounted() {
 		console.log(this.$data);
 	},
 
 	updated() {
-		this.$emit('update', this.$data)
-		console.log(this.$data);
+		//console.log(this.feature_settings_data);
 	},
 
 	methods: {

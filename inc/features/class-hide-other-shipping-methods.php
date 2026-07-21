@@ -22,14 +22,6 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	protected $feature_id = 'hide-other-shipping-methods';
 
 	/**
-	 * Hold tier item
-	 * 
-	 * @since 1.0.0
-	 * @var array
-	 */
-	protected $lite_tier = [];
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct($data = null) {
@@ -81,7 +73,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 				$condition_groups = $this->lite_tier['condition_groups'];
 			}
 
-			$matched = Main::get_instance()->is_matched_conditions($condition_groups);
+			$matched = Main::get_instance()->is_matched_conditions($condition_groups, $this);
 			if (!$matched) {
 				continue;
 			}

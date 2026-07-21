@@ -85,27 +85,23 @@ final class General {
 			});
 		}
 
-		// array_walk($rates, function (&$shipping_rate) use ($features) {
-		// 	$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
-		// 	if (!$shipflex_rule->exists()) {
-		// 		return;
-		// 	}
+		array_walk($rates, function (&$shipping_rate) use ($features) {
+			$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
+			if (!$shipflex_rule->exists()) {
+				return;
+			}
 
-		// 	foreach ($features as $feature_id => $feature_object) {
-		// 		if (!$shipflex_rule->is_feature_enabled($feature_id)) {
-		// 			continue;
-		// 		}
+			foreach ($features as $feature_id => $feature_object) {
+				if (!$shipflex_rule->is_feature_enabled($feature_id)) {
+					continue;
+				}
 
-		// 		$rule_feature_object = $shipflex_rule->get_feature_object($feature_id);
-		// 		if ($rule_feature_object) {
-		// 			$shipping_rate = $rule_feature_object->modify_shipping_rate($shipping_rate);
-		// 		}
-		// 	}
-		// });
-
-
-
-		//error_log(print_r($rates, true));
+				$rule_feature_object = $shipflex_rule->get_feature_object($feature_id);
+				if ($rule_feature_object) {
+					$shipping_rate = $rule_feature_object->modify_shipping_rate($shipping_rate);
+				}
+			}
+		});
 
 		return $rates;
 	}
