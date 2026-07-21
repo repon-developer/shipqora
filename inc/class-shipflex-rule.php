@@ -10,44 +10,68 @@ if (!defined('ABSPATH')) {
  * ShipFlex_Rule class
  */
 final class ShipFlex_Rule {
+	/**
+	 * Hold all instance of ShipFlex_Rule
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private static $rule_instances = [];
 
 	/**
 	 * Get rule by ID
 	 * 
+	 * @since 1.0.0
+	 * @param int $id
 	 * @return ShipFlex_Rule
 	 */
 	public static function get($id) {
-		global $wpdb;
-		$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return new self($rule_data);
+		if (!isset(self::$rule_instances[$id])) {
+			global $wpdb;
+			$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$rule_instances[$id] = new self($rule_data);
+		}
+
+		return self::$rule_instances[$id];
 	}
 
 	/**
-	 * Get rule by instance ID
+	 * Hold ShipFlex rule id of shipping rate
 	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private static $shipping_rate_ids = [];
+
+	/**
+	 * Get rule by shipping rate
+	 * 
+	 * @since 1.0.0
 	 * @return ShipFlex_Rule
 	 */
 	public static function get_by_shipping_method($shipping_rate) {
-		$query_string_method = wp_json_encode(join(':', array($shipping_rate->get_method_id())));
-		$query_string_instance = wp_json_encode(join(':', array($shipping_rate->get_method_id(), $shipping_rate->get_instance_id())));
+		$rate_id = $shipping_rate->get_id();
 
-		global $wpdb;
+		if (!isset(self::$shipping_rate_ids[$rate_id])) {
+			global $wpdb;
+			$prepared_sql = $wpdb->prepare("SELECT id FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
+			$prepared_sql .= $wpdb->prepare(
+				" AND (JSON_CONTAINS(shipping_methods, %s) OR JSON_CONTAINS(shipping_methods, %s))",
+				wp_json_encode($shipping_rate->get_method_id()),
+				wp_json_encode($rate_id)
+			);
 
-		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
-		$prepared_sql .= $wpdb->prepare(
-			" AND (JSON_CONTAINS(shipping_methods, %s) OR JSON_CONTAINS(shipping_methods, %s))", 
-			$query_string_method,
-			$query_string_instance
-		);
+			if (current_user_can('manage_woocommerce')) {
+				$prepared_sql .= " AND status IN ('active', 'development')";
+			} else {
+				$prepared_sql .= " AND status = 'active'";
+			}
 
-		if (current_user_can('manage_woocommerce')) {
-			$prepared_sql .= " AND status IN ('active', 'development')";
-		} else {
-			$prepared_sql .= " AND status = 'active'";
+			$rule_id = $wpdb->get_var($prepared_sql); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$shipping_rate_ids[$rate_id] = $rule_id;
 		}
 
-		$rule_data = $wpdb->get_row($prepared_sql, ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return new self($rule_data);
+		return self::get(self::$shipping_rate_ids[$rate_id]);
 	}
 
 	/**
@@ -291,12 +315,12 @@ final class ShipFlex_Rule {
 	}
 
 	/**
-	 * Get feature instance of provided feature id
+	 * Get feature object of provided feature id
 	 * 
 	 * @since 1.0.0
 	 * @return object
 	 */
-	public function get_feature_instance($feature_id) {
+	public function get_feature_object($feature_id) {
 		$registered_features = Feature::get_features();
 		if (!isset($registered_features[$feature_id])) {
 			return false;

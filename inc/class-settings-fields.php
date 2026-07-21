@@ -65,8 +65,8 @@ final class Settings_Fields {
 	 * @since 1.0.0
 	 * @return string
 	 */
-	public function get_hook_name() {
-		return 'shipflex/' . $this->context;
+	public function get_hook_name($suffix = '') {
+		return join('/', array_filter(array('shipflex', $this->context, $suffix)));
 	}
 
 	/**
@@ -102,9 +102,8 @@ final class Settings_Fields {
 		$group = sanitize_key($group);
 		$subgroup = sanitize_key($subgroup);
 
-		$setting_data['group'] = $group;
 		$setting_data['subgroup'] = $subgroup;
-		$this->settings_fields[$key] = $setting_data;
+		$this->settings_fields[$group][$key] = $setting_data;
 	}
 
 	/**
@@ -113,13 +112,13 @@ final class Settings_Fields {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function modify_setting($key, $setting_data) {
-		if (!isset($this->settings_fields[$key])) {
-			throw new \Exception('This setting key does not exists.');
+	public function modify_setting($key, $group, $setting_data) {
+		$group = sanitize_key($group);
+		if (!isset($this->settings_fields[$group][$key])) {
+			throw new \Exception('This setting key does not exists of this settings group.');
 		}
 
-		$group = !empty($this->settings_fields[$key]['group']) ? $this->settings_fields[$key]['group'] : '';
-		$subgroup = !empty($this->settings_fields[$key]['subgroup']) ? $this->settings_fields[$key]['subgroup'] : '';
+		$subgroup = !empty($this->settings_fields[$group][$key]['subgroup']) ? $this->settings_fields[$group][$key]['subgroup'] : '';
 		$this->add_setting($key, $setting_data, $group, $subgroup);
 	}
 
@@ -160,29 +159,31 @@ final class Settings_Fields {
 	 */
 	public function get_models() {
 		$settings_models = array();
-		foreach ($this->settings_fields as $setting_field) {
-			if (!empty($setting_field['model_key'])) {
-				$model_value = isset($setting_field['default_value']) ? $setting_field['default_value'] : null;
-				$this->assign_model($settings_models, $setting_field['model_key'], $model_value);
-			}
-
-			if (isset($setting_field['related_models']) && is_array($setting_field['related_models'])) {
-				foreach ($setting_field['related_models'] as $model_key => $related_model_value) {
-					$this->assign_model($settings_models, $model_key, $related_model_value);
+		foreach ($this->settings_fields as $group) {
+			foreach ($group as $setting_field) {
+				if (!empty($setting_field['model_key'])) {
+					$model_value = isset($setting_field['default_value']) ? $setting_field['default_value'] : null;
+					$this->assign_model($settings_models, $setting_field['model_key'], $model_value);
 				}
-			}
 
-			if (isset($setting_field['sub_settings_fields']) && is_array($setting_field['sub_settings_fields'])) {
-				$sub_settings_fields = $setting_field['sub_settings_fields'];
-				foreach ($sub_settings_fields as $sub_setting_field) {
-					if (!empty($sub_setting_field['model_key'])) {
-						$sub_model_value = isset($sub_setting_field['default_value']) ? $sub_setting_field['default_value'] : null;
-						$this->assign_model($settings_models, $sub_setting_field['model_key'], $sub_model_value);
+				if (isset($setting_field['related_models']) && is_array($setting_field['related_models'])) {
+					foreach ($setting_field['related_models'] as $model_key => $related_model_value) {
+						$this->assign_model($settings_models, $model_key, $related_model_value);
 					}
+				}
 
-					if (isset($sub_setting_field['related_models']) && is_array($sub_setting_field['related_models'])) {
-						foreach ($sub_setting_field['related_models'] as $model_key => $related_model_value) {
-							$this->assign_model($settings_models, $model_key, $related_model_value);
+				if (isset($setting_field['sub_settings_fields']) && is_array($setting_field['sub_settings_fields'])) {
+					$sub_settings_fields = $setting_field['sub_settings_fields'];
+					foreach ($sub_settings_fields as $sub_setting_field) {
+						if (!empty($sub_setting_field['model_key'])) {
+							$sub_model_value = isset($sub_setting_field['default_value']) ? $sub_setting_field['default_value'] : null;
+							$this->assign_model($settings_models, $sub_setting_field['model_key'], $sub_model_value);
+						}
+
+						if (isset($sub_setting_field['related_models']) && is_array($sub_setting_field['related_models'])) {
+							foreach ($sub_setting_field['related_models'] as $model_key => $related_model_value) {
+								$this->assign_model($settings_models, $model_key, $related_model_value);
+							}
 						}
 					}
 				}
@@ -204,22 +205,23 @@ final class Settings_Fields {
 		$group = sanitize_key($group);
 		$subgroup = sanitize_key($subgroup);
 
-		$settings_fields = apply_filters($this->get_hook_name(), $this->settings_fields);
+		$settings_fields = array();
+		if (isset($this->settings_fields[$group])) {
+			$settings_fields = $this->settings_fields[$group];
+		}
+
+		$settings_fields = apply_filters($this->get_hook_name($group), $settings_fields);
 
 		$settings_fields = array_map(function ($setting_field) {
-			return wp_parse_args($setting_field, array('group' => '', 'subgroup' => 'general', 'priority' => 10));
+			return wp_parse_args($setting_field, array('subgroup' => 'general', 'priority' => 10));
 		}, $settings_fields);
 
-		$settings_fields = array_filter($settings_fields, function ($setting_field) use ($group, $subgroup) {
-			$matched = false;
-			if (!empty($group)) {
-				$matched = $setting_field['group'] == $group;
-				if ($matched && !empty($subgroup)) {
-					$matched = $setting_field['subgroup'] == $subgroup;
-				}
+		$settings_fields = array_filter($settings_fields, function ($setting_field) use ($subgroup) {
+			if (!empty($subgroup)) {
+				return $setting_field['subgroup'] == $subgroup;
 			}
 
-			return $matched;
+			return true;
 		});
 
 		uasort($settings_fields, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : -1);

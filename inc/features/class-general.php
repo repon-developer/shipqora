@@ -37,11 +37,11 @@ final class General {
 			unset($features['hide-shipping-methods']);
 			$rates = array_filter($rates, function ($shipping_rate) {
 				$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
-				if ($shipflex_rule->exists()) {
+				if ($shipflex_rule->exists()) {					
 					if ($shipflex_rule->is_feature_enabled('hide-shipping-methods')) {
-						$feature_instance = $shipflex_rule->get_feature_instance('hide-shipping-methods');
-						if ($feature_instance) {
-							return !$feature_instance->hide_shipping_methods();
+						$feature_object = $shipflex_rule->get_feature_object('hide-shipping-methods');
+						if ($feature_object) {
+							return !$feature_object->hide_shipping_methods();
 						}
 					}
 				}
@@ -50,23 +50,58 @@ final class General {
 			});
 		}
 
-		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
-			if (!$shipflex_rule->exists()) {
-				return;
+		if (isset($features['hide-other-shipping-methods'])) {
+			unset($features['hide-other-shipping-methods']);
+
+			$hideable_rate_ids = array();
+			foreach ($rates as $shipping_rate) {
+				$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
+				if ($shipflex_rule->exists()) {
+					if ($shipflex_rule->is_feature_enabled('hide-other-shipping-methods')) {
+						$feature_object = $shipflex_rule->get_feature_object('hide-other-shipping-methods');
+						if ($feature_object) {
+							$hideable_rate_ids = array_merge($hideable_rate_ids, $feature_object->get_shipping_rates());
+						}
+					}
+				}
 			}
 
-			foreach ($features as $feature_id => $feature_instance) {
-				if (!$shipflex_rule->is_feature_enabled($feature_id)) {
-					continue;
+			$hideable_methods = array_filter($hideable_rate_ids, function ($rate_id) {
+				$rate_information = explode(':', $rate_id);
+				return !isset($rate_information[1]);
+			});
+
+			$rates = array_filter($rates, function ($shipping_rate) use ($hideable_methods, $hideable_rate_ids) {
+				$matched = false;
+				if (in_array($shipping_rate->get_method_id(), $hideable_methods)) {
+					$matched = true;
 				}
 
-				$rule_feature = $shipflex_rule->get_feature_instance($feature_id);
-				if ($rule_feature) {
-					$shipping_rate = $rule_feature->manage_shipping_rate($shipping_rate);
+				if (in_array($shipping_rate->get_id(), $hideable_rate_ids)) {
+					$matched = true;
 				}
-			}
-		});
+
+				return !$matched;
+			});
+		}
+
+		// array_walk($rates, function (&$shipping_rate) use ($features) {
+		// 	$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
+		// 	if (!$shipflex_rule->exists()) {
+		// 		return;
+		// 	}
+
+		// 	foreach ($features as $feature_id => $feature_object) {
+		// 		if (!$shipflex_rule->is_feature_enabled($feature_id)) {
+		// 			continue;
+		// 		}
+
+		// 		$rule_feature_object = $shipflex_rule->get_feature_object($feature_id);
+		// 		if ($rule_feature_object) {
+		// 			$shipping_rate = $rule_feature_object->modify_shipping_rate($shipping_rate);
+		// 		}
+		// 	}
+		// });
 
 
 
@@ -117,12 +152,12 @@ final class General {
 			'label_note' => esc_html__('Select the ShipFlex features that should be applied to the selected shipping methods.', 'shipflex'),
 		), 'general');
 
-		foreach ($registered_features as $feature_id => $feature_instance) {
-			$feature_instance->add_editor_settings_fields($editor_settings_fields);
+		foreach ($registered_features as $feature_id => $feature_object) {
+			$feature_object->add_editor_settings_fields($editor_settings_fields);
 
-			if (method_exists($feature_instance, 'add_component_settings_fields')) {
+			if (method_exists($feature_object, 'add_component_settings_fields')) {
 				$component_settings_fields = Settings_Fields::get_instance($feature_id);
-				$feature_instance->add_component_settings_fields($component_settings_fields);
+				$feature_object->add_component_settings_fields($component_settings_fields);
 			}
 		}
 	}

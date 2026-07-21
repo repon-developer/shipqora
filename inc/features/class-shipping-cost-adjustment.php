@@ -53,9 +53,10 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * Manage shipping rate object
 	 * 
 	 * @since 1.0.0
+	 * @param WC_Shipping_Rate $shipping_rate
 	 * @return WC_Shipping_Rate
 	 */
-	public function manage_shipping_rate($shipping_rate) {
+	public function modify_shipping_rate($shipping_rate) {
 
 
 		return $shipping_rate;
@@ -78,7 +79,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 		</tr>
 
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('line-item') ?>
+			<?php $settings_fields->output_fields('tier-item') ?>
 		</template>
 	<?php
 	}
@@ -111,7 +112,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('shipping_cost_adjustment_lite_tier_item', array(
+		$settings_fields->add_setting('lite_tier', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'model_key' => $this->get_model_key('lite_tier'),
@@ -154,7 +155,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'adjustment_amount' => '',
 				'adjustment_type' => 'increase_percentage',
 			)
-		), 'line-item');
+		), 'tier-item');
 
 		$settings_fields->add_setting('shipping_cost_limit', array(
 			'priority' => 1000,
@@ -166,14 +167,14 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'min_shipping_cost' => '',
 				'max_shipping_cost' => '',
 			)
-		), 'line-item');
+		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array($this, 'condition_group_setting_field'),
-		), 'line-item');
+		), 'tier-item');
 	}
 
 	/**

@@ -73,6 +73,17 @@ class Utils {
 	}
 
 	/**
+	 * Get Hook Name
+	 * 
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public static function get_hook_name(...$hook_slugs) {
+		array_unshift($hook_slugs, 'shipflex');
+		return join('/', $hook_slugs);
+	}
+
+	/**
 	 * Rearrange array item by priority
 	 * 
 	 * @since 1.0.0

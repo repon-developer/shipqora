@@ -4,7 +4,9 @@ namespace ShipFlex\Feature;
 
 use ShipFlex\Feature;
 use ShipFlex\Form_Control;
+use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -18,6 +20,14 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @var string
 	 */
 	protected $feature_id = 'hide-other-shipping-methods';
+
+	/**
+	 * Hold tier item
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	protected $lite_tier = [];
 
 	/**
 	 * Constructor.
@@ -42,20 +52,44 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'base_model' => 'hide_other_shipping_methods',
 			'name' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
 			'section_title' => esc_html__('Hide Other Shipping Methods Settings', 'shipflex'),
-			'description' => esc_html__('If the selected shipping methods are available on the checkout page, hide the other selected shipping methods when the conditions are met.', 'shipflex'),
+			'description' => esc_html__('If the selected shipping methods are available on the checkout page, hide the other selected shipping methods.', 'shipflex'),
 		);
 	}
 
 	/**
-	 * Manage shipping rate object
+	 * Get all hideable shipping rates
 	 * 
 	 * @since 1.0.0
 	 * @return WC_Shipping_Rate
 	 */
-	public function manage_shipping_rate($shipping_rate) {
+	public function get_shipping_rates() {
+		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'hideable-shipping-rates'), array($this->lite_tier));
 
+		$hideable_rates = array();
+		foreach ($tier_items as $tier) {
+			$shipping_methods = array();
+			if (isset($this->lite_tier['shipping_methods']) && is_array($this->lite_tier['shipping_methods'])) {
+				$shipping_methods = $this->lite_tier['shipping_methods'];
+			}
 
-		return $shipping_rate;
+			if (count($shipping_methods) == 0) {
+				continue;
+			}
+
+			$condition_groups = array();
+			if (isset($this->lite_tier['condition_groups']) && is_array($this->lite_tier['condition_groups'])) {
+				$condition_groups = $this->lite_tier['condition_groups'];
+			}
+
+			$matched = Main::get_instance()->is_matched_conditions($condition_groups);
+			if (!$matched) {
+				continue;
+			}
+
+			$hideable_rates = array_merge($hideable_rates, $shipping_methods);
+		}
+
+		return $hideable_rates;
 	}
 
 	/**
@@ -75,7 +109,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		</tr>
 
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('line-item') ?>
+			<?php $settings_fields->output_fields('tier-item') ?>
 		</template>
 	<?php
 	}
@@ -108,7 +142,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('hide_other_shipping_methods_lite_tier', array(
+		$settings_fields->add_setting('lite_tier', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'model_key' => $this->get_model_key('lite_tier'),
@@ -141,24 +175,24 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('shipping_cost_adjustment', array(
-			'priority' => 1000,
-			'label' => esc_html__('Cost Adjustment', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
-			'label_note' => esc_html__('Choose how the shipping cost should be adjusted and enter the value to apply.', 'shipflex'),
-			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
+		$settings_fields->add_setting('shipping_methods', array(
+			'priority' => 10,
+			'label' => esc_html__('Shipping Methods to Hide', 'shipflex'),
+			'callback' => array($this, 'shipping_methods_setting_field'),
+			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipflex'),
+			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipflex'),
 			'related_models' => array(
-				'adjustment_amount' => '',
-				'adjustment_type' => 'increase_percentage',
+				'shipping_methods' => array(''),
 			)
-		), 'line-item');
+		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
-			'default_value' => array(),
-			'model_key' => 'condition_groups',
 			'callback' => array($this, 'condition_group_setting_field'),
-		), 'line-item');
+			'related_models' => array(
+				'condition_groups' => array(),
+			)
+		), 'tier-item');
 	}
 
 	/**
@@ -167,20 +201,23 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function shipping_cost_adjustment_setting_field(Form_Control $form_control) {
+	public function shipping_methods_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<select v-model="adjustment_type">
-				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipflex') ?></option>
-				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipflex') ?></option>
-				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipflex') ?></option>
-				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipflex') ?></option>
-				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipflex') ?></option>
-			</select>
-			<input type="number" v-model="adjustment_amount" placeholder="<?php esc_html_e('Amount', 'shipflex') ?>">
-			<span v-if="'increase_percentage' == adjustment_type || 'decrease_percentage' == adjustment_type">%</span>
 
-		</div>
+		<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">
+			<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
+				<shipping-method-input
+					:shipping-method="shipping_method"
+					@update="(value) => shipping_methods[index] = value"
+					@delete="delete_shipping_method(index)">
+				</shipping-method-input>
+			</li>
+		</ul>
+
+		<a href="#" class="button" :class="add_shipping_method_button_class" @click.prevent="add_shipping_method()">
+			<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
+		</a>
+
 	<?php
 		$form_control->output_after_input_options();
 	}
@@ -223,7 +260,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 				</template>
 			</div>
 
-			<button class="button" :class="{'button-large-dashed button-full-width': !condition_groups?.length}" @click.prevent="add_condition_group()">
+			<button class="button" :class="get_add_group_button_class()" @click.prevent="add_condition_group()">
 				<?php esc_html_e('Add condition group', 'shipflex') ?>
 			</button>
 		</td>

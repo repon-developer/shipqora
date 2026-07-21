@@ -1,8 +1,8 @@
-import { Utils, Feature_Base_Component } from '../global-module.min.js?v=@@VERSION';
-
+import { Utils } from '../utils.min.js?v=@@VERSION';
+import Base_Component from './base-component.min.js?v=@@VERSION';
 
 const Shipping_Cost_Adjustment = {
-	extends: Feature_Base_Component,
+	extends: Base_Component,
 	template: '#shipflex-shipping-cost-adjustment-feature-component',
 
 	data() {
