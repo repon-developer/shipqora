@@ -226,8 +226,8 @@ final class Product_Based_Shipping extends Feature {
 	 */
 	public function add_new_layer_setting_field(Form_Control $form_control) {
 		$form_control->output_row(); ?>
-		<td colspan="2">
-			<a style="--inputHeight: 46px;" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-row" href="#">
+		<td class="no-padding" colspan="2">
+			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-width" href="#">
 				<?php esc_html_e('Add Layer', 'codiepress-cart-rewards-pro'); ?>
 			</a>
 		</td>
@@ -264,19 +264,20 @@ final class Product_Based_Shipping extends Feature {
 			'label' => esc_html__('Shipping Cost', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__('Choose how the shipping cost should be calculated for this layer.', 'shipflex'),
-			'option_note' => esc_html__("This layer will apply only when the customer's cart contains the selected items.", 'shipflex'),
 			'related_models' => array(
 				'calculation_value' => '',
-				'calculate_by' => 'subtotal',
-				'calculation_method' => 'flat_rate',
+				'calculate_basis' => 'flat_rate',
+				'calculation_method' => 'percentage',
 			)
 		), 'product-layer');
 
 		$settings_fields->add_setting('advanced_calculation_shipping_cost', array(
 			'priority' => 20.10,
+			'default_value' => array(array()),
+			'model_key' => 'advanced_calculation_layers',
 			'label' => esc_html__('Advance Calculation Settings', 'shipflex'),
 			'callback' => array($this, 'advanced_shipping_cost_setting_field'),
-			'conditions' => array('calculation_method == "advanced_calculation"'),
+			'conditions' => array('calculate_basis !== "flat_rate" && calculation_method == "advanced_calculation"'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -342,27 +343,29 @@ final class Product_Based_Shipping extends Feature {
 	public function shipping_cost_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<select v-model="calculate_by">
+			<select v-model="calculate_basis">
+				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
 				<option value="subtotal"><?php esc_html_e('Calculate by Product Subtotal', 'shipflex') ?></option>
 				<option value="quantity"><?php esc_html_e('Calculate by Product Quantity', 'shipflex') ?></option>
 				<option value="weight"><?php esc_html_e('Calculate by Product Weight', 'shipflex') ?></option>
 				<option value="volume"><?php esc_html_e('Calculate by Product Volume', 'shipflex') ?></option>
 			</select>
 
-			<select v-model="calculation_method">
-				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
-				<option value="percentage" v-if="'subtotal' == calculate_by"><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="per_unit" v-if="'subtotal' != calculate_by">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
+			<select v-model="calculation_method" v-if="calculate_basis !== 'flat_rate'">
+				<option value="percentage" v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></option>
+				<option value="per_unit" v-if="'subtotal' != calculate_basis">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
 				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
 			</select>
 
-			<input v-if="calculation_method != 'advanced_calculation'" v-model="calculation_value" type="number" min="0" placeholder="0.00">
-			<span v-if="calculation_method == 'percentage'">%</span>
+			<template v-if="show_calculation_value">
+				<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
+				<span v-if="calculation_method == 'percentage'">%</span>
+			</template>
 		</div>
-<?php
+	<?php
 		$form_control->output_after_input_options();
 	}
-	
+
 	/**
 	 * Output setting field for advanced calculation
 	 * 
@@ -371,24 +374,15 @@ final class Product_Based_Shipping extends Feature {
 	 */
 	public function advanced_shipping_cost_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<select v-model="calculate_by">
-				<option value="subtotal"><?php esc_html_e('Calculate by Product Subtotal', 'shipflex') ?></option>
-				<option value="quantity"><?php esc_html_e('Calculate by Product Quantity', 'shipflex') ?></option>
-				<option value="weight"><?php esc_html_e('Calculate by Product Weight', 'shipflex') ?></option>
-				<option value="volume"><?php esc_html_e('Calculate by Product Volume', 'shipflex') ?></option>
-			</select>
 
-			<select v-model="calculation_method">
-				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
-				<option value="percentage" v-if="'subtotal' == calculate_by"><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="per_unit" v-if="'subtotal' != calculate_by">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
-				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
-			</select>
+		<advanced-shipping
+			:number="index"
+			:key="layer?.id"
+			:calculate-basis="calculate_basis"
+			v-for="(layer, index) in advanced_calculation_layers">
+		</advanced-shipping>
 
-			<input v-if="calculation_method != 'advanced_calculation'" v-model="calculation_value" type="number" min="0" placeholder="0.00">
-			<span v-if="calculation_method == 'percentage'">%</span>
-		</div>
+		<a class="button button-full-width button-flat" href="#" @click.prevent="add_advanced_shipping_layer()">Add Variation</a>
 <?php
 		$form_control->output_after_input_options();
 	}

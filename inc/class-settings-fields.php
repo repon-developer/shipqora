@@ -211,8 +211,6 @@ final class Settings_Fields {
 			$settings_fields = $this->settings_fields[$group];
 		}
 
-		$settings_fields = apply_filters($this->get_hook_name($group), $settings_fields);
-
 		$settings_fields = array_map(function ($setting_field) {
 			return wp_parse_args($setting_field, array('subgroup' => 'general', 'priority' => 10));
 		}, $settings_fields);

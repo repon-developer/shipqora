@@ -29,7 +29,7 @@ final class General {
 		$delete_group_method = $form_control->get_extra_setting('delete_group_method');
 
 		$form_control->output_row(); ?>
-		<td colspan="2">
+		<td class="no-padding" colspan="2">
 			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="<?php echo esc_attr($model_key); ?>?.length > 0">
 				<template v-for="(group, index) in <?php echo esc_attr($model_key); ?>" :key="group?.id">
 					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
@@ -43,7 +43,7 @@ final class General {
 				</template>
 			</div>
 
-			<button class="button" :class="{'button-large-dashed button-full-width': !<?php echo esc_attr($model_key); ?>?.length}" @click.prevent="<?php echo esc_attr($add_group_method) ?>">
+			<button class="button button-large-dashed button-full-width" @click.prevent="<?php echo esc_attr($add_group_method) ?>">
 				<?php esc_html_e('Add condition group', 'shipflex') ?>
 			</button>
 		</td>

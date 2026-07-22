@@ -3,6 +3,7 @@ import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
+import Advanced_Shipping from './component/advanced-shipping.min.js?v=@@VERSION';
 import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
 
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
@@ -221,6 +222,7 @@ if ($('.shipflex-rule-editor').length) {
 		'input-product': Input_Product,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
+		'advanced-shipping': Advanced_Shipping,
 		'shipping-method-input': Shipping_Method_Input,
 	});
 

@@ -6,9 +6,6 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Rule_Editor class
- */
 final class Rule_Editor {
 
 	/**
@@ -108,7 +105,8 @@ final class Rule_Editor {
 		}
 
 		Condition\Main::output_component();
-		Component\Cart_Option::output_component(); ?>
+		Component\Cart_Option::output_component(); 
+		Component\Advanced_Shipping::output_component(); ?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">
