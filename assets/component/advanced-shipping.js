@@ -37,7 +37,11 @@ const Advanced_Shipping = {
 	},
 
 	watch: {
-
+		calculateBasis(value) {
+			if ((value == 'subtotal' && this.sdfsf == 'cost_per_unit') || (value != 'subtotal' && this.sdfsf == 'percentage')) {
+				this.sdfsf = 'flat_rate';
+			}
+		}
 	},
 
 	methods: {

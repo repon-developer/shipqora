@@ -134,14 +134,16 @@ final class Advanced_Shipping {
 	 */
 	public function sdfsfsfsfsfsdfsdf($form_control) {
 		$form_control->output_before_input_options(); ?>
+		{{calculateBasis}}
 		<div class="field-row">
 			<select v-model="sdfsf">
 				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
-				<option value="cost_per_unit"><?php esc_html_e('Cost per kg', 'shipflex') ?></option>
-				<option value="cost_ranges"><?php esc_html_e('Cost Ranges', 'shipflex') ?></option>
+				<option value="percentage" v-if="calculateBasis == 'subtotal'"><?php esc_html_e('Percentage', 'shipflex') ?></option>
+				<option value="cost_per_unit" v-if="calculateBasis !== 'subtotal'"><?php esc_html_e('Cost per kg', 'shipflex') ?></option>
 			</select>
 
 			<input type="number" min="0" placeholder="0.00">
+			<span v-if="sdfsf == 'percentage'">%</span>
 		</div>
 <?php
 		$form_control->output_after_input_options();

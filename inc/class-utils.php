@@ -184,8 +184,8 @@ class Utils {
 		$supported_operators = array(
 			'equal_to' => __('Equal To', 'shipflex'),
 			'less_than' => __('Less than ( < )', 'shipflex'),
-			'less_than_or_equal' => __('Less than or equal ( <= )', 'shipflex'),
-			'greater_than_or_equal' => __('Greater than or equal ( >= )', 'shipflex'),
+			'less_than_or_equal' => __('Less than or equal to ( <= )', 'shipflex'),
+			'greater_than_or_equal' => __('Greater than or equal to ( >= )', 'shipflex'),
 			'greater_than' => __('Greater than ( > )', 'shipflex'),
 			'between' => __('Between', 'shipflex'),
 			'any_in_list' => __('Any in list', 'shipflex'),
