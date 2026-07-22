@@ -8,6 +8,9 @@ const Product_Based_Shipping = {
 
 	data() {
 		return {
+			calculation_value: '',
+			calculate_by: 'subtotal',
+			calculation_method: 'flat_rate',
 			...shipflex_admin?.features?.['product-based-shipping'],
 			...this.featureData
 		}
@@ -18,13 +21,21 @@ const Product_Based_Shipping = {
 	},
 
 	computed: {
-		unit_label() {
-			return Utils.get_unit_label(this.calculate_by);
+
+	},
+
+	watch: {
+		calculate_by(value) {
+			if ((value !== 'subtotal' && this.calculation_method == 'percentage') || (value === 'subtotal' && this.calculation_method == 'per_unit')) {
+				this.calculation_method = 'flat_rate';
+			}
 		}
 	},
 
 	methods: {
-
+		unit_label(text) {
+			return this.$root.get_unit_label(this.calculate_by, text);
+		}
 	}
 }
 

@@ -263,8 +263,9 @@ final class Product_Based_Shipping extends Feature {
 			'label_note' => esc_html__('Choose how the shipping cost should be calculated for this layer.', 'shipflex'),
 			'option_note' => esc_html__("This layer will apply only when the customer's cart contains the selected items.", 'shipflex'),
 			'related_models' => array(
+				'calculation_value' => '',
 				'calculate_by' => 'subtotal',
-				'calculation_method' => 'flat-rate',
+				'calculation_method' => 'flat_rate',
 			)
 		), 'product-layer');
 
@@ -331,18 +332,20 @@ final class Product_Based_Shipping extends Feature {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<select v-model="calculate_by">
-				<option value="subtotal"><?php esc_html_e('Based on product subtotal', 'shipflex') ?></option>
-				<option value="quantity"><?php esc_html_e('Based on product quantity', 'shipflex') ?></option>
-				<option value="weight"><?php esc_html_e('Based on product weight', 'shipflex') ?></option>
-				<option value="volume"><?php esc_html_e('Based on product volume', 'shipflex') ?></option>
+				<option value="subtotal"><?php esc_html_e('Calculate by Product Subtotal', 'shipflex') ?></option>
+				<option value="quantity"><?php esc_html_e('Calculate by Product Quantity', 'shipflex') ?></option>
+				<option value="weight"><?php esc_html_e('Calculate by Product Weight', 'shipflex') ?></option>
+				<option value="volume"><?php esc_html_e('Calculate by Product Volume', 'shipflex') ?></option>
 			</select>
 
 			<select v-model="calculation_method">
-				<option value="flat-rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
+				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
 				<option value="percentage" v-if="'subtotal' == calculate_by" ><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="per_unit" v-if="'subtotal' != calculate_by"><?php esc_html_e('Cost per {{unit_label}}', 'shipflex') ?></option>
-				<option value="advanced"><?php esc_html_e('Advanced settings', 'shipflex') ?></option>
+				<option value="per_unit" v-if="'subtotal' != calculate_by">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
+				<option value="advanced"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
 			</select>
+
+			<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
 		</div>
 <?php
 		$form_control->output_after_input_options();

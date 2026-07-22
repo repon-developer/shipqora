@@ -65,17 +65,12 @@ final class Rule_Editor {
 			unset($shipping_method_options['local_pickup'], $shipping_method_options['pickup_location']);
 			$values['shipping_methods'] = $shipping_method_options;
 
-			$weight_label = \Automattic\WooCommerce\Utilities\I18nUtil::get_weight_unit_label(get_option('woocommerce_weight_unit'));
+			$weight_label = get_option('woocommerce_weight_unit');
 			if (empty($weight_label)) {
 				$weight_label = 'weight';
 			}
 
-			$weight_label = \Automattic\WooCommerce\Utilities\I18nUtil::get_weight_unit_label(get_option('woocommerce_weight_unit'));
-			if (empty($weight_label)) {
-				$weight_label = 'weight';
-			}
-
-			$dimension_label = \Automattic\WooCommerce\Utilities\I18nUtil::get_dimensions_unit_label(get_option('woocommerce_dimension_unit'));
+			$dimension_label = get_option('woocommerce_dimension_unit');
 			if (empty($dimension_label)) {
 				$dimension_label = 'unit';
 			}

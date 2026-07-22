@@ -93,6 +93,21 @@ const ShipFlex_Rule_Editor = {
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
 
+		get_unit_label(unit_key, text, default_value = null) {
+			let unit_label = default_value || __('unit', 'shipflex');
+			if (shipflex_admin?.unit_labels?.[unit_key]?.length) {
+				unit_label = shipflex_admin.unit_labels[unit_key];
+			}
+
+			if (unit_key == 'quantity') {
+				text = text.replace('unit_label:upper_case', unit_label);
+			}
+
+			text = text.replace('unit_label:lower_case', unit_label.toLowerCase());
+			text = text.replace('unit_label:upper_case', unit_label.toUpperCase());
+			return text.replace('unit_label', unit_label)
+		},
+
 		add_collection(model_keys, default_value = {}) {
 			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
 			if (!Array.isArray(collections)) {
