@@ -252,7 +252,6 @@ const Select2_Dropdown = {
 					},
 
 					transport: function (params, success, failure) {
-						console.log(params.data)
 						const cache_key = JSON.stringify(params.data)
 						const cache_data = Utils.get_cache_data(cache_key);
 						if (cache_data) {

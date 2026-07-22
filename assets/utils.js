@@ -12,13 +12,6 @@ const Utils = {
 		return Math.random().toString(36).slice(2, 9);
 	},
 
-	async generate_key(data_object) {
-		const encoder = new TextEncoder();
-		const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(JSON.stringify(data_object)));
-		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-	},
-
 	set_cache_data(key, value) {
 		this.cache_data[key] = value;
 	},

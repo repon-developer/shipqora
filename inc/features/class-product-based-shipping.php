@@ -272,6 +272,13 @@ final class Product_Based_Shipping extends Feature {
 			)
 		), 'product-layer');
 
+		$settings_fields->add_setting('advanced_calculation_shipping_cost', array(
+			'priority' => 20.10,
+			'label' => esc_html__('Advance Calculation Settings', 'shipflex'),
+			'callback' => array($this, 'advanced_shipping_cost_setting_field'),
+			'conditions' => array('calculation_method == "advanced_calculation"'),
+		), 'product-layer');
+
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
@@ -333,6 +340,36 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function shipping_cost_setting_field(Form_Control $form_control) {
+		$form_control->output_before_input_options(); ?>
+		<div class="field-row">
+			<select v-model="calculate_by">
+				<option value="subtotal"><?php esc_html_e('Calculate by Product Subtotal', 'shipflex') ?></option>
+				<option value="quantity"><?php esc_html_e('Calculate by Product Quantity', 'shipflex') ?></option>
+				<option value="weight"><?php esc_html_e('Calculate by Product Weight', 'shipflex') ?></option>
+				<option value="volume"><?php esc_html_e('Calculate by Product Volume', 'shipflex') ?></option>
+			</select>
+
+			<select v-model="calculation_method">
+				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
+				<option value="percentage" v-if="'subtotal' == calculate_by"><?php esc_html_e('Percentage', 'shipflex') ?></option>
+				<option value="per_unit" v-if="'subtotal' != calculate_by">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
+				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
+			</select>
+
+			<input v-if="calculation_method != 'advanced_calculation'" v-model="calculation_value" type="number" min="0" placeholder="0.00">
+			<span v-if="calculation_method == 'percentage'">%</span>
+		</div>
+<?php
+		$form_control->output_after_input_options();
+	}
+	
+	/**
+	 * Output setting field for advanced calculation
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function advanced_shipping_cost_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<select v-model="calculate_by">
