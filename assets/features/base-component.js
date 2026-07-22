@@ -1,4 +1,5 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
+const { __ } = wp.i18n;
 
 const Base_Component = {
 	props: {
@@ -14,10 +15,15 @@ const Base_Component = {
 		additionalTier: {
 			type: Boolean,
 			default: false,
-		}
+		},
+
+		deleteWarning: {
+			type: String,
+			default: __('Do you want to delete this tier?', 'shipflex'),
+		},
 	},
 
-	emits: ['update'],
+	emits: ['update', 'duplicate', 'delete'],
 
 	data() {
 		return {
@@ -54,7 +60,7 @@ const Base_Component = {
 	},
 
 	mounted() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	updated() {
@@ -62,6 +68,17 @@ const Base_Component = {
 	},
 
 	methods: {
+		duplicate_tier() {
+			this.$emit('duplicate', { ...this.feature_settings_data, id: Utils.generate_uuid(), collapse: false }, this.tier_no)
+		},
+
+		delete_tier() {
+			const response = confirm(this.deleteWarning)
+			if (response) {
+				this.$emit('delete')
+			}
+		},
+
 		add_condition_group() {
 			if (!Array.isArray(this.condition_groups)) {
 				this.condition_groups = [];

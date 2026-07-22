@@ -5,7 +5,7 @@ const { __ } = wp.i18n;
 const Cart_Option = {
 	template: '#shipflex-cart-option-component',
 	props: {
-		settings: {
+		cartOptionData: {
 			required: true
 		},
 
@@ -32,7 +32,7 @@ const Cart_Option = {
 			based_on: this.basedOn,
 			operator: 'any_in_list',
 			...shipflex_admin.cart_option_models,
-			...this.settings
+			...this.cartOptionData
 		}
 	},
 

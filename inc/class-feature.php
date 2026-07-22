@@ -179,7 +179,7 @@ class Feature {
 		$actions = array(
 			'duplicate' => array(
 				'priority' => 5,
-				'content' => '<a class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
+				'content' => '<a @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
 			),
 
 			'delete' => array(

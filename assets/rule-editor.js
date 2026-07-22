@@ -117,6 +117,15 @@ const ShipFlex_Rule_Editor = {
 			collections?.push(default_value)
 		},
 
+		duplicate_collection(model_keys, data, position) {
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
+				collections = []
+			}
+
+			collections.splice(position, 0, data)
+		},
+
 		delete_collection(model_keys, index_no) {
 			const collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
 			if (!Array.isArray(collections)) {

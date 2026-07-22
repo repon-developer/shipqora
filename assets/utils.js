@@ -1,5 +1,3 @@
-const { __ } = wp.i18n;
-
 let toast_timer = 0;
 
 const Utils = {

@@ -209,7 +209,10 @@ final class Product_Based_Shipping extends Feature {
 				:feature-data="layer"
 				:tier-index="layer_index"
 				is="vue:feature-product-based-shipping"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value">
+				delete-warning="<?php esc_html_e('Are you sure you want to delete this layer?', 'shipflex') ?>"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value"
+				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', layer_index)"
+				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', value, position)">
 			</template>
 		</tbody>
 	<?php
@@ -228,7 +231,7 @@ final class Product_Based_Shipping extends Feature {
 				<?php esc_html_e('Add Layer', 'codiepress-cart-rewards-pro'); ?>
 			</a>
 		</td>
-<?php
+	<?php
 		$form_control->output_row('close');
 	}
 
@@ -293,6 +296,7 @@ final class Product_Based_Shipping extends Feature {
 			<cart-option
 				:hide-operator="true"
 				based-on="taxonomy:product_cat"
+				:cart-option-data="product_source"
 				@on-update="(value) => product_source = value"
 				option-label="<?php esc_html_e('{{option_label}}', 'shipflex') ?>">
 			</cart-option>
@@ -340,12 +344,13 @@ final class Product_Based_Shipping extends Feature {
 
 			<select v-model="calculation_method">
 				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
-				<option value="percentage" v-if="'subtotal' == calculate_by" ><?php esc_html_e('Percentage', 'shipflex') ?></option>
+				<option value="percentage" v-if="'subtotal' == calculate_by"><?php esc_html_e('Percentage', 'shipflex') ?></option>
 				<option value="per_unit" v-if="'subtotal' != calculate_by">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
-				<option value="advanced"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
+				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
 			</select>
 
-			<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
+			<input v-if="calculation_method != 'advanced_calculation'" v-model="calculation_value" type="number" min="0" placeholder="0.00">
+			<span v-if="calculation_method == 'percentage'">%</span>
 		</div>
 <?php
 		$form_control->output_after_input_options();

@@ -168,7 +168,7 @@ final class Cart {
 			<input v-if="cart_operator == 'between'" type="number" v-model="value2" :min="value" placeholder="<?php echo '0.00'; ?>" step="0.001">
 
 			<cart-option
-				:settings="cart_cart_option"
+				:cart-option-data="cart_cart_option"
 				@on-update="(value) => cart_cart_option = value">
 				<template v-slot:based-on-first-option>
 					<option value=""><?php esc_html_e('of the cart items', 'shipflex') ?></option>
