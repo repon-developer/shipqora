@@ -72,7 +72,7 @@ final class Cart_Option {
 	 */
 	public static function output_component() { ?>
 		<template id="shipflex-cart-option-component">
-			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
+			<select ref="cart_option_dropdown" v-model="based_on" click="handle_cart_option_click()">
 				<slot name="based-on-first-option"></slot>
 				<option
 					:key="option_value"

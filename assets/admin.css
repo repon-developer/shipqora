@@ -622,16 +622,29 @@ table.table-shipflex-form tr.row-group-heading .heading-line {
 	padding: 7px 14px;
 }
 
-table.table-shipflex-form tr.row-group-heading .heading-line ul.shipflex-tab {
-	margin-inline-start: auto;
-	margin-block: -7px !important;
+table.table-shipflex-form tr.row-group-heading .button .dashicons {
+	--size: 18px !important;
+	margin-inline-start: -3px
 }
 
-table.table-shipflex-form tr.row-group-heading .action {
+table.table-shipflex-form tr.row-group-heading .heading-line .action {
 	display: flex;
 	column-gap: 4px;
+	align-items: center;
 	margin-inline-start: auto;
 	margin-inline-end: -4px;
+}
+
+table.table-shipflex-form tr.row-group-heading .heading-line .action .btn-collapse {
+	--size: 30px;
+	display: flex;
+	align-items: center;
+	width: var(--size);
+	height: var(--size);
+	justify-content: center;
+	color: var(--primaryColor);
+	border: 1px solid var(--primaryColor);
+	border-radius: var(--borderRadius)
 }
 
 

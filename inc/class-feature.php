@@ -168,4 +168,48 @@ class Feature {
 	 */
 	public function output_rule_editor(Settings_Fields $settings_fields) {
 	}
+
+	/**
+	 * Output action content of tier heading
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function get_tier_header_action() {
+		$actions = array(
+			'duplicate' => array(
+				'priority' => 5,
+				'content' => '<a class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
+			),
+
+			'delete' => array(
+				'priority' => 10,
+				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
+			),
+
+			'collapse' => array(
+				'priority' => 1000,
+				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
+			)
+		);
+
+		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
+
+		$allow_html_tags = wp_kses_allowed_html('post');
+		$vuejs_attributes = array('v-if', ':class', '@click.prevent');
+
+		$supported_tags = array('div', 'span', 'a');
+		foreach ($supported_tags as $tag) {
+			if (!isset($allow_html_tags[$tag])) {
+				continue;
+			}
+
+			foreach ($vuejs_attributes as $attribute) {
+				$allow_html_tags[$tag][$attribute] = true;
+			}
+		}
+
+		$html = '<div class="action">' . join('', $html_contents) . '</div>';
+		echo wp_kses($html, $allow_html_tags);
+	}
 }

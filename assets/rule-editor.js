@@ -87,7 +87,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	updated() {
-		//console.log(this.$data);
+		console.log(this.$data);
 	},
 
 	methods: {

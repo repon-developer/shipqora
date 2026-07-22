@@ -25,7 +25,7 @@ const Cart_Option = {
 		}
 	},
 
-	emits: ['change'],
+	emits: ['on-update'],
 
 	data() {
 		return {
@@ -63,7 +63,7 @@ const Cart_Option = {
 
 	watch: {
 		cart_option_data(cart_option_data) {
-			this.$emit('change', cart_option_data)
+			this.$emit('on-update', cart_option_data)
 		},
 	},
 

@@ -90,13 +90,12 @@ class Utils {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public static function priority_rearrange($values, $target_key = null, $extra_values = array()) {
+	public static function priority_rearrange($values, $target_key = null) {
 		if (empty($target_key)) {
 			$target_key = 'priority';
 		}
 
-		$values = array_map(function ($option) use ($target_key, $extra_values) {
-			$option = wp_parse_args($option, $extra_values);
+		$values = array_map(function ($option) use ($target_key) {
 			if (!isset($option[$target_key])) {
 				$option[$target_key] = 10;
 			}

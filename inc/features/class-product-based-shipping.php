@@ -144,12 +144,13 @@ final class Product_Based_Shipping extends Feature {
 		<tr class="row-group-heading">
 			<td colspan="2">
 				<div class="heading-line">
-					<?php esc_html_e('Layer', 'shipflex') ?> #{{tierNo}}
+					<?php esc_html_e('Layer', 'shipflex') ?> #{{tier_no}}
+					<?php $this->get_tier_header_action(); ?>
 				</div>
 			</td>
 		</tr>
 
-		<template v-if="!collapse">
+		<template v-if="!collapse || tier_no == 1">
 			<?php $settings_fields->output_fields('product-layer') ?>
 		</template>
 	<?php
@@ -205,10 +206,10 @@ final class Product_Based_Shipping extends Feature {
 	public function layer_items_setting_field() { ?>
 		<tbody v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>" :key="layer?.id">
 			<template
-				:tier-no="layer_index + 1"
+				:feature-data="layer"
+				:tier-index="layer_index"
 				is="vue:feature-product-based-shipping"
-				:feature-data="<?php echo esc_attr($this->get_model_key('layers')) ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?> = value">
+				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value">
 			</template>
 		</tbody>
 	<?php
@@ -262,6 +263,7 @@ final class Product_Based_Shipping extends Feature {
 			<cart-option
 				:hide-operator="true"
 				based-on="taxonomy:product_cat"
+				@on-update="(value) => product_source = value"
 				option-label="<?php esc_html_e('{{option_label}}', 'shipflex') ?>">
 			</cart-option>
 		</div>

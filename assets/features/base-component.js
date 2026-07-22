@@ -6,7 +6,7 @@ const Base_Component = {
 			default: null
 		},
 
-		tierNo: {
+		tierIndex: {
 			default: 1,
 			type: Number
 		},
@@ -28,8 +28,19 @@ const Base_Component = {
 	},
 
 	computed: {
+		tier_no() {
+			return this.tierIndex + 1;
+		},
+
 		feature_settings_data() {
 			return JSON.parse(JSON.stringify(this.$data));
+		},
+
+		collapse_button_class() {
+			return {
+				'dashicons-arrow-up-alt2': this.collapse,
+				'dashicons-arrow-down-alt2': !this.collapse,
+			}
 		}
 	},
 
@@ -47,7 +58,7 @@ const Base_Component = {
 	},
 
 	updated() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	methods: {
