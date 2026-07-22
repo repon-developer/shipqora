@@ -2,13 +2,13 @@ import { Utils } from '../utils.min.js?v=@@VERSION';
 import Base_Component from './base-component.min.js?v=@@VERSION';
 
 
-const Product_Based_Shipping_Cost = {
+const Product_Based_Shipping = {
 	extends: Base_Component,
-	template: '#shipflex-product-based-shipping-cost-feature-component',
+	template: '#shipflex-product-based-shipping-feature-component',
 
 	data() {
 		return {
-			...shipflex_admin?.features?.['product-based-shipping-cost'],
+			...shipflex_admin?.features?.['product-based-shipping'],
 			...this.featureData
 		}
 	},
@@ -26,4 +26,4 @@ const Product_Based_Shipping_Cost = {
 	}
 }
 
-export default Product_Based_Shipping_Cost;
+export default Product_Based_Shipping;

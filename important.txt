@@ -1,0 +1,5 @@
+✅ Brand: ShipFlex
+✅ Tagline: All-in-One Shipping Solution
+✅ Plugin title: ShipFlex – All-in-One Shipping, Conditional Rules & Dynamic Rates for WooCommerce
+✅ Slug: shipflex
+✅ Website: shipflexpro.com

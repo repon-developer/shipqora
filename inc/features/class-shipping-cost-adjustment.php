@@ -214,7 +214,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('shipping_cost_adjustment', array(
 			'priority' => 1000,
-			'label' => esc_html__('Cost Adjustment', 'shipflex'),
+			'label' => esc_html__('Adjustment', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
 			'label_note' => esc_html__('Choose how the shipping cost should be adjusted and enter the value to apply.', 'shipflex'),
 			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
@@ -226,7 +226,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 
 		$settings_fields->add_setting('shipping_cost_limit', array(
 			'priority' => 1000,
-			'label' => esc_html__('Shipping Cost Limits', 'shipflex'),
+			'label' => esc_html__('Cost Limits', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_limit_setting_field'),
 			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
 			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
@@ -240,7 +240,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'component_condition_group_setting_field'),
+			'callback' => array(General::class, 'condition_group_setting_field'),
 			'extra_settings' => array(
 				'add_group_method' => 'add_condition_group()',
 				'delete_group_method' => 'delete_condition_group(index)'

@@ -22,13 +22,13 @@ final class General {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public static function component_condition_group_setting_field(Form_Control $form_control) {
+	public static function condition_group_setting_field(Form_Control $form_control) {
 		$model_key = $form_control->get_model_key();
 
 		$add_group_method = $form_control->get_extra_setting('add_group_method');
 		$delete_group_method = $form_control->get_extra_setting('delete_group_method');
 
-		$form_control->output_open_row(); ?>
+		$form_control->output_row(); ?>
 		<td colspan="2">
 			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="<?php echo esc_attr($model_key); ?>?.length > 0">
 				<template v-for="(group, index) in <?php echo esc_attr($model_key); ?>" :key="group?.id">
@@ -48,7 +48,7 @@ final class General {
 			</button>
 		</td>
 	<?php
-		$form_control->output_close_row();
+		$form_control->output_row('close');
 	}
 
 	/**

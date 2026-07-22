@@ -12,14 +12,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Product_Based_Shipping_Cost extends Feature {
+final class Product_Based_Shipping extends Feature {
 
 	/**
 	 * Hold the feature id of this feature
 	 * 
 	 * @var string
 	 */
-	protected $feature_id = 'product-based-shipping-cost';
+	protected $feature_id = 'product-based-shipping';
 
 	/**
 	 * Constructor.
@@ -41,7 +41,7 @@ final class Product_Based_Shipping_Cost extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 40,
-			'base_model' => 'product_based_shipping_cost',
+			'base_model' => 'product_based_shipping',
 			'name' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
 			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
 			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipflex'),
@@ -185,9 +185,14 @@ final class Product_Based_Shipping_Cost extends Feature {
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('layer_items', array(
 			'priority' => 10,
-			'default_value' => array(),
-			'model_key' => $this->get_model_key('layer_items'),
+			'default_value' => array((object) array()),
+			'model_key' => $this->get_model_key('layers'),
 			'callback' => array($this, 'layer_items_setting_field'),
+		), $this->get_id());
+
+		$settings_fields->add_setting('add_new_layer', array(
+			'priority' => 10000,
+			'callback' => array($this, 'add_new_layer_setting_field'),
 		), $this->get_id());
 	}
 
@@ -198,11 +203,12 @@ final class Product_Based_Shipping_Cost extends Feature {
 	 * @return void
 	 */
 	public function layer_items_setting_field() { ?>
-		<tbody>
+		<tbody v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>" :key="layer?.id">
 			<template
-				is="vue:feature-product-based-shipping-cost"
-				:feature-data="product_based_shipping_cost?.layer_items"
-				@update="(value) => product_based_shipping_cost.layer_items = value">
+				:tier-no="layer_index + 1"
+				is="vue:feature-product-based-shipping"
+				:feature-data="<?php echo esc_attr($this->get_model_key('layers')) ?>"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?> = value">
 			</template>
 		</tbody>
 	<?php
@@ -227,6 +233,8 @@ final class Product_Based_Shipping_Cost extends Feature {
 
 		$settings_fields->add_setting('exclude_products', array(
 			'priority' => 5.05,
+			'conditions' => array('tierNo == 1'),
+			'row_attributes' => array('class' => 'pro-notice-row'),
 			'callback' => array($this, 'exclude_products_setting_field'),
 		), 'product-layer');
 
@@ -234,7 +242,7 @@ final class Product_Based_Shipping_Cost extends Feature {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'component_condition_group_setting_field'),
+			'callback' => array(General::class, 'condition_group_setting_field'),
 			'extra_settings' => array(
 				'add_group_method' => 'add_condition_group()',
 				'delete_group_method' => 'delete_condition_group(index)'
@@ -267,20 +275,37 @@ final class Product_Based_Shipping_Cost extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function exclude_products_setting_field() {
-		$line_button_data = array('utm_source' => 'exclude+products') ?>
-		<tr class="pro-notice-row">
-			<td colspan="2">
-				<div class="shipflex-pro-notice">
-					<h3>🚀 Want to Exclude Specific Products?</h3>
-					<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Product Source"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
-					<div class="gap-10"></div>
-					<?php Utils::get_lite_button($line_button_data) ?>
-				</div>
-			</td>
-		</tr>
+	public function exclude_products_setting_field(Form_Control $form_control) {
+		$line_button_data = array('utm_source' => 'exclude+products');
+		$form_control->output_row(); ?>
+		<td colspan="2">
+			<div class="shipflex-pro-notice">
+				<h3>🚀 Want to Exclude Specific Products?</h3>
+				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Product Source"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
+				<div class="gap-10"></div>
+				<?php Utils::get_lite_button($line_button_data) ?>
+			</div>
+		</td>
+	<?php
+		$form_control->output_row('close');
+	}
+
+	/**
+	 * Output add new layer button
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_new_layer_setting_field(Form_Control $form_control) {
+		$form_control->output_row(); ?>
+		<td colspan="2">
+			<a style="--inputHeight: 46px;" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-row" href="#">
+				<?php esc_html_e('Add Layer', 'codiepress-cart-rewards-pro'); ?>
+			</a>
+		</td>
 <?php
+		$form_control->output_row('close');
 	}
 }
 
-Feature::add_feature(Product_Based_Shipping_Cost::class);
+Feature::add_feature(Product_Based_Shipping::class);

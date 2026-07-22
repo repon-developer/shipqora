@@ -7,7 +7,7 @@ const Shipping_Method_Input = {
 	template: '#shipflex-shipping-method-input-component',
 	props: {
 		shippingMethod: {
-			type: Object,
+			type: [String, null],
 			default: null,
 		}
 	},
@@ -15,7 +15,8 @@ const Shipping_Method_Input = {
 	emits: ['update', 'delete'],
 
 	data() {
-		const [method_id, instance_id] = (this.shippingMethod || '').split(':');
+		const shippingMethod = (typeof this.shippingMethod === 'string') ? this.shippingMethod : '';
+		const [method_id, instance_id] = shippingMethod.split(':');
 
 		return {
 			loading: false,
@@ -23,10 +24,8 @@ const Shipping_Method_Input = {
 			instance_id: instance_id,
 			shipping_instances: [],
 			id: Utils.generate_uuid(),
-			...this.shippingMethod
 		}
 	},
-
 	created() {
 		this.load_shipping_instances();
 	},
@@ -38,6 +37,10 @@ const Shipping_Method_Input = {
 
 		chosen_instance_cache_key() {
 			return 'shipping_method_chosen_instance_' + this.method_id + '_' + this.id;
+		},
+
+		registered_shipping_methods() {
+			return shipflex_admin?.shipping_methods;
 		},
 
 		shipping_method_data() {

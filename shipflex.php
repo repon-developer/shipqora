@@ -2,19 +2,19 @@
 
 /**
  * Plugin Name: ShipFlex
- * Description: 
+ * Description: All-in-One Shipping Solution for WooCommerce with conditional rules, dynamic rates, shipping cost adjustments, and advanced shipping controls.
  * Version: 1.0.0
  * Author: ShipFlex
  * Author URI: https://shipflexpro.com
  * Text Domain: shipflex
- * 
+ *
  * Requires Plugins: woocommerce
  * Requires at least: 6.8
  * Tested up to: 7.0
  * Requires PHP: 8.1
- * 
+ *
  * License: GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if (!defined('ABSPATH')) {

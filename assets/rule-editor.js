@@ -5,8 +5,8 @@ import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
 
+import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
 import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
-import Product_Based_Shipping_Cost from './features/product-based-shipping-cost.min.js?v=@@VERSION';
 import Hide_Other_Shipping_Methods from './features/hide-other-shipping-methods.min.js?v=@@VERSION';
 
 const $ = jQuery;
@@ -24,8 +24,8 @@ const helper_models = {
 
 const ShipFlex_Rule_Editor = {
 	components: {
+		'feature-product-based-shipping': Product_Based_Shipping,
 		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
-		'feature-product-based-shipping-cost': Product_Based_Shipping_Cost,
 		'feature-hide-other-shipping-methods': Hide_Other_Shipping_Methods,
 	},
 
@@ -82,6 +82,8 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
+
+		//console.log(this.$data);
 	},
 
 	updated() {

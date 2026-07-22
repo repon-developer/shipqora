@@ -56,6 +56,15 @@ final class Rule_Editor {
 				$values['features'][$feature_id] = $settings_fields->get_models();
 			}
 
+			$shipping_method_options = array();
+			$registered_shipping_methods = WC()->shipping()->get_shipping_methods();
+			foreach ($registered_shipping_methods as $shipping_id => $shipping_method) {
+				$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
+			}
+
+			unset($shipping_method_options['local_pickup'], $shipping_method_options['pickup_location']);
+			$values['shipping_methods'] = $shipping_method_options;
+
 			//error_log(print_r($values, true));
 		}
 
@@ -83,20 +92,7 @@ final class Rule_Editor {
 		}
 
 		Condition\Main::output_component();
-		Component\Cart_Option::output_component();
-
-
-		$shipping_method_options = array();
-
-		$registered_shipping_methods = WC()->shipping()->get_shipping_methods();
-		foreach ($registered_shipping_methods as $shipping_id => $shipping_method) {
-			$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
-		}
-
-		unset($shipping_method_options['local_pickup'], $shipping_method_options['pickup_location']);
-		if (count($shipping_method_options) == 0) {
-			$shipping_method_options = array('empty' => esc_html__('No shipping methods', 'shipflex'));
-		} ?>
+		Component\Cart_Option::output_component(); ?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">
@@ -137,9 +133,7 @@ final class Rule_Editor {
 
 			<select v-model="method_id">
 				<option value=""><?php esc_html_e('Choose a shipping method', 'shipflex') ?></option>
-				<?php foreach ($shipping_method_options as $shipping_method_id => $shipping_method_title) {
-					echo '<option value="' . esc_attr($shipping_method_id) . '">' . esc_html($shipping_method_title) . '</option>';
-				} ?>
+				<option v-for="(method_label, method_id) in registered_shipping_methods" :value="method_id" :key="method_id">{{method_label}}</option>
 			</select>
 
 			<select2-dropdown
@@ -176,7 +170,7 @@ final class Rule_Editor {
 					<?php
 					printf(
 						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %ssend email%s us.', 'shipflex'),
-						'<a href="mailto:support@shipflex.com">',
+						'<a href="mailto:support@shipflexpro.com">',
 						'</a>',
 					) ?>
 				</div>

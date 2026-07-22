@@ -23,6 +23,7 @@ const Base_Component = {
 		return {
 			collapse: false,
 			condition_groups: [],
+			id: Utils.generate_uuid(),
 		}
 	},
 
@@ -46,7 +47,7 @@ const Base_Component = {
 	},
 
 	updated() {
-		//console.log(this.feature_settings_data);
+		console.log(this.$data);
 	},
 
 	methods: {

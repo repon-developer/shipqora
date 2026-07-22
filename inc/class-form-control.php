@@ -97,7 +97,8 @@ final class Form_Control {
 			'label' => '',
 			'label_note' => '',
 			'option_note' => '',
-			'conditions' => array()
+			'conditions' => array(),
+			'row_attributes' => array(),
 		));
 
 		$this->type = sanitize_key($options['type']);
@@ -125,9 +126,13 @@ final class Form_Control {
 			$this->add_attribute('placeholder', $options['placeholder']);
 		}
 
+		if (is_array($options['row_attributes']) && count($options['row_attributes']) > 0) {
+			$this->row_attributes = $options['row_attributes'];
+		}
+
 		if (is_array($options['conditions']) && count($options['conditions']) > 0) {
 			$conditions = array_map(fn($item) => '(' . $item . ')', $options['conditions']);
-			$this->row_attributes['v-if'] = implode(' && ', $conditions);
+			$this->row_attributes['v-if'] = implode(' || ', $conditions);
 		}
 	}
 
@@ -168,6 +173,16 @@ final class Form_Control {
 	}
 
 	/**
+	 * Get value of extra settings key
+	 * 
+	 * @since 1.0.0
+	 * @return mixed
+	 */
+	public function get_extra_setting($key) {
+		return (isset($this->extra_settings[$key])) ? $this->extra_settings[$key] : null;
+	}
+
+	/**
 	 * Get model keys
 	 * 
 	 * @since 1.0.0
@@ -187,21 +202,6 @@ final class Form_Control {
 	}
 
 	/**
-	 * Output attributes
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_attributes() {
-		$attributes_html = array();
-		foreach ($this->attributes as $key => $value) {
-			$attributes_html[] = sprintf('%s="%s"', esc_attr($key), esc_attr($value));
-		}
-
-		return implode(' ', $attributes_html);
-	}
-
-	/**
 	 * Output row attributes
 	 * 
 	 * @since 1.0.0
@@ -217,13 +217,18 @@ final class Form_Control {
 	}
 
 	/**
-	 * Get value of extra settings key
+	 * Output attributes
 	 * 
 	 * @since 1.0.0
-	 * @return mixed
+	 * @return void
 	 */
-	public function get_extra_setting($key) {
-		return (isset($this->extra_settings[$key])) ? $this->extra_settings[$key] : null;
+	public function output_attributes() {
+		$attributes_html = array();
+		foreach ($this->attributes as $key => $value) {
+			$attributes_html[] = sprintf('%s="%s"', esc_attr($key), esc_attr($value));
+		}
+
+		return implode(' ', $attributes_html);
 	}
 
 	/**
@@ -255,23 +260,19 @@ final class Form_Control {
 	}
 
 	/**
-	 * Output row open tag
+	 * Output tag of row
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function output_open_row() {
-		echo '<tr ' . wp_kses($this->output_row_attributes(), $this->allow_vue_attrs()) . '>';
-	}
+	public function output_row($type = 'open') {
+		if ('open' == $type) {
+			echo '<tr ' . wp_kses($this->output_row_attributes(), $this->allow_vue_attrs()) . '>';
+		}
 
-	/**
-	 * Output row close tag
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_close_row() {
-		echo '</tr>';
+		if ('close' == $type) {
+			echo '</tr>';
+		}
 	}
 
 	/**
@@ -281,7 +282,7 @@ final class Form_Control {
 	 * @return void
 	 */
 	public function output_before_input_options() {
-		$this->output_open_row();
+		$this->output_row();
 
 		echo '<th';
 		if (!empty($this->options['classes']['label_heading'])) {
@@ -330,7 +331,7 @@ final class Form_Control {
 
 		echo '</td>';
 
-		$this->output_close_row();
+		$this->output_row('close');
 	}
 
 	/**

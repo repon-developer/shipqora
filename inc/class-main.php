@@ -63,8 +63,8 @@ final class Main {
 		// Load Features
 		require_once ShipFlex_PATH . 'inc/features/class-general.php';
 		require_once ShipFlex_PATH . 'inc/features/class-hide-shipping-methods.php';
+		require_once ShipFlex_PATH . 'inc/features/class-product-based-shipping.php';
 		require_once ShipFlex_PATH . 'inc/features/class-shipping-cost-adjustment.php';
-		require_once ShipFlex_PATH . 'inc/features/class-product-based-shipping-cost.php';
 		require_once ShipFlex_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 
 
@@ -81,7 +81,8 @@ final class Main {
 	 */
 	public function add_plugin_links($actions, $plugin_file) {
 		if (ShipFlex_BASENAME == $plugin_file) {
-			$new_links['shipflex_lite'] = sprintf('<a target="_blank" href="%s">%s</a>', 'https://codiepress.com/plugins/shipflex-pro/', __('Get Pro', 'shipflex'));
+			$new_links['shipflex_rules'] = sprintf('<a href="%s">%s</a>', menu_page_url('shipflex', false), esc_html__('ShipFlex Rules', 'shipflex'));
+			$new_links['shipflex_lite'] = sprintf('<a target="_blank" href="%s">%s</a>', 'https://shipflexpro.com/', __('Get Pro', 'shipflex'));
 			$actions = array_merge($new_links, $actions);
 		}
 
