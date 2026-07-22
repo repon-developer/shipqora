@@ -193,6 +193,11 @@ class Feature {
 			)
 		);
 
+		$actions = apply_filters(Utils::get_hook_name('tier-heading', 'actions'), $actions, $this->get_id(), $this);
+		if (count($actions) == 0) {
+			return;
+		}
+
 		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
 
 		$allow_html_tags = wp_kses_allowed_html('post');

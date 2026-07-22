@@ -14,15 +14,17 @@ const Product_Based_Shipping = {
 	},
 
 	created() {
-		
+		//console.log(shipflex_admin)
 	},
 
-	component: {
-		
+	computed: {
+		unit_label() {
+			return Utils.get_unit_label(this.calculate_by);
+		}
 	},
 
 	methods: {
-		
+
 	}
 }
 

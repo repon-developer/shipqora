@@ -41,7 +41,7 @@ const Base_Component = {
 				'dashicons-arrow-up-alt2': this.collapse,
 				'dashicons-arrow-down-alt2': !this.collapse,
 			}
-		}
+		},
 	},
 
 	watch: {

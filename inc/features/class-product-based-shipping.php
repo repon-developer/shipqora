@@ -216,6 +216,23 @@ final class Product_Based_Shipping extends Feature {
 	}
 
 	/**
+	 * Output add new layer button
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_new_layer_setting_field(Form_Control $form_control) {
+		$form_control->output_row(); ?>
+		<td colspan="2">
+			<a style="--inputHeight: 46px;" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-row" href="#">
+				<?php esc_html_e('Add Layer', 'codiepress-cart-rewards-pro'); ?>
+			</a>
+		</td>
+<?php
+		$form_control->output_row('close');
+	}
+
+	/**
 	 * Add component settings field 
 	 * 
 	 * @since 1.0.0
@@ -223,7 +240,7 @@ final class Product_Based_Shipping extends Feature {
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('product_source', array(
-			'priority' => 5,
+			'priority' => 10,
 			'default_value' => (object) array(),
 			'model_key' => 'product_source',
 			'label' => esc_html__('Product Source', 'shipflex'),
@@ -233,10 +250,22 @@ final class Product_Based_Shipping extends Feature {
 		), 'product-layer');
 
 		$settings_fields->add_setting('exclude_products', array(
-			'priority' => 5.05,
-			'conditions' => array('tierNo == 1'),
+			'priority' => 10.10,
+			'conditions' => array('tier_no == 1'),
 			'row_attributes' => array('class' => 'pro-notice-row'),
 			'callback' => array($this, 'exclude_products_setting_field'),
+		), 'product-layer');
+
+		$settings_fields->add_setting('shipping_cost', array(
+			'priority' => 20,
+			'label' => esc_html__('Shipping Cost', 'shipflex'),
+			'callback' => array($this, 'shipping_cost_setting_field'),
+			'label_note' => esc_html__('Choose how the shipping cost should be calculated for this layer.', 'shipflex'),
+			'option_note' => esc_html__("This layer will apply only when the customer's cart contains the selected items.", 'shipflex'),
+			'related_models' => array(
+				'calculate_by' => 'subtotal',
+				'calculation_method' => 'flat-rate',
+			)
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -293,20 +322,30 @@ final class Product_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Output add new layer button
+	 * Output shipping cost setting field
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_new_layer_setting_field(Form_Control $form_control) {
-		$form_control->output_row(); ?>
-		<td colspan="2">
-			<a style="--inputHeight: 46px;" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-row" href="#">
-				<?php esc_html_e('Add Layer', 'codiepress-cart-rewards-pro'); ?>
-			</a>
-		</td>
+	public function shipping_cost_setting_field(Form_Control $form_control) {
+		$form_control->output_before_input_options(); ?>
+		<div class="field-row">
+			<select v-model="calculate_by">
+				<option value="subtotal"><?php esc_html_e('Based on product subtotal', 'shipflex') ?></option>
+				<option value="quantity"><?php esc_html_e('Based on product quantity', 'shipflex') ?></option>
+				<option value="weight"><?php esc_html_e('Based on product weight', 'shipflex') ?></option>
+				<option value="volume"><?php esc_html_e('Based on product volume', 'shipflex') ?></option>
+			</select>
+
+			<select v-model="calculation_method">
+				<option value="flat-rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
+				<option value="percentage" v-if="'subtotal' == calculate_by" ><?php esc_html_e('Percentage', 'shipflex') ?></option>
+				<option value="per_unit" v-if="'subtotal' != calculate_by"><?php esc_html_e('Cost per {{unit_label}}', 'shipflex') ?></option>
+				<option value="advanced"><?php esc_html_e('Advanced settings', 'shipflex') ?></option>
+			</select>
+		</div>
 <?php
-		$form_control->output_row('close');
+		$form_control->output_after_input_options();
 	}
 }
 

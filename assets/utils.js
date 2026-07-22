@@ -1,3 +1,5 @@
+const { __ } = wp.i18n;
+
 let toast_timer = 0;
 
 const Utils = {
@@ -38,6 +40,16 @@ const Utils = {
 
 		clearTimeout(toast_timer)
 		toast_timer = setTimeout(() => this.app.show_toast_message = false, 3500)
+	},
+
+	get_unit_label(unit_key, default_value = null) {
+		let unit_label = default_value || __('unit', 'shipflex');
+
+		if (shipflex_admin?.unit_labels?.[unit_key]?.length) {
+			unit_label = shipflex_admin.unit_labels[unit_key];
+		}
+
+		return unit_label.toLowerCase();
 	}
 }
 
