@@ -758,7 +758,7 @@ table.table-shipflex-form tr.row-group-heading .heading-line .action {
 
 table.table-shipflex-form thead .heading-line .action .btn-collapse,
 table.table-shipflex-form tr.row-group-heading .heading-line .action .btn-collapse {
-	--size: 30px;
+	--size: 28px;
 	display: flex;
 	align-items: center;
 	width: var(--size);
@@ -770,9 +770,7 @@ table.table-shipflex-form tr.row-group-heading .heading-line .action .btn-collap
 }
 
 table.table-shipflex-form td>table.table-shipflex-form {
-	width: auto;
 	margin-bottom: 10px;
-	margin-inline: -1px;
 }
 
 table.table-shipflex-form td>table.table-shipflex-form thead {

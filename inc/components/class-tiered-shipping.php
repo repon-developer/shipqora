@@ -50,6 +50,10 @@ final class Tiered_Shipping {
 				'priority' => 10,
 				'content' => '<a @click.prevent="delete_item()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
 			),
+			'collapse' => array(
+				'priority' => 1000,
+				'content' => '<a  @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
+			)
 		);
 
 		$settings_fields = Settings_Fields::get_instance('tiered-shipping'); ?>
@@ -66,7 +70,9 @@ final class Tiered_Shipping {
 					</tr>
 				</thead>
 
-				<?php $settings_fields->output_fields('general'); ?>
+				<tbody v-if="!collapse">
+					<?php $settings_fields->output_fields('general'); ?>
+				</tbody>
 			</table>
 		</template>
 	<?php

@@ -20,19 +20,17 @@ const Tiered_Shipping = {
 			type: [null, String]
 		},
 
-		modelKey: {
-			default: null,
-			type: [null, String]
-		},
-
 		deleteWarning: {
 			type: String,
 			default: __('Do you want to delete this rate?', 'shipflex'),
 		},
 	},
 
+	emits: ['update', 'duplicate', 'delete'],
+
 	data() {
 		return {
+			collapse: false,
 			...shipflex_admin.tiered_shipping_models,
 			...this.rateData
 		}
@@ -49,7 +47,15 @@ const Tiered_Shipping = {
 
 		metric_label_lower() {
 			return this.$root.calculation_metric_label(this.calculateBasis, 'lowercase');
-		}
+		},
+
+		rate_data() {
+			return JSON.stringify(this.$data)
+		},
+
+		collapse_button_class() {
+			return { 'dashicons-arrow-up-alt2': this.collapse, 'dashicons-arrow-down-alt2': !this.collapse }
+		},
 	},
 
 	watch: {
@@ -57,30 +63,26 @@ const Tiered_Shipping = {
 			if ((value == 'subtotal' && this.shipping_cost_type == 'cost_per_unit') || (value != 'subtotal' && this.shipping_cost_type == 'percentage')) {
 				this.shipping_cost_type = 'fixed_cost';
 			}
+		},
+
+		rate_data(string_data) {
+			this.$emit('update', JSON.parse(string_data));
 		}
 	},
 
 	methods: {
 		duplicate_item() {
-			if (!this.modelKey?.length || !Array.isArray(this.$parent[this.modelKey])) {
-				return;
-			}
-
-			this.$parent[this.modelKey].splice(this.number + 1, 0, {
+			this.$emit('duplicate', {
 				...this.$data,
 				collapse: false,
 				id: Utils.generate_uuid()
-			})
+			});
 		},
 
 		delete_item() {
-			if (!this.modelKey?.length || !Array.isArray(this.$parent[this.modelKey])) {
-				return;
-			}
-
 			const response = confirm(this.deleteWarning)
 			if (response) {
-				this.$parent[this.modelKey].splice(this.number, 1)
+				this.$emit('delete');
 			}
 		},
 

@@ -272,12 +272,12 @@ final class Product_Based_Shipping extends Feature {
 			)
 		), 'product-layer');
 
-		$settings_fields->add_setting('tiered_calculation_shipping_cost', array(
+		$settings_fields->add_setting('tiered_rates', array(
 			'priority' => 20.10,
-			'default_value' => array(array()),
-			'model_key' => 'tiered_rate_rules',
-			'label' => esc_html__('Tiered Rate Rules', 'shipflex'),
-			'callback' => array($this, 'tiered_calculation_setting_field'),
+			'default_value' => array((object)array()),
+			'model_key' => 'tiered_rates',
+			'label' => esc_html__('Tiered Rates', 'shipflex'),
+			'callback' => array($this, 'tiered_rates_setting_field'),
 			'label_note' => esc_html__('Set up condition brackets for this layer. Important: The shipping costs from all matching rules will be summed together for each product.', 'shipflex'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "tiered_calculation"'),
 		), 'product-layer');
@@ -363,23 +363,23 @@ final class Product_Based_Shipping extends Feature {
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'fixed_amount'">
-			<?php esc_html_e('Applies a single fixed shipping cost to each matching product.', 'shipflex') ?>			
+			<?php esc_html_e('Applies a single fixed shipping cost to each matching product.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'subtotal'">
-			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Tiered Calculation" for subtotal ranges.', 'shipflex') ?>			
+			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Tiered Calculation" for subtotal ranges.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'quantity'">
-			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Tiered Calculation" for quantity brackets.', 'shipflex') ?>			
+			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Tiered Calculation" for quantity brackets.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'weight'">
-			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Tiered Calculation" for weight brackets.', 'shipflex') ?>			
+			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Tiered Calculation" for weight brackets.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'volume'">
-			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Tiered Calculation" for volume brackets.', 'shipflex') ?>			
+			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Tiered Calculation" for volume brackets.', 'shipflex') ?>
 		</div>
 	<?php
 		$form_control->output_after_input_options();
@@ -391,19 +391,21 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function tiered_calculation_setting_field(Form_Control $form_control) {
+	public function tiered_rates_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
 		<tiered-shipping
 			:number="index"
 			:key="rate?.id"
 			:rate-data="rate"
-			model-key="tiered_rate_rules"
 			:calculate-basis="calculate_basis"
-			v-for="(rate, index) in tiered_rate_rules">
+			v-for="(rate, index) in tiered_rates"
+			@delete="delete_tiered_rate(index)"
+			@update="(rate_data) => tiered_rates[index] = rate_data"
+			@duplicate="(rate_data) => duplicate_tiered_rate(rate_data, index+1)">
 		</tiered-shipping>
 
-		<a class="button button-full-width button-flat" href="#" @click.prevent="add_tiered_rate_rule()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
+		<a class="button button-full-width button-flat" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}
