@@ -144,7 +144,7 @@ final class Product_Based_Shipping extends Feature {
 		<tr class="row-group-heading">
 			<td colspan="2">
 				<div class="heading-line">
-					<?php esc_html_e('Layer', 'shipflex') ?> #{{tier_no}}
+					<?php esc_html_e('Product Rule', 'shipflex') ?> #{{tier_no}}: Heavy Items
 					<?php $this->get_tier_header_action(); ?>
 				</div>
 			</td>
@@ -246,10 +246,10 @@ final class Product_Based_Shipping extends Feature {
 			'priority' => 10,
 			'default_value' => (object) array(),
 			'model_key' => 'product_source',
-			'label' => esc_html__('Product Source', 'shipflex'),
+			'label' => esc_html__('Target Products', 'shipflex'),
 			'callback' => array($this, 'product_source_setting_field'),
-			'label_note' => esc_html__('Choose the product data to match, then select one or more items for this layer.', 'shipflex'),
-			'option_note' => esc_html__("This layer will apply only when the customer's cart contains the selected items.", 'shipflex'),
+			'label_note' => esc_html__('Choose which cart items this rule applies to based on categories, tags, or classes.', 'shipflex'),
+			'option_note' => esc_html__('This rule calculates shipping costs individually for each matching item in the cart.', 'shipflex'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('exclude_products', array(
@@ -261,23 +261,25 @@ final class Product_Based_Shipping extends Feature {
 
 		$settings_fields->add_setting('shipping_cost', array(
 			'priority' => 20,
-			'label' => esc_html__('Shipping Cost', 'shipflex'),
+			'label' => esc_html__('Calculate Cost By', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
-			'label_note' => esc_html__('Choose how the shipping cost should be calculated for this layer.', 'shipflex'),
+			'label_note' => esc_html__('Select the product metric used to determine the shipping rate for each matching item.', 'shipflex'),
+			//'option_note' => esc_html__('Determines how shipping costs are applied to matching items. Select "Tiered Calculation" to configure conditional rates.', 'shipflex'),
 			'related_models' => array(
 				'calculation_value' => '',
-				'calculate_basis' => 'flat_rate',
-				'calculation_method' => 'percentage',
+				'calculate_basis' => 'fixed_amount',
+				'calculation_mode' => 'percentage',
 			)
 		), 'product-layer');
 
-		$settings_fields->add_setting('advanced_calculation_shipping_cost', array(
+		$settings_fields->add_setting('tiered_calculation_shipping_cost', array(
 			'priority' => 20.10,
 			'default_value' => array(array()),
-			'model_key' => 'advanced_calculation_layers',
-			'label' => esc_html__('Advance Calculation Settings', 'shipflex'),
-			'callback' => array($this, 'advanced_shipping_cost_setting_field'),
-			'conditions' => array('calculate_basis !== "flat_rate" && calculation_method == "advanced_calculation"'),
+			'model_key' => 'tiered_rate_rules',
+			'label' => esc_html__('Tiered Rate Rules', 'shipflex'),
+			'callback' => array($this, 'tiered_calculation_setting_field'),
+			'label_note' => esc_html__('Set up condition brackets for this layer. Important: The shipping costs from all matching rules will be summed together for each product.', 'shipflex'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "tiered_calculation"'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -325,7 +327,7 @@ final class Product_Based_Shipping extends Feature {
 		<td colspan="2">
 			<div class="shipflex-pro-notice">
 				<h3>🚀 Want to Exclude Specific Products?</h3>
-				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Product Source"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
+				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
 				<div class="gap-10"></div>
 				<?php Utils::get_lite_button($line_button_data) ?>
 			</div>
@@ -344,23 +346,43 @@ final class Product_Based_Shipping extends Feature {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<select v-model="calculate_basis">
-				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
-				<option value="subtotal"><?php esc_html_e('Calculate by Product Subtotal', 'shipflex') ?></option>
-				<option value="quantity"><?php esc_html_e('Calculate by Product Quantity', 'shipflex') ?></option>
-				<option value="weight"><?php esc_html_e('Calculate by Product Weight', 'shipflex') ?></option>
-				<option value="volume"><?php esc_html_e('Calculate by Product Volume', 'shipflex') ?></option>
+				<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipflex') ?></option>
+				<option value="subtotal"><?php esc_html_e('Product Subtotal', 'shipflex') ?></option>
+				<option value="quantity"><?php esc_html_e('Product Quantity', 'shipflex') ?></option>
+				<option value="weight"><?php esc_html_e('Product Weight', 'shipflex') ?></option>
+				<option value="volume"><?php esc_html_e('Product Volume', 'shipflex') ?></option>
 			</select>
 
-			<select v-model="calculation_method" v-if="calculate_basis !== 'flat_rate'">
+			<select v-model="calculation_mode" v-if="calculate_basis !== 'fixed_amount'">
 				<option value="percentage" v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></option>
 				<option value="per_unit" v-if="'subtotal' != calculate_basis">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
-				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
+				<option value="tiered_calculation"><?php esc_html_e('Tiered Calculation', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="show_calculation_value">
 				<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
-				<span v-if="calculation_method == 'percentage'">%</span>
+				<span v-if="calculate_basis == 'subtotal' && calculation_mode == 'percentage'">%</span>
 			</template>
+		</div>
+
+		<div class="field-note" v-if="calculate_basis == 'fixed_amount'">
+			<?php esc_html_e('Applies a single fixed shipping cost to each matching product.', 'shipflex') ?>			
+		</div>
+
+		<div class="field-note" v-if="calculate_basis == 'subtotal'">
+			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Tiered Calculation" for subtotal ranges.', 'shipflex') ?>			
+		</div>
+
+		<div class="field-note" v-if="calculate_basis == 'quantity'">
+			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Tiered Calculation" for quantity brackets.', 'shipflex') ?>			
+		</div>
+
+		<div class="field-note" v-if="calculate_basis == 'weight'">
+			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Tiered Calculation" for weight brackets.', 'shipflex') ?>			
+		</div>
+
+		<div class="field-note" v-if="calculate_basis == 'volume'">
+			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Tiered Calculation" for volume brackets.', 'shipflex') ?>			
 		</div>
 	<?php
 		$form_control->output_after_input_options();
@@ -372,17 +394,17 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function advanced_shipping_cost_setting_field(Form_Control $form_control) {
+	public function tiered_calculation_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
 		<advanced-shipping
 			:number="index"
 			:key="layer?.id"
 			:calculate-basis="calculate_basis"
-			v-for="(layer, index) in advanced_calculation_layers">
+			v-for="(layer, index) in tiered_rate_rules">
 		</advanced-shipping>
 
-		<a class="button button-full-width button-flat" href="#" @click.prevent="add_advanced_shipping_layer()">Add Variation</a>
+		<a class="button button-full-width button-flat" href="#" @click.prevent="add_tiered_rate_rule()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}

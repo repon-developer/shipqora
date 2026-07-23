@@ -8,8 +8,8 @@ const Product_Based_Shipping = {
 	data() {
 		return {
 			calculation_value: '',
-			calculate_basis: 'flat_rate',
-			calculation_method: 'percentage',
+			calculate_basis: 'fixed_amount',
+			calculation_mode: 'percentage',
 			...shipflex_admin?.features?.['product-based-shipping'],
 			...this.featureData
 		}
@@ -21,18 +21,18 @@ const Product_Based_Shipping = {
 
 	computed: {
 		show_calculation_value() {
-			return this.calculate_basis == 'flat_rate' || (this.calculate_basis != 'flat_rate' && this.calculation_method != 'advanced_calculation')
+			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_mode != 'tiered_calculation')
 		}
 	},
 
 	watch: {
 		calculate_basis(value) {
-			if (value == 'subtotal' && this.calculation_method == 'per_unit') {
-				this.calculation_method = 'percentage';
+			if (value == 'subtotal' && this.calculation_mode == 'per_unit') {
+				this.calculation_mode = 'percentage';
 			}
 
-			if (value !== 'subtotal' && this.calculation_method == 'percentage') {
-				this.calculation_method = 'per_unit';
+			if (value !== 'subtotal' && this.calculation_mode == 'percentage') {
+				this.calculation_mode = 'per_unit';
 			}
 		}
 	},
@@ -42,12 +42,12 @@ const Product_Based_Shipping = {
 			return this.$root.get_unit_label(this.calculate_basis, text);
 		},
 
-		add_advanced_shipping_layer() {
-			if (!Array.isArray(this.advanced_calculation_layers)) {
-				this.advanced_calculation_layers = [];
+		add_tiered_rate_rule() {
+			if (!Array.isArray(this.tiered_rate_rules)) {
+				this.tiered_rate_rules = [];
 			}
 
-			this.advanced_calculation_layers.push({ id: Utils.generate_uuid() })
+			this.tiered_rate_rules.push({ id: Utils.generate_uuid() })
 		}
 	}
 }

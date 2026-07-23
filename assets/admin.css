@@ -280,6 +280,7 @@
 #shipflex .button-large-dashed {
 	--inputHeight: 40px;
 	min-width: 200px;
+	font-size: 120%;
 	border-style: dashed;
 }
 

@@ -44,7 +44,7 @@ final class Advanced_Shipping {
 			<table class="table-shipflex-form">
 				<thead>
 					<tr>
-						<td colspan="2"><?php esc_html_e('Variation', 'shipflex') ?> #{{variation_no}}</td>
+						<td colspan="2"><?php esc_html_e('Tier', 'shipflex') ?> #{{variation_no}} (Qty: 0 to 15) → $8.00 Fixed</td>
 					</tr>
 				</thead>
 
@@ -86,23 +86,28 @@ final class Advanced_Shipping {
 	public function add_settings_fields() {
 		$settings_fields = Settings_Fields::get_instance('advanced-shipping-cost');
 
-		$settings_fields->add_setting('target_amount', array(
+		$settings_fields->add_setting('metric_condition', array(
 			'priority' => 10,
-			'label' => esc_html__('Minimum Subtotal', 'shipflex'),
-			'callback' => array($this, 'sdfsadfasdfasfsf'),
+			'label' => esc_html__('[ Selected Metric ] Condition', 'shipflex'),
+			'callback' => array($this, 'metric_condition_setting_field'),
+			'label_note' => esc_html__('Define the range or threshold required for this rule to apply to an item.', 'shipflex'),
+			'option_note' => esc_html__("This rule applies whenever an item's [ metric ] meets this condition.", 'shipflex'),
 			'related_models' => array(
-				'unit_value1' => '',
-				'unit_value2' => '',
-				'unit_operator' => 'greater_than',
+				'metric_value1' => '',
+				'metric_value2' => '',
+				'metric_operator' => 'greater_than',
 			)
 		), 'general');
 
-		$settings_fields->add_setting('sdfsfsfsf', array(
+		$settings_fields->add_setting('tier_shipping_cost', array(
 			'priority' => 10,
-			'label' => esc_html__('Variation Cost', 'shipflex'),
-			'callback' => array($this, 'sdfsfsfsfsfsdfsdf'),
+			'label' => esc_html__('Tier Shipping Cost', 'shipflex'),
+			'callback' => array($this, 'shipping_cost_setting_field'),
+			'label_note' => esc_html__("Specify the shipping cost to add when this tier's condition is met.", 'shipflex'),
+			'option_note' => esc_html__('This rate will be calculated for each matching item and added to the total shipping fee.', 'shipflex'),
 			'related_models' => array(
-				'sdfsf' => 'flat_rate',
+				'shipping_cost_type' => 'fixed_cost',
+				'shipping_cost_value' => 'flat_rate',
 			)
 		), 'general');
 	}
@@ -113,14 +118,14 @@ final class Advanced_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function sdfsadfasdfasfsf($form_control) {
+	public function metric_condition_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<select v-model="unit_operator">
+			<select v-model="metric_operator">
 				<?php Utils::get_operators_options(array('greater_than', 'less_than', 'greater_than_or_equal', 'less_than_or_equal', 'between')); ?>
 			</select>
-			<input v-model="unit_value1" type="number" min="0" placeholder="0.00">
-			<input v-model="unit_value2" type="number" min="0" placeholder="0.00" v-if="unit_operator == 'between'">
+			<input v-model="metric_value1" type="number" min="0" placeholder="0.00">
+			<input v-model="metric_value2" type="number" min="0" placeholder="0.00" v-if="metric_operator == 'between'">
 		</div>
 	<?php
 		$form_control->output_after_input_options();
@@ -132,18 +137,17 @@ final class Advanced_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function sdfsfsfsfsfsdfsdf($form_control) {
+	public function shipping_cost_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
-		{{calculateBasis}}
 		<div class="field-row">
-			<select v-model="sdfsf">
-				<option value="flat_rate"><?php esc_html_e('Flat Rate', 'shipflex') ?></option>
+			<select v-model="shipping_cost_type">
+				<option value="fixed_cost"><?php esc_html_e('Fixed Cost', 'shipflex') ?></option>
 				<option value="percentage" v-if="calculateBasis == 'subtotal'"><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="cost_per_unit" v-if="calculateBasis !== 'subtotal'"><?php esc_html_e('Cost per kg', 'shipflex') ?></option>
+				<option value="cost_per_unit" v-if="calculateBasis !== 'subtotal'"><?php esc_html_e('Cost per Unit', 'shipflex') ?></option>
 			</select>
 
-			<input type="number" min="0" placeholder="0.00">
-			<span v-if="sdfsf == 'percentage'">%</span>
+			<input v-model="shipping_cost_value" type="number" min="0" placeholder="0.00">
+			<span v-if="shipping_cost_type == 'percentage'">%</span>
 		</div>
 <?php
 		$form_control->output_after_input_options();
