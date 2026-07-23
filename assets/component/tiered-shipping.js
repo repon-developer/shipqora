@@ -46,14 +46,26 @@ const Tiered_Shipping = {
 
 	watch: {
 		calculateBasis(value) {
-			if ((value == 'subtotal' && this.sdfsf == 'cost_per_unit') || (value != 'subtotal' && this.sdfsf == 'percentage')) {
-				this.sdfsf = 'flat_rate';
+			if ((value == 'subtotal' && this.shipping_cost_type == 'cost_per_unit') || (value != 'subtotal' && this.shipping_cost_type == 'percentage')) {
+				this.shipping_cost_type = 'fixed_cost';
 			}
 		}
 	},
 
 	methods: {
+		add_condition_group() {
+			if (!Array.isArray(this.condition_groups)) {
+				this.condition_groups = [];
+			}
 
+			this.condition_groups.push({
+				id: Utils.generate_uuid()
+			})
+		},
+
+		delete_condition_group(index) {
+			this.condition_groups.splice(index, 1)
+		}
 	}
 }
 

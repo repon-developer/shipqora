@@ -2,6 +2,7 @@
 
 namespace ShipFlex\Component;
 
+use ShipFlex\Feature\General;
 use ShipFlex\Utils;
 use ShipFlex\Settings_Fields;
 
@@ -44,7 +45,7 @@ final class Tiered_Shipping {
 			<table class="table-shipflex-form">
 				<thead>
 					<tr>
-						<td colspan="2"><?php esc_html_e('Tier', 'shipflex') ?> #{{variation_no}} (Qty: 0 to 15) → $8.00 Fixed</td>
+						<td colspan="2"><?php esc_html_e('Tier', 'shipflex') ?> #{{variation_no}}</td>
 					</tr>
 				</thead>
 
@@ -88,7 +89,7 @@ final class Tiered_Shipping {
 
 		$settings_fields->add_setting('metric_condition', array(
 			'priority' => 10,
-			'label' => esc_html__('{{metric_label}} Condition', 'shipflex'),
+			'label' => '{{metric_label}}',
 			'callback' => array($this, 'metric_condition_setting_field'),
 			'label_note' => esc_html__('Define the range or threshold required for this rule to apply to an item.', 'shipflex'),
 			'option_note' => esc_html__("This rule applies whenever an item's {{metric_label_lower}} meets this condition.", 'shipflex'),
@@ -100,7 +101,7 @@ final class Tiered_Shipping {
 		), 'general');
 
 		$settings_fields->add_setting('tier_shipping_cost', array(
-			'priority' => 10,
+			'priority' => 20,
 			'label' => esc_html__('Shipping Cost', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__("Specify the shipping cost to add when this tier's condition is met.", 'shipflex'),
@@ -108,6 +109,17 @@ final class Tiered_Shipping {
 			'related_models' => array(
 				'shipping_cost_type' => 'fixed_cost',
 				'shipping_cost_value' => '',
+			)
+		), 'general');
+
+		$settings_fields->add_setting('condition_groups', array(
+			'priority' => 1000,
+			'default_value' => array(),
+			'model_key' => 'condition_groups',
+			'callback' => array(General::class, 'condition_group_setting_field'),
+			'extra_settings' => array(
+				'add_group_method' => 'add_condition_group()',
+				'delete_group_method' => 'delete_condition_group(index)'
 			)
 		), 'general');
 	}
