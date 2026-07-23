@@ -279,7 +279,7 @@ final class Product_Based_Shipping extends Feature {
 			'label' => esc_html__('Tiered Rates', 'shipflex'),
 			'callback' => array($this, 'tiered_rates_setting_field'),
 			'label_note' => esc_html__('Set up condition brackets for this layer. Important: The shipping costs from all matching rules will be summed together for each product.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "tiered_calculation"'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "tiered_rates"'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -353,7 +353,7 @@ final class Product_Based_Shipping extends Feature {
 			<select v-model="calculation_mode" v-if="calculate_basis !== 'fixed_amount'">
 				<option value="percentage" v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></option>
 				<option value="per_unit" v-if="'subtotal' != calculate_basis">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
-				<option value="tiered_calculation"><?php esc_html_e('Tiered Calculation', 'shipflex') ?></option>
+				<option value="tiered_rates"><?php esc_html_e('Tiered Rates', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="show_calculation_value">

@@ -818,15 +818,15 @@ table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 	margin-inline-start: 23px;
 }
 
-#shipflex ul.multiple-options-list.multiple-options-list-status li.status-active .field-note{
+#shipflex ul.multiple-options-list.multiple-options-list-status li.status-active .field-note {
 	color: #0b6e31;
 }
 
-#shipflex ul.multiple-options-list.multiple-options-list-status li.status-development .field-note{
+#shipflex ul.multiple-options-list.multiple-options-list-status li.status-development .field-note {
 	color: #d57d01;
 }
 
-#shipflex ul.multiple-options-list.multiple-options-list-status li.status-disabled .field-note{
+#shipflex ul.multiple-options-list.multiple-options-list-status li.status-disabled .field-note {
 	color: #b32213;
 }
 
@@ -984,6 +984,10 @@ ul.shipflex-repeater {
 
 .shipflex-repeater.shipflex-repeater-condition-groups>.repeater-item .btn-delete-item.btn-delete-group:hover {
 	color: #c50202 !important;
+}
+
+.shipflex-repeater.shipflex-repeater-condition-groups select.condition-types optgroup:empty {
+	display: none;
 }
 
 .shipflex-modal {

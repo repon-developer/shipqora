@@ -50,6 +50,7 @@ final class Tiered_Shipping {
 				'priority' => 10,
 				'content' => '<a @click.prevent="delete_item()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
 			),
+
 			'collapse' => array(
 				'priority' => 1000,
 				'content' => '<a  @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
@@ -142,7 +143,8 @@ final class Tiered_Shipping {
 			'callback' => array(General::class, 'condition_group_setting_field'),
 			'extra_settings' => array(
 				'add_group_method' => 'add_condition_group()',
-				'delete_group_method' => 'delete_condition_group(index)'
+				'delete_group_method' => 'delete_condition_group(index)',
+				'supported_condition_types' => array('cart:subtotal', 'cart:total_quantity', 'cart:total_weight', 'cart:total_volume')
 			)
 		), 'general');
 	}

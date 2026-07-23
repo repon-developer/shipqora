@@ -22,7 +22,7 @@ const Product_Based_Shipping = {
 
 	computed: {
 		show_calculation_value() {
-			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_mode != 'tiered_calculation')
+			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_mode != 'tiered_rates')
 		},
 
 		calculation_metrics() {

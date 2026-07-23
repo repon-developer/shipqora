@@ -75,6 +75,15 @@ const Condition = {
 			if (response) {
 				this.$parent.conditions.splice(this.number, 1);
 			}
+		},
+
+		is_type_support(type_key) {
+			const supported_types = this.$parent.supportedTypes;
+			if (Array.isArray(supported_types)) {
+				return supported_types?.includes(type_key);
+			}
+
+			return true;
 		}
 	},
 }
@@ -90,6 +99,11 @@ const Condition_Group = {
 		group: {
 			type: Object,
 			required: true
+		},
+
+		supportedTypes: {
+			default: null,
+			type: [null, Array]
 		}
 	},
 

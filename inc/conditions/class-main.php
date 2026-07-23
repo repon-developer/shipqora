@@ -22,7 +22,7 @@ class Main {
 	public static function output_component() {
 		$main_condition = self::get_instance(); ?>
 		<template id="shipflex-condition">
-			<select v-model="type">
+			<select class="condition-types" v-model="type">
 				<?php
 				foreach ($main_condition->get_groups() as $group_key => $group_label) {
 					$conditions = $main_condition->get_types_by_group($group_key);
@@ -32,7 +32,11 @@ class Main {
 
 					echo '<optgroup label="' . esc_attr($group_label) . '">';
 					foreach ($conditions as $key => $condition) {
-						echo '<option value="' . esc_attr($key) . '">' . esc_html($condition['label']) . ' </option>';
+						printf(
+							'<option value="%1$s" v-if="is_type_support(\'%1$s\')">%2$s</option>',
+							esc_attr($key),
+							esc_html($condition['label'])
+						);
 					}
 					echo '</optgroup>';
 				} ?>
@@ -65,7 +69,7 @@ class Main {
 				<template v-for="(condition, index) in conditions" :key="condition.id">
 					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipflex') ?>"></div>
 					<div class="repeater-item">
-						<condition :condition="condition" :number="index"></condition>
+						<condition :condition="condition" :number="index" :key="condition?.id"></condition>
 					</div>
 				</template>
 			</div>

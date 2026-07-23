@@ -307,12 +307,12 @@ class Utils {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public static function get_form_table_header_action($actions, $source) {
+	public static function get_form_table_header_action($actions, $object) {
 		if (count($actions) == 0) {
 			return;
 		}
 
-		$actions = apply_filters(Utils::get_hook_name('form-table-heading', 'actions'), $actions, $source);
+		$actions = apply_filters(Utils::get_hook_name('form-table-heading', 'actions'), $actions, $object);
 		if (count($actions) == 0) {
 			return;
 		}

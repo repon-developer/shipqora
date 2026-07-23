@@ -193,14 +193,6 @@ class Feature {
 			)
 		);
 
-		$actions = apply_filters(Utils::get_hook_name('tier-heading', 'actions'), $actions, $this->get_id(), $this);
-		if (count($actions) == 0) {
-			return;
-		}
-
-		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
-
-		$html = '<div class="action">' . join('', $html_contents) . '</div>';
-		echo wp_kses($html, Utils::table_header_action_vuejs_attr());
+		Utils::get_form_table_header_action($actions, $this->get_id());
 	}
 }

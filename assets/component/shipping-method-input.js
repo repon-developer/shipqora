@@ -62,9 +62,17 @@ const Shipping_Method_Input = {
 			this.$emit('update', method_data)
 		},
 
-		shipping_instances() {
+		shipping_instances(shipping_instances) {
 			this.loading = false;
-			Utils.set_cache_data(this.cache_key, this.shipping_instances);
+
+			if (this.instance_id) {
+				const existed = shipping_instances.find((item) => item.id == this.instance_id)
+				if (!existed) {
+					this.shipping_instances.push({ id: this.instance_id, name: __('[Deleted] - Remove it', 'shipflex') })
+				}
+			}
+
+			Utils.set_cache_data(this.cache_key, shipping_instances);
 		}
 	},
 
