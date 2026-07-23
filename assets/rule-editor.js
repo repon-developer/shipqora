@@ -3,7 +3,7 @@ import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
-import Advanced_Shipping from './component/advanced-shipping.min.js?v=@@VERSION';
+import Tiered_Shipping from './component/tiered-shipping.min.js?v=@@VERSION';
 import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
 
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
@@ -58,6 +58,10 @@ const ShipFlex_Rule_Editor = {
 
 		get_root_element() {
 			return $(this.$el.parentElement);
+		},
+
+		calculation_metrics() {
+			return shipflex_admin.calculation_metrics;
 		}
 	},
 
@@ -93,6 +97,15 @@ const ShipFlex_Rule_Editor = {
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
+
+		calculation_metric_label(metric_key, case_type = null) {
+			const metric_label = this.calculation_metrics?.[metric_key];
+			if ('lowercase' == case_type) {
+				return metric_label.toLowerCase();
+			}
+
+			return metric_label;
+		},
 
 		get_unit_label(unit_key, text, default_value = null) {
 			let unit_label = default_value || __('unit', 'shipflex');
@@ -222,7 +235,7 @@ if ($('.shipflex-rule-editor').length) {
 		'input-product': Input_Product,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
-		'advanced-shipping': Advanced_Shipping,
+		'tiered-shipping': Tiered_Shipping,
 		'shipping-method-input': Shipping_Method_Input,
 	});
 

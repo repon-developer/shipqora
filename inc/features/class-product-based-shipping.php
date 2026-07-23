@@ -347,10 +347,7 @@ final class Product_Based_Shipping extends Feature {
 		<div class="field-row">
 			<select v-model="calculate_basis">
 				<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipflex') ?></option>
-				<option value="subtotal"><?php esc_html_e('Product Subtotal', 'shipflex') ?></option>
-				<option value="quantity"><?php esc_html_e('Product Quantity', 'shipflex') ?></option>
-				<option value="weight"><?php esc_html_e('Product Weight', 'shipflex') ?></option>
-				<option value="volume"><?php esc_html_e('Product Volume', 'shipflex') ?></option>
+				<option v-for="(label, value) in calculation_metrics" :value="value" :key="value">{{label}}</option>
 			</select>
 
 			<select v-model="calculation_mode" v-if="calculate_basis !== 'fixed_amount'">
@@ -397,12 +394,12 @@ final class Product_Based_Shipping extends Feature {
 	public function tiered_calculation_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
-		<advanced-shipping
+		<tiered-shipping
 			:number="index"
 			:key="layer?.id"
 			:calculate-basis="calculate_basis"
 			v-for="(layer, index) in tiered_rate_rules">
-		</advanced-shipping>
+		</tiered-shipping>
 
 		<a class="button button-full-width button-flat" href="#" @click.prevent="add_tiered_rate_rule()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
 <?php

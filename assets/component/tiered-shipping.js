@@ -2,8 +2,8 @@ import { Utils } from '../utils.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
-const Advanced_Shipping = {
-	template: '#shipflex-advanced-calculation-component',
+const Tiered_Shipping = {
+	template: '#shipflex-tiered-shipping-component',
 	props: {
 		shippingData: {
 			default: null,
@@ -25,7 +25,7 @@ const Advanced_Shipping = {
 
 	data() {
 		return {
-			...shipflex_admin.advanced_shipping_cost_models,
+			...shipflex_admin.tiered_shipping_models,
 			...this.shippingData
 		}
 	},
@@ -33,6 +33,14 @@ const Advanced_Shipping = {
 	computed: {
 		variation_no() {
 			return this.number + 1;
+		},
+
+		metric_label() {
+			return this.$root.calculation_metric_label(this.calculateBasis);
+		},
+
+		metric_label_lower() {
+			return this.$root.calculation_metric_label(this.calculateBasis, 'lowercase');
 		}
 	},
 
@@ -49,4 +57,4 @@ const Advanced_Shipping = {
 	}
 }
 
-export default Advanced_Shipping;
+export default Tiered_Shipping;

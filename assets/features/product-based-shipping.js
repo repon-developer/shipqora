@@ -15,13 +15,17 @@ const Product_Based_Shipping = {
 		}
 	},
 
-	created() {
-		//console.log(shipflex_admin)
+	updated() {
+		//console.log(this.$data)
 	},
 
 	computed: {
 		show_calculation_value() {
 			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_mode != 'tiered_calculation')
+		},
+
+		calculation_metrics() {
+			return this.$root.calculation_metrics;
 		}
 	},
 

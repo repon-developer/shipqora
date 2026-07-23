@@ -9,12 +9,12 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Advanced_Shipping {
+final class Tiered_Shipping {
 	/**
 	 * Hold the current instance
 	 * 
 	 * @since 1.0.0
-	 * @var Advanced_Shipping
+	 * @var Tiered_Shipping
 	 */
 	private static $instance = null;
 
@@ -22,7 +22,7 @@ final class Advanced_Shipping {
 	 * Get instance of current class
 	 * 
 	 * @since 1.0.0
-	 * @return Advanced_Shipping
+	 * @return Tiered_Shipping
 	 */
 	public static function get_instance() {
 		if (is_null(self::$instance)) {
@@ -39,8 +39,8 @@ final class Advanced_Shipping {
 	 * @return void
 	 */
 	public static function output_component() {
-		$settings_fields = Settings_Fields::get_instance('advanced-shipping-cost'); ?>
-		<template id="shipflex-advanced-calculation-component">
+		$settings_fields = Settings_Fields::get_instance('tiered-shipping'); ?>
+		<template id="shipflex-tiered-shipping-component">
 			<table class="table-shipflex-form">
 				<thead>
 					<tr>
@@ -70,8 +70,8 @@ final class Advanced_Shipping {
 	 */
 	public static function enqueue_scripts($values, $source) {
 		if (Utils::is_plugin_screen('rule-editor') && 'localize' == $source) {
-			$settings_fields = Settings_Fields::get_instance('advanced-shipping-cost');
-			$values['advanced_shipping_cost_models'] = $settings_fields->get_models();
+			$settings_fields = Settings_Fields::get_instance('tiered-shipping');
+			$values['tiered_shipping_models'] = $settings_fields->get_models();
 		}
 
 		return $values;
@@ -84,14 +84,14 @@ final class Advanced_Shipping {
 	 * @return void
 	 */
 	public function add_settings_fields() {
-		$settings_fields = Settings_Fields::get_instance('advanced-shipping-cost');
+		$settings_fields = Settings_Fields::get_instance('tiered-shipping');
 
 		$settings_fields->add_setting('metric_condition', array(
 			'priority' => 10,
-			'label' => esc_html__('[ Selected Metric ] Condition', 'shipflex'),
+			'label' => esc_html__('{{metric_label}} Condition', 'shipflex'),
 			'callback' => array($this, 'metric_condition_setting_field'),
 			'label_note' => esc_html__('Define the range or threshold required for this rule to apply to an item.', 'shipflex'),
-			'option_note' => esc_html__("This rule applies whenever an item's [ metric ] meets this condition.", 'shipflex'),
+			'option_note' => esc_html__("This rule applies whenever an item's {{metric_label_lower}} meets this condition.", 'shipflex'),
 			'related_models' => array(
 				'metric_value1' => '',
 				'metric_value2' => '',
@@ -101,13 +101,13 @@ final class Advanced_Shipping {
 
 		$settings_fields->add_setting('tier_shipping_cost', array(
 			'priority' => 10,
-			'label' => esc_html__('Tier Shipping Cost', 'shipflex'),
+			'label' => esc_html__('Shipping Cost', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__("Specify the shipping cost to add when this tier's condition is met.", 'shipflex'),
 			'option_note' => esc_html__('This rate will be calculated for each matching item and added to the total shipping fee.', 'shipflex'),
 			'related_models' => array(
 				'shipping_cost_type' => 'fixed_cost',
-				'shipping_cost_value' => 'flat_rate',
+				'shipping_cost_value' => '',
 			)
 		), 'general');
 	}
@@ -154,4 +154,4 @@ final class Advanced_Shipping {
 	}
 }
 
-Advanced_Shipping::get_instance();
+Tiered_Shipping::get_instance();

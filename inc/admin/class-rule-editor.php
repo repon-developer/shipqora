@@ -78,6 +78,13 @@ final class Rule_Editor {
 				'quantity' => esc_html__('Item', 'shipflex'),
 			);
 
+			$values['calculation_metrics'] = array(
+				'subtotal' => esc_html__('Product Subtotal', 'shipflex'),
+				'quantity' => esc_html__('Product Quantity', 'shipflex'),
+				'weight' => esc_html__('Product Weight', 'shipflex'),
+				'volume' => esc_html__('Product Volume', 'shipflex'),
+			);
+
 			//error_log(print_r($values, true));
 		}
 
@@ -105,8 +112,8 @@ final class Rule_Editor {
 		}
 
 		Condition\Main::output_component();
-		Component\Cart_Option::output_component(); 
-		Component\Advanced_Shipping::output_component(); ?>
+		Component\Cart_Option::output_component();
+		Component\Tiered_Shipping::output_component(); ?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">
