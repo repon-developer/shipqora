@@ -180,7 +180,7 @@ final class Tiered_Shipping {
 			<select v-model="shipping_cost_type">
 				<option value="fixed_cost"><?php esc_html_e('Fixed Cost', 'shipflex') ?></option>
 				<option value="percentage" v-if="calculateBasis == 'subtotal'"><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="cost_per_unit" v-if="calculateBasis !== 'subtotal'"><?php esc_html_e('Cost per Unit', 'shipflex') ?></option>
+				<option value="cost_per_unit" v-if="calculateBasis !== 'subtotal'">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
 			</select>
 
 			<input v-model="shipping_cost_value" type="number" min="0" placeholder="0.00">

@@ -239,7 +239,7 @@
 }
 
 #shipflex select {
-	padding-inline-end: 30px !important;
+	padding-inline-end: 25px !important;
 	line-height: calc(var(--inputHeight) - 2px);
 }
 

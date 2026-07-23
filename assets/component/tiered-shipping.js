@@ -71,6 +71,10 @@ const Tiered_Shipping = {
 	},
 
 	methods: {
+		unit_label(text) {
+			return this.$root.get_unit_label(this.calculateBasis, text);
+		},
+
 		duplicate_item() {
 			this.$emit('duplicate', {
 				...this.$data,
