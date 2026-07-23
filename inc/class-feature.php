@@ -175,7 +175,7 @@ class Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function get_tier_header_action() {
+	public function get_form_table_header_action() {
 		$actions = array(
 			'duplicate' => array(
 				'priority' => 5,
@@ -200,21 +200,7 @@ class Feature {
 
 		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
 
-		$allow_html_tags = wp_kses_allowed_html('post');
-		$vuejs_attributes = array('v-if', ':class', '@click.prevent');
-
-		$supported_tags = array('div', 'span', 'a');
-		foreach ($supported_tags as $tag) {
-			if (!isset($allow_html_tags[$tag])) {
-				continue;
-			}
-
-			foreach ($vuejs_attributes as $attribute) {
-				$allow_html_tags[$tag][$attribute] = true;
-			}
-		}
-
 		$html = '<div class="action">' . join('', $html_contents) . '</div>';
-		echo wp_kses($html, $allow_html_tags);
+		echo wp_kses($html, Utils::table_header_action_vuejs_attr());
 	}
 }

@@ -1,9 +1,9 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Base_Component from './base-component.min.js?v=@@VERSION';
+import Feature_Base_Component from './base-component.min.js?v=@@VERSION';
 
 
 const Hide_Other_Shipping_Methods = {
-	extends: Base_Component,
+	extends: Feature_Base_Component,
 	template: '#shipflex-hide-other-shipping-methods-feature-component',
 
 	data() {

@@ -278,6 +278,51 @@ class Utils {
 	}
 
 	/**
+	 * Supported VueJS attributes for table heading
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function table_header_action_vuejs_attr() {
+		$allow_html_tags = wp_kses_allowed_html('post');
+		$vuejs_attributes = array('v-if', ':class', '@click.prevent');
+
+		$supported_tags = array('div', 'span', 'a');
+		foreach ($supported_tags as $tag) {
+			if (!isset($allow_html_tags[$tag])) {
+				continue;
+			}
+
+			foreach ($vuejs_attributes as $attribute) {
+				$allow_html_tags[$tag][$attribute] = true;
+			}
+		}
+
+		return $allow_html_tags;
+	}
+
+	/**
+	 * Output action content of table heading
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function get_form_table_header_action($actions, $source) {
+		if (count($actions) == 0) {
+			return;
+		}
+
+		$actions = apply_filters(Utils::get_hook_name('form-table-heading', 'actions'), $actions, $source);
+		if (count($actions) == 0) {
+			return;
+		}
+
+		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
+		$html = '<div class="action">' . join('', $html_contents) . '</div>';
+		echo wp_kses($html, self::table_header_action_vuejs_attr());
+	}
+
+	/**
 	 * Get lite notice button
 	 * 
 	 * @since 1.0.0

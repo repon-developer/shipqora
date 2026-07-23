@@ -5,7 +5,7 @@ const { __ } = wp.i18n;
 const Tiered_Shipping = {
 	template: '#shipflex-tiered-shipping-component',
 	props: {
-		shippingData: {
+		rateData: {
 			default: null,
 			type: [null, Object]
 		},
@@ -18,20 +18,28 @@ const Tiered_Shipping = {
 		calculateBasis: {
 			default: null,
 			type: [null, String]
-		}
-	},
+		},
 
-	emits: ['update'],
+		modelKey: {
+			default: null,
+			type: [null, String]
+		},
+
+		deleteWarning: {
+			type: String,
+			default: __('Do you want to delete this rate?', 'shipflex'),
+		},
+	},
 
 	data() {
 		return {
 			...shipflex_admin.tiered_shipping_models,
-			...this.shippingData
+			...this.rateData
 		}
 	},
 
 	computed: {
-		variation_no() {
+		tier_no() {
 			return this.number + 1;
 		},
 
@@ -53,6 +61,29 @@ const Tiered_Shipping = {
 	},
 
 	methods: {
+		duplicate_item() {
+			if (!this.modelKey?.length || !Array.isArray(this.$parent[this.modelKey])) {
+				return;
+			}
+
+			this.$parent[this.modelKey].splice(this.number + 1, 0, {
+				...this.$data,
+				collapse: false,
+				id: Utils.generate_uuid()
+			})
+		},
+
+		delete_item() {
+			if (!this.modelKey?.length || !Array.isArray(this.$parent[this.modelKey])) {
+				return;
+			}
+
+			const response = confirm(this.deleteWarning)
+			if (response) {
+				this.$parent[this.modelKey].splice(this.number, 1)
+			}
+		},
+
 		add_condition_group() {
 			if (!Array.isArray(this.condition_groups)) {
 				this.condition_groups = [];

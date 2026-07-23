@@ -1,7 +1,7 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
 const { __ } = wp.i18n;
 
-const Base_Component = {
+const Feature_Base_Component = {
 	props: {
 		featureData: {
 			default: null
@@ -95,4 +95,4 @@ const Base_Component = {
 	}
 }
 
-export default Base_Component;
+export default Feature_Base_Component;

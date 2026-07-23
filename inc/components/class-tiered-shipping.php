@@ -40,12 +40,29 @@ final class Tiered_Shipping {
 	 * @return void
 	 */
 	public static function output_component() {
+		$actions = array(
+			'duplicate' => array(
+				'priority' => 5,
+				'content' => '<a @click.prevent="duplicate_item()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
+			),
+
+			'delete' => array(
+				'priority' => 10,
+				'content' => '<a @click.prevent="delete_item()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
+			),
+		);
+
 		$settings_fields = Settings_Fields::get_instance('tiered-shipping'); ?>
 		<template id="shipflex-tiered-shipping-component">
 			<table class="table-shipflex-form">
 				<thead>
 					<tr>
-						<td colspan="2"><?php esc_html_e('Tier', 'shipflex') ?> #{{variation_no}}</td>
+						<td colspan="2">
+							<div class="heading-line">
+								<?php esc_html_e('Tier', 'shipflex') ?> #{{tier_no}}
+								<?php Utils::get_form_table_header_action($actions, 'tiered-shipping'); ?>
+							</div>
+						</td>
 					</tr>
 				</thead>
 

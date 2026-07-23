@@ -239,8 +239,6 @@ if ($('.shipflex-rule-editor').length) {
 		'shipping-method-input': Shipping_Method_Input,
 	});
 
-
-
 	for (const key in components) {
 		ShipFlex_Rule_Editor_App.component(key, components[key]);
 	}

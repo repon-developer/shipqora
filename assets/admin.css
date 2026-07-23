@@ -719,7 +719,7 @@ table.table-shipflex-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
 	border-bottom-color: #cfcfcf;
 }
 
-table.table-shipflex-form tr.row-group-heading :is(th, td) {
+table.table-shipflex-form :is(th, td):has(>.heading-line) {
 	padding: 0px !important;
 	font-size: 15px;
 	font-weight: 500;
@@ -728,6 +728,7 @@ table.table-shipflex-form tr.row-group-heading :is(th, td) {
 	border-bottom-color: #dbdbdb;
 }
 
+table.table-shipflex-form thead .heading-line,
 table.table-shipflex-form tr.row-group-heading .heading-line {
 	display: flex;
 	min-height: 40px;
@@ -735,11 +736,18 @@ table.table-shipflex-form tr.row-group-heading .heading-line {
 	padding: 7px 14px;
 }
 
+#shipflex table.table-shipflex-form thead .heading-line .button,
+#shipflex table.table-shipflex-form tr.row-group-heading .button {
+	--inputHeight: 28px
+}
+
+table.table-shipflex-form thead .heading-line .button .dashicons,
 table.table-shipflex-form tr.row-group-heading .button .dashicons {
 	--size: 18px !important;
 	margin-inline-start: -3px
 }
 
+table.table-shipflex-form thead .heading-line .action,
 table.table-shipflex-form tr.row-group-heading .heading-line .action {
 	display: flex;
 	column-gap: 4px;
@@ -748,6 +756,7 @@ table.table-shipflex-form tr.row-group-heading .heading-line .action {
 	margin-inline-end: -4px;
 }
 
+table.table-shipflex-form thead .heading-line .action .btn-collapse,
 table.table-shipflex-form tr.row-group-heading .heading-line .action .btn-collapse {
 	--size: 30px;
 	display: flex;

@@ -1,8 +1,8 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Base_Component from './base-component.min.js?v=@@VERSION';
+import Feature_Base_Component from './base-component.min.js?v=@@VERSION';
 
 const Product_Based_Shipping = {
-	extends: Base_Component,
+	extends: Feature_Base_Component,
 	template: '#shipflex-product-based-shipping-feature-component',
 
 	data() {

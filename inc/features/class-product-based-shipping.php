@@ -144,8 +144,8 @@ final class Product_Based_Shipping extends Feature {
 		<tr class="row-group-heading">
 			<td colspan="2">
 				<div class="heading-line">
-					<?php esc_html_e('Product Rule', 'shipflex') ?> #{{tier_no}}: Heavy Items
-					<?php $this->get_tier_header_action(); ?>
+					<?php esc_html_e('Product Rule', 'shipflex') ?> #{{tier_no}}
+					<?php $this->get_form_table_header_action(); ?>
 				</div>
 			</td>
 		</tr>
@@ -396,9 +396,11 @@ final class Product_Based_Shipping extends Feature {
 
 		<tiered-shipping
 			:number="index"
-			:key="layer?.id"
+			:key="rate?.id"
+			:rate-data="rate"
+			model-key="tiered_rate_rules"
 			:calculate-basis="calculate_basis"
-			v-for="(layer, index) in tiered_rate_rules">
+			v-for="(rate, index) in tiered_rate_rules">
 		</tiered-shipping>
 
 		<a class="button button-full-width button-flat" href="#" @click.prevent="add_tiered_rate_rule()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
