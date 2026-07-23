@@ -172,14 +172,15 @@ final class General {
 			);
 		}
 
-		$editor_settings_fields->add_setting('managed_features', array(
+		$editor_settings_fields->add_setting('active_features', array(
 			'priority' => 10,
 			'default_value' => array(),
 			'model_key' => 'active_features',
 			'option_type' => 'checkbox',
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'options' => $registered_feature_options,
-			'label' => esc_html__('Managed Features', 'shipflex'),
+			'label' => esc_html__('Active Features', 'shipflex'),
+			'callback' => array($this, 'active_features_setting_field'),
 			'label_note' => esc_html__('Select the ShipFlex features that should be applied to the selected shipping methods.', 'shipflex'),
 		), 'general');
 
@@ -191,6 +192,32 @@ final class General {
 				$feature_object->add_component_settings_fields($component_settings_fields);
 			}
 		}
+
+		$editor_settings_fields->add_setting('shipflex_rule_status', array(
+			'priority' => 1000,
+			'model_key' => 'status',
+			'option_type' => 'radio',
+			'default_value' => 'development',
+			'type' => Form_Control::MULTIPLE_OPTIONS,
+			'label' => esc_html__('Rule Status', 'shipflex'),
+			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipflex'),
+			'options' => array(
+				'active' => array(
+					'label' => esc_html__('Active', 'shipflex'),
+					'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipflex')
+				),
+
+				'development' => array(
+					'label' => esc_html__('Test Mode', 'shipflex'),
+					'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipflex')
+				),
+
+				'disabled' => array(
+					'label' => esc_html__('Disabled', 'shipflex'),
+					'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipflex')
+				)
+			),
+		), 'general');
 	}
 
 	/**
@@ -217,6 +244,28 @@ final class General {
 			<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
 		</a>
 
+	<?php
+		$form_control->output_after_input_options();
+	}
+
+	/**
+	 * Output shipping method setting field
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function active_features_setting_field(Form_Control $form_control) {
+		$model_key = $form_control->get_model_key();
+		$form_control->output_before_input_options();
+
+		$form_control->output_control(); ?>
+
+		<div class="shipflex-pro-notice shipflex-pro-notice-left">
+			<h3>💡 Looking for Additional Features?</h3>
+			<div class="description">Missing a key feature for your workflow? Reach out directly to <a href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">support@shipflexpro.com</a> and our team will help build it for you.</div>
+			<div class="gap-10"></div>
+			<a class="button" href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">Request a Feature</a>
+		</div>
 <?php
 		$form_control->output_after_input_options();
 	}

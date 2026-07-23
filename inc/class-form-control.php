@@ -434,7 +434,7 @@ final class Form_Control {
 
 		$this->add_attribute('type', $option_type);
 
-		echo '<ul class="multiple-options-list">';
+		echo '<ul class="multiple-options-list multiple-options-list-' . esc_attr($model_key) . '">';
 		foreach ($options as $option_value => $option) {
 			$option = wp_parse_args($option, array('label' => '', 'description' => ''));
 			if (empty($option['label'])) {
@@ -443,7 +443,7 @@ final class Form_Control {
 
 			$this->add_attribute('value', esc_attr($option_value));
 
-			echo '<li>';
+			echo '<li class="' . esc_attr($model_key . '-' . $option_value) . '">';
 			echo '<label>';
 			echo '<input ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . '>';
 			echo esc_html($option['label']);

@@ -220,12 +220,16 @@
 	height: var(--inputHeight);
 }
 
-#shipflex [type="checkbox"],
-#shipflex [type="radio"] {
+#shipflex [type="radio"],
+#shipflex [type="checkbox"] {
 	--inputHeight: 1rem;
 	--borderColor: #8f8d8d;
 	margin-inline-end: 6px;
 	vertical-align: text-bottom;
+}
+
+#shipflex [type="radio"] {
+	border-radius: 100px !important;
 }
 
 #shipflex [type="number"] {
@@ -811,6 +815,19 @@ table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 
 #shipflex ul.multiple-options-list .field-note {
 	margin-top: 2px;
+	margin-inline-start: 23px;
+}
+
+#shipflex ul.multiple-options-list.multiple-options-list-status li.status-active .field-note{
+	color: #0b6e31;
+}
+
+#shipflex ul.multiple-options-list.multiple-options-list-status li.status-development .field-note{
+	color: #d57d01;
+}
+
+#shipflex ul.multiple-options-list.multiple-options-list-status li.status-disabled .field-note{
+	color: #b32213;
 }
 
 .shipflex-repeater {
@@ -1109,6 +1126,10 @@ ul.shipflex-repeater {
 	padding-bottom: 15px;
 	border: 1px solid #dbd5d5;
 	background-color: #f9f9f9;
+}
+
+.shipflex-pro-notice.shipflex-pro-notice-left {
+	text-align: left;
 }
 
 .shipflex-pro-notice h3 {

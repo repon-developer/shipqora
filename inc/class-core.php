@@ -43,7 +43,7 @@ class Core {
 			`active_features` JSON DEFAULT NULL,
 			`feature_settings` JSON DEFAULT NULL,
 			`meta_data` JSON DEFAULT NULL,
-			`status` ENUM('active', 'disable', 'development') DEFAULT 'development',
+			`status` ENUM('active', 'disabled', 'development') DEFAULT 'development',
 			`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY (`id`),
 			KEY idx_main (status)
