@@ -278,7 +278,7 @@ final class Product_Based_Shipping extends Feature {
 			'model_key' => 'tiered_rates',
 			'label' => esc_html__('Tiered Rates', 'shipflex'),
 			'callback' => array($this, 'tiered_rates_setting_field'),
-			'label_note' => esc_html__('Set up condition brackets for this layer. Important: The shipping costs from all matching rules will be summed together for each product.', 'shipflex'),
+			'label_note' => esc_html__('Configure quantity or metric ranges to calculate shipping costs. If multiple rate tiers match, the selected Tier Matching Logic will apply.', 'shipflex'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "tiered_rates"'),
 		), 'product-layer');
 
@@ -405,7 +405,9 @@ final class Product_Based_Shipping extends Feature {
 			@duplicate="(rate_data) => duplicate_tiered_rate(rate_data, index+1)">
 		</tiered-shipping>
 
-		<a class="button button-full-width button-flat" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
+		<div style="padding: 10px 14px">
+			<a class="button button-full-width" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
+		</div>
 <?php
 		$form_control->output_after_input_options();
 	}

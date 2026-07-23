@@ -318,7 +318,7 @@ class Utils {
 		}
 
 		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
-		$html = '<div class="action">' . join('', $html_contents) . '</div>';
+		$html = '<div class="repeater-item-header-action">' . join('', $html_contents) . '</div>';
 		echo wp_kses($html, self::table_header_action_vuejs_attr());
 	}
 

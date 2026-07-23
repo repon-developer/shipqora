@@ -740,19 +740,7 @@ table.table-shipflex-form tr.row-group-heading .heading-line {
 	padding: 7px 14px;
 }
 
-#shipflex table.table-shipflex-form thead .heading-line .button,
-#shipflex table.table-shipflex-form tr.row-group-heading .button {
-	--inputHeight: 28px
-}
-
-table.table-shipflex-form thead .heading-line .button .dashicons,
-table.table-shipflex-form tr.row-group-heading .button .dashicons {
-	--size: 18px !important;
-	margin-inline-start: -3px
-}
-
-table.table-shipflex-form thead .heading-line .action,
-table.table-shipflex-form tr.row-group-heading .heading-line .action {
+#shipflex .repeater-item-header-action {
 	display: flex;
 	column-gap: 4px;
 	align-items: center;
@@ -760,8 +748,16 @@ table.table-shipflex-form tr.row-group-heading .heading-line .action {
 	margin-inline-end: -4px;
 }
 
-table.table-shipflex-form thead .heading-line .action .btn-collapse,
-table.table-shipflex-form tr.row-group-heading .heading-line .action .btn-collapse {
+#shipflex .repeater-item-header-action .button {
+	--inputHeight: 28px
+}
+
+#shipflex .repeater-item-header-action .button .dashicons {
+	--size: 18px !important;
+	margin-inline-start: -3px
+}
+
+#shipflex .repeater-item-header-action .btn-collapse {
 	--size: 28px;
 	display: flex;
 	align-items: center;
@@ -1154,4 +1150,84 @@ ul.shipflex-repeater {
 
 .shipflex-pro-notice .button {
 	min-width: 130px
+}
+
+
+
+
+table.table-shipflex-form td:has(>.tiered-rate-item-container) {
+	padding: 0 !important
+}
+
+#shipflex .tiered-rate-item-container {
+	margin-bottom: -1px;
+	padding-inline: 14px;
+	padding-bottom: 14px;
+	border-block: 1px solid #dbd5d5;
+}
+
+#shipflex .tiered-rate-item-container header {
+	display: flex;
+	padding: 6px 14px;
+	align-items: center;
+	margin-inline: -14px;
+	border-bottom: 1px solid #dbd5d5;
+	background-color: #f1f1f1;
+}
+
+#shipflex .tiered-rate-item-container header h4 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+#shipflex .tiered-rate-item-container .shipflex-repeater.shipflex-repeater-condition-groups {
+	margin-top: 0px;
+}
+
+table.shipflex-cost-range-table {
+	width: 100%;
+	text-align: center;
+	margin-top: 15px;
+	margin-bottom: 10px;
+	background-color: #fff;
+	border-collapse: collapse;
+}
+
+table.shipflex-cost-range-table,
+table.shipflex-cost-range-table :is(th, td) {
+	border: 1px solid #ccc !important
+}
+
+table.shipflex-cost-range-table thead th {
+	min-width: 0;
+	text-align: center;
+	padding-inline: 16px;
+	border-block: 1px solid #eee;
+	padding-block: 5px !important;
+	white-space: nowrap
+}
+
+table.shipflex-cost-range-table thead th:nth-child(3) {
+	width: 120px !important;
+}
+
+table.shipflex-cost-range-table tbody td {
+	padding: 0 !important
+}
+
+#shipflex table.shipflex-cost-range-table tbody td input,
+#shipflex table.shipflex-cost-range-table tbody td select {
+	width: 100%;
+	max-width: none;
+	border: none;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+#shipflex table.shipflex-cost-range-table tfoot .button {
+	width: auto;
+	display: block;
+	margin: -2px !important;
+	border-radius: 0 !important;
 }

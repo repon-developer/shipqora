@@ -59,22 +59,79 @@ final class Tiered_Shipping {
 
 		$settings_fields = Settings_Fields::get_instance('tiered-shipping'); ?>
 		<template id="shipflex-tiered-shipping-component">
-			<table class="table-shipflex-form">
-				<thead>
-					<tr>
-						<td colspan="2">
-							<div class="heading-line">
-								<?php esc_html_e('Tier', 'shipflex') ?> #{{tier_no}}
-								<?php Utils::get_form_table_header_action($actions, 'tiered-shipping'); ?>
-							</div>
-						</td>
-					</tr>
-				</thead>
 
-				<tbody v-if="!collapse">
-					<?php $settings_fields->output_fields('general'); ?>
-				</tbody>
-			</table>
+			<div class="tiered-rate-item-container">
+				<header>
+					<h4><?php esc_html_e('Rate Tier', 'shipflex') ?> #{{tier_no}}</h4>
+
+					<?php Utils::get_form_table_header_action($actions, 'tiered-shipping'); ?>
+				</header>
+
+				<table class="shipflex-cost-range-table">
+					<thead>
+						<tr>
+							<th>From ( > )</th>
+							<th>To ( <= )</th>
+							<th>Cost Type</th>
+							<th>Rate ($)</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td><input type="number" placeholder="0" disabled></td>
+							<td><input type="number" placeholder="5"></td>
+							<td>
+								<select>
+									<option value="">Fixed Cost</option>
+									<option value="">Cost per Unit</option>
+									<option value="">Percentage</option>
+								</select>
+							</td>
+
+							<td><input type="number" placeholder="0.00"></td>
+						</tr>
+
+						<tr>
+							<td><input type="number" placeholder="5" disabled></td>
+							<td><input type="number" placeholder="max"></td>
+							<td>
+								<select>
+									<option value="">Fixed Cost</option>
+									<option value="">Cost per Unit</option>
+									<option value="">Percentage</option>
+								</select>
+							</td>
+
+							<td><input type="number" placeholder="0.00"></td>
+						</tr>
+					</tbody>
+
+				</table>
+
+				<a class="button button-small" href="">+ Add Range</a>
+
+				<div class="gap-20"></div>
+
+				<div class="shipflex-repeater shipflex-repeater-condition-groups">
+					<template v-for="(group, index) in condition_groups" :key="group?.id">
+						<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
+						<div class="repeater-item">
+							<condition-group
+								:group="group"
+								@update="(group_data) => condition_groups[index] = group_data">
+							</condition-group>
+						</div>
+					</template>
+				</div>
+
+				<button class="button button-large-dashed button-full-width">
+					<?php esc_html_e('Add condition group', 'shipflex') ?>
+				</button>
+
+			</div>
+
+
 		</template>
 	<?php
 	}
@@ -138,7 +195,7 @@ final class Tiered_Shipping {
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
-			'default_value' => array(),
+			'default_value' => array(array()),
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
 			'extra_settings' => array(
