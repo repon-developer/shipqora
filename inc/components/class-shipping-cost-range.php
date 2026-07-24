@@ -115,6 +115,7 @@ final class Shipping_Cost_Range_Tier {
 		$settings_fields->add_setting('shipping_cost_ranges', array(
 			'priority' => 10,
 			'model_key' => 'shipping_cost_ranges',
+			'default_value' => array(array()),
 			'label' => esc_html__('Shipping Cost Ranges', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_ranges_setting_field'),
 			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this range.', 'shipflex'),
@@ -149,51 +150,46 @@ final class Shipping_Cost_Range_Tier {
 	 */
 	public function shipping_cost_ranges_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
-		<template v-if="true">
-			<table class="shipflex-cost-range-table">
-				<thead>
-					<tr>
-						<th>From ( > )</th>
-						<th>To ( <= )</th>
-						<th>Cost Type</th>
-						<th>Rate ($)</th>
-					</tr>
-				</thead>
+		<table class="shipflex-cost-range-table" v-if="shipping_cost_ranges?.length">
+			<thead>
+				<tr>
+					<th><?php esc_html_e('From ( > )', 'shipflex') ?></th>
+					<th><?php esc_html_e('To ( <= )', 'shipflex') ?></th>
+					<th><?php esc_html_e('Cost Type', 'shipflex') ?></th>
+					<th>
+						<?php
+						printf(
+							/* translators: %s for currency symbol */
+							esc_html__('Cost (%s) or Percentage', 'shipflex'),
+							get_woocommerce_currency_symbol()
+						) ?>
+					</th>
 
-				<tbody>
-					<tr>
-						<td><input type="number" placeholder="0" disabled></td>
-						<td><input type="number" placeholder="5"></td>
-						<td>
-							<select>
-								<option value="">Fixed Cost</option>
-								<option value="">Cost per Unit</option>
-								<option value="">Percentage</option>
-							</select>
-						</td>
+					<th class="column-delete"></th>
+				</tr>
+			</thead>
 
-						<td><input type="number" placeholder="0.00"></td>
-					</tr>
+			<tbody>
+				<tr v-for="(range, index) in shipping_cost_ranges" :key="range?.id" :class="error_classes(index)">
+					<td><input type="number" placeholder="0" disabled :value="get_range_minimum(index)"></td>
+					<td><input v-model="range.max" type="number" placeholder="<?php esc_html_e('max', 'shipflex') ?>"></td>
+					<td>
+						<select v-model="range.type">
+							<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipflex') ?></option>
+							<option value="per_unit_or_percentage">{{calculation_type_label}}</option>
+						</select>
+					</td>
 
-					<tr>
-						<td><input type="number" placeholder="5" disabled></td>
-						<td><input type="number" placeholder="max"></td>
-						<td>
-							<select>
-								<option value="">Fixed Cost</option>
-								<option value="">Cost per Unit</option>
-								<option value="">Percentage</option>
-							</select>
-						</td>
+					<td><input v-model="range.value" type="number" placeholder="0.00" min="0" step="0.001"></td>
+					<td class="column-delete">
+						<a @click.prevent="delete_collection('shipping_cost_ranges', index)" class="btn-delete dashicons dashicons-remove" href="#"></a>
+					</td>
+				</tr>
+			</tbody>
 
-						<td><input type="number" placeholder="0.00"></td>
-					</tr>
-				</tbody>
+		</table>
 
-			</table>
-		</template>
-		<a class="button button-small" @click.prevent="add_cost_line()" href="#"><?php esc_html_e('+ Add Cost Range Line', 'shipflex') ?></a>
-
+		<a class="button button-small" @click.prevent="add_cost_range()" href="#"><?php esc_html_e('+ Add Cost Range Line', 'shipflex') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}

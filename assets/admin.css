@@ -1194,3 +1194,12 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	outline: none !important;
 	box-shadow: none !important;
 }
+
+#shipflex table.shipflex-cost-range-table .column-delete {
+	width: 1%;
+	vertical-align: middle;
+}
+
+#shipflex table.shipflex-cost-range-table .btn-delete {
+	color: #3c434a;
+}
