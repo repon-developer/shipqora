@@ -72,10 +72,20 @@ final class Rule_Editor {
 				$dimension_label = 'unit';
 			}
 
-			$values['unit_labels'] = array(
-				'weight' => $weight_label,
-				'volume' => $dimension_label,
-				'quantity' => esc_html__('Item', 'shipflex'),
+			$values['calculation_types'] = array(
+				'subtotal' => esc_html__('Percentage', 'shipflex'),
+				'quantity' => esc_html__('Cost per Item', 'shipflex'),
+				'weight' => sprintf(
+					/* translators: %s: weight unit */
+					esc_html__('Cost per %s', 'shipflex'),
+					$weight_label
+				),
+
+				'volume' => sprintf(
+					/* translators: %s: weight unit */
+					esc_html__('Cost per %s', 'shipflex'),
+					$dimension_label
+				)
 			);
 
 			$values['calculation_metrics'] = array(
@@ -85,7 +95,7 @@ final class Rule_Editor {
 					'long_title' => esc_html__('Product Subtotal', 'shipflex'),
 					'long_lower' => esc_html__('product subtotal', 'shipflex'),
 				),
-				
+
 				'quantity' => array(
 					'short_title' => esc_html__('Quantity', 'shipflex'),
 					'short_lower' => esc_html__('quantity', 'shipflex'),
@@ -113,7 +123,7 @@ final class Rule_Editor {
 				'volume' => array(
 					'short_title' => esc_html__('Volume', 'shipflex'),
 					'short_lower' => esc_html__('volume', 'shipflex'),
-					
+
 					'long_title' => sprintf(
 						/* translators: %s: dimension unit */
 						esc_html__('Product Volume (%s)', 'shipflex'),

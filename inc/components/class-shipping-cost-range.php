@@ -72,7 +72,9 @@ final class Shipping_Cost_Range_Tier {
 					</tr>
 				</thead>
 
-				<?php $settings_fields->output_fields('general'); ?>
+				<tbody v-if="!collapse">
+					<?php $settings_fields->output_fields('general'); ?>
+				</tbody>
 			</table>
 		</template>
 	<?php
@@ -124,7 +126,7 @@ final class Shipping_Cost_Range_Tier {
 			'default_value' => '',
 			'placeholder' => '10',
 			'model_key' => 'priority',
-			'type' => Form_Control::TEXTBOX_NUMBER,
+			'type' => Form_Control::NUMBER,
 			'label' => esc_html__('Priority', 'shipflex'),
 			'label_note' => esc_html__('Set the priority for this Cost Range block. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
 			'option_note' => esc_html__('Higher numbers take precedence over lower numbers (e.g., Priority 15 executes before Priority 10).', 'shipflex'),

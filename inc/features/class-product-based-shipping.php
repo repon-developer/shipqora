@@ -264,11 +264,10 @@ final class Product_Based_Shipping extends Feature {
 			'label' => esc_html__('Calculate Cost By', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__('Select the product metric used to determine the shipping rate for each matching item.', 'shipflex'),
-			//'option_note' => esc_html__('Determines how shipping costs are applied to matching items. Select "Tiered Calculation" to configure conditional rates.', 'shipflex'),
 			'related_models' => array(
 				'calculation_value' => '',
 				'calculate_basis' => 'fixed_amount',
-				'calculation_mode' => 'percentage',
+				'calculation_type' => 'per_unit_or_percentage',
 			)
 		), 'product-layer');
 
@@ -279,7 +278,7 @@ final class Product_Based_Shipping extends Feature {
 			'label' => esc_html__('Advanced Calculation Settings', 'shipflex'),
 			'callback' => array($this, 'advanced_calculation_setting_field'),
 			'label_note' => esc_html__('Set up tiered pricing brackets for your products. You can add optional conditions to each block—if multiple blocks match, the one with the highest priority will be applied.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "advanced_calculation"'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "advanced_calculation"'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -346,10 +345,10 @@ final class Product_Based_Shipping extends Feature {
 				<option v-for="(metric, value) in calculation_metrics" :value="value" :key="value">{{metric.long_title}}</option>
 			</select>
 
-			<select v-model="calculation_mode" v-if="calculate_basis !== 'fixed_amount'">
+			<select v-model="calculation_type" v-if="calculate_basis !== 'fixed_amount'">
 				<option value="per_unit_or_percentage">
 					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></template>
-					<template v-if="'subtotal' != calculate_basis">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</template>
+					<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
 				</option>
 				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
 			</select>

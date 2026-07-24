@@ -53,12 +53,6 @@ const Shipping_Cost_Range_Tier = {
 	},
 
 	watch: {
-		calculateBasis(value) {
-			if ((value == 'subtotal' && this.shipping_cost_type == 'cost_per_unit') || (value != 'subtotal' && this.shipping_cost_type == 'percentage')) {
-				this.shipping_cost_type = 'fixed_cost';
-			}
-		},
-
 		range_data: {
 			deep: true,
 			handler(range_data) {
@@ -70,7 +64,7 @@ const Shipping_Cost_Range_Tier = {
 	methods: {
 		duplicate_item() {
 			this.$emit('duplicate', {
-				...JSON.parse(this.range_data),
+				...this.range_data,
 				collapse: false,
 				id: Utils.generate_uuid()
 			});

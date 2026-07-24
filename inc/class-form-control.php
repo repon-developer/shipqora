@@ -19,11 +19,11 @@ final class Form_Control {
 	const TEXTBOX = 'textbox';
 
 	/**
-	 * Hold field type of number like textbox
+	 * Hold field type of number like
 	 * 
 	 * @var string
 	 */
-	const TEXTBOX_NUMBER = 'textbox_number';
+	const NUMBER = 'number';
 
 	/**
 	 * Hold field type of select dropdown
@@ -153,7 +153,7 @@ final class Form_Control {
 	 * @return void
 	 */
 	public function add_attribute($key, $value) {
-		if (!empty($key) && !empty($value)) {
+		if (!empty($key) && strlen($value)) {
 			if ('class' == $key && array_key_exists('class', $this->attributes)) {
 				$value = $this->attributes['class'] . ' ' . $value;
 			}
@@ -389,8 +389,9 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function textbox_number($model_suffix = null) {
-		$this->add_attribute('type', 'text');
+	public function number($model_suffix = null) {
+		$this->add_attribute('min', 0);
+		$this->add_attribute('type', 'number');
 		$this->add_attribute('class', 'textbox-number');
 		echo '<input ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . ' />';
 	}
