@@ -32,11 +32,7 @@ class Main {
 
 					echo '<optgroup label="' . esc_attr($group_label) . '">';
 					foreach ($conditions as $key => $condition) {
-						printf(
-							'<option value="%1$s" v-if="is_type_support(\'%1$s\')">%2$s</option>',
-							esc_attr($key),
-							esc_html($condition['label'])
-						);
+						printf('<option value="%s">%s</option>', esc_attr($key), esc_html($condition['label']));
 					}
 					echo '</optgroup>';
 				} ?>

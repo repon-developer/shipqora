@@ -7,10 +7,10 @@ const Product_Based_Shipping = {
 
 	data() {
 		return {
-			tiered_rates: [],
 			calculation_value: '',
-			calculate_basis: 'fixed_amount',
 			calculation_mode: 'percentage',
+			calculate_basis: 'fixed_amount',
+			advanced_calculation_tiers: [],
 			...shipflex_admin?.features?.['product-based-shipping'],
 			...this.featureData
 		}
@@ -35,20 +35,8 @@ const Product_Based_Shipping = {
 			return this.$root.get_unit_label(this.calculate_basis, text);
 		},
 
-		add_tiered_rate() {
-			if (!Array.isArray(this.tiered_rates)) {
-				this.tiered_rates = [];
-			}
-
-			this.tiered_rates.push({ id: Utils.generate_uuid() })
-		},
-
-		duplicate_tiered_rate(rate_data, position) {
-			this.tiered_rates.splice(position, 0, rate_data)
-		},
-
-		delete_tiered_rate(index_no) {
-			this.tiered_rates.splice(index_no, 1)
+		add_shipping_cost_range() {
+			this.add_collection('advanced_calculation_tiers', { id: Utils.generate_uuid() })
 		}
 	}
 }

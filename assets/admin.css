@@ -1119,7 +1119,7 @@ ul.shipflex-repeater {
 	margin: -1px 0;
 }
 
-.shipflex-pro-notice {
+#shipflex .shipflex-pro-notice {
 	text-align: center;
 	margin-top: 15px;
 	padding: 10px 15px;
@@ -1128,45 +1128,42 @@ ul.shipflex-repeater {
 	background-color: #f9f9f9;
 }
 
-.shipflex-pro-notice.shipflex-pro-notice-left {
+#shipflex .shipflex-pro-notice.shipflex-pro-notice-left {
 	text-align: left;
 }
 
-.shipflex-pro-notice h3 {
+#shipflex .shipflex-pro-notice h3 {
 	font-size: 15px;
 	margin-block: 0 7px;
 }
 
-.shipflex-pro-notice .description {
+#shipflex .shipflex-pro-notice .description {
 	line-height: 1.5;
 	max-width: 1000px;
 	margin-inline: auto;
 }
 
-.shipflex-pro-notice .description a {
+#shipflex .shipflex-pro-notice .description a {
 	color: #333;
 	font-weight: bold;
 }
 
-.shipflex-pro-notice .button {
+#shipflex .shipflex-pro-notice .button {
 	min-width: 130px
 }
 
-
-
-
-table.table-shipflex-form td:has(>.table-shipflex-form-tiered-rates) {
+table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	padding: 3px !important
 }
 
-#shipflex .table-shipflex-form-tiered-rates {
+#shipflex .table-shipping-cost-range-tier {
 	margin-bottom: 3px;
 }
 
 #shipflex table.shipflex-cost-range-table {
 	width: 100%;
-	text-align: center;
 	margin-bottom: 10px;
+	text-align: center;
 	background-color: #fff;
 	border-collapse: collapse;
 }

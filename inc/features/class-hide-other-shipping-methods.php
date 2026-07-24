@@ -178,10 +178,6 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
-			'extra_settings' => array(
-				'add_group_method' => 'add_condition_group()',
-				'delete_group_method' => 'delete_condition_group(index)'
-			)
 		), 'tier-item');
 	}
 

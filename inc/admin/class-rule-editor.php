@@ -79,10 +79,53 @@ final class Rule_Editor {
 			);
 
 			$values['calculation_metrics'] = array(
-				'subtotal' => esc_html__('Product Subtotal', 'shipflex'),
-				'quantity' => esc_html__('Product Quantity', 'shipflex'),
-				'weight' => sprintf(esc_html__('Product Weight (%s)', 'shipflex'), $weight_label),
-				'volume' => sprintf(esc_html__('Product Volume (%s)', 'shipflex'), $dimension_label) ,
+				'subtotal' => array(
+					'short_title' => esc_html__('Subtotal', 'shipflex'),
+					'short_lower' => esc_html__('subtotal', 'shipflex'),
+					'long_title' => esc_html__('Product Subtotal', 'shipflex'),
+					'long_lower' => esc_html__('product subtotal', 'shipflex'),
+				),
+				
+				'quantity' => array(
+					'short_title' => esc_html__('Quantity', 'shipflex'),
+					'short_lower' => esc_html__('quantity', 'shipflex'),
+					'long_title' => esc_html__('Product Quantity', 'shipflex'),
+					'long_lower' => esc_html__('product quantity', 'shipflex'),
+				),
+
+				'weight' => array(
+					'short_title' => esc_html__('Weight', 'shipflex'),
+					'short_lower' => esc_html__('weight', 'shipflex'),
+
+					'long_title' => sprintf(
+						/* translators: %s: weight unit */
+						esc_html__('Product Weight (%s)', 'shipflex'),
+						$weight_label
+					),
+
+					'long_lower' => sprintf(
+						/* translators: %s: weight unit */
+						esc_html__('product weight (%s)', 'shipflex'),
+						$weight_label
+					),
+				),
+
+				'volume' => array(
+					'short_title' => esc_html__('Volume', 'shipflex'),
+					'short_lower' => esc_html__('volume', 'shipflex'),
+					
+					'long_title' => sprintf(
+						/* translators: %s: dimension unit */
+						esc_html__('Product Volume (%s)', 'shipflex'),
+						$dimension_label
+					),
+
+					'long_lower' => sprintf(
+						/* translators: %s: dimension unit */
+						esc_html__('product volume (%s)', 'shipflex'),
+						$dimension_label
+					),
+				),
 			);
 
 			//error_log(print_r($values, true));
@@ -113,7 +156,7 @@ final class Rule_Editor {
 
 		Condition\Main::output_component();
 		Component\Cart_Option::output_component();
-		Component\Tiered_Shipping::output_component(); ?>
+		Component\Shipping_Cost_Range_Tier::output_component(); ?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">

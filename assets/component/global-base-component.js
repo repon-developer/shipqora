@@ -6,11 +6,15 @@ const Global_Base_Component = {
 	computed: {
 		...wp.hooks.applyFilters('shipflex.global_base_component.computed', {}),
 
-
+		collapse_button_class() {
+			return { 'dashicons-arrow-up-alt2': this.collapse, 'dashicons-arrow-down-alt2': !this.collapse }
+		}
 	},
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.global_base_component.methods', {}),
+
+
 
 		get_unit_label(unit_key, text, default_value = null) {
 			let unit_label = default_value || __('unit', 'shipflex');

@@ -26,8 +26,14 @@ final class General {
 		$model_key = $form_control->get_model_key();
 
 		$add_group_method = $form_control->get_extra_setting('add_group_method');
+		if (empty($add_group_method)) {
+			$add_group_method = 'add_condition_group()';
+		}
+
 		$delete_group_method = $form_control->get_extra_setting('delete_group_method');
-		$supported_condition_types = $form_control->get_extra_setting('supported_condition_types');
+		if (empty($delete_group_method)) {
+			$delete_group_method = 'delete_condition_group(index)';
+		}
 
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
@@ -38,8 +44,7 @@ final class General {
 						<condition-group
 							:group="group"
 							@delete="<?php echo esc_attr($delete_group_method) ?>"
-							@update="(group_data) => <?php echo esc_attr($model_key); ?>[index] = group_data"
-							:supported-types="<?php echo esc_attr(wp_json_encode($supported_condition_types)) ?>">
+							@update="(group_data) => <?php echo esc_attr($model_key); ?>[index] = group_data">
 						</condition-group>
 					</div>
 				</template>

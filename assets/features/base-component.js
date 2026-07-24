@@ -41,20 +41,17 @@ const Feature_Base_Component = {
 			return this.tierIndex + 1;
 		},
 
-		feature_settings_data() {
+		feature_data() {
 			return JSON.parse(JSON.stringify(this.$data));
 		},
 
-		collapse_button_class() {
-			return {
-				'dashicons-arrow-up-alt2': this.collapse,
-				'dashicons-arrow-down-alt2': !this.collapse,
-			}
-		},
+		calculation_metrics() {
+			return shipflex_admin.calculation_metrics
+		}
 	},
 
 	watch: {
-		feature_settings_data: {
+		feature_data: {
 			deep: true,
 			handler(data) {
 				this.$emit('update', data)
@@ -72,7 +69,7 @@ const Feature_Base_Component = {
 
 	methods: {
 		duplicate_tier() {
-			this.$emit('duplicate', { ...this.feature_settings_data, id: Utils.generate_uuid(), collapse: false }, this.tier_no)
+			this.$emit('duplicate', { ...this.feature_data, id: Utils.generate_uuid(), collapse: false }, this.tier_no)
 		},
 
 		delete_tier() {
