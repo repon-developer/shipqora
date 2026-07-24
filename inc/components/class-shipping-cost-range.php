@@ -172,7 +172,7 @@ final class Shipping_Cost_Range_Tier {
 			<tbody>
 				<tr v-for="(range, index) in shipping_cost_ranges" :key="range?.id" :class="error_classes(index)">
 					<td><input type="number" placeholder="0" disabled :value="get_range_minimum(index)"></td>
-					<td><input v-model="range.max" type="number" placeholder="<?php esc_html_e('max', 'shipflex') ?>"></td>
+					<td><input v-model="range.max" class="range-input-max" type="number" placeholder="<?php esc_html_e('max', 'shipflex') ?>"></td>
 					<td>
 						<select v-model="range.type">
 							<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipflex') ?></option>
@@ -180,7 +180,7 @@ final class Shipping_Cost_Range_Tier {
 						</select>
 					</td>
 
-					<td><input v-model="range.value" type="number" placeholder="0.00" min="0" step="0.001"></td>
+					<td><input v-model="range.value" class="range-input-value" type="number" placeholder="0.00" min="0" step="0.001"></td>
 					<td class="column-delete">
 						<a @click.prevent="delete_collection('shipping_cost_ranges', index)" class="btn-delete dashicons dashicons-remove" href="#"></a>
 					</td>

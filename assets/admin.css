@@ -1192,6 +1192,7 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	max-width: none;
 	border: none;
 	outline: none !important;
+	border-radius: 0 !important;
 	box-shadow: none !important;
 }
 
@@ -1202,4 +1203,10 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 
 #shipflex table.shipflex-cost-range-table .btn-delete {
 	color: #3c434a;
+}
+
+#shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-max-empty .range-input-max,
+#shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-less-value .range-input-max,
+#shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-value-empty .range-input-value {
+	background-color: #ffe7e7;
 }
