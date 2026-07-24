@@ -125,18 +125,6 @@ final class Tiered_Shipping {
 
 		$settings_fields->add_setting('tier_shipping_cost', array(
 			'priority' => 20,
-			'label' => esc_html__('Shipping Cost', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_setting_field'),
-			'label_note' => esc_html__("Specify the shipping cost to add when this tier's condition is met.", 'shipflex'),
-			'option_note' => esc_html__('This rate will be calculated for each matching item and added to the total shipping fee.', 'shipflex'),
-			'related_models' => array(
-				'shipping_cost_type' => 'fixed_cost',
-				'shipping_cost_value' => '',
-			)
-		), 'general');
-
-		$settings_fields->add_setting('tier_shipping_cost', array(
-			'priority' => 20,
 			'default_value' => '',
 			'placeholder' => '10',
 			'model_key' => 'priority',
@@ -213,28 +201,6 @@ final class Tiered_Shipping {
 		</table>
 
 	<?php
-		$form_control->output_after_input_options();
-	}
-
-	/**
-	 * Output setting field of product source
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function shipping_cost_setting_field($form_control) {
-		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<select v-model="shipping_cost_type">
-				<option value="fixed_cost"><?php esc_html_e('Fixed Cost', 'shipflex') ?></option>
-				<option value="percentage" v-if="calculateBasis == 'subtotal'"><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="cost_per_unit" v-if="calculateBasis !== 'subtotal'">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
-			</select>
-
-			<input v-model="shipping_cost_value" type="number" min="0" placeholder="0.00">
-			<span v-if="shipping_cost_type == 'percentage'">%</span>
-		</div>
-<?php
 		$form_control->output_after_input_options();
 	}
 }

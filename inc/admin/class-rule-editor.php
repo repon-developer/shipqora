@@ -81,8 +81,8 @@ final class Rule_Editor {
 			$values['calculation_metrics'] = array(
 				'subtotal' => esc_html__('Product Subtotal', 'shipflex'),
 				'quantity' => esc_html__('Product Quantity', 'shipflex'),
-				'weight' => esc_html__('Product Weight', 'shipflex'),
-				'volume' => esc_html__('Product Volume', 'shipflex'),
+				'weight' => sprintf(esc_html__('Product Weight (%s)', 'shipflex'), $weight_label),
+				'volume' => sprintf(esc_html__('Product Volume (%s)', 'shipflex'), $dimension_label) ,
 			);
 
 			//error_log(print_r($values, true));

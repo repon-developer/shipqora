@@ -228,7 +228,7 @@ final class Product_Based_Shipping extends Feature {
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
 			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('Add Layer', 'codiepress-cart-rewards-pro'); ?>
+				<?php esc_html_e('Add Product Rule', 'codiepress-cart-rewards-pro'); ?>
 			</a>
 		</td>
 	<?php
@@ -259,7 +259,7 @@ final class Product_Based_Shipping extends Feature {
 			'callback' => array($this, 'exclude_products_setting_field'),
 		), 'product-layer');
 
-		$settings_fields->add_setting('shipping_cost', array(
+		$settings_fields->add_setting('shipping_cost_calculation', array(
 			'priority' => 20,
 			'label' => esc_html__('Calculate Cost By', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
@@ -272,14 +272,14 @@ final class Product_Based_Shipping extends Feature {
 			)
 		), 'product-layer');
 
-		$settings_fields->add_setting('tiered_rates', array(
+		$settings_fields->add_setting('advanced_calculation', array(
 			'priority' => 20.10,
 			'default_value' => array((object)array()),
-			'model_key' => 'tiered_rates',
-			'label' => esc_html__('Tiered Rates', 'shipflex'),
-			'callback' => array($this, 'tiered_rates_setting_field'),
+			'model_key' => 'advanced_calculation_tiers',
+			'label' => esc_html__('Advanced Calculation Tiers', 'shipflex'),
+			'callback' => array($this, 'advanced_calculation_setting_field'),
 			'label_note' => esc_html__('Configure quantity or metric ranges to calculate shipping costs. If multiple rate tiers match, the selected Tier Matching Logic will apply.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "tiered_rates"'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_mode == "advanced_calculation"'),
 		), 'product-layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -351,14 +351,16 @@ final class Product_Based_Shipping extends Feature {
 			</select>
 
 			<select v-model="calculation_mode" v-if="calculate_basis !== 'fixed_amount'">
-				<option value="percentage" v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></option>
-				<option value="per_unit" v-if="'subtotal' != calculate_basis">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</option>
-				<option value="tiered_rates"><?php esc_html_e('Tiered Rates', 'shipflex') ?></option>
+				<option value="per_unit_or_percentage">
+					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></template>
+					<template v-if="'subtotal' != calculate_basis">{{unit_label('<?php esc_html_e('Cost per unit_label:upper_case', 'shipflex') ?>')}}</template>
+				</option>
+				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="show_calculation_value">
 				<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
-				<span v-if="calculate_basis == 'subtotal' && calculation_mode == 'percentage'">%</span>
+				<span v-if="calculate_basis == 'subtotal'">%</span>
 			</template>
 		</div>
 
@@ -391,7 +393,7 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function tiered_rates_setting_field(Form_Control $form_control) {
+	public function advanced_calculation_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
 		<tiered-shipping
@@ -399,13 +401,15 @@ final class Product_Based_Shipping extends Feature {
 			:key="rate?.id"
 			:rate-data="rate"
 			:calculate-basis="calculate_basis"
-			v-for="(rate, index) in tiered_rates"
-			@delete="delete_tiered_rate(index)"
-			@update="(rate_data) => tiered_rates[index] = rate_data"
+			v-for="(rate, index) in advanced_calculation_tiers"
+			@delete="delete_advanced_calculation_tier(index)"
+			@update="(rate_data) => advanced_calculation_tiers[index] = rate_data"
 			@duplicate="(rate_data) => duplicate_tiered_rate(rate_data, index+1)">
 		</tiered-shipping>
 
-		<a class="button button-full-width" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
+		<div style="padding: 6px">
+			<a class="button button-full-width" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
+		</div>
 <?php
 		$form_control->output_after_input_options();
 	}

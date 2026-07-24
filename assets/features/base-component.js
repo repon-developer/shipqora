@@ -1,7 +1,10 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
+import Global_Base_Component from '../component/global-base-component.min.js?v=@@VERSION';
+
 const { __ } = wp.i18n;
 
 const Feature_Base_Component = {
+	extends: Global_Base_Component,
 	props: {
 		featureData: {
 			default: null
@@ -78,20 +81,6 @@ const Feature_Base_Component = {
 				this.$emit('delete')
 			}
 		},
-
-		add_condition_group() {
-			if (!Array.isArray(this.condition_groups)) {
-				this.condition_groups = [];
-			}
-
-			this.condition_groups.push({
-				id: Utils.generate_uuid()
-			})
-		},
-
-		delete_condition_group(index) {
-			this.condition_groups.splice(index, 1)
-		}
 	}
 }
 

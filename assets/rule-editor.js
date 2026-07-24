@@ -5,6 +5,7 @@ import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Tiered_Shipping from './component/tiered-shipping.min.js?v=@@VERSION';
 import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
+import Global_Base_Component from './component/global-base-component.min.js?v=@@VERSION';
 
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
 import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
@@ -24,6 +25,7 @@ const helper_models = {
 }
 
 const ShipFlex_Rule_Editor = {
+	extends: Global_Base_Component,
 	components: {
 		'feature-product-based-shipping': Product_Based_Shipping,
 		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
@@ -59,10 +61,6 @@ const ShipFlex_Rule_Editor = {
 		get_root_element() {
 			return $(this.$el.parentElement);
 		},
-
-		calculation_metrics() {
-			return shipflex_admin.calculation_metrics;
-		}
 	},
 
 	watch: {
@@ -87,8 +85,6 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
-
-		//console.log(this.$data);
 	},
 
 	updated() {
@@ -97,57 +93,6 @@ const ShipFlex_Rule_Editor = {
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
-
-		calculation_metric_label(metric_key, case_type = null) {
-			const metric_label = this.calculation_metrics?.[metric_key];
-			if ('lowercase' == case_type) {
-				return metric_label.toLowerCase();
-			}
-
-			return metric_label;
-		},
-
-		get_unit_label(unit_key, text, default_value = null) {
-			let unit_label = default_value || __('unit', 'shipflex');
-			if (shipflex_admin?.unit_labels?.[unit_key]?.length) {
-				unit_label = shipflex_admin.unit_labels[unit_key];
-			}
-
-			if (unit_key == 'quantity') {
-				text = text.replace('unit_label:upper_case', unit_label);
-			}
-
-			text = text.replace('unit_label:lower_case', unit_label.toLowerCase());
-			text = text.replace('unit_label:upper_case', unit_label.toUpperCase());
-			return text.replace('unit_label', unit_label)
-		},
-
-		add_collection(model_keys, default_value = {}) {
-			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
-			if (!Array.isArray(collections)) {
-				collections = []
-			}
-
-			collections?.push(default_value)
-		},
-
-		duplicate_collection(model_keys, data, position) {
-			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
-			if (!Array.isArray(collections)) {
-				collections = []
-			}
-
-			collections.splice(position, 0, data)
-		},
-
-		delete_collection(model_keys, index_no) {
-			const collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
-			if (!Array.isArray(collections)) {
-				return;
-			}
-
-			collections.splice(index_no, 1)
-		},
 
 		validate_save_data() {
 			if ('after' == this.date_validity && !this?.start_date) {
@@ -229,6 +174,8 @@ const ShipFlex_Rule_Editor = {
 
 if ($('.shipflex-rule-editor').length) {
 	const ShipFlex_Rule_Editor_App = Vue.createApp(ShipFlex_Rule_Editor).use(sortablejs)
+
+	ShipFlex_Rule_Editor_App.config.globalProperties.$utils = Utils;
 
 	const components = wp.hooks.applyFilters('shipflex.rule_editor_components', {
 		'cart-option': Cart_Option,

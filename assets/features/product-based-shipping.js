@@ -26,19 +26,7 @@ const Product_Based_Shipping = {
 		},
 
 		calculation_metrics() {
-			return this.$root.calculation_metrics;
-		}
-	},
-
-	watch: {
-		calculate_basis(value) {
-			if (value == 'subtotal' && this.calculation_mode == 'per_unit') {
-				this.calculation_mode = 'percentage';
-			}
-
-			if (value !== 'subtotal' && this.calculation_mode == 'percentage') {
-				this.calculation_mode = 'per_unit';
-			}
+			return shipflex_admin.calculation_metrics;
 		}
 	},
 

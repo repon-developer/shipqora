@@ -42,11 +42,11 @@ const Tiered_Shipping = {
 		},
 
 		metric_label() {
-			return this.$root.calculation_metric_label(this.calculateBasis);
+			return 'metric_labelsssssss'; // this.$root.calculation_metric_label(this.calculateBasis);
 		},
 
 		metric_label_lower() {
-			return this.$root.calculation_metric_label(this.calculateBasis, 'lowercase');
+			return 'metric_label_lowersssssssss' // this.$root.calculation_metric_label(this.calculateBasis, 'lowercase');
 		},
 
 		rate_data() {
