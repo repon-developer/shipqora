@@ -3,6 +3,7 @@
 namespace ShipFlex\Component;
 
 use ShipFlex\Feature\General;
+use ShipFlex\Form_Control;
 use ShipFlex\Utils;
 use ShipFlex\Settings_Fields;
 
@@ -59,79 +60,20 @@ final class Tiered_Shipping {
 
 		$settings_fields = Settings_Fields::get_instance('tiered-shipping'); ?>
 		<template id="shipflex-tiered-shipping-component">
+			<table class="table-shipflex-form table-shipflex-form-tiered-rates">
+				<thead>
+					<tr>
+						<td colspan="2">
+							<div class="heading-line">
+								<?php esc_html_e('Rate Tier', 'shipflex') ?> #{{tier_no}}
+								<?php Utils::get_form_table_header_action($actions, 'tiered-shipping'); ?>
+							</div>
+						</td>
+					</tr>
+				</thead>
 
-			<div class="tiered-rate-item-container">
-				<header>
-					<h4><?php esc_html_e('Rate Tier', 'shipflex') ?> #{{tier_no}}</h4>
-
-					<?php Utils::get_form_table_header_action($actions, 'tiered-shipping'); ?>
-				</header>
-
-				<table class="shipflex-cost-range-table">
-					<thead>
-						<tr>
-							<th>From ( > )</th>
-							<th>To ( <= )</th>
-							<th>Cost Type</th>
-							<th>Rate ($)</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						<tr>
-							<td><input type="number" placeholder="0" disabled></td>
-							<td><input type="number" placeholder="5"></td>
-							<td>
-								<select>
-									<option value="">Fixed Cost</option>
-									<option value="">Cost per Unit</option>
-									<option value="">Percentage</option>
-								</select>
-							</td>
-
-							<td><input type="number" placeholder="0.00"></td>
-						</tr>
-
-						<tr>
-							<td><input type="number" placeholder="5" disabled></td>
-							<td><input type="number" placeholder="max"></td>
-							<td>
-								<select>
-									<option value="">Fixed Cost</option>
-									<option value="">Cost per Unit</option>
-									<option value="">Percentage</option>
-								</select>
-							</td>
-
-							<td><input type="number" placeholder="0.00"></td>
-						</tr>
-					</tbody>
-
-				</table>
-
-				<a class="button button-small" href="">+ Add Range</a>
-
-				<div class="gap-20"></div>
-
-				<div class="shipflex-repeater shipflex-repeater-condition-groups">
-					<template v-for="(group, index) in condition_groups" :key="group?.id">
-						<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
-						<div class="repeater-item">
-							<condition-group
-								:group="group"
-								@update="(group_data) => condition_groups[index] = group_data">
-							</condition-group>
-						</div>
-					</template>
-				</div>
-
-				<button class="button button-large-dashed button-full-width">
-					<?php esc_html_e('Add condition group', 'shipflex') ?>
-				</button>
-
-			</div>
-
-
+				<?php $settings_fields->output_fields('general'); ?>
+			</table>
 		</template>
 	<?php
 	}
@@ -170,7 +112,7 @@ final class Tiered_Shipping {
 
 		$settings_fields->add_setting('metric_condition', array(
 			'priority' => 10,
-			'label' => '{{metric_label}}',
+			'label' => '{{metric_label}} Ranges',
 			'callback' => array($this, 'metric_condition_setting_field'),
 			'label_note' => esc_html__('Define the range or threshold required for this rule to apply to an item.', 'shipflex'),
 			'option_note' => esc_html__("This rule applies whenever an item's {{metric_label_lower}} meets this condition.", 'shipflex'),
@@ -187,6 +129,19 @@ final class Tiered_Shipping {
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__("Specify the shipping cost to add when this tier's condition is met.", 'shipflex'),
 			'option_note' => esc_html__('This rate will be calculated for each matching item and added to the total shipping fee.', 'shipflex'),
+			'related_models' => array(
+				'shipping_cost_type' => 'fixed_cost',
+				'shipping_cost_value' => '',
+			)
+		), 'general');
+
+		$settings_fields->add_setting('tier_shipping_cost', array(
+			'priority' => 20,
+			'default_value' => '',
+			'placeholder' => '10',
+			'model_key' => 'priority',
+			'type' => Form_Control::TEXTBOX_NUMBER,
+			'label' => esc_html__('Priority', 'shipflex'),
 			'related_models' => array(
 				'shipping_cost_type' => 'fixed_cost',
 				'shipping_cost_value' => '',
@@ -214,13 +169,49 @@ final class Tiered_Shipping {
 	 */
 	public function metric_condition_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<select v-model="metric_operator">
-				<?php Utils::get_operators_options(array('greater_than', 'less_than', 'greater_than_or_equal', 'less_than_or_equal', 'between')); ?>
-			</select>
-			<input v-model="metric_value1" type="number" min="0" placeholder="0.00">
-			<input v-model="metric_value2" type="number" min="0" placeholder="0.00" v-if="metric_operator == 'between'">
-		</div>
+
+		<table class="shipflex-cost-range-table">
+			<thead>
+				<tr>
+					<th>From ( > )</th>
+					<th>To ( <= )</th>
+					<th>Cost Type</th>
+					<th>Rate ($)</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr>
+					<td><input type="number" placeholder="0" disabled></td>
+					<td><input type="number" placeholder="5"></td>
+					<td>
+						<select>
+							<option value="">Fixed Cost</option>
+							<option value="">Cost per Unit</option>
+							<option value="">Percentage</option>
+						</select>
+					</td>
+
+					<td><input type="number" placeholder="0.00"></td>
+				</tr>
+
+				<tr>
+					<td><input type="number" placeholder="5" disabled></td>
+					<td><input type="number" placeholder="max"></td>
+					<td>
+						<select>
+							<option value="">Fixed Cost</option>
+							<option value="">Cost per Unit</option>
+							<option value="">Percentage</option>
+						</select>
+					</td>
+
+					<td><input type="number" placeholder="0.00"></td>
+				</tr>
+			</tbody>
+
+		</table>
+
 	<?php
 		$form_control->output_after_input_options();
 	}

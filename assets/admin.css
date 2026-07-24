@@ -1155,51 +1155,28 @@ ul.shipflex-repeater {
 
 
 
-table.table-shipflex-form td:has(>.tiered-rate-item-container) {
-	padding: 0 !important
+table.table-shipflex-form td:has(>.table-shipflex-form-tiered-rates) {
+	padding: 3px !important
 }
 
-#shipflex .tiered-rate-item-container {
-	margin-bottom: -1px;
-	padding-inline: 14px;
-	padding-bottom: 14px;
-	border-block: 1px solid #dbd5d5;
+#shipflex .table-shipflex-form-tiered-rates {
+	margin-bottom: 3px;
 }
 
-#shipflex .tiered-rate-item-container header {
-	display: flex;
-	padding: 6px 14px;
-	align-items: center;
-	margin-inline: -14px;
-	border-bottom: 1px solid #dbd5d5;
-	background-color: #f1f1f1;
-}
-
-#shipflex .tiered-rate-item-container header h4 {
-	margin: 0;
-	font-size: 15px;
-	font-weight: bold;
-}
-
-#shipflex .tiered-rate-item-container .shipflex-repeater.shipflex-repeater-condition-groups {
-	margin-top: 0px;
-}
-
-table.shipflex-cost-range-table {
+#shipflex table.shipflex-cost-range-table {
 	width: 100%;
 	text-align: center;
-	margin-top: 15px;
 	margin-bottom: 10px;
 	background-color: #fff;
 	border-collapse: collapse;
 }
 
-table.shipflex-cost-range-table,
-table.shipflex-cost-range-table :is(th, td) {
+#shipflex table.shipflex-cost-range-table,
+#shipflex table.shipflex-cost-range-table :is(th, td) {
 	border: 1px solid #ccc !important
 }
 
-table.shipflex-cost-range-table thead th {
+#shipflex table.shipflex-cost-range-table thead th {
 	min-width: 0;
 	text-align: center;
 	padding-inline: 16px;
@@ -1208,11 +1185,7 @@ table.shipflex-cost-range-table thead th {
 	white-space: nowrap
 }
 
-table.shipflex-cost-range-table thead th:nth-child(3) {
-	width: 120px !important;
-}
-
-table.shipflex-cost-range-table tbody td {
+#shipflex table.shipflex-cost-range-table tbody td {
 	padding: 0 !important
 }
 
@@ -1223,11 +1196,4 @@ table.shipflex-cost-range-table tbody td {
 	border: none;
 	outline: none !important;
 	box-shadow: none !important;
-}
-
-#shipflex table.shipflex-cost-range-table tfoot .button {
-	width: auto;
-	display: block;
-	margin: -2px !important;
-	border-radius: 0 !important;
 }

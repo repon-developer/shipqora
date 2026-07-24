@@ -405,9 +405,7 @@ final class Product_Based_Shipping extends Feature {
 			@duplicate="(rate_data) => duplicate_tiered_rate(rate_data, index+1)">
 		</tiered-shipping>
 
-		<div style="padding: 10px 14px">
-			<a class="button button-full-width" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
-		</div>
+		<a class="button button-full-width" href="#" @click.prevent="add_tiered_rate()">+ <?php esc_html_e('Add Rate Tier', 'shipflex') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}
