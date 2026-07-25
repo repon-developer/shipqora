@@ -198,7 +198,9 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function get_component_heading_actions() {
-		return Utils::get_component_heading_actions();
+		$actions = Utils::get_component_heading_actions();
+		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
+		return $actions;
 	}
 
 		/**
@@ -241,8 +243,20 @@ final class Product_Based_Shipping extends Feature {
 			'callback' => array($this, 'exclude_products_setting_field'),
 		), 'product');
 
-		$settings_fields->add_setting('shipping_cost_calculation', array(
+		$settings_fields->add_setting('priority', array(
 			'priority' => 20,
+			'default_value' => '',
+			'placeholder' => '10',
+			'model_key' => 'priority',
+			'type' => Form_Control::NUMBER,
+			'label' => esc_html__('Priority', 'shipflex'),
+			'label_note' => esc_html__('Set the priority for this product rule. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
+			'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed).', 'shipflex'),
+
+		), 'product');
+
+		$settings_fields->add_setting('shipping_cost_calculation', array(
+			'priority' => 30,
 			'label' => esc_html__('Calculate Cost By', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__('Select the product metric used to determine the shipping rate for each matching item.', 'shipflex'),
@@ -254,7 +268,7 @@ final class Product_Based_Shipping extends Feature {
 		), 'product');
 
 		$settings_fields->add_setting('advanced_calculation', array(
-			'priority' => 20.10,
+			'priority' => 30.10,
 			'default_value' => array((object)array()),
 			'model_key' => 'advanced_calculation_tiers',
 			'label' => esc_html__('Advanced Calculation Settings', 'shipflex'),
@@ -374,18 +388,18 @@ final class Product_Based_Shipping extends Feature {
 		$form_control->output_before_input_options(); ?>
 
 		<shipping-cost-range
-			:number="index"
+			:tier-no="index + 1"
 			:key="shipping_rage_data?.id"
 			:range-data="shipping_rage_data"
 			:calculate-basis="calculate_basis"
+			@delete="delete_shipping_cost_range(index)"
 			v-for="(shipping_rage_data, index) in advanced_calculation_tiers"
-			@delete="delete_collection('advanced_calculation_tiers', index)"
 			@update="(range_data) => advanced_calculation_tiers[index] = range_data"
-			@duplicate="(range_data) => duplicate_collection('advanced_calculation_tiers', range_data, index+1)">
+			@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
 		</shipping-cost-range>
 
 		<div style="padding: 6px">
-			<a class="button button-full-width" href="#" @click.prevent="add_shipping_cost_range()"><?php esc_html_e('+ Add New Cost Range', 'shipflex') ?></a>
+			<a class="button button-full-width" href="#" @click.prevent="add_shipping_cost_range()"><?php esc_html_e('+ Add New Shipping Cost Range', 'shipflex') ?></a>
 		</div>
 <?php
 		$form_control->output_after_input_options();

@@ -11,10 +11,6 @@ const Shipping_Cost_Range_Tier = {
 			default: null,
 			type: [null, Object]
 		},
-		number: {
-			default: 0,
-			type: Number,
-		},
 
 		calculateBasis: {
 			default: null,
@@ -27,8 +23,6 @@ const Shipping_Cost_Range_Tier = {
 		},
 	},
 
-	emits: ['update', 'duplicate', 'delete'],
-
 	data() {
 		return {
 			collapse: false,
@@ -40,10 +34,6 @@ const Shipping_Cost_Range_Tier = {
 	},
 
 	computed: {
-		tier_no() {
-			return this.number + 1;
-		},
-
 		metric_label_short_lower() {
 			return shipflex_admin.calculation_metrics?.[this.calculateBasis]?.short_lower;
 		},
@@ -147,22 +137,11 @@ const Shipping_Cost_Range_Tier = {
 			return prev_item?.max || 0;
 		},
 
-		duplicate_item() {
-			this.$emit('duplicate', {
-				...this.range_data,
-				collapse: false,
-				id: Utils.generate_uuid()
-			});
-		},
-
-		delete_item() {
-			const response = confirm(this.deleteWarning)
-			if (response) {
-				this.$emit('delete');
-			}
-		},
-
 		add_cost_range() {
+			if (!Array.isArray(this.shipping_cost_ranges)) {
+				this.shipping_cost_ranges = []
+			}
+
 			const last_item = this.get_prev_range(this.shipping_cost_ranges?.length - 1);
 			if (last_item && !last_item?.max) {
 				return alert(__('Please enter "Max" value of the previous range.', 'shipflex'))
@@ -172,13 +151,13 @@ const Shipping_Cost_Range_Tier = {
 				return alert(__('Please enter "Rate" of the previous range.', 'shipflex'))
 			}
 
-			this.add_collection('shipping_cost_ranges', { id: Utils.generate_uuid(), ...this.range_default_data })
+			this.shipping_cost_ranges.push({ id: Utils.generate_uuid(), ...this.range_default_data })
 		},
 
 		delete_cost_range(index) {
 			const response = confirm(__('Do you want to delete this range?', 'shipflex'));
 			if (response) {
-				this.delete_collection('shipping_cost_ranges', index)
+				this.shipping_cost_ranges.splice(index, 1)
 			}
 		}
 	}

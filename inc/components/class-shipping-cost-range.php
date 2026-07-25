@@ -41,7 +41,9 @@ final class Shipping_Cost_Range_Tier {
 	 * @return void
 	 */
 	public static function output_component() {
-		$action_contents = apply_filters(Utils::get_component_heading_actions_hook('shipping-cost-range'), Utils::get_component_heading_actions()); 
+		$actions = Utils::get_component_heading_actions();
+		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
+		$action_contents = apply_filters(Utils::get_component_heading_actions_hook('shipping-cost-range'), $actions);
 		$settings_fields = Settings_Fields::get_instance('shipping-cost-range'); ?>
 		<template id="shipflex-shipping-cost-range-component">
 			<table class="table-shipflex-form table-shipping-cost-range-tier">
@@ -114,7 +116,7 @@ final class Shipping_Cost_Range_Tier {
 			'type' => Form_Control::NUMBER,
 			'label' => esc_html__('Priority', 'shipflex'),
 			'label_note' => esc_html__('Set the priority for this Cost Range block. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
-			'option_note' => esc_html__('Higher numbers take precedence over lower numbers (e.g., Priority 15 executes before Priority 10).', 'shipflex'),
+			'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed)..', 'shipflex'),
 
 		), 'general');
 

@@ -43,7 +43,19 @@ const Product_Based_Shipping = {
 
 	methods: {
 		add_shipping_cost_range() {
-			this.add_collection('advanced_calculation_tiers', { id: Utils.generate_uuid() })
+			if (!Array.isArray(this.advanced_calculation_tiers)) {
+				this.advanced_calculation_tiers = []
+			}
+
+			this.advanced_calculation_tiers.push({ id: Utils.generate_uuid() })
+		},
+
+		duplicate_shipping_cost_range(data, position) {
+			this.advanced_calculation_tiers.splice(position, 0, data)
+		},
+
+		delete_shipping_cost_range(index) {
+			this.advanced_calculation_tiers.splice(index, 1)
 		}
 	}
 }
