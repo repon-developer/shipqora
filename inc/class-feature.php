@@ -161,6 +161,15 @@ class Feature {
 	}
 
 	/**
+	 * Output section wrapper attributes
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_wrapper_attributes() {
+	}
+
+	/**
 	 * Output settings fields of rule editor
 	 * 
 	 * @since 1.0.0
@@ -168,17 +177,7 @@ class Feature {
 	 */
 	public function output_rule_editor(Settings_Fields $settings_fields) {
 ?>
-
-		<div class="shipflex-box">
-			<div class="box-header">
-				<h3><?php echo esc_html($this->get_configuration_value('section_title')) ?></h3>
-			</div>
-			<div class="box-content">
-				sdfsf
-			</div>
-		</div>
-
-		<table class="table-shipflex-form">
+		<table class="table-shipflex-form" <?php $this->output_wrapper_attributes() ?>>
 			<thead>
 				<tr>
 					<td colspan="2">

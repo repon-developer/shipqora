@@ -701,18 +701,18 @@ table.table-shipflex-form .field-note.field-note-warning {
 	color: #ab0000;
 }
 
-table.table-shipflex-form.sortable-chosen {
+table.table-shipflex-form tbody.sortable-chosen {
 	z-index: 10;
-	box-shadow: 0 0 20px rgba(0, 0, 0, .10)
+	box-shadow: 0 0 20px rgba(0, 0, 0, .16)
 }
 
-table.table-shipflex-form.sortable-chosen tr.row-group-heading,
-table.table-shipflex-form.sortable-chosen tr.row-group-heading .button-drag {
+table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading,
+table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading .button-drag {
 	cursor: grabbing;
 }
 
-table.table-shipflex-form.sortable-chosen tr.row-group-heading td {
-	background-color: #ffffef !important;
+table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading td {
+	background-color: #f5f2ff !important;
 }
 
 table.table-shipflex-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {

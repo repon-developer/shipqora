@@ -127,6 +127,18 @@ const ShipFlex_Rule_Editor = {
 			collections.splice(index_no, 1)
 		},
 
+		on_order_change(event, model_keys, skip = 0) {
+			const source_element = jQuery(event.from);
+			if (!model_keys || !model_keys?.length) {
+				throw new Error("Please pass 'Model Key'");
+			}
+
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+
+			const item = collections.splice(event.oldIndex - skip, 1)[0];
+			collections.splice(event.newIndex - skip, 0, item);
+		},
+
 		validate_save_data() {
 			if ('after' == this.date_validity && !this?.start_date) {
 				this.highlighted_section.name = 'date-validity';

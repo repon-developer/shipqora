@@ -139,6 +139,23 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
+	public function output_wrapper_attributes() {
+		printf(
+			'@end="(event) => on_order_change(event, \'%s\', 1)"',
+			esc_attr($this->get_model_key('layers'))
+		);
+
+		echo ' v-sortable="{options: {handle: \'tr.row-group-heading .button-drag\'}, filter: \'>tbody.sortable-item\'}"';
+
+		echo ' :key="' . $this->get_model_key('layers') . '?.length"';
+	}
+
+	/**
+	 * Add settings field of rule editor of current feature
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('layer_items', array(
 			'priority' => 10,
@@ -160,8 +177,10 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function layer_items_setting_field() { ?>
-
-		<tbody v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>" :key="layer?.id">
+		<tbody
+			:key="layer?.id"
+			class="sortable-item"
+			v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>">
 			<template
 				:feature-data="layer"
 				:tier-no="layer_index + 1"
