@@ -9,21 +9,6 @@ const Feature_Base_Component = {
 		featureData: {
 			default: null
 		},
-
-		tierIndex: {
-			default: 1,
-			type: Number
-		},
-
-		additionalTier: {
-			type: Boolean,
-			default: false,
-		},
-
-		deleteWarning: {
-			type: String,
-			default: __('Do you want to delete this tier?', 'shipflex'),
-		},
 	},
 
 	emits: ['update', 'duplicate', 'delete'],
@@ -37,10 +22,6 @@ const Feature_Base_Component = {
 	},
 
 	computed: {
-		tier_no() {
-			return this.tierIndex + 1;
-		},
-
 		feature_data() {
 			return JSON.parse(JSON.stringify(this.$data));
 		},
@@ -69,7 +50,7 @@ const Feature_Base_Component = {
 
 	methods: {
 		duplicate_tier() {
-			this.$emit('duplicate', { ...this.feature_data, id: Utils.generate_uuid(), collapse: false }, this.tier_no)
+			this.$emit('duplicate', { ...this.feature_data, id: Utils.generate_uuid(), collapse: false })
 		},
 
 		delete_tier() {

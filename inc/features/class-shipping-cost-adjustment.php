@@ -146,7 +146,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
 		<tbody>
-			<?php $this->output_heading_row(esc_html__('Adjustment Tier', 'shipflex') . ' #{{tier_no}}') ?>
+			<?php $this->output_heading_row(esc_html__('Adjustment: Tier #{{tierNo}}', 'shipflex')) ?>
 			<template v-if="!collapse && !additionalTier">
 				<?php $settings_fields->output_fields('tier-item') ?>
 			</template>
@@ -188,6 +188,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'model_key' => $this->get_model_key('lite_tier'),
 			'callback' => array($this, 'lite_tier_setting_field'),
 		), $this->get_id());
+
+		$settings_fields->add_setting('add_new_tier', array(
+			'priority' => 10,
+			'row_attributes' => array('class' => 'pro-notice-row'),
+			'callback' => array($this, 'add_new_tier_setting_field'),
+		), $this->get_id());
 	}
 
 	/**
@@ -207,6 +213,27 @@ final class Shipping_Cost_Adjustment extends Feature {
 	}
 
 	/**
+	 * Add new adjustment tier notice
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_new_tier_setting_field(Form_Control $form_control) {
+		$line_button_data = array('utm_source' => 'add+shipping+cost+adjustment+tier');
+		$form_control->output_row(); ?>
+		<td colspan="2">
+			<div class="shipflex-pro-notice">
+				<h3>⚡ Need Multiple Adjustment Tiers?</h3>
+				<div class="description">Upgrade to <strong>ShipFlex Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.</div>
+				<div class="gap-10"></div>
+				<?php Utils::get_lite_button($line_button_data) ?>
+			</div>
+		</td>
+	<?php
+		$form_control->output_row('close');
+	}
+
+	/**
 	 * Add component settings field 
 	 * 
 	 * @since 1.0.0
@@ -215,10 +242,10 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('shipping_cost_adjustment', array(
 			'priority' => 1000,
-			'label' => esc_html__('Adjustment', 'shipflex'),
+			'label' => esc_html__('Adjustment Method & Value', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
-			'label_note' => esc_html__('Choose how the shipping cost should be adjusted and enter the value to apply.', 'shipflex'),
-			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
+			'label_note' => esc_html__('Select how to modify the shipping rate (increase, decrease, or set a fixed price) and enter the value to apply.', 'shipflex'),
+			'option_note' => esc_html__('Enter a numerical value (e.g., 10 for 10% or $10.00 depending on the selected method).', 'shipflex'),
 			'related_models' => array(
 				'amount' => '',
 				'type' => 'increase_percentage',

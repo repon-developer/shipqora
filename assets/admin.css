@@ -810,7 +810,7 @@ table.table-shipflex-form td>table.table-shipflex-form thead {
 }
 
 table.table-shipflex-form tr.pro-notice-row td {
-	padding: 0;
+	padding: 0 !important;
 }
 
 #shipflex table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {

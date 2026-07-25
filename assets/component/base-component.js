@@ -12,6 +12,16 @@ const Base_Component = {
 			default: 1,
 			type: Number
 		},
+
+		hideHeading: {
+			type: Boolean,
+			default: false,
+		},
+
+		deleteWarning: {
+			type: String,
+			default: __('Do you want to delete this tier?', 'shipflex'),
+		},
 	},
 
 	data() {
