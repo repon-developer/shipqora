@@ -12,14 +12,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Product_Based_Shipping extends Feature {
+final class Cart_Based_Shipping extends Feature {
 
 	/**
 	 * Hold the feature id of this feature
 	 * 
 	 * @var string
 	 */
-	protected $feature_id = 'product-based-shipping';
+	protected $feature_id = 'cart-based-shipping';
 
 	/**
 	 * Constructor.
@@ -40,11 +40,11 @@ final class Product_Based_Shipping extends Feature {
 	 */
 	protected function get_configuration() {
 		return array(
-			'priority' => 50,
-			'base_model' => 'product_based_shipping',
-			'name' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
-			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
-			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipflex'),
+			'priority' => 40,
+			'base_model' => 'cart_based_shipping',
+			'name' => esc_html__('Cart-Based Shipping Cost', 'shipflex'),
+			'section_title' => esc_html__('Cart-Based Shipping Cost', 'shipflex'),
+			'description' => esc_html__('Calculate shipping costs dynamically based on cart total, item count, weight, or volume.', 'shipflex'),
 		);
 	}
 
@@ -139,23 +139,6 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function output_wrapper_attributes() {
-		printf(
-			'@end="(event) => on_order_change(event, \'%s\', 1)"',
-			esc_attr($this->get_model_key('layers'))
-		);
-
-		echo ' v-sortable="{options: {handle: \'tr.row-group-heading .button-drag\'}, filter: \'>tbody.sortable-item\'}"';
-
-		echo ' :key="' . $this->get_model_key('layers') . '?.length"';
-	}
-
-	/**
-	 * Add settings field of rule editor of current feature
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('layer_items', array(
 			'priority' => 10,
@@ -164,9 +147,10 @@ final class Product_Based_Shipping extends Feature {
 			'callback' => array($this, 'layer_items_setting_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('add_new_layer', array(
-			'priority' => 10000,
-			'callback' => array($this, 'add_new_layer_setting_field'),
+		$settings_fields->add_setting('add_new_tier', array(
+			'priority' => 10,
+			'row_attributes' => array('class' => 'pro-notice-row'),
+			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
 	}
 
@@ -177,19 +161,13 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function layer_items_setting_field() { ?>
-		<tbody
-			:key="layer?.id"
-			class="sortable-item"
-			v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>">
+		<tbody>
 			<template
-				:feature-data="layer"
-				:tier-no="layer_index + 1"
-				is="vue:feature-product-based-shipping"
-				:total-tier="<?php echo esc_attr($this->get_model_key('layers')) ?>?.length"
-				delete-warning="<?php esc_html_e('Are you sure you want to delete this "Product Rule"?', 'shipflex') ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value"
-				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', layer_index)"
-				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', value, position)">
+				:feature-data="<?php echo esc_attr($this->get_model_key('lite_tier')) ?>"
+				is="vue:feature-cart-based-shipping"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_tier')) ?> = value"
+				delete-warning="<?php esc_html_e('Are you sure you want to delete this "Cart Based Shipping Rule"?', 'shipflex') ?>"
+				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('lite_tier')) ?>', value, 1)">
 			</template>
 		</tbody>
 
@@ -202,27 +180,19 @@ final class Product_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_new_layer_setting_field(Form_Control $form_control) {
+	public function add_new_tier_setting_field(Form_Control $form_control) {
+		$line_button_data = array('utm_source' => 'cart+based+shipping+cost');
 		$form_control->output_row(); ?>
-		<td class="no-padding" colspan="2">
-			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('Add Product Rule', 'codiepress-cart-rewards-pro'); ?>
-			</a>
+		<td colspan="2">
+			<div class="shipflex-pro-notice">
+				<h3>💡 Unlock Unlimited Cart Tiers</h3>
+				<div class="description">Upgrade to the Pro version to create unlimited shipping tiers and build complex, tiered shipping rules based on cart conditions.</div>
+				<div class="gap-10"></div>
+				<?php Utils::get_lite_button($line_button_data) ?>
+			</div>
 		</td>
 	<?php
 		$form_control->output_row('close');
-	}
-
-	/**
-	 * Get actions button of component heading
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function get_component_heading_actions() {
-		$actions = Utils::get_component_heading_actions();
-		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
-		return $actions;
 	}
 
 	/**
@@ -234,9 +204,9 @@ final class Product_Based_Shipping extends Feature {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<?php $this->output_heading_row(esc_html__('Product Rule: Tier #{{tierNo}}', 'shipflex')) ?>
+		<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex')) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('product') ?>
+			<?php $settings_fields->output_fields('cart-tier') ?>
 		</template>
 	<?php
 	}
@@ -248,84 +218,53 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('product_source', array(
-			'priority' => 10,
-			'default_value' => (object) array(),
-			'model_key' => 'product_source',
-			'label' => esc_html__('Target Products', 'shipflex'),
-			'callback' => array($this, 'product_source_setting_field'),
-			'label_note' => esc_html__('Choose which cart items this rule applies to based on categories, tags, or classes.', 'shipflex'),
-			'option_note' => esc_html__('This rule calculates shipping costs individually for each matching item in the cart.', 'shipflex'),
-		), 'product');
-
-		$settings_fields->add_setting('exclude_products', array(
-			'priority' => 10.10,
-			'conditions' => array('tierNo == 1'),
-			'row_attributes' => array('class' => 'pro-notice-row'),
-			'callback' => array($this, 'exclude_products_setting_field'),
-		), 'product');
-
 		$settings_fields->add_setting('priority', array(
-			'priority' => 20,
+			'priority' => 30,
 			'default_value' => '',
 			'placeholder' => '10',
 			'model_key' => 'priority',
 			'type' => Form_Control::NUMBER,
 			'label' => esc_html__('Priority', 'shipflex'),
-			'label_note' => esc_html__('Set the priority for this product rule. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
+			'label_note' => esc_html__('Set the priority for this rule. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
 			'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed).', 'shipflex'),
 
-		), 'product');
+		), 'cart-tier');
+
+		$settings_fields->add_setting('exclude_products', array(
+			'priority' => 30,
+			'conditions' => array('tierNo == 1'),
+			'row_attributes' => array('class' => 'pro-notice-row'),
+			'callback' => array($this, 'exclude_products_setting_field'),
+		), 'cart-tier');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
-			'priority' => 30,
+			'priority' => 40,
 			'label' => esc_html__('Calculate Cost By', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
-			'label_note' => esc_html__('Select the product metric used to determine the shipping rate for each matching item.', 'shipflex'),
+			'label_note' => esc_html__('Choose how the shipping cost is determined based on cart subtotal, item quantity, total weight, or total volume.', 'shipflex'),
 			'related_models' => array(
 				'calculation_value' => '',
 				'calculate_basis' => 'fixed_amount',
 				'calculation_type' => 'per_unit_or_percentage',
 			)
-		), 'product');
+		), 'cart-tier');
 
 		$settings_fields->add_setting('advanced_calculation', array(
-			'priority' => 30.10,
+			'priority' => 40.10,
 			'default_value' => array((object)array()),
 			'model_key' => 'advanced_calculation_tiers',
 			'label' => esc_html__('Advanced Calculation Settings', 'shipflex'),
 			'callback' => array($this, 'advanced_calculation_setting_field'),
 			'label_note' => esc_html__('Set up tiered pricing brackets for your products. You can add optional conditions to each block—if multiple blocks match, the one with the highest priority will be applied.', 'shipflex'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "advanced_calculation"'),
-		), 'product');
+		), 'cart-tier');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
-		), 'product');
-	}
-
-	/**
-	 * Output setting field of product source
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function product_source_setting_field(Form_Control $form_control) {
-		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<cart-option
-				:hide-operator="true"
-				based-on="taxonomy:product_cat"
-				:cart-option-data="product_source"
-				@on-update="(value) => product_source = value"
-				option-label="<?php esc_html_e('{{option_label}}', 'shipflex') ?>">
-			</cart-option>
-		</div>
-	<?php
-		$form_control->output_after_input_options();
+		), 'cart-tier');
 	}
 
 	/**
@@ -340,7 +279,7 @@ final class Product_Based_Shipping extends Feature {
 		<td colspan="2">
 			<div class="shipflex-pro-notice">
 				<h3>🚀 Want to Exclude Specific Products?</h3>
-				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
+				<div class="description">Upgrade to <strong>ShipFlex Pro</strong> to exclude specific products or categories from cart-based shipping rules and gain precise control over product eligibility.</div>
 				<div class="gap-10"></div>
 				<?php Utils::get_lite_button($line_button_data) ?>
 			</div>
@@ -435,4 +374,4 @@ final class Product_Based_Shipping extends Feature {
 	}
 }
 
-Feature::add_feature(Product_Based_Shipping::class);
+Feature::add_feature(Cart_Based_Shipping::class);
