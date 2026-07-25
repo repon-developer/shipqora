@@ -362,7 +362,7 @@ class Utils {
 ?>
 		<tr class="row-group-heading" v-if="!hideHeading">
 			<td colspan="2">
-				<span class="button-drag dashicons dashicons-menu-alt" v-if="draggable"></span>
+				<span class="button-drag dashicons dashicons-menu-alt" v-if="draggable && totalTier > 1"></span>
 				<div class="heading-line">
 					<?php
 					if (!empty($title)) {

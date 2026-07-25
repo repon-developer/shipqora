@@ -160,17 +160,20 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function layer_items_setting_field() { ?>
+
 		<tbody v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>" :key="layer?.id">
 			<template
 				:feature-data="layer"
 				:tier-no="layer_index + 1"
 				is="vue:feature-product-based-shipping"
+				:total-tier="<?php echo esc_attr($this->get_model_key('layers')) ?>?.length"
 				delete-warning="<?php esc_html_e('Are you sure you want to delete this "Product Rule"?', 'shipflex') ?>"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value"
 				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', layer_index)"
 				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', value, position)">
 			</template>
 		</tbody>
+
 	<?php
 	}
 
@@ -203,7 +206,7 @@ final class Product_Based_Shipping extends Feature {
 		return $actions;
 	}
 
-		/**
+	/**
 	 * Output component
 	 * 
 	 * @since 1.0.0
@@ -387,20 +390,27 @@ final class Product_Based_Shipping extends Feature {
 	public function advanced_calculation_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
-		<shipping-cost-range
-			:tier-no="index + 1"
-			:key="shipping_rage_data?.id"
-			:range-data="shipping_rage_data"
-			:calculate-basis="calculate_basis"
-			@delete="delete_shipping_cost_range(index)"
-			v-for="(shipping_rage_data, index) in advanced_calculation_tiers"
-			@update="(range_data) => advanced_calculation_tiers[index] = range_data"
-			@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
-		</shipping-cost-range>
-
-		<div style="padding: 6px">
-			<a class="button button-full-width" href="#" @click.prevent="add_shipping_cost_range()"><?php esc_html_e('+ Add New Shipping Cost Range', 'shipflex') ?></a>
+		<div
+			@end="on_order_change"
+			style="margin-bottom: 10px;"
+			class="sortable-items-container"
+			v-if="advanced_calculation_tiers?.length"
+			data-model-key="advanced_calculation_tiers"
+			v-sortable="{options: {handle: '.button-drag'}}">
+			<shipping-cost-range
+				:tier-no="index + 1"
+				:key="shipping_rage_data?.id"
+				:range-data="shipping_rage_data"
+				:calculate-basis="calculate_basis"
+				@delete="delete_shipping_cost_range(index)"
+				:total-tier="advanced_calculation_tiers?.length"
+				v-for="(shipping_rage_data, index) in advanced_calculation_tiers"
+				@update="(range_data) => advanced_calculation_tiers[index] = range_data"
+				@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
+			</shipping-cost-range>
 		</div>
+
+		<a class="button button-full-width" href="#" @click.prevent="add_shipping_cost_range()"><?php esc_html_e('+ Add New Shipping Cost Range', 'shipflex') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}

@@ -43,19 +43,13 @@ final class Shipping_Cost_Range_Tier {
 	public static function output_component() {
 		$actions = Utils::get_component_heading_actions();
 		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
-		$action_contents = apply_filters(Utils::get_component_heading_actions_hook('shipping-cost-range'), $actions);
+		$actions = apply_filters(Utils::get_component_heading_actions_hook('shipping-cost-range'), $actions);
+		
 		$settings_fields = Settings_Fields::get_instance('shipping-cost-range'); ?>
 		<template id="shipflex-shipping-cost-range-component">
 			<table class="table-shipflex-form table-shipping-cost-range-tier">
 				<thead>
-					<tr class="row-group-heading">
-						<td colspan="2">
-							<div class="heading-line">
-								<?php esc_html_e('Cost Ranges', 'shipflex') ?> #{{tier_no}}
-								<?php Utils::output_component_heading_actions($action_contents); ?>
-							</div>
-						</td>
-					</tr>
+					<?php Utils::output_component_heading_row(esc_html__('Cost Ranges #{{tierNo}}', 'shipflex'), $actions) ?>
 				</thead>
 
 				<tbody v-if="!collapse">

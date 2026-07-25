@@ -13,6 +13,11 @@ const Base_Component = {
 			type: Number
 		},
 
+		totalTier: {
+			default: 1,
+			type: Number
+		},
+
 		hideHeading: {
 			type: Boolean,
 			default: false,
@@ -93,6 +98,17 @@ const Base_Component = {
 
 		delete_condition_group(index_no) {
 			this.condition_groups.splice(index_no, 1)
+		},
+
+		on_order_change(event) {
+			const source_element = jQuery(event.from);
+			const model_key = source_element.data('model-key')
+			if (!this?.[model_key]?.length) {
+				return;
+			}
+
+			const item = this[model_key].splice(event.oldIndex, 1)[0];
+			this[model_key].splice(event.newIndex, 0, item);
 		}
 	}
 }

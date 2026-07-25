@@ -633,20 +633,6 @@ table.table-shipflex-form {
 	background-color: #fff;
 }
 
-table.table-shipflex-form thead {
-	font-size: 140%;
-	font-weight: 500;
-}
-
-table.table-shipflex-form th.vmiddle {
-	vertical-align: middle;
-}
-
-table.table-shipflex-form>:is(thead, tbody, tfoot)>tr>:is(td, th) {
-	padding-inline: 14px;
-	padding-block: var(--paddingblock);
-}
-
 table.table-shipflex-form>tbody>tr>:is(td, th) {
 	border-block: 1px solid #eee;
 }
@@ -715,17 +701,17 @@ table.table-shipflex-form .field-note.field-note-warning {
 	color: #ab0000;
 }
 
-table.table-shipflex-form tbody.sortable-chosen {
+table.table-shipflex-form.sortable-chosen {
 	z-index: 10;
 	box-shadow: 0 0 20px rgba(0, 0, 0, .10)
 }
 
-table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading,
-table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading .button-drag {
+table.table-shipflex-form.sortable-chosen tr.row-group-heading,
+table.table-shipflex-form.sortable-chosen tr.row-group-heading .button-drag {
 	cursor: grabbing;
 }
 
-table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading td {
+table.table-shipflex-form.sortable-chosen tr.row-group-heading td {
 	background-color: #ffffef !important;
 }
 
@@ -749,7 +735,7 @@ table.table-shipflex-form tr.row-group-heading td:has(>.button-drag) {
 
 table.table-shipflex-form tr.row-group-heading .button-drag {
 	width: 40px;
-	height: 40px;
+	height: auto;
 	inset-block: 0;
 	position: absolute;
 	display: flex;
@@ -1130,19 +1116,26 @@ ul.shipflex-repeater {
 	border: 1px solid #dbd5d5;
 }
 
+#shipflex .shipflex-box .box-header,
+table.table-shipflex-form>:is(thead, tbody, tfoot)>tr>:is(td, th) {
+	padding: 10px 14px;
+}
+
 #shipflex .shipflex-box .box-header {
 	display: flex;
-	padding: 10px 15px;
 	align-items: center;
 	border-bottom: 1px solid #dbd5d5;
 }
 
+table.table-shipflex-form thead,
 #shipflex .shipflex-box .box-header h3 {
 	margin: 0;
+	font-size: 140%;
+	font-weight: 500;
 }
 
 #shipflex .shipflex-box .box-content {
-	padding: 15px;
+	padding: 14px;
 }
 
 #shipflex .shipflex-box>table.table-shipflex-form {

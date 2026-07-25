@@ -168,6 +168,16 @@ class Feature {
 	 */
 	public function output_rule_editor(Settings_Fields $settings_fields) {
 ?>
+
+		<div class="shipflex-box">
+			<div class="box-header">
+				<h3><?php echo esc_html($this->get_configuration_value('section_title')) ?></h3>
+			</div>
+			<div class="box-content">
+				sdfsf
+			</div>
+		</div>
+
 		<table class="table-shipflex-form">
 			<thead>
 				<tr>
