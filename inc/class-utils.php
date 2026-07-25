@@ -302,24 +302,78 @@ class Utils {
 	}
 
 	/**
+	 * Get hook name of component heading actions
+	 * 
+	 * @since 1.0.0
+	 * @return string
+	 */
+	public static function get_component_heading_actions_hook(...$args) {
+		return Utils::get_hook_name('component-heading-actions', ...$args);
+	}
+
+	/**
+	 * Get actions buttons of component heading
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function get_component_heading_actions() {
+		return array(
+			'duplicate' => array(
+				'priority' => 5,
+				'content' => '<a @click.prevent="duplicate_component()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
+			),
+
+			'delete' => array(
+				'priority' => 10,
+				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="delete_component()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
+			),
+
+			'collapse' => array(
+				'priority' => 1000,
+				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
+			)
+		);
+	}
+
+	/**
 	 * Output action content of table heading
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public static function get_form_table_header_action($actions, $object) {
-		if (count($actions) == 0) {
-			return;
-		}
-
-		$actions = apply_filters(Utils::get_hook_name('form-table-heading', 'actions'), $actions, $object);
-		if (count($actions) == 0) {
+	public static function output_component_heading_actions($actions) {
+		if (!is_array($actions) || count($actions) == 0) {
 			return;
 		}
 
 		$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($actions));
-		$html = '<div class="repeater-item-header-action">' . join('', $html_contents) . '</div>';
+		$html = '<div class="component-heading-actions">' . join('', $html_contents) . '</div>';
 		echo wp_kses($html, self::table_header_action_vuejs_attr());
+	}
+
+	/**
+	 * Output heading row of component
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function output_component_heading_row($title, $action_contents) {
+?>
+		<tr class="row-group-heading">
+			<td colspan="2">
+				<span class="button-drag dashicons dashicons-menu-alt" v-if="draggable"></span>
+				<div class="heading-line">
+					<?php
+					if (!empty($title)) {
+						echo wp_kses_post($title);
+					}
+
+					Utils::output_component_heading_actions($action_contents); ?>
+				</div>
+			</td>
+		</tr>
+<?php
 	}
 
 	/**

@@ -688,10 +688,6 @@ table.table-shipflex-form td.no-padding {
 	padding: 5px !important;
 }
 
-table.table-shipflex-form :is(th.vtop, td.vtop) {
-	vertical-align: top;
-}
-
 table.table-shipflex-form .field-note {
 	color: #4e4e4e;
 	font-size: 13px;
@@ -719,6 +715,20 @@ table.table-shipflex-form .field-note.field-note-warning {
 	color: #ab0000;
 }
 
+table.table-shipflex-form tbody.sortable-chosen {
+	z-index: 10;
+	box-shadow: 0 0 20px rgba(0, 0, 0, .10)
+}
+
+table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading,
+table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading .button-drag {
+	cursor: grabbing;
+}
+
+table.table-shipflex-form tbody.sortable-chosen tr.row-group-heading td {
+	background-color: #ffffef !important;
+}
+
 table.table-shipflex-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
 	border-bottom-color: #cfcfcf;
 }
@@ -732,7 +742,28 @@ table.table-shipflex-form :is(th, td):has(>.heading-line) {
 	border-bottom-color: #dbdbdb;
 }
 
-table.table-shipflex-form thead .heading-line,
+table.table-shipflex-form tr.row-group-heading td:has(>.button-drag) {
+	position: relative;
+	padding-inline-start: 40px !important;
+}
+
+table.table-shipflex-form tr.row-group-heading .button-drag {
+	width: 40px;
+	height: 40px;
+	inset-block: 0;
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	inset-inline-start: 0;
+	cursor: grab;
+}
+
+table.table-shipflex-form tr.row-group-heading .button-drag+.heading-line {
+	margin-inline-start: -3px;
+	padding-inline-start: 0 !important;
+}
+
 table.table-shipflex-form tr.row-group-heading .heading-line {
 	display: flex;
 	min-height: 40px;
@@ -740,7 +771,7 @@ table.table-shipflex-form tr.row-group-heading .heading-line {
 	padding: 7px 14px;
 }
 
-#shipflex .repeater-item-header-action {
+table.table-shipflex-form tr.row-group-heading .component-heading-actions {
 	display: flex;
 	column-gap: 4px;
 	align-items: center;
@@ -748,16 +779,16 @@ table.table-shipflex-form tr.row-group-heading .heading-line {
 	margin-inline-end: -4px;
 }
 
-#shipflex .repeater-item-header-action .button {
+table.table-shipflex-form tr.row-group-heading .component-heading-actions .button {
 	--inputHeight: 28px
 }
 
-#shipflex .repeater-item-header-action .button .dashicons {
+table.table-shipflex-form tr.row-group-heading .component-heading-actions .button .dashicons {
 	--size: 18px !important;
 	margin-inline-start: -3px
 }
 
-#shipflex .repeater-item-header-action .btn-collapse {
+table.table-shipflex-form tr.row-group-heading .component-heading-actions .btn-collapse {
 	--size: 28px;
 	display: flex;
 	align-items: center;
@@ -782,7 +813,7 @@ table.table-shipflex-form tr.pro-notice-row td {
 	padding: 0;
 }
 
-table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
+#shipflex table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
 	margin: 3px;
 	border: none;
 }
@@ -1162,6 +1193,7 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 
 #shipflex table.shipflex-cost-range-table {
 	width: 100%;
+	margin-top: 5px;
 	margin-bottom: 10px;
 	text-align: center;
 	background-color: #fff;

@@ -143,12 +143,14 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id());
-		$tier_header = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'tier-header'), null);
-		echo wp_kses_post($tier_header); ?>
-		<template v-if="!collapse && !additionalTier">
-			<?php $settings_fields->output_fields('tier-item') ?>
-		</template>
+		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+
+		<tbody>
+			<?php $this->output_heading_row(esc_html__('Adjustment Tier', 'shipflex') . ' #{{tier_no}}') ?>
+			<template v-if="!collapse && !additionalTier">
+				<?php $settings_fields->output_fields('tier-item') ?>
+			</template>
+		</tbody>
 	<?php
 	}
 
@@ -195,13 +197,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function lite_tier_setting_field() { ?>
-		<tbody>
-			<template
-				is="vue:feature-shipping-cost-adjustment"
-				:feature-data="shipping_cost_adjustment?.lite_tier"
-				@update="(value) => shipping_cost_adjustment.lite_tier = value">
-			</template>
-		</tbody>
+		<template
+			:draggable="false"
+			is="vue:feature-shipping-cost-adjustment"
+			:feature-data="shipping_cost_adjustment?.lite_tier"
+			@update="(value) => shipping_cost_adjustment.lite_tier = value">
+		</template>
 	<?php
 	}
 
@@ -220,7 +221,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'option_note' => esc_html__('Enter an amount or percentage based on the selected adjustment type.', 'shipflex'),
 			'related_models' => array(
 				'amount' => '',
-				'type' => 'increase_amount',
+				'type' => 'increase_percentage',
 			)
 		), 'tier-item');
 
@@ -254,13 +255,13 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<select v-model="type">
+				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipflex') ?></option>
+				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipflex') ?></option>
+				<option value="-" disabled>-------------------------</option>
 				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipflex') ?></option>
 				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipflex') ?></option>
 				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipflex') ?></option>
 				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipflex') ?></option>
-				<option value="-" disabled>-------------------------</option>
-				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipflex') ?></option>
-				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="'free_shipping' !== type">
@@ -284,7 +285,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
 			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
 		</div>
-	<?php
+<?php
 		$form_control->output_after_input_options();
 	}
 }

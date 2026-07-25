@@ -410,4 +410,4 @@ final class Product_Based_Shipping extends Feature {
 	}
 }
 
-Feature::add_feature(Product_Based_Shipping::class);
+//Feature::add_feature(Product_Based_Shipping::class);

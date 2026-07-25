@@ -1,10 +1,10 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Global_Base_Component from '../component/global-base-component.min.js?v=@@VERSION';
+import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
 const Feature_Base_Component = {
-	extends: Global_Base_Component,
+	extends: Base_Component,
 	props: {
 		featureData: {
 			default: null

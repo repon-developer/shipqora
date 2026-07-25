@@ -106,4 +106,4 @@ final class Hide_Shipping_Methods extends Feature {
 	}
 }
 
-Feature::add_feature(Hide_Shipping_Methods::class);
+//Feature::add_feature(Hide_Shipping_Methods::class);

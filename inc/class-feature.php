@@ -170,29 +170,23 @@ class Feature {
 	}
 
 	/**
-	 * Output action content of tier heading
+	 * Get actions button of component heading
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function get_form_table_header_action() {
-		$actions = array(
-			'duplicate' => array(
-				'priority' => 5,
-				'content' => '<a @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
-			),
+	public function get_component_heading_actions() {
+		return null;
+	}
 
-			'delete' => array(
-				'priority' => 10,
-				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
-			),
-
-			'collapse' => array(
-				'priority' => 1000,
-				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
-			)
-		);
-
-		Utils::get_form_table_header_action($actions, $this->get_id());
+	/**
+	 * Output feature heading row
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_heading_row($title) {
+		$action_contents = apply_filters(Utils::get_component_heading_actions_hook($this->get_id()), $this->get_component_heading_actions());
+		Utils::output_component_heading_row($title, $action_contents);
 	}
 }

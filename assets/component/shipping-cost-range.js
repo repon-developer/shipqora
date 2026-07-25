@@ -1,10 +1,10 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Global_Base_Component from './global-base-component.min.js?v=@@VERSION';
+import Base_Component from './base-component.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
 const Shipping_Cost_Range_Tier = {
-	extends: Global_Base_Component,
+	extends: Base_Component,
 	template: '#shipflex-shipping-cost-range-component',
 	props: {
 		rangeData: {
@@ -172,9 +172,14 @@ const Shipping_Cost_Range_Tier = {
 				return alert(__('Please enter "Rate" of the previous range.', 'shipflex'))
 			}
 
-
-
 			this.add_collection('shipping_cost_ranges', { id: Utils.generate_uuid(), ...this.range_default_data })
+		},
+
+		delete_cost_range(index) {
+			const response = confirm(__('Do you want to delete this range?', 'shipflex'));
+			if (response) {
+				this.delete_collection('shipping_cost_ranges', index)
+			}
 		}
 	}
 }

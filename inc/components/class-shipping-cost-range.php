@@ -41,32 +41,16 @@ final class Shipping_Cost_Range_Tier {
 	 * @return void
 	 */
 	public static function output_component() {
-		$actions = array(
-			'duplicate' => array(
-				'priority' => 5,
-				'content' => '<a @click.prevent="duplicate_item()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
-			),
-
-			'delete' => array(
-				'priority' => 10,
-				'content' => '<a @click.prevent="delete_item()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
-			),
-
-			'collapse' => array(
-				'priority' => 1000,
-				'content' => '<a  @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
-			)
-		);
-
+		$action_contents = apply_filters(Utils::get_component_heading_actions_hook('shipping-cost-range'), Utils::get_component_heading_actions()); 
 		$settings_fields = Settings_Fields::get_instance('shipping-cost-range'); ?>
 		<template id="shipflex-shipping-cost-range-component">
 			<table class="table-shipflex-form table-shipping-cost-range-tier">
 				<thead>
-					<tr>
+					<tr class="row-group-heading">
 						<td colspan="2">
 							<div class="heading-line">
 								<?php esc_html_e('Cost Ranges', 'shipflex') ?> #{{tier_no}}
-								<?php Utils::get_form_table_header_action($actions, 'shipping-cost-range'); ?>
+								<?php Utils::output_component_heading_actions($action_contents); ?>
 							</div>
 						</td>
 					</tr>
@@ -182,7 +166,7 @@ final class Shipping_Cost_Range_Tier {
 
 					<td><input v-model="range.value" class="range-input-value" type="number" placeholder="0.00" min="0" step="0.001"></td>
 					<td class="column-delete">
-						<a @click.prevent="delete_collection('shipping_cost_ranges', index)" class="btn-delete dashicons dashicons-remove" href="#"></a>
+						<a @click.prevent="delete_cost_range(index)" class="btn-delete dashicons dashicons-remove" href="#"></a>
 					</td>
 				</tr>
 			</tbody>

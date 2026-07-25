@@ -5,7 +5,6 @@ import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Shipping_Cost_Range from './component/shipping-cost-range.min.js?v=@@VERSION';
 import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
-import Global_Base_Component from './component/global-base-component.min.js?v=@@VERSION';
 
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
 import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
@@ -25,7 +24,6 @@ const helper_models = {
 }
 
 const ShipFlex_Rule_Editor = {
-	extends: Global_Base_Component,
 	components: {
 		'feature-product-based-shipping': Product_Based_Shipping,
 		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
@@ -93,6 +91,41 @@ const ShipFlex_Rule_Editor = {
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
+
+		add_collection(model_keys, default_value = {}) {
+			if (!model_keys || !model_keys?.length) {
+				throw new Error("Please pass 'Model Key' at first argument");
+			}
+
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
+				collections = []
+			}
+
+			collections?.push(default_value)
+		},
+
+		duplicate_collection(model_keys, data, position = 1) {
+			if (!model_keys || !model_keys?.length) {
+				throw new Error("Please pass 'Model Key' at first argument");
+			}
+
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
+				collections = []
+			}
+
+			collections.splice(position, 0, data)
+		},
+
+		delete_collection(model_keys, index_no) {
+			const collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			if (!Array.isArray(collections)) {
+				return;
+			}
+
+			collections.splice(index_no, 1)
+		},
 
 		validate_save_data() {
 			if ('after' == this.date_validity && !this?.start_date) {
