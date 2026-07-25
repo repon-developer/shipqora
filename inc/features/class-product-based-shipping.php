@@ -261,7 +261,7 @@ final class Product_Based_Shipping extends Feature {
 		$settings_fields->add_setting('exclude_products', array(
 			'priority' => 10.10,
 			'conditions' => array('tierNo == 1'),
-			'row_attributes' => array('class' => 'pro-notice-row'),
+			'row_attributes' => array('class' => 'shipflex-notice-row'),
 			'callback' => array($this, 'exclude_products_setting_field'),
 		), 'product');
 
@@ -338,7 +338,7 @@ final class Product_Based_Shipping extends Feature {
 		$line_button_data = array('utm_source' => 'exclude+products');
 		$form_control->output_row(); ?>
 		<td colspan="2">
-			<div class="shipflex-pro-notice">
+			<div class="shipflex-notice-box">
 				<h3>🚀 Want to Exclude Specific Products?</h3>
 				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
 				<div class="gap-10"></div>

@@ -170,7 +170,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 
 		$settings_fields->add_setting('add_new_tier', array(
 			'priority' => 10,
-			'row_attributes' => array('class' => 'pro-notice-row'),
+			'row_attributes' => array('class' => 'shipflex-notice-row'),
 			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
 	}
@@ -202,7 +202,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$line_button_data = array('utm_source' => 'add+shipping+cost+adjustment+tier');
 		$form_control->output_row(); ?>
 		<td colspan="2">
-			<div class="shipflex-pro-notice">
+			<div class="shipflex-notice-box">
 				<h3>⚡ Need Multiple Adjustment Tiers?</h3>
 				<div class="description">Upgrade to <strong>ShipFlex Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.</div>
 				<div class="gap-10"></div>

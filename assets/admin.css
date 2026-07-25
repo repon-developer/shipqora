@@ -795,11 +795,11 @@ table.table-shipflex-form td>table.table-shipflex-form thead {
 	background-color: #f9f9f9;
 }
 
-table.table-shipflex-form tr.pro-notice-row td {
+table.table-shipflex-form tr.shipflex-notice-row td {
 	padding: 0 !important;
 }
 
-#shipflex table.table-shipflex-form tr.pro-notice-row .shipflex-pro-notice {
+#shipflex table.table-shipflex-form tr.shipflex-notice-row .shipflex-notice-box {
 	margin: 3px;
 	border: none;
 }
@@ -828,7 +828,6 @@ table.table-shipflex-form tr.pro-notice-row td {
 
 #shipflex ul.multiple-options-list .field-note {
 	margin-top: 2px;
-	margin-inline-start: 23px;
 }
 
 #shipflex ul.multiple-options-list.multiple-options-list-status li.status-active .field-note {
@@ -1143,7 +1142,7 @@ table.table-shipflex-form thead,
 	margin: -1px 0;
 }
 
-#shipflex .shipflex-pro-notice {
+#shipflex .shipflex-notice-box {
 	text-align: center;
 	margin-top: 15px;
 	padding: 10px 15px;
@@ -1152,27 +1151,27 @@ table.table-shipflex-form thead,
 	background-color: #f9f9f9;
 }
 
-#shipflex .shipflex-pro-notice.shipflex-pro-notice-left {
+#shipflex .shipflex-notice-box.shipflex-notice-box-left {
 	text-align: left;
 }
 
-#shipflex .shipflex-pro-notice h3 {
+#shipflex .shipflex-notice-box h3 {
 	font-size: 15px;
 	margin-block: 0 7px;
 }
 
-#shipflex .shipflex-pro-notice .description {
+#shipflex .shipflex-notice-box .description {
 	line-height: 1.5;
 	max-width: 1000px;
 	margin-inline: auto;
 }
 
-#shipflex .shipflex-pro-notice .description a {
+#shipflex .shipflex-notice-box .description a {
 	color: #333;
 	font-weight: bold;
 }
 
-#shipflex .shipflex-pro-notice .button {
+#shipflex .shipflex-notice-box .button {
 	min-width: 130px
 }
 

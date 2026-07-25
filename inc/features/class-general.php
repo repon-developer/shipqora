@@ -141,6 +141,7 @@ final class General {
 				$rule_feature_object = $shipflex_rule->get_feature_object($feature_id);
 				if ($rule_feature_object) {
 					$shipping_rate = $rule_feature_object->modify_shipping_rate($shipping_rate);
+					error_log(print_r($shipping_rate, true));
 				}
 			}
 		});
@@ -207,6 +208,7 @@ final class General {
 			'default_value' => 'development',
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'label' => esc_html__('Rule Status', 'shipflex'),
+			'callback' => array($this, 'status_setting_field'),
 			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipflex'),
 			'options' => array(
 				'active' => array(
@@ -241,6 +243,7 @@ final class General {
 			<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
 				<shipping-method-input
 					:shipping-method="shipping_method"
+					:draggable="shipping_methods?.length > 1"
 					@update="(value) => shipping_methods[index] = value"
 					@delete="delete_collection('shipping_methods', index)">
 				</shipping-method-input>
@@ -262,12 +265,10 @@ final class General {
 	 * @return void
 	 */
 	public function active_features_setting_field(Form_Control $form_control) {
-		$model_key = $form_control->get_model_key();
 		$form_control->output_before_input_options();
-
 		$form_control->output_control(); ?>
 
-		<div class="shipflex-pro-notice shipflex-pro-notice-left">
+		<div class="shipflex-notice-box shipflex-notice-box-left">
 			<h3>💡 Looking for Additional Features?</h3>
 			<div class="description">Missing a key feature for your workflow? Reach out directly to <a href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">support@shipflexpro.com</a> and our team will help build it for you.</div>
 			<div class="gap-10"></div>
@@ -276,6 +277,28 @@ final class General {
 <?php
 		$form_control->output_after_input_options();
 	}
+
+	/**
+	 * Output status setting field
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function status_setting_field(Form_Control $form_control) {
+		$form_control->output_before_input_options();
+		$form_control->output_control(); ?>
+
+		<div class="shipflex-notice-box shipflex-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
+			<h3><?php esc_html_e('💡 Debugging Mode is Disabled', 'shipflex') ?></h3>
+			<div class="description"><?php esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipFlex rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipflex') ?></div>
+			<div class="gap-10"></div>
+			<a @click.prevent="enable_debugging_mode()" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#"><?php esc_html_e('Enable Debugging Mode', 'shipflex') ?></a>
+		</div>
+<?php
+		$form_control->output_after_input_options();
+	}
+
+	
 }
 
 new General();

@@ -50,10 +50,12 @@ final class Main {
 	public function load_files() {
 		require_once ShipFlex_PATH . 'inc/class-core.php';
 		require_once ShipFlex_PATH . 'inc/class-feature.php';
+		require_once ShipFlex_PATH . 'inc/class-debugging.php';
 		require_once ShipFlex_PATH . 'inc/class-cart-total.php';
 		require_once ShipFlex_PATH . 'inc/class-form-control.php';
-		require_once ShipFlex_PATH . 'inc/class-settings-fields.php';
+		require_once ShipFlex_PATH . 'inc/class-shipping-cost.php';
 		require_once ShipFlex_PATH . 'inc/class-shipflex-rule.php';
+		require_once ShipFlex_PATH . 'inc/class-settings-fields.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-main.php';
 
 		/* Load components */

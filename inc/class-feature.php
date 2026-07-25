@@ -152,6 +152,16 @@ class Feature {
 	}
 
 	/**
+	 * Get shipping cost after filter
+	 * 
+	 * @since 1.0.0
+	 * @return float
+	 */
+	public function get_shipping_cost($amount, $tier_data) {
+		return apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'shipping-cost'), $amount, $tier_data, $this);
+	}
+
+	/**
 	 * Add settings field of rule editor
 	 * 
 	 * @since 1.0.0

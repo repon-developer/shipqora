@@ -22,6 +22,8 @@ const helper_models = {
 	current_modal: null,
 	show_toast_message: false,
 	toast_message_type: 'error',
+	enabling_debugging_mode: false,
+	is_debugging_enabled: shipflex_admin?.is_debugging_enabled == 'yes',
 }
 
 const ShipFlex_Rule_Editor = {
@@ -85,6 +87,8 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
+
+		console.log(this.$data)
 	},
 
 	updated() {
@@ -216,6 +220,34 @@ const ShipFlex_Rule_Editor = {
 			})
 
 		},
+
+		enable_debugging_mode() {
+			this.enabling_debugging_mode = true;
+
+			const formData = new FormData();
+			formData.append('enable_debugging', true);
+			formData.append('nonce', shipflex_admin.debugging_nonce);
+			formData.append('action', 'shipflex/update_debugging_mode');
+
+			fetch(shipflex_admin.ajax_url, {
+				method: 'POST',
+				body: formData
+			}).then(async (response) => {
+				const result = await response.json();
+				if (typeof result !== 'object' || !response.ok) {
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
+				}
+
+				if (false === result.success) {
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
+				}
+
+				this.is_debugging_enabled = true;
+
+			}).catch((e) => Utils.set_toast_message(e.message)).finally(() => {
+				this.enabling_debugging_mode = false;
+			})
+		}
 	}
 }
 

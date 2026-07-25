@@ -138,6 +138,9 @@ final class Rule_Editor {
 				),
 			);
 
+			$values['debugging_nonce'] = wp_create_nonce(Debugging::NONCE);
+			$values['is_debugging_enabled'] = Debugging::get_instance()->is_debugging() ? 'yes' : 'no';
+
 			//error_log(print_r($values, true));
 		}
 
@@ -203,7 +206,7 @@ final class Rule_Editor {
 		</template>
 
 		<template id="shipflex-shipping-method-input-component">
-			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading"></span>
+			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading && draggable"></span>
 
 			<select v-model="method_id">
 				<option value=""><?php esc_html_e('Choose a shipping method', 'shipflex') ?></option>

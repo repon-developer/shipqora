@@ -9,6 +9,10 @@ const Shipping_Method_Input = {
 		shippingMethod: {
 			type: [String, null],
 			default: null,
+		},
+		draggable: {
+			default: true,
+			type: Boolean
 		}
 	},
 
