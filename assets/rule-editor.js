@@ -242,7 +242,7 @@ const ShipFlex_Rule_Editor = {
 					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
 				}
 
-				this.is_debugging_enabled = true;
+				setTimeout(() => this.is_debugging_enabled = true, 1000)
 
 			}).catch((e) => Utils.set_toast_message(e.message)).finally(() => {
 				this.enabling_debugging_mode = false;
