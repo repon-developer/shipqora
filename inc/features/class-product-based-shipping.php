@@ -134,50 +134,6 @@ final class Product_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Output component
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<tr class="row-group-heading">
-			<td colspan="2">
-				<div class="heading-line">
-					<?php esc_html_e('Product Rule', 'shipflex') ?> #{{tier_no}}
-					<?php $this->get_form_table_header_action(); ?>
-				</div>
-			</td>
-		</tr>
-
-		<template v-if="!collapse || tier_no == 1">
-			<?php $settings_fields->output_fields('product-layer') ?>
-		</template>
-	<?php
-	}
-
-	/**
-	 * Output settings fields of rule editor
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_rule_editor(Settings_Fields $settings_fields) { ?>
-		<table class="table-shipflex-form">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<?php echo esc_html($this->get_configuration_value('section_title')) ?>
-					</td>
-				</tr>
-			</thead>
-
-			<?php $settings_fields->output_fields($this->get_id()); ?>
-		</table>
-	<?php
-	}
-
-	/**
 	 * Add settings field of rule editor of current feature
 	 * 
 	 * @since 1.0.0
@@ -207,9 +163,9 @@ final class Product_Based_Shipping extends Feature {
 		<tbody v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>" :key="layer?.id">
 			<template
 				:feature-data="layer"
-				:tier-index="layer_index"
+				:tier-no="layer_index + 1"
 				is="vue:feature-product-based-shipping"
-				delete-warning="<?php esc_html_e('Are you sure you want to delete this layer?', 'shipflex') ?>"
+				delete-warning="<?php esc_html_e('Are you sure you want to delete this "Product Rule"?', 'shipflex') ?>"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value"
 				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', layer_index)"
 				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', value, position)">
@@ -236,6 +192,32 @@ final class Product_Based_Shipping extends Feature {
 	}
 
 	/**
+	 * Get actions button of component heading
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function get_component_heading_actions() {
+		return Utils::get_component_heading_actions();
+	}
+
+		/**
+	 * Output component
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_component() {
+		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+
+		<?php $this->output_heading_row(esc_html__('Product Rule: Tier #{{tierNo}}', 'shipflex')) ?>
+		<template v-if="!collapse">
+			<?php $settings_fields->output_fields('product') ?>
+		</template>
+	<?php
+	}
+
+	/**
 	 * Add component settings field 
 	 * 
 	 * @since 1.0.0
@@ -250,14 +232,14 @@ final class Product_Based_Shipping extends Feature {
 			'callback' => array($this, 'product_source_setting_field'),
 			'label_note' => esc_html__('Choose which cart items this rule applies to based on categories, tags, or classes.', 'shipflex'),
 			'option_note' => esc_html__('This rule calculates shipping costs individually for each matching item in the cart.', 'shipflex'),
-		), 'product-layer');
+		), 'product');
 
 		$settings_fields->add_setting('exclude_products', array(
 			'priority' => 10.10,
-			'conditions' => array('tier_no == 1'),
+			'conditions' => array('tierNo == 1'),
 			'row_attributes' => array('class' => 'pro-notice-row'),
 			'callback' => array($this, 'exclude_products_setting_field'),
-		), 'product-layer');
+		), 'product');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
 			'priority' => 20,
@@ -269,7 +251,7 @@ final class Product_Based_Shipping extends Feature {
 				'calculate_basis' => 'fixed_amount',
 				'calculation_type' => 'per_unit_or_percentage',
 			)
-		), 'product-layer');
+		), 'product');
 
 		$settings_fields->add_setting('advanced_calculation', array(
 			'priority' => 20.10,
@@ -279,14 +261,14 @@ final class Product_Based_Shipping extends Feature {
 			'callback' => array($this, 'advanced_calculation_setting_field'),
 			'label_note' => esc_html__('Set up tiered pricing brackets for your products. You can add optional conditions to each block—if multiple blocks match, the one with the highest priority will be applied.', 'shipflex'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "advanced_calculation"'),
-		), 'product-layer');
+		), 'product');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
-		), 'product-layer');
+		), 'product');
 	}
 
 	/**
@@ -410,4 +392,4 @@ final class Product_Based_Shipping extends Feature {
 	}
 }
 
-//Feature::add_feature(Product_Based_Shipping::class);
+Feature::add_feature(Product_Based_Shipping::class);

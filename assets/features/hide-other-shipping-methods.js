@@ -1,10 +1,15 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Feature_Base_Component from './base-component.min.js?v=@@VERSION';
+import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 
 const Hide_Other_Shipping_Methods = {
-	extends: Feature_Base_Component,
+	extends: Base_Component,
 	template: '#shipflex-hide-other-shipping-methods-feature-component',
+
+	featureData: {
+		default: null,
+		type: [null, Object],
+	},
 
 	data() {
 		return {
@@ -21,6 +26,10 @@ const Hide_Other_Shipping_Methods = {
 	},
 
 	component: {
+		component_data() {
+			return JSON.parse(JSON.stringify(this.$data));
+		},
+
 		add_shipping_method_button_class() {
 			return {
 				'button-small': this.shipping_methods?.length > 0,

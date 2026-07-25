@@ -1,9 +1,16 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Feature_Base_Component from './base-component.min.js?v=@@VERSION';
+import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Product_Based_Shipping = {
-	extends: Feature_Base_Component,
+	extends: Base_Component,
 	template: '#shipflex-product-based-shipping-feature-component',
+
+	props: {
+		featureData: {
+			default: null,
+			type: [null, Object],
+		},
+	},
 
 	data() {
 		return {
@@ -16,11 +23,11 @@ const Product_Based_Shipping = {
 		}
 	},
 
-	updated() {
-		//console.log(this.$data)
-	},
-
 	computed: {
+		component_data() {
+			return JSON.parse(JSON.stringify(this.$data));
+		},
+
 		show_calculation_value() {
 			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_type != 'advanced_calculation')
 		},

@@ -155,27 +155,6 @@ final class Shipping_Cost_Adjustment extends Feature {
 	}
 
 	/**
-	 * Output settings fields of rule editor
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_rule_editor(Settings_Fields $settings_fields) { ?>
-		<table class="table-shipflex-form">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<?php echo esc_html($this->get_configuration_value('section_title')) ?>
-					</td>
-				</tr>
-			</thead>
-
-			<?php $settings_fields->output_fields($this->get_id()); ?>
-		</table>
-	<?php
-	}
-
-	/**
 	 * Add settings field of rule editor of current feature
 	 * 
 	 * @since 1.0.0
@@ -205,6 +184,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function lite_tier_setting_field() { ?>
 		<template
 			:draggable="false"
+			:hide-heading="true"
 			is="vue:feature-shipping-cost-adjustment"
 			:feature-data="shipping_cost_adjustment?.lite_tier"
 			@update="(value) => shipping_cost_adjustment.lite_tier = value">

@@ -167,6 +167,19 @@ class Feature {
 	 * @return void
 	 */
 	public function output_rule_editor(Settings_Fields $settings_fields) {
+?>
+		<table class="table-shipflex-form">
+			<thead>
+				<tr>
+					<td colspan="2">
+						<?php echo esc_html($this->get_configuration_value('section_title')) ?>
+					</td>
+				</tr>
+			</thead>
+
+			<?php $settings_fields->output_fields($this->get_id()); ?>
+		</table>
+<?php
 	}
 
 	/**

@@ -24,20 +24,50 @@ const Base_Component = {
 		},
 	},
 
+	emits: ['update', 'duplicate', 'delete'],
+
 	data() {
-		return { collapse: false }
+		return {
+			collapse: false,
+			condition_groups: [],
+			id: Utils.generate_uuid()
+		}
 	},
 
 	computed: {
 		...wp.hooks.applyFilters('shipflex.base_component.computed', {}),
+
+		component_data() {
+			return JSON.parse(JSON.stringify(this.$data));
+		},
 
 		collapse_button_class() {
 			return { 'dashicons-arrow-up-alt2': this.collapse, 'dashicons-arrow-down-alt2': !this.collapse }
 		}
 	},
 
+	watch: {
+		component_data: {
+			deep: true,
+			handler(data) {
+				this.$emit('update', data)
+			}
+		}
+	},
+
 	methods: {
 		...wp.hooks.applyFilters('shipflex.base_component.methods', {}),
+
+		duplicate_tier() {
+			this.$emit('duplicate', { ...this.component_data, id: Utils.generate_uuid(), collapse: false })
+		},
+
+		delete_tier() {
+			const response = confirm(this.deleteWarning)
+			if (response) {
+				this.$emit('delete')
+			}
+		},
 
 		get_calculation_type_label(calculate_basis) {
 			return shipflex_admin.calculation_types?.[calculate_basis];

@@ -77,25 +77,6 @@ final class Hide_Shipping_Methods extends Feature {
 	}
 
 	/**
-	 * Output settings fields of rule editor
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_rule_editor(Settings_Fields $settings_fields) { ?>
-		<table class="table-shipflex-form">
-			<thead>
-				<tr>
-					<td colspan="2"><?php echo esc_html($this->get_configuration_value('section_title')) ?></td>
-				</tr>
-			</thead>
-
-			<?php $settings_fields->output_fields($this->get_id()); ?>
-		</table>
-	<?php
-	}
-
-	/**
 	 * Visible shipping rate or not based on condition
 	 * 
 	 * @since 1.0.0
@@ -106,4 +87,4 @@ final class Hide_Shipping_Methods extends Feature {
 	}
 }
 
-//Feature::add_feature(Hide_Shipping_Methods::class);
+Feature::add_feature(Hide_Shipping_Methods::class);

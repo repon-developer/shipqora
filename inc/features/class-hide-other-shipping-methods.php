@@ -44,7 +44,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'base_model' => 'hide_other_shipping_methods',
 			'name' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
 			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
-			'description' => esc_html__('If the selected shipping methods are available on the checkout page, hide the other selected shipping methods.', 'shipflex'),
+			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipflex'),
 		);
 	}
 
@@ -91,34 +91,14 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id());
-		$tier_header = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'tier-header'), null);
-		echo wp_kses_post($tier_header); ?>
+		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<template v-if="!collapse && !additionalTier">
-			<?php $settings_fields->output_fields('tier-item') ?>
-		</template>
-	<?php
-	}
-
-	/**
-	 * Output settings fields of rule editor
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_rule_editor(Settings_Fields $settings_fields) { ?>
-		<table class="table-shipflex-form">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<?php echo esc_html($this->get_configuration_value('section_title')) ?>
-					</td>
-				</tr>
-			</thead>
-
-			<?php $settings_fields->output_fields($this->get_id()); ?>
-		</table>
+		<tbody>
+			<?php $this->output_heading_row(esc_html__('Hide Rule #{{tierNo}}', 'shipflex')) ?>
+			<template v-if="!collapse && !additionalTier">
+				<?php $settings_fields->output_fields('tier-item') ?>
+			</template>
+		</tbody>
 	<?php
 	}
 
@@ -135,6 +115,12 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'model_key' => $this->get_model_key('lite_tier'),
 			'callback' => array($this, 'lite_tier_setting_field'),
 		), $this->get_id());
+
+		$settings_fields->add_setting('add_new_tier', array(
+			'priority' => 10,
+			'row_attributes' => array('class' => 'pro-notice-row'),
+			'callback' => array($this, 'add_new_tier_setting_field'),
+		), $this->get_id());
 	}
 
 	/**
@@ -144,15 +130,34 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function lite_tier_setting_field() { ?>
-		<tbody>
-			<template
-				is="vue:feature-hide-other-shipping-methods"
-				:feature-data="hide_other_shipping_methods?.lite_tier"
-				@update="(value) => hide_other_shipping_methods.lite_tier = value">
-			</template>
-		</tbody>
-
+		<template
+			:draggable="false"
+			is="vue:feature-hide-other-shipping-methods"
+			:feature-data="hide_other_shipping_methods?.lite_tier"
+			@update="(value) => hide_other_shipping_methods.lite_tier = value">
+		</template>
 	<?php
+	}
+
+	/**
+	 * Add new adjustment tier notice
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_new_tier_setting_field(Form_Control $form_control) {
+		$line_button_data = array('utm_source' => 'hide+other+shipping+methos+tier');
+		$form_control->output_row(); ?>
+		<td colspan="2">
+			<div class="shipflex-pro-notice">
+				<h3>⚡ Need Multiple Hiding Tiers?</h3>
+				<div class="description">Create complex combinations of conditions and stack multiple hiding tiers seamlessly with <strong>ShipFlex Pro</strong>.</div>
+				<div class="gap-10"></div>
+				<?php Utils::get_lite_button($line_button_data) ?>
+			</div>
+		</td>
+	<?php
+		$form_control->output_row('close');
 	}
 
 	/**
@@ -220,9 +225,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			<input type="number" v-model="min_shipping_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
 			<input type="number" v-model="max_shipping_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
 		</div>
-	<?php
+<?php
 		$form_control->output_after_input_options();
 	}
 }
 
-//Feature::add_feature(Hide_Other_Shipping_Methods::class);
+Feature::add_feature(Hide_Other_Shipping_Methods::class);

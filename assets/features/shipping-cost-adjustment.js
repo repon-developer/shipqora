@@ -1,14 +1,25 @@
 import { Utils } from '../utils.min.js?v=@@VERSION';
-import Feature_Base_Component from './base-component.min.js?v=@@VERSION';
+import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Shipping_Cost_Adjustment = {
-	extends: Feature_Base_Component,
+	extends: Base_Component,
 	template: '#shipflex-shipping-cost-adjustment-feature-component',
 
+	featureData: {
+		default: null,
+		type: [null, Object],
+	},
+	
 	data() {
 		return {
 			...shipflex_admin?.features?.['shipping-cost-adjustment'],
 			...this.featureData
+		}
+	},
+
+	component: {
+		component_data() {
+			return JSON.parse(JSON.stringify(this.$data));
 		}
 	},
 }

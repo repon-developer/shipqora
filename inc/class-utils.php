@@ -321,17 +321,17 @@ class Utils {
 		return array(
 			'duplicate' => array(
 				'priority' => 5,
-				'content' => '<a @click.prevent="duplicate_component()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
+				'content' => '<a @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
 			),
 
 			'delete' => array(
 				'priority' => 10,
-				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="delete_component()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
+				'content' => '<a v-if="tierNo &gt; 1" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
 			),
 
 			'collapse' => array(
 				'priority' => 1000,
-				'content' => '<a v-if="tier_no &gt; 1" @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
+				'content' => '<a @click.prevent="collapse = !collapse" class="btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
 			)
 		);
 	}
@@ -383,7 +383,7 @@ class Utils {
 	 * @return array
 	 */
 	public static function get_lite_button($button_data = null) {
-		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipflex', 'utm_medium' => 'rule+editor'));
+		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipflex', 'utm_medium' => 'shipflex+rule'));
 		$button_attributes = array_map(fn($value, $attribute) => sprintf('%s="%s"', $attribute, $value), $button_data, array_keys($button_data));
 		$button_link = 'https://shipflexpro.com/?' . implode('&', $button_attributes);
 		$button = apply_filters('shipflex/lite_button', '<a class="button button-primary" target="_blank" href="' . esc_url($button_link) . '">' . esc_html__('Get Pro', 'shipflex') . '</a>');
