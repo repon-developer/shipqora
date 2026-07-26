@@ -49,7 +49,7 @@ final class ShipFlex_Rule {
 	 * @since 1.0.0
 	 * @return ShipFlex_Rule
 	 */
-	public static function get_by_shipping_method($shipping_rate) {
+	public static function get_by_shipping_rate($shipping_rate) {
 		$instance_id = $shipping_rate->get_instance_id();
 
 		$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id);
@@ -79,11 +79,11 @@ final class ShipFlex_Rule {
 				$prepared_sql .= " AND status = 'active'";
 			}
 
-			$rule_id = $wpdb->get_var($prepared_sql); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			self::$shipping_rate_ids[$instance_id] = $rule_id;
+			$rule_ids = $wpdb->get_col($prepared_sql); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$shipping_rate_ids[$instance_id] = $rule_ids;
 		}
 
-		return self::get(self::$shipping_rate_ids[$instance_id]);
+		return array_map(fn($rule_id) => self::get($rule_id), self::$shipping_rate_ids[$instance_id]);
 	}
 
 	/**

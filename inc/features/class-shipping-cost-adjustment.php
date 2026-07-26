@@ -59,11 +59,13 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return WC_Shipping_Rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$current_shipping_cost = $shipping_rate->get_cost();
-		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'modify-shipping-rate'), array($this->lite_tier));
+		$tier_items = apply_filters($this->get_hook('tier-items'), array($this->lite_tier));
+		if (count($tier_items) == 0) {
+			return;
+		}
 
-		$tier_shipping_costs = array();
-		foreach ($tier_items as $tier_item) {
+		$current_shipping_cost = $shipping_rate->get_cost();
+		array_walk($tier_items, function (&$tier_item) use ($current_shipping_cost) {
 			$tier_item = wp_parse_args($tier_item, array(
 				'type' => '',
 				'amount' => '',
@@ -72,26 +74,29 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'condition_groups' => array(),
 			));
 
+			if (!isset($tier_item['id'])) {
+				$tier_item['id'] = md5(wp_json_encode($tier_item));
+			}
+
 			if (empty($tier_item['type'])) {
-				continue;
+				return;
 			}
 
 			$amount = trim($tier_item['amount']);
 			if (strlen($amount) == 0 && 'free_shipping' != $tier_item['type']) {
-				continue;
-			}
-
-			if ('free_shipping' == $tier_item['type']) {
-				$tier_shipping_costs[] = 0.00;
-				continue;
+				return;
 			}
 
 			$matched = Main::get_instance()->is_matched_conditions($tier_item['condition_groups'], $this);
 			if (false === $matched) {
-				continue;
+				return;
 			}
 
 			$amount = floatval($tier_item['amount']);
+			if ('free_shipping' == $tier_item['type']) {
+				$amount = 0.00;
+			}
+
 			if ('increase_percentage' == $tier_item['type']) {
 				$amount = $current_shipping_cost + ($current_shipping_cost * $amount / 100);
 			}
@@ -108,32 +113,47 @@ final class Shipping_Cost_Adjustment extends Feature {
 				$amount = $current_shipping_cost - $amount;
 			}
 
-			$min_cost = trim($tier_item['min_cost']);
-			if (strlen($min_cost) > 0) {
-				$amount = max(floatval($min_cost), $amount);
-			}
+			if ('free_shipping' !== $tier_item['type']) {
+				$min_cost = trim($tier_item['min_cost']);
+				if (strlen($min_cost) > 0) {
+					$amount = max(floatval($min_cost), $amount);
+				}
 
-			$max_cost = trim($tier_item['max_cost']);
-			if (strlen($max_cost) > 0) {
-				$amount = min(floatval($max_cost), $amount);
+				$max_cost = trim($tier_item['max_cost']);
+				if (strlen($max_cost) > 0) {
+					$amount = min(floatval($max_cost), $amount);
+				}
 			}
 
 			if ($amount < 0) {
 				$amount = 0.00;
 			}
 
-			$tier_shipping_costs[] = $amount;
+			$tier_item['calculated_shipping_cost'] = $amount;
+		});
+
+		$best_tier = array_reduce($tier_items, function ($carry, $item) {
+			if (!$carry) {
+				return $item;
+			}
+
+			if (
+				array_key_exists('calculated_shipping_cost', $carry) &&
+				array_key_exists('calculated_shipping_cost', $item) &&
+				$carry['calculated_shipping_cost'] > $item['calculated_shipping_cost']
+			) {
+				return $carry;
+			}
+
+			return $item;
+		});
+
+		if (!empty($best_tier['shipping_method_title'])) {
+			$shipping_rate->set_label($best_tier['shipping_method_title']);
 		}
 
-		if (count($tier_shipping_costs) > 0) {
-			$current_shipping_cost = max($tier_shipping_costs);
-		}
-
-		$hook_name = Utils::get_hook_name('feature', $this->get_id(), 'shipping-cost');
-		$shipping_cost = apply_filters($hook_name, $current_shipping_cost, array($tier_shipping_costs));
+		$shipping_cost = apply_filters($this->get_hook('shipping-cost'), $best_tier['calculated_shipping_cost'], $tier_items, $this);
 		$shipping_rate->set_cost($shipping_cost);
-
-		return $shipping_rate;
 	}
 
 	/**
@@ -221,7 +241,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('shipping_cost_adjustment', array(
-			'priority' => 1000,
+			'priority' => 10,
 			'label' => esc_html__('Adjustment Method & Value', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
 			'label_note' => esc_html__('Select how to modify the shipping rate (increase, decrease, or set a fixed price) and enter the value to apply.', 'shipflex'),
@@ -233,8 +253,9 @@ final class Shipping_Cost_Adjustment extends Feature {
 		), 'tier-item');
 
 		$settings_fields->add_setting('shipping_cost_limit', array(
-			'priority' => 1000,
+			'priority' => 20,
 			'label' => esc_html__('Cost Limits', 'shipflex'),
+			'conditions' => array('type != "free_shipping"'),
 			'callback' => array($this, 'shipping_cost_limit_setting_field'),
 			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
 			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
@@ -242,6 +263,15 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'min_cost' => '',
 				'max_cost' => '',
 			)
+		), 'tier-item');
+
+		$settings_fields->add_setting('overwrite_shipping_method_title', array(
+			'priority' => 30,
+			'type' => Form_Control::TEXTBOX,
+			'model_key' => 'shipping_method_title',
+			'label' => esc_html__('Overwrite shipping method title', 'shipflex'),
+			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
+			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
 		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(

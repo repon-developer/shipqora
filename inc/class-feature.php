@@ -152,13 +152,13 @@ class Feature {
 	}
 
 	/**
-	 * Get shipping cost after filter
+	 * Get hook of feature
 	 * 
 	 * @since 1.0.0
-	 * @return float
+	 * @return string
 	 */
-	public function get_shipping_cost($amount, $tier_data) {
-		return apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'shipping-cost'), $amount, $tier_data, $this);
+	public function get_hook(...$hooks) {
+		return Utils::get_hook_name('feature', $this->get_id(), ...$hooks);
 	}
 
 	/**

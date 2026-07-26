@@ -6,9 +6,11 @@ const Hide_Other_Shipping_Methods = {
 	extends: Base_Component,
 	template: '#shipflex-hide-other-shipping-methods-feature-component',
 
-	featureData: {
-		default: null,
-		type: [null, Object],
+	props: {
+		featureData: {
+			default: null,
+			type: [null, Object],
+		},
 	},
 
 	data() {

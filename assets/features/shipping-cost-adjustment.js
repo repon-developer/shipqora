@@ -5,9 +5,11 @@ const Shipping_Cost_Adjustment = {
 	extends: Base_Component,
 	template: '#shipflex-shipping-cost-adjustment-feature-component',
 
-	featureData: {
-		default: null,
-		type: [null, Object],
+	props: {
+		featureData: {
+			default: null,
+			type: [null, Object],
+		},
 	},
 	
 	data() {

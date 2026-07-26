@@ -73,175 +73,123 @@ final class Cart_Based_Shipping extends Feature {
 	 * @return WC_Shipping_Rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$lite_tier = $this->lite_tier;
-		if (!is_array($lite_tier) || empty($lite_tier)) {
-			return $shipping_rate;
+		$tier_items = apply_filters($this->get_hook('tier-items'), array($this->lite_tier));
+		if (count($tier_items) == 0) {
+			return;
 		}
 
 		$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
 
-		$calculate_basis = isset($lite_tier['calculate_basis']) ? $lite_tier['calculate_basis'] : null;
-		if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
-			return $shipping_rate;
-		}
-
-		$calculation_value = isset($lite_tier['calculation_value']) ? trim($lite_tier['calculation_value']) : '';
-		if (strlen($calculation_value) == 0) {
-			return $shipping_rate;
-		}
-
-		error_log(print_r($lite_tier, true));
-
-		try {
-			$calculation_value = floatval($calculation_value);
-			if ('fixed_amount' == $calculate_basis) {
-				throw new Shipping_Cost($calculation_value);
-			}
-
-			if (in_array($calculate_basis, $calculate_metrics)) {
-				$calculation_type = isset($lite_tier['calculation_type']) ? $lite_tier['calculation_type'] : null;
-
-				$metrics_total = (new Cart_Total())->get_total($calculate_basis);
-
-				if ($metrics_total > 0) {
-					if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
-						$shipping_cost = $metrics_total * $calculation_value;
-						if ('subtotal' == $calculate_basis) {
-							$shipping_cost = $shipping_cost / 100;
-						}
-
-						throw new Shipping_Cost($shipping_cost);
-					}
-
-					if (
-						'advanced_calculation' == $calculation_type
-						&& isset($lite_tier['advanced_calculation_tiers'])
-						&& is_array($lite_tier['advanced_calculation_tiers'])
-						&& count($lite_tier['advanced_calculation_tiers']) > 0
-					) {
-						$tiers = array_map(function ($tier_item) {
-							$tier_item = wp_parse_args($tier_item, array('priority' => '', 'condition_groups' => array(), 'shipping_cost_ranges' => array()));
-							if (strlen($tier_item['priority']) == 0) {
-								$tier_item['priority'] = 10;
-							}
-
-							if (!is_array($tier_item['condition_groups'])) {
-								$tier_item['condition_groups'] = array();
-							}
-
-							if (!is_array($tier_item['shipping_cost_ranges'])) {
-								$tier_item['shipping_cost_ranges'] = array();
-							}
-
-							return $tier_item;
-						}, $lite_tier['advanced_calculation_tiers']);
-
-						$tiers = array_filter($tiers, function ($item) {
-							if (count($item['shipping_cost_ranges']) == 0) {
-								return false;
-							}
-
-							return true;
-						});
-
-						uasort($tiers, fn($a, $b) => $a['priority'] > $b['priority'] ? -1 : 1);
-
-						error_log(print_r($tiers, true));
-					}
-				}
-
-
-				throw new Shipping_Cost($shipping_rate->get_cost());
-			}
-
-
-
-
-
-			throw new Shipping_Cost(5555555);
-		} catch (Shipping_Cost $e) {
-			$shipping_cost = $this->get_shipping_cost($e->getAmount(), $lite_tier);
-			$shipping_rate->set_cost($e->getAmount());
-			return $shipping_rate;
-		}
-
-
-
-		$current_shipping_cost = $shipping_rate->get_cost();
-		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'modify-shipping-rate'), array($this->lite_tier));
-
-		$tier_shipping_costs = array();
-		foreach ($tier_items as $tier_item) {
+		array_walk($tier_items, function (&$tier_item) use ($calculate_metrics) {
 			$tier_item = wp_parse_args($tier_item, array(
-				'type' => '',
-				'amount' => '',
-				'min_cost' => '',
-				'max_cost' => '',
+				'calculate_basis' => '',
+				'calculation_type' => '',
+				'calculation_value' => '',
 				'condition_groups' => array(),
+				'advanced_calculation_tiers' => array(),
 			));
 
-			if (empty($tier_item['type'])) {
-				continue;
+			if (!isset($tier_item['id'])) {
+				$tier_item['id'] = md5(wp_json_encode($tier_item));
 			}
 
-			$amount = trim($tier_item['amount']);
-			if (strlen($amount) == 0 && 'free_shipping' != $tier_item['type']) {
-				continue;
+			$calculate_basis = isset($tier_item['calculate_basis']) ? $tier_item['calculate_basis'] : null;
+			if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
+				return;
 			}
 
-			if ('free_shipping' == $tier_item['type']) {
-				$tier_shipping_costs[] = 0.00;
-				continue;
+			$calculation_value = isset($tier_item['calculation_value']) ? trim($tier_item['calculation_value']) : '';
+			if (strlen($calculation_value) == 0) {
+				return;
 			}
 
-			$matched = Main::get_instance()->is_matched_conditions($tier_item['condition_groups'], $this);
-			if (false === $matched) {
-				continue;
+			try {
+				$calculation_value = floatval($calculation_value);
+				if ('fixed_amount' == $calculate_basis) {
+					throw new Shipping_Cost($calculation_value);
+				}
+
+				if (in_array($calculate_basis, $calculate_metrics)) {
+					$calculation_type = isset($tier_item['calculation_type']) ? $tier_item['calculation_type'] : null;
+
+					$metrics_total = (new Cart_Total())->get_total($calculate_basis);
+
+					if ($metrics_total > 0) {
+						if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
+							$shipping_cost = $metrics_total * $calculation_value;
+							if ('subtotal' == $calculate_basis) {
+								$shipping_cost = $shipping_cost / 100;
+							}
+
+							throw new Shipping_Cost($shipping_cost);
+						}
+
+						if (
+							'advanced_calculation' == $calculation_type &&
+							isset($tier_item['advanced_calculation_tiers']) &&
+							is_array($tier_item['advanced_calculation_tiers']) &&
+							count($tier_item['advanced_calculation_tiers']) > 0
+						) {
+							$calculation_tiers = array_map(function ($tier) {
+								$tier = wp_parse_args($tier, array('priority' => '', 'condition_groups' => array(), 'shipping_cost_ranges' => array()));
+								if (strlen($tier['priority']) == 0) {
+									$tier['priority'] = 10;
+								}
+
+								if (!is_array($tier['condition_groups'])) {
+									$tier['condition_groups'] = array();
+								}
+
+								if (!is_array($tier['shipping_cost_ranges'])) {
+									$tier['shipping_cost_ranges'] = array();
+								}
+
+								return $tier;
+							}, $lite_tier['advanced_calculation_tiers']);
+
+							$calculation_tiers = array_filter($calculation_tiers, function ($item) {
+								if (count($item['shipping_cost_ranges']) == 0) {
+									return false;
+								}
+
+								return true;
+							});
+
+							uasort($calculation_tiers, fn($a, $b) => $a['priority'] > $b['priority'] ? -1 : 1);
+
+							error_log(print_r($calculation_tiers, true));
+						}
+					}
+
+
+					throw new Shipping_Cost($shipping_rate->get_cost());
+				}
+
+				throw new Shipping_Cost(-1);
+			} catch (Shipping_Cost $e) {
+				$tier_item['calculated_shipping_cost'] = $e->getAmount();
+			}
+		});
+
+		$best_tier = array_reduce($tier_items, function ($carry, $item) {
+			if (!$carry) {
+				return $item;
 			}
 
-			$amount = floatval($tier_item['amount']);
-			if ('increase_percentage' == $tier_item['type']) {
-				$amount = $current_shipping_cost + ($current_shipping_cost * $amount / 100);
+			if (
+				array_key_exists('calculated_shipping_cost', $item) &&
+				array_key_exists('calculated_shipping_cost', $carry) &&
+				$carry['calculated_shipping_cost'] > $item['calculated_shipping_cost']
+			) {
+				return $carry;
 			}
 
-			if ('decrease_percentage' == $tier_item['type']) {
-				$amount = $current_shipping_cost - ($current_shipping_cost * $amount / 100);
-			}
+			return $item;
+		});
 
-			if ('increase_amount' == $tier_item['type']) {
-				$amount = $current_shipping_cost + $amount;
-			}
-
-			if ('decrease_amount' == $tier_item['type']) {
-				$amount = $current_shipping_cost - $amount;
-			}
-
-			$min_cost = trim($tier_item['min_cost']);
-			if (strlen($min_cost) > 0) {
-				$amount = max(floatval($min_cost), $amount);
-			}
-
-			$max_cost = trim($tier_item['max_cost']);
-			if (strlen($max_cost) > 0) {
-				$amount = min(floatval($max_cost), $amount);
-			}
-
-			if ($amount < 0) {
-				$amount = 0.00;
-			}
-
-			$tier_shipping_costs[] = $amount;
+		if (array_key_exists('calculated_shipping_cost', $best_tier)) {
+			$shipping_rate->set_cost($best_tier['calculated_shipping_cost']);
 		}
-
-		if (count($tier_shipping_costs) > 0) {
-			$current_shipping_cost = max($tier_shipping_costs);
-		}
-
-		$hook_name = Utils::get_hook_name('feature', $this->get_id(), 'shipping-cost');
-		$shipping_cost = apply_filters($hook_name, $current_shipping_cost, array($tier_shipping_costs));
-		$shipping_rate->set_cost($shipping_cost);
-
-		return $shipping_rate;
 	}
 
 	/**
@@ -326,24 +274,17 @@ final class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('priority', array(
-			'priority' => 30,
-			'default_value' => '',
-			'placeholder' => '10',
-			'model_key' => 'priority',
-			'type' => Form_Control::NUMBER,
-			'label' => esc_html__('Priority', 'shipflex'),
-			'label_note' => esc_html__('Set the priority for this rule. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
-			'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed).', 'shipflex'),
+		// $settings_fields->add_setting('priority', array(
+		// 	'priority' => 30,
+		// 	'default_value' => '',
+		// 	'placeholder' => '10',
+		// 	'model_key' => 'priority',
+		// 	'type' => Form_Control::NUMBER,
+		// 	'label' => esc_html__('Priority', 'shipflex'),
+		// 	'label_note' => esc_html__('Set the priority for this rule. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
+		// 	'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed).', 'shipflex'),
 
-		), 'cart-tier');
-
-		$settings_fields->add_setting('exclude_products', array(
-			'priority' => 30,
-			'conditions' => array('tierNo == 1'),
-			'row_attributes' => array('class' => 'shipflex-notice-row'),
-			'callback' => array($this, 'exclude_products_setting_field'),
-		), 'cart-tier');
+		// ), 'cart-tier');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
 			'priority' => 40,
@@ -358,7 +299,7 @@ final class Cart_Based_Shipping extends Feature {
 		), 'cart-tier');
 
 		$settings_fields->add_setting('advanced_calculation', array(
-			'priority' => 40.10,
+			'priority' => 40.20,
 			'default_value' => array((object)array()),
 			'model_key' => 'advanced_calculation_tiers',
 			'label' => esc_html__('Advanced Calculation Settings', 'shipflex'),

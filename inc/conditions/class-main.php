@@ -108,19 +108,17 @@ class Main {
 	public $types = array();
 
 	/**
+	 * Hold results of conditions
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $condition_results = array();
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->load_files();
-	}
-
-	/**
-	 * Load all condition files
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function load_files() {
 		require_once ShipFlex_PATH . 'inc/conditions/class-cart.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-user.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-order-history.php';
@@ -213,8 +211,12 @@ class Main {
 			return true;
 		}
 
-		$condition_types = $this->get_types();
+		$hash = md5(wp_json_encode($condition_groups));
+		if (array_key_exists($hash, $this->condition_results)) {
+			return $this->condition_results[$hash];
+		}
 
+		$condition_types = $this->get_types();
 		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types, $feature_object) {
 			if (!isset($group_data['conditions']) || !is_array($group_data['conditions'])) {
 				return true;
@@ -237,7 +239,8 @@ class Main {
 		});
 
 		$hook_name = Utils::get_hook_name('condition-groups', 'matched');
-		return apply_filters($hook_name, count($condition_groups) > 0, $condition_groups, $feature_object);
+		$this->condition_results[$hash] = apply_filters($hook_name, count($condition_groups) > 0, $condition_groups, $feature_object);
+		return $this->condition_results[$hash];
 	}
 }
 
