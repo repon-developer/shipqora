@@ -24,7 +24,7 @@ const Select2_Dropdown = {
 
 		options: {
 			default: null,
-			type: [Array, null]
+			type: [Array, null, Object]
 		},
 
 		placeholder: {
@@ -61,6 +61,10 @@ const Select2_Dropdown = {
 						option_group_items[country_code] = wcSettings.countries?.[country_code];
 					}
 				})
+			}
+
+			if ('shipping_instances' === this.type) {
+				Object.values(this.options).forEach((zone) => option_group_items[zone.id] = zone.name)
 			}
 
 			return option_group_items;
@@ -161,6 +165,13 @@ const Select2_Dropdown = {
 			let options = {};
 			if ('states' === this.type) {
 				options = wcSettings.countryStates[key];
+			}
+
+			if ('shipping_instances' === this.type) {
+				const current_zone = Object.values(this.options).find((zone) => zone.id == key)
+				if (typeof current_zone?.instances === 'object') {
+					options = current_zone.instances;
+				}
 			}
 
 			return options;

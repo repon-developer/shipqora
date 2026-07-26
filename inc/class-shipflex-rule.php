@@ -25,14 +25,14 @@ final class ShipFlex_Rule {
 	 * @param int $id
 	 * @return ShipFlex_Rule
 	 */
-	public static function get($id) {
-		if (!isset(self::$rule_instances[$id])) {
+	public static function get($shipflex_rule_id) {
+		if (!isset(self::$rule_instances[$shipflex_rule_id])) {
 			global $wpdb;
-			$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			self::$rule_instances[$id] = new self($rule_data);
+			$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $shipflex_rule_id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$rule_instances[$shipflex_rule_id] = new self($rule_data);
 		}
 
-		return self::$rule_instances[$id];
+		return self::$rule_instances[$shipflex_rule_id];
 	}
 
 	/**
@@ -50,21 +50,28 @@ final class ShipFlex_Rule {
 	 * @return ShipFlex_Rule
 	 */
 	public static function get_by_shipping_method($shipping_rate) {
-		// $zone = \WC_Shipping_Zones::get_zone_by(
-		// 		'instance_id',
-		// 		$shipping_rate->get_instance_id()
-		// 	);
+		$instance_id = $shipping_rate->get_instance_id();
 
-		$rate_id = $shipping_rate->get_id();
+		$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id);
+		$zone_id = $zone->get_id();
 
-		if (!isset(self::$shipping_rate_ids[$rate_id])) {
+		if (!isset(self::$shipping_rate_ids[$instance_id])) {
 			global $wpdb;
 			$prepared_sql = $wpdb->prepare("SELECT id FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
-			$prepared_sql .= $wpdb->prepare(
-				" AND (JSON_CONTAINS(shipping_methods, %s) OR JSON_CONTAINS(shipping_methods, %s))",
-				wp_json_encode($shipping_rate->get_method_id()),
-				wp_json_encode($rate_id)
+
+			$json_search = array(
+				$shipping_rate->method_id,
+				$shipping_rate->method_id . ':' . $zone_id . '-0',
+				$shipping_rate->method_id . ':' . $zone_id . '-' . $instance_id,
 			);
+
+			$shipping_method_sql = array();
+			while ($shpping_method = current($json_search)) {
+				$shipping_method_sql[] = $wpdb->prepare('JSON_CONTAINS(shipping_methods, %s)', wp_json_encode($shpping_method));
+				next($json_search);
+			}
+
+			$prepared_sql .= " AND (" . implode(' OR ', $shipping_method_sql) . ")";
 
 			if (current_user_can('manage_woocommerce')) {
 				$prepared_sql .= " AND status IN ('active', 'development')";
@@ -73,10 +80,10 @@ final class ShipFlex_Rule {
 			}
 
 			$rule_id = $wpdb->get_var($prepared_sql); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			self::$shipping_rate_ids[$rate_id] = $rule_id;
+			self::$shipping_rate_ids[$instance_id] = $rule_id;
 		}
 
-		return self::get(self::$shipping_rate_ids[$rate_id]);
+		return self::get(self::$shipping_rate_ids[$instance_id]);
 	}
 
 	/**
@@ -327,17 +334,18 @@ final class ShipFlex_Rule {
 			$shipping_methods = $zone->get_shipping_methods();
 			foreach ($shipping_methods as $shipping_method) {
 				$instance_id = $shipping_method->instance_id;
-				$method_slug = $shipping_method->id . ':' . $zone->get_id() . '-' . $shipping_method->instance_id;
+				$zone_slug = $shipping_method->id . ':' . $zone->get_id();
+				$method_slug =  $zone_slug . '-' . $shipping_method->instance_id;
 				$method_title = $shipping_method->get_title();
 
 				if (!in_array($method_slug, $this->shipping_methods)) {
 					$instance_id = 0;
-					$method_slug = $shipping_method->id . ':' . $zone->get_id();
+					$method_slug = $shipping_method->id . ':' . $zone->get_id() . '-0';
 
-					$method_title = sprintf(esc_html__('%s - All shipping rates', 'shipflex'), $zone->get_zone_name());
+					$method_title = sprintf(esc_html__('%s - All rates', 'shipflex'), $zone->get_zone_name());
 					if (!in_array($method_slug, $this->shipping_methods)) {
 						$method_slug = $shipping_method->id;
-						$method_title = esc_html__('All shipping rates', 'shipflex');
+						$method_title = esc_html__('All rates', 'shipflex');
 					}
 				}
 

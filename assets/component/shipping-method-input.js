@@ -50,6 +50,10 @@ const Shipping_Method_Input = {
 		shipping_method_data() {
 			return [this.method_id, this.instance_id].filter((item) => item?.length).join(':');
 		},
+
+		has_shipping_instance() {
+			return Object.values(this.shipping_instances)?.length
+		}
 	},
 
 	watch: {
@@ -69,12 +73,12 @@ const Shipping_Method_Input = {
 		shipping_instances(shipping_instances) {
 			this.loading = false;
 
-			if (this.instance_id) {
-				const existed = shipping_instances.find((item) => item.id == this.instance_id)
-				if (!existed) {
-					this.shipping_instances.push({ id: this.instance_id, name: __('[Deleted] - Remove it', 'shipflex') })
-				}
-			}
+			// if (this.instance_id) {
+			// 	const existed = shipping_instances.find((item) => item.id == this.instance_id)
+			// 	if (!existed) {
+			// 		this.shipping_instances.push({ id: this.instance_id, name: __('[Deleted] - Remove it', 'shipflex') })
+			// 	}
+			// }
 
 			Utils.set_cache_data(this.cache_key, shipping_instances);
 		}

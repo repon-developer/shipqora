@@ -7,7 +7,7 @@ const package_file = require('./package.json'); // or wherever you store version
 const replace = require('gulp-replace');
 
 function minifyjs() {
-	return src(['assets/**/*.js', '!assets/ace/*.js', '!assets/**/*.min.js']) // base ensures directory structure is preserved
+	return src(['assets/**/*.js', '!assets/**/*.min.js']) // base ensures directory structure is preserved
 		.pipe(replace('@@VERSION', package_file.version)) // inject version
 		.pipe(uglify())
 		.pipe(rename({ suffix: '.min' })) // optional: adds .min suffix
@@ -21,10 +21,9 @@ function minifycss() {
 		.pipe(dest('assets/'));
 }
 
-
 exports.watch = function () {
 	watch(['assets/**/*.css', '!assets/**/*.min.css'], minifycss);
-	watch(['assets/**/*.js', '!assets/**/*.min.js', '!assets/ace/*.js'], minifyjs);
+	watch(['assets/**/*.js', '!assets/**/*.min.js'], minifyjs);
 }
 
 exports.default = series(minifyjs, minifycss)

@@ -227,28 +227,34 @@ final class Select2 {
 			$allow_shipping_method = sanitize_text_field($meta_data['shipping_method']);
 		}
 
-		$shipping_instances = array();
 		$shipping_zones = Utils::get_shipping_zones();
+
+		$shipping_instances = array();
 		foreach ($shipping_zones as $zone) {
+			$zone_id = $zone->get_id();
+
+			$zone_instances = array(
+				$zone_id . '-0' => esc_html__('All rates', 'shipflex')
+			);
+
 			$shipping_methods = $zone->get_shipping_methods();
 			foreach ($shipping_methods as $shipping_method) {
 				if ($allow_shipping_method && $shipping_method->id !== $allow_shipping_method) {
 					continue;
 				}
 
-				$zone_name = $zone->get_zone_name();
-				if ($zone->get_id() == 0) {
-					$zone_name = esc_html__('Rest of the world', 'shipflex');
-				}
+				$option_slug = $zone_id . '-' . $shipping_method->instance_id;
+				$zone_instances[$option_slug] = $shipping_method->get_title();
+			}
 
-				$shipping_instances[] = array(
-					'id' => $shipping_method->instance_id,
-					'name' => sprintf('%s - %s', $zone_name, $shipping_method->get_title())
+			if (count($zone_instances) > 1) {
+				$shipping_instances[$zone_id] = array(
+					'id' => $zone_id,
+					'name' => $zone->get_zone_name(),
+					'instances' => $zone_instances
 				);
 			}
 		}
-
-		//error_log(print_r($shipping_instances, true));
 
 		return $shipping_instances;
 	}

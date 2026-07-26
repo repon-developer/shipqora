@@ -510,6 +510,7 @@
 }
 
 .select2-dropdown.shipflex-select2-dropdown .select2-results__option {
+	margin: 0;
 	cursor: pointer;
 }
 
@@ -517,7 +518,6 @@
 	color: #fff;
 	background-color: var(--primaryColor) !important
 }
-
 
 #shipflex .select2.select2-container--open .select2-selection {
 	border-bottom-left-radius: 0;
@@ -1233,4 +1233,16 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 #shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-less-value .range-input-max,
 #shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-value-empty .range-input-value {
 	background-color: #ffe7e7;
+}
+
+table.shipflex_rules_table ul.shipping-rate-list {
+	margin: 0;
+}
+
+table.shipflex_rules_table ul.shipping-rate-list a {
+	color: inherit;
+}
+
+table.shipflex_rules_table ul.shipping-rate-list a:hover {
+	text-decoration: underline;
 }
