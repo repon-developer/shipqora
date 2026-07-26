@@ -39,6 +39,7 @@
 
 	$('#shipflex-debugging-box').on('click', '.shipflex-disable-button', function (event) {
 		event.preventDefault();
+		$('#shipflex-debugging-box').remove();
 		update_debugging_mode_settings('enable_debugging', false);
 	})
 

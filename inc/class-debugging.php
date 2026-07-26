@@ -76,8 +76,9 @@ final class Debugging {
 			$this->position = 'left';
 		}
 
-		add_action('wp_ajax_shipflex/update_debugging_mode', array($this, 'update_debugging_mode'));
 		add_action('wp_footer', array($this, 'output_debugging_section'));
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 1);
+		add_action('wp_ajax_shipflex/update_debugging_mode', array($this, 'update_debugging_mode'));
 	}
 
 	/**
@@ -150,7 +151,7 @@ final class Debugging {
 		if (!empty($_POST['position'])) {
 			$this->position = sanitize_text_field(wp_unslash($_POST['position']));
 		}
-		
+
 		update_option('shipflex_debugging', array(
 			'position' => $this->position,
 			'collapse' => $this->is_collapse,
@@ -161,13 +162,66 @@ final class Debugging {
 	}
 
 	/**
+	 * Check if target page for output debugging scripts and content
+	 * 
+	 * @since 1.0.0
+	 * @return boolean
+	 */
+	public function is_target_pages() {
+		if (is_cart() || is_checkout()) {
+			return true;
+		}
+
+		global $post;
+		if (! $post instanceof WP_Post) {
+			return false;
+		}
+
+		if (
+			has_shortcode($post->post_content, 'woocommerce_cart') ||
+			has_shortcode($post->post_content, 'woocommerce_checkout')
+		) {
+			return true;
+		}
+
+		// WooCommerce Cart/Checkout blocks.
+		if (
+			has_block('woocommerce/cart', $post) ||
+			has_block('woocommerce/checkout', $post)
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Enqueue script on the frontend
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function enqueue_scripts() {
+		if (!$this->is_debugging() || !$this->is_target_pages()) {
+			return;
+		}
+
+		wp_enqueue_style('shipflex', ShipFlex_URI . 'assets/frontend.min.css', array(), Utils::get_plugin_version());
+		wp_enqueue_script('shipflex', ShipFlex_URI . 'assets/frontend.min.js', array('jquery'), Utils::get_plugin_version(), true);
+		wp_localize_script('shipflex', 'shipflex', array(
+			'ajax_url' => admin_url('admin-ajax.php'),
+			'debugging_nonce' => Debugging::get_instance()->get_nonce_value()
+		));
+	}
+
+	/**
 	 * Output debugging content on the frontend
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
 	public function output_debugging_section() {
-		if (!$this->is_debugging()) {
+		if (!$this->is_debugging() || !$this->is_target_pages()) {
 			return;
 		}
 
@@ -182,12 +236,37 @@ final class Debugging {
 
 			<div class="shipflex-box-body">
 				<div class="shipflex-content">
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium maiores nobis non atque suscipit perferendis vel odit veniam illo maxime, fuga corrupti recusandae quod consectetur repellendus ipsum dolorum voluptatum iusto!
+					<div class="store-manager-notice">
+						<h4><?php esc_html_e('Note for Store Managers:', 'shipflex') ?></h4>
+
+						<ul class="list">
+							<li>
+								<?php
+								printf(
+									/* translators: %s for who can see this text, %s: for debugging mode enabled text */
+									esc_html__('%s: Logged-in administrators and store managers who currently have %s.'),
+									'<strong>' . esc_html__('Visible Only To', 'shipflex') . '</strong>',
+									'<strong>' . esc_html__('Debugging Mode enabled', 'shipflex') . '</strong>',
+								) ?>
+							</li>
+							<li>
+								<?php
+								printf(
+									/* translators: %s for who can not see this text */
+									esc_html__('%s: All standard store visitors, guest users, and regular customers.'),
+									'<strong>' . esc_html__('Hidden From', 'shipflex') . '</strong>'
+								) ?>
+							</li>
+						</ul>
+					</div>
+
+					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium maiores nobis non atque suscipit perferendis vel odit veniam illo maxime, fuga corrupti recusandae quod consectetur repellendus ipsum dolorum voluptatum iusto!</p>
+					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium maiores nobis non atque suscipit perferendis vel odit veniam illo maxime, fuga corrupti recusandae quod consectetur repellendus ipsum dolorum voluptatum iusto!</p>
 				</div>
 				<div class="shipflex-footer">
 					<a class="shipflex-button shipflex-position-button" href="#">
-						<span class="left"><?php esc_html_e('Move on Left', 'shipflex') ?></span>
-						<span class="right"><?php esc_html_e('Move on Right', 'shipflex') ?></span>
+						<span class="left"><?php esc_html_e('Move to Left', 'shipflex') ?></span>
+						<span class="right"><?php esc_html_e('Move to Right', 'shipflex') ?></span>
 					</a>
 					<a class="shipflex-button shipflex-disable-button" href="#"><?php esc_html_e('Disable Debugging', 'shipflex') ?></a>
 				</div>
