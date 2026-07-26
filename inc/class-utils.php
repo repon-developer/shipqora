@@ -278,6 +278,22 @@ class Utils {
 	}
 
 	/**
+	 * Get all shipping zones
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function get_shipping_zones() {
+		$shipping_zones = \WC_Shipping_Zones::get_shipping_zones();
+
+		$global_zone = new \WC_Shipping_Zone(0);
+		$global_zone->set_zone_name(esc_html__('Rest of the world', 'shipflex'));
+		
+		$shipping_zones[] = $global_zone;
+		return $shipping_zones;
+	}
+
+	/**
 	 * Supported VueJS attributes for table heading
 	 * 
 	 * @since 1.0.0

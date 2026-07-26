@@ -2,6 +2,8 @@
 
 namespace ShipFlex\Component;
 
+use ShipFlex\Utils;
+
 if (!defined('ABSPATH')) {
 	exit;
 }
@@ -226,14 +228,11 @@ final class Select2 {
 		}
 
 		$shipping_instances = array();
-
-		$shipping_zones = \WC_Shipping_Zones::get_shipping_zones();
-		$shipping_zones[] = new \WC_Shipping_Zone(0);
-
+		$shipping_zones = Utils::get_shipping_zones();
 		foreach ($shipping_zones as $zone) {
 			$shipping_methods = $zone->get_shipping_methods();
 			foreach ($shipping_methods as $shipping_method) {
-				if (!$shipping_method->enabled || ($allow_shipping_method && $shipping_method->id !== $allow_shipping_method)) {
+				if ($allow_shipping_method && $shipping_method->id !== $allow_shipping_method) {
 					continue;
 				}
 

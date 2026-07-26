@@ -44,22 +44,21 @@ class Rule_List_Table extends \WP_List_Table {
 		$page_number = $this->get_pagenum();
 		$offset = absint($page_number - 1) * $this->per_page;
 
-		$select_sql = $wpdb->prepare("SELECT * FROM %i", $wpdb->shipflex_rules_table);
-
-		$where_sql = " WHERE 1 = 1";
-		
-
-		$order_sql = $wpdb->prepare(" ORDER BY id DESC LIMIT %d, %d", $offset, $this->per_page);
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$rewards = $wpdb->get_results($select_sql . $where_sql . $order_sql);
-
-		$this->items = array_map(fn($item) => new ShipFlex_Rule($item), $rewards);
-
-		$prepared_sql = $wpdb->prepare("SELECT count(*) FROM %i", $wpdb->shipflex_rules_table);
+		$prepared_sqls = array(
+			'select' => $wpdb->prepare("SELECT * FROM %i", $wpdb->shipflex_rules_table),
+			'order' => "ORDER BY id DESC",
+			'limit' => $wpdb->prepare("LIMIT %d, %d", $offset, $this->per_page)
+		);
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$total_rules = $wpdb->get_var($prepared_sql);
+		$rules = $wpdb->get_results(implode(' ', $prepared_sqls), ARRAY_A);
+
+		$this->items = array_map(fn($item) => new ShipFlex_Rule($item), $rules);
+
+		unset($prepared_sqls['limit']);
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total_rules = $wpdb->get_var(implode(' ', $prepared_sqls));
 
 		$this->set_pagination_args(array(
 			'per_page'    => $this->per_page,
@@ -86,6 +85,7 @@ class Rule_List_Table extends \WP_List_Table {
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
 			'title' => esc_html__('Title', 'shipflex'),
+			'shipping_methods' => esc_html__('Shippiing Methods', 'shipflex'),
 			'status' => esc_html__('Status', 'shipflex'),
 		);
 
@@ -101,22 +101,23 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 */
 	public function column_default($shipflex_rule, $column_name) {
-		
 	}
 
 	/**
 	 * Checkbox column 
 	 * 
 	 * @since 1.0.0
+	 * @return void
 	 */
 	public function column_cb($shipflex_rule) {
-		return sprintf('<input type="checkbox" name="reward_rules[]" value="%d" />', $shipflex_rule->get_id());
+		printf('<input type="checkbox" name="rules[]" value="%d" />', $shipflex_rule->get_id());
 	}
 
 	/**
 	 * Title column 
 	 * 
 	 * @since 1.0.0
+	 * @return void
 	 */
 	public function column_title($shipflex_rule) {
 		$edit_url = add_query_arg(array(
@@ -133,6 +134,40 @@ class Rule_List_Table extends \WP_List_Table {
 		$row_actions[] = sprintf('<a href="%s" class="delete-reward">%s</a>', esc_url($delete_url), __('Delete', 'shipflex'));
 
 		echo '<div class="row-actions">' . wp_kses_post(implode(' | ', $row_actions)) . '</div>';
+	}
+
+	/**
+	 * Shipping Methods Column 
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function column_shipping_methods($shipflex_rule) {
+		$shipping_methods = $shipflex_rule->get_shipping_methods();
+
+		$html_lists = array();
+
+		foreach ($shipping_methods as $shipping_method) {
+			$url_args = array('page' => 'wc-settings', 'tab' => 'shipping');
+			if ($shipping_method['zone_id'] > 0) {
+				$url_args['zone_id'] = $shipping_method['zone_id'];
+			}
+
+			if ($shipping_method['id'] > 0) {
+				unset($url_args['zone_id']);
+				$url_args['instance_id'] = $shipping_method['id'];
+			}
+
+			$shipping_method_text = sprintf(
+				'<a target="_blank" href="%s">%s</a>',
+				add_query_arg($url_args),
+				$shipping_method['name']
+			);
+
+			$html_lists[] = '<li>' . $shipping_method_text . '</li>';
+		}
+
+		echo wp_kses_post('<ul class="shipping-rate-list">' . implode('', $html_lists) . '</ul>');
 	}
 
 	/**

@@ -128,6 +128,10 @@ final class General {
 		}
 
 		array_walk($rates, function (&$shipping_rate) use ($features) {
+			
+
+
+			error_log(print_r($zone, true));
 			$shipflex_rule = ShipFlex_Rule::get_by_shipping_method($shipping_rate);
 			if (!$shipflex_rule->exists()) {
 				return;
@@ -274,7 +278,7 @@ final class General {
 			<div class="gap-10"></div>
 			<a class="button" href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">Request a Feature</a>
 		</div>
-<?php
+	<?php
 		$form_control->output_after_input_options();
 	}
 
@@ -297,8 +301,6 @@ final class General {
 <?php
 		$form_control->output_after_input_options();
 	}
-
-	
 }
 
 new General();

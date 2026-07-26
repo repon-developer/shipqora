@@ -50,6 +50,11 @@ final class ShipFlex_Rule {
 	 * @return ShipFlex_Rule
 	 */
 	public static function get_by_shipping_method($shipping_rate) {
+		// $zone = \WC_Shipping_Zones::get_zone_by(
+		// 		'instance_id',
+		// 		$shipping_rate->get_instance_id()
+		// 	);
+
 		$rate_id = $shipping_rate->get_id();
 
 		if (!isset(self::$shipping_rate_ids[$rate_id])) {
@@ -302,6 +307,53 @@ final class ShipFlex_Rule {
 
 		$rule_models = apply_filters('shipflex/rule_models', $rule_editor_settings->get_models());
 		return (object) Utils::deep_merge_arrays($rule_models, array_merge($this->meta_data, $rule_data));
+	}
+
+	/**
+	 * Get added shipping methods
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_shipping_methods() {
+		if (empty($this->shipping_methods)) {
+			return array();
+		}
+
+		$shipping_rates = array();
+		$shipping_zones = Utils::get_shipping_zones();
+
+		foreach ($shipping_zones as $zone) {
+			$shipping_methods = $zone->get_shipping_methods();
+			foreach ($shipping_methods as $shipping_method) {
+				$instance_id = $shipping_method->instance_id;
+				$method_slug = $shipping_method->id . ':' . $zone->get_id() . '-' . $shipping_method->instance_id;
+				$method_title = $shipping_method->get_title();
+
+				if (!in_array($method_slug, $this->shipping_methods)) {
+					$instance_id = 0;
+					$method_slug = $shipping_method->id . ':' . $zone->get_id();
+
+					$method_title = sprintf(esc_html__('%s - All shipping rates', 'shipflex'), $zone->get_zone_name());
+					if (!in_array($method_slug, $this->shipping_methods)) {
+						$method_slug = $shipping_method->id;
+						$method_title = esc_html__('All shipping rates', 'shipflex');
+					}
+				}
+
+				if (!in_array($method_slug, $this->shipping_methods)) {
+					continue;
+				}
+
+				$shipping_rates[$method_slug] = array(
+					'id' => $instance_id,
+					'zone_id' => $zone->get_id(),
+					'name' => sprintf('%s - %s', $shipping_method->method_title, $method_title)
+				);
+			}
+		}
+
+		return $shipping_rates;
 	}
 
 	/**
