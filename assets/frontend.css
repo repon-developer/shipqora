@@ -1,0 +1,95 @@
+#shipflex-debugging-box {
+	--round: 8px;
+	--primaryColor: #4C2DC1;
+	--borderColor: #b5b5b5;
+	--primaryColorLight: #6D4AFF;
+	position: fixed;
+	bottom: 30px;
+	z-index: 999999;
+	min-height: 200px;
+	overflow: hidden;
+	display: flex;
+	max-width: 500px;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	box-shadow: 0 0 15px rgba(0, 0, 0, .20);
+}
+
+#shipflex-debugging-box:not(.left) {
+	border-right: none;
+	inset-inline-end: 0;
+	border-top-left-radius: var(--round);
+	border-bottom-left-radius: var(--round);
+}
+
+#shipflex-debugging-box .title-bar {
+	color: #fff;
+	inset-inline: 0;
+	padding: 15px 8px;
+	font-size: 25px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 1.3;
+	max-width: 50px;
+	cursor: pointer;
+	text-transform: uppercase;
+	background-color: var(--primaryColor);
+	writing-mode: sideways-lr;
+}
+
+#shipflex-debugging-box .shipflex-box-body {
+	display: flex;
+	flex-direction: column;
+}
+
+#shipflex-debugging-box .shipflex-content {
+	padding: 20px;
+}
+
+#shipflex-debugging-box .shipflex-footer {
+	display: flex;
+	margin-top: auto;
+}
+
+#shipflex-debugging-box .shipflex-button {
+	flex: 1;
+	color: #fff;
+	text-align: center;
+	padding: 8px 15px;
+	display: inline-block;
+	outline: 1px solid #fff;
+	outline-offset: -2px;
+	background-color: var(--primaryColor);
+	border: 1px solid var(--primaryColorLight);
+	text-decoration: none !important;
+	transition: all 200ms;
+}
+
+#shipflex-debugging-box .shipflex-button:hover {
+	background-color: var(--primaryColorLight);
+}
+
+#shipflex-debugging-box.left .shipflex-position-button .left,
+#shipflex-debugging-box:not(.left) .shipflex-position-button .right {
+	display: none !important;
+}
+
+#shipflex-debugging-box.left {
+	border-left: none;
+	inset-inline-start: 0;
+	border-top-right-radius: var(--round);
+	border-bottom-right-radius: var(--round);
+}
+
+#shipflex-debugging-box.left .title-bar {
+	order: 99999;
+	writing-mode: sideways-rl;
+}
+
+#shipflex-debugging-box.collapse {
+	height: auto;
+}
+
+#shipflex-debugging-box.collapse .shipflex-box-body {
+	display: none;
+}

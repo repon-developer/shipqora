@@ -23,7 +23,7 @@ const helper_models = {
 	show_toast_message: false,
 	toast_message_type: 'error',
 	enabling_debugging_mode: false,
-	is_debugging_enabled: shipflex_admin?.is_debugging_enabled == 'yes',
+	is_debugging_enabled: shipflex_admin?.is_debugging_enabled == 'yes'
 }
 
 const ShipFlex_Rule_Editor = {
@@ -87,8 +87,6 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
-
-		console.log(this.$data)
 	},
 
 	updated() {

@@ -60,9 +60,7 @@ final class Admin {
 
 		add_action('admin_menu', array($this, 'admin_menu'));
 
-		add_action('wp_enqueue_scripts', array($this, 'register_scripts'), 1);
 		add_action('admin_enqueue_scripts', array($this, 'register_scripts'), 1);
-
 		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'), 5);
 
 		add_filter('script_loader_tag', array($this, 'handle_script_loader_tag'), 100, 3);

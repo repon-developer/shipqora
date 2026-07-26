@@ -138,8 +138,8 @@ final class Rule_Editor {
 				),
 			);
 
-			$values['debugging_nonce'] = wp_create_nonce(Debugging::NONCE);
-			$values['is_debugging_enabled'] = Debugging::get_instance()->is_debugging() ? 'yes' : 'no';
+			$values['debugging_nonce'] = Debugging::get_instance()->get_nonce_value();
+			$values['is_debugging_enabled'] = Debugging::get_instance()->is_debugging_mode_enabled() ? 'yes' : 'no';
 
 			//error_log(print_r($values, true));
 		}

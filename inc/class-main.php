@@ -38,6 +38,7 @@ final class Main {
 	 */
 	public function __construct() {
 		$this->load_files();
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 1);
 		add_filter('plugin_action_links', array($this, 'add_plugin_links'), 10, 2);
 	}
 
@@ -78,7 +79,7 @@ final class Main {
 	}
 
 	/**
-	 * Add get pro link in plugin links
+	 * Add plugin links
 	 * 
 	 * @since 1.0.0
 	 * @return array
@@ -91,6 +92,25 @@ final class Main {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Enqueue script on the frontend
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function enqueue_scripts() {
+		if (!Debugging::get_instance()->is_debugging()) {
+			return;
+		}
+
+		wp_enqueue_style('shipflex', ShipFlex_URI . 'assets/frontend.min.css', array(), Utils::get_plugin_version());
+		wp_enqueue_script('shipflex', ShipFlex_URI . 'assets/frontend.min.js', array('jquery'), Utils::get_plugin_version(), true);
+		wp_localize_script('shipflex', 'shipflex', array(
+			'ajax_url' => admin_url('admin-ajax.php'),
+			'debugging_nonce' => Debugging::get_instance()->get_nonce_value()
+		));
 	}
 }
 
