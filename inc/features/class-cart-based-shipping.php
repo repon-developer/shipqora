@@ -172,11 +172,8 @@ final class Cart_Based_Shipping extends Feature {
 		});
 
 		$best_tier = array_reduce($tier_items, function ($carry, $item) {
-			if (!$carry) {
-				return $item;
-			}
-
 			if (
+				$carry &&
 				array_key_exists('calculated_shipping_cost', $item) &&
 				array_key_exists('calculated_shipping_cost', $carry) &&
 				$carry['calculated_shipping_cost'] > $item['calculated_shipping_cost']

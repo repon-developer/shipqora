@@ -113,17 +113,12 @@ final class Billing_Shipping {
 	 * @return boolean
 	 */
 	public function validate_billing_shipping($matched, $condition, $reward_session) {
-		$session_reward = Session_Reward::get_instance();
-		if ($session_reward->is_context('product')) {
-			return true;
-		}
-
 		$operator = 'any_in_list';
 		if (!empty($condition['billing_shipping_operator'])) {
 			$operator = $condition['billing_shipping_operator'];
 		}
 
-		if ('billing:cities' === $condition['type'] || 'shipping:cities' === $condition['type']) {	
+		if ('billing:cities' === $condition['type'] || 'shipping:cities' === $condition['type']) {
 			$cities = $condition['billing_cities'] ?? '';
 			$customer_city = strtolower(WC()->customer->get_billing_city());
 
@@ -131,7 +126,7 @@ final class Billing_Shipping {
 				$cities = $condition['shipping_cities'] ?? '';
 				$customer_city = strtolower(WC()->customer->get_shipping_city());
 			}
-			
+
 			$cities = Utils::comma_separator_to_array($cities);
 			if ('any_in_list' === $operator) {
 				return in_array($customer_city, $cities);
@@ -164,7 +159,7 @@ final class Billing_Shipping {
 			}
 		}
 
-		if ('billing:zipcodes' === $condition['type'] || 'shipping:zipcodes' === $condition['type']) {	
+		if ('billing:zipcodes' === $condition['type'] || 'shipping:zipcodes' === $condition['type']) {
 			$zipcodes = $condition['billing_zipcodes'] ?? '';
 			$customer_postcode = strtolower(WC()->customer->get_billing_postcode());
 
@@ -172,14 +167,19 @@ final class Billing_Shipping {
 				$zipcodes = $condition['shipping_zipcodes'] ?? '';
 				$customer_postcode = strtolower(WC()->customer->get_shipping_postcode());
 			}
-			
+
 			$zipcodes = Utils::comma_separator_to_array($zipcodes);
+			$matched = array_filter($zipcodes, function ($zipcode) use ($customer_postcode) {
+				$regex = str_replace(['\*', '\?'], ['.*', '.'], preg_quote($zipcode, '/'));
+				return preg_match('/^' . $regex . '$/i', $customer_postcode);
+			});
+
 			if ('any_in_list' === $operator) {
-				return in_array($customer_postcode, $zipcodes);
+				return count($matched) > 0;
 			}
 
 			if ('not_in_list' === $operator) {
-				return !in_array($customer_postcode, $zipcodes);
+				return count($matched) === 0;
 			}
 		}
 
@@ -261,7 +261,14 @@ final class Billing_Shipping {
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
-			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 21710, 38686', 'shipflex'); ?>">
+			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipflex'); ?>">
+			<div class="field-note" style="margin-top: 0;" v-if="type == 'billing:zipcodes' || type == 'shipping:zipcodes'">
+				<?php
+				printf(
+					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipflex'),
+					'<strong>' .  esc_html__('Example: T3B 0N3, T3B ???, T3B*', 'shipflex') . '</strong>'
+				) ?>
+			</div>
 		</template>
 	<?php
 	}
