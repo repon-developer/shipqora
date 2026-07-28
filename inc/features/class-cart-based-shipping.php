@@ -183,16 +183,37 @@ final class Cart_Based_Shipping extends Feature {
 
 							$calculation_tier = end($this->order_priority($calculation_tiers));
 
-							$cost_ranges = array_map(function ($range) {
+							error_log(print_r($metrics_total, true));
+
+							$previous_max = 0;
+
+							$range_costs = array_map(function ($range) use (&$metrics_total, &$previous_max) {
 								if (empty($range['type']) || !in_array($range['type'], array('fixed_amount', 'per_unit_or_percentage'))) {
 									$range['type'] = 'fixed_amount';
 								}
 
-								return $range;
+								if (empty($range['max'])) {
+									$range['max'] = 9999999999999999;
+								}
+
+								$calculate_with = min($metrics_total, $range['max'] - $previous_max);
+								if ($calculate_with <= 0) {
+									return 0;
+								}
+
+								$previous_max = $range['max'];
+								$metrics_total = $metrics_total - $calculate_with;
+
+
+								$range_cost = $range['value'];
+								if ('per_unit_or_percentage' === $range['type']) {
+									$range_cost = $calculate_with * $range['value'];
+								}
+
+								return $range_cost;
 							}, $calculation_tier['shipping_cost_ranges']);
 
-
-							error_log(print_r($cost_ranges, true));
+							throw new Shipping_Cost(array_sum($range_costs));
 						}
 					}
 				}
