@@ -206,7 +206,7 @@ class Main {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function is_matched_conditions($condition_groups, $feature_object) {
+	public function is_matched_conditions($condition_groups) {
 		if (empty($condition_groups) || !is_array($condition_groups)) {
 			return true;
 		}
@@ -217,12 +217,12 @@ class Main {
 		}
 
 		$condition_types = $this->get_types();
-		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types, $feature_object) {
+		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types) {
 			if (!isset($group_data['conditions']) || !is_array($group_data['conditions'])) {
 				return true;
 			}
 
-			$conditions = array_filter($group_data['conditions'], function ($condition) use ($condition_types, $feature_object) {
+			$conditions = array_filter($group_data['conditions'], function ($condition) use ($condition_types) {
 				$condition = wp_parse_args($condition, array('type' => '', 'value' => '', 'value2' => ''));
 				$current_type = $condition['type'];
 
@@ -232,14 +232,14 @@ class Main {
 				}
 
 				$hook_name = Utils::get_hook_name('condition', $current_type, 'matched');
-				return apply_filters($hook_name, $validated_condition, $condition, $feature_object);
+				return apply_filters($hook_name, $validated_condition, $condition);
 			});
 
 			return count($group_data['conditions']) === count($conditions);
 		});
 
 		$hook_name = Utils::get_hook_name('condition-groups', 'matched');
-		$this->condition_results[$hash] = apply_filters($hook_name, count($condition_groups) > 0, $condition_groups, $feature_object);
+		$this->condition_results[$hash] = apply_filters($hook_name, count($condition_groups) > 0, $condition_groups);
 		return $this->condition_results[$hash];
 	}
 }

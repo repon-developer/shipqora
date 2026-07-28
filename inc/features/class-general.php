@@ -143,12 +143,20 @@ final class General {
 					}
 
 					$rule_feature_object = $rule->get_feature_object($feature_id);
-					if ($rule_feature_object) {
-						$rule_feature_object->modify_shipping_rate($shipping_rate);
+					if ($rule_feature_object && method_exists($rule_feature_object, 'add_shipping_rate_data')) {
+						$rule_feature_object->add_shipping_rate_data($shipping_rate, $rule->get_id());
 					}
 				}
 			}
+
+			foreach ($features as $feature_id => $feature_object) {
+				if (method_exists($feature_object, 'set_shipping_cost')) {
+					$feature_object->set_shipping_cost($shipping_rate);
+				}
+			}
 		});
+
+		
 
 		return $rates;
 	}

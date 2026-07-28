@@ -162,6 +162,27 @@ class Feature {
 	}
 
 	/**
+	 * Order rule id and priority
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function order_priority($items) {
+		$items = array_map(function ($item) {
+			$item = wp_parse_args($item, array('rule_id' => 0, 'priority' => 10));
+			if (strlen($item['priority']) === 0) {
+				$item['priority'] = 10;
+			}
+
+			return $item;
+		}, $items);
+
+		usort($items, fn($a, $b) => [$a['priority'], $a['rule_id']] <=> [$b['priority'], $b['rule_id']]);
+
+		return $items;
+	}
+
+	/**
 	 * Add settings field of rule editor
 	 * 
 	 * @since 1.0.0
