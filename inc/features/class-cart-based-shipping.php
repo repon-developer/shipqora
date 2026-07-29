@@ -270,8 +270,8 @@ final class Cart_Based_Shipping extends Feature {
 			'type' => Form_Control::NUMBER,
 			'label' => esc_html__('Global Priority', 'shipflex'),
 			'attributes' => array('min' => '0', 'step' => '1'),
-			'label_note' => esc_html__('Set the execution priority for this section. Higher numbers take precedence. If multiple matching rules share the same highest priority, the latest created rule (highest Rule ID) will be executed.', 'shipflex'),
-			'option_note' => esc_html__('Defines execution order when multiple rules match the cart. The system evaluates matching rules and applies only the rule with the highest priority number. If priorities are equal, the latest rule (highest Rule ID) takes precedence, and lower-priority rules are ignored.', 'shipflex'),
+			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipflex'),
+			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipflex'),
 		), 'cart-tier');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
