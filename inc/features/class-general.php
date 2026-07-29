@@ -156,7 +156,7 @@ final class General {
 			}
 		});
 
-		
+
 
 		return $rates;
 	}
@@ -179,8 +179,10 @@ final class General {
 			'label' => esc_html__('Apply to Shipping Methods', 'shipflex'),
 			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipflex'),
 			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipflex'),
+			'row_attributes' => array(
+				'data-section' => 'general-shipping-methods'
+			)
 		), 'general');
-
 
 		$registered_features = \ShipFlex\Feature::get_features();
 

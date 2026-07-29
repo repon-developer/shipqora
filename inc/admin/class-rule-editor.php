@@ -256,14 +256,16 @@ final class Rule_Editor {
 
 			<template v-if="!loading">
 				<div class="shipflex-wp-heading">
-					<h1 class="wp-heading-inline"><?php esc_html_e('Edit Rule', 'shipflex') ?></h1>
+					<h1 class="wp-heading-inline">
+						<?php printf(esc_html__('Edit Rule%s', 'shipflex'), '{{rule_title}}') ?>
+					</h1>
 					<a class="button" href="<?php menu_page_url('shipflex-edit') ?>"><?php esc_html_e('Add a Rule', 'shipflex') ?></a>
 				</div>
 				<hr class="wp-header-end">
 
 				<div class="shipflex-editor-container">
-					<div class="rule-title">
-						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Please enter a rule title', 'shipflex') ?>">
+					<div class="rule-title" data-section="shipflex-rule-title">
+						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Enter rule title (e.g., Free Shipping Over $50)', 'shipflex') ?>">
 					</div>
 
 					<table class="table-shipflex-form">

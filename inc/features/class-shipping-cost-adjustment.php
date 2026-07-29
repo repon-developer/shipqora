@@ -269,8 +269,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 30,
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => 'shipping_method_title',
-			'label' => esc_html__('Overwrite shipping method title', 'shipflex'),
-			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages (leave blank to keep original).', 'shipflex'),
+			'label' => esc_html__('Overwrite Shipping Method Title', 'shipflex'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipflex'),
 			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipflex'),
 		), 'tier-item');
 

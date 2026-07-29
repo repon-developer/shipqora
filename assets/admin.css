@@ -53,6 +53,10 @@
 	position: relative;
 }
 
+#shipflex.wrap.shipflex-rule-editor {
+	padding-bottom: 30px;
+}
+
 #shipflex a {
 	box-shadow: none !important;
 }
@@ -1286,10 +1290,7 @@ table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
 	inset-inline-start: 160px;
 	background-color: #f0f0f0;
 	border-top: 1px solid #dbd5d5;
-}
-
-#shipflex.shipflex-rule-editor {
-	padding-bottom: 30px;
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 #shipflex .form-footer .review-request {

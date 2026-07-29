@@ -63,6 +63,10 @@ const ShipFlex_Rule_Editor = {
 		get_root_element() {
 			return $(this.$el.parentElement);
 		},
+
+		rule_title() {
+			return this.title?.length ? ': ' + this.title : '';
+		}
 	},
 
 	watch: {
@@ -88,17 +92,15 @@ const ShipFlex_Rule_Editor = {
 
 		this.loading = false;
 
-		
 		//console.log(wcSettings.currency.priceFormat);
-
 		//  return p.currency_format
-        // .replace('%1$s', p.currency_format_symbol)
-        // .replace('%2$s', number);
-		
+		// .replace('%1$s', p.currency_format_symbol)
+		// .replace('%2$s', number);
+
 	},
 
 	updated() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	methods: {
@@ -151,36 +153,13 @@ const ShipFlex_Rule_Editor = {
 			collections.splice(event.newIndex - skip, 0, item);
 		},
 
-		validate_save_data() {
-			if ('after' == this.date_validity && !this?.start_date) {
-				this.highlighted_section.name = 'date-validity';
-				return false;
-			}
-
-			if ('before' == this.date_validity && !this?.end_date) {
-				this.highlighted_section.name = 'date-validity';
-				return false;
-			}
-
-			if ('between' == this.date_validity && (!this?.start_date || !this?.end_date)) {
-				this.highlighted_section.name = 'date-validity';
-				return false;
-			}
-
-			return true;
-		},
-
 		save_rule() {
 			if (!this.title?.length) {
-				return Utils.set_toast_message(__('Please enter rule title.', 'shipflex'));
+				return Utils.set_toast_message(__('Please provide a rule title to save your ShipFlex rule.', 'shipflex'));
 			}
 
 			if (this.title?.length > 200) {
 				return Utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipflex'));
-			}
-
-			if (!this.validate_save_data()) {
-				//return;
 			}
 
 			this.saving = true;
