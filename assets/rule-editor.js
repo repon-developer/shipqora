@@ -87,6 +87,14 @@ const ShipFlex_Rule_Editor = {
 		})
 
 		this.loading = false;
+
+		
+		//console.log(wcSettings.currency.priceFormat);
+
+		//  return p.currency_format
+        // .replace('%1$s', p.currency_format_symbol)
+        // .replace('%2$s', number);
+		
 	},
 
 	updated() {

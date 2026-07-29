@@ -26,7 +26,7 @@ const Shipping_Cost_Range_Tier = {
 	data() {
 		return {
 			collapse: false,
-			shipping_cost_ranges: [],
+			range_lines: [],
 			shipping_ranges_errors: [],
 			...shipflex_admin.shipping_cost_range_model,
 			...this.rangeData
@@ -52,7 +52,7 @@ const Shipping_Cost_Range_Tier = {
 	},
 
 	created() {
-		this.shipping_cost_ranges = this.shipping_cost_ranges.map((range_data) => ({
+		this.range_lines = this.range_lines.map((range_data) => ({
 			id: Utils.generate_uuid(),
 			...this.range_default_data,
 			...range_data
@@ -69,7 +69,7 @@ const Shipping_Cost_Range_Tier = {
 			}
 		},
 
-		shipping_cost_ranges: {
+		range_lines: {
 			deep: true,
 			handler(range_items) {
 
@@ -124,7 +124,7 @@ const Shipping_Cost_Range_Tier = {
 		},
 
 		get_prev_range(current_index) {
-			return this.shipping_cost_ranges[current_index - 1];
+			return this.range_lines[current_index - 1];
 		},
 
 		get_range_minimum(index) {
@@ -138,11 +138,11 @@ const Shipping_Cost_Range_Tier = {
 		},
 
 		add_cost_range() {
-			if (!Array.isArray(this.shipping_cost_ranges)) {
-				this.shipping_cost_ranges = []
+			if (!Array.isArray(this.range_lines)) {
+				this.range_lines = []
 			}
 
-			const last_item = this.get_prev_range(this.shipping_cost_ranges?.length - 1);
+			const last_item = this.get_prev_range(this.range_lines?.length - 1);
 			if (last_item && !last_item?.max) {
 				return alert(__('Please enter "Max" value of the previous range.', 'shipflex'))
 			}
@@ -151,13 +151,13 @@ const Shipping_Cost_Range_Tier = {
 				return alert(__('Please enter "Rate" of the previous range.', 'shipflex'))
 			}
 
-			this.shipping_cost_ranges.push({ id: Utils.generate_uuid(), ...this.range_default_data })
+			this.range_lines.push({ id: Utils.generate_uuid(), ...this.range_default_data })
 		},
 
 		delete_cost_range(index) {
 			const response = confirm(__('Do you want to delete this range?', 'shipflex'));
 			if (response) {
-				this.shipping_cost_ranges.splice(index, 1)
+				this.range_lines.splice(index, 1)
 			}
 		}
 	}

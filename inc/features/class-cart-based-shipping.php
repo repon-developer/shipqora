@@ -9,6 +9,7 @@ use ShipFlex\Form_Control;
 use ShipFlex\Shipping_Cost;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Component\Shipping_Cost_Range_Tier;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -96,7 +97,7 @@ final class Cart_Based_Shipping extends Feature {
 				'calculation_type' => '',
 				'calculation_value' => '',
 				'condition_groups' => array(),
-				'advanced_calculation_tiers' => array(),
+				'shipping_cost_ranges' => array(),
 			));
 
 			$calculate_basis = isset($tier_item['calculate_basis']) ? $tier_item['calculate_basis'] : null;
@@ -106,7 +107,7 @@ final class Cart_Based_Shipping extends Feature {
 
 			$calculation_value = isset($tier_item['calculation_value']) ? trim($tier_item['calculation_value']) : '';
 			$calculation_value = apply_filters($this->get_hook('layer', 'calculation-value'), $calculation_value, $tier_item, $this);
-			if (strlen($calculation_value) == 0) {
+			if (strlen($calculation_value) == 0 && 'shipping_cost_ranges' !== $tier_item['calculation_type']) {
 				return;
 			}
 
@@ -132,88 +133,31 @@ final class Cart_Based_Shipping extends Feature {
 						}
 
 						if (
-							'advanced_calculation' == $calculation_type &&
-							isset($tier_item['advanced_calculation_tiers']) &&
-							is_array($tier_item['advanced_calculation_tiers']) &&
-							count($tier_item['advanced_calculation_tiers']) > 0
+							'shipping_cost_ranges' == $calculation_type &&
+							isset($tier_item['shipping_cost_ranges']) &&
+							is_array($tier_item['shipping_cost_ranges']) &&
+							count($tier_item['shipping_cost_ranges']) > 0
 						) {
-							$calculation_tiers = array_map(function ($tier) {
-								$tier = wp_parse_args($tier, array('priority' => '10', 'condition_groups' => array(), 'shipping_cost_ranges' => array()));
-								if (strlen($tier['priority']) == 0) {
-									$tier['priority'] = 10;
-								}
+							$shipping_cost_ranges = array_map(fn($range_layer) => new Shipping_Cost_Range_Tier($range_layer), $tier_item['shipping_cost_ranges']);
 
-								if (!is_array($tier['condition_groups'])) {
-									$tier['condition_groups'] = array();
-								}
-
-								if (!is_array($tier['shipping_cost_ranges'])) {
-									$tier['shipping_cost_ranges'] = array();
-								}
-
-								$total_range = count($tier['shipping_cost_ranges']);
-
-								$tier['shipping_cost_ranges'] = array_filter($tier['shipping_cost_ranges'], function ($item, $item_no) use ($total_range) {
-									$item = wp_parse_args($item, array('max' => '', 'value' => ''));
-									if (strlen(trim($item['value'])) == 0) {
-										return false;
-									}
-
-									if (($item_no + 1) < $total_range) {
-										return strlen($item['max']) > 0 || $item['max'] > 0;
-									}
-
-									return true;
-								}, ARRAY_FILTER_USE_BOTH);
-
-								return $tier;
-							}, $tier_item['advanced_calculation_tiers']);
-
-							$calculation_tiers = array_filter($calculation_tiers, function ($item) {
-								if (!is_array($item['shipping_cost_ranges']) || (is_array($item['shipping_cost_ranges']) && count($item['shipping_cost_ranges']) == 0)) {
+							$shipping_cost_ranges = array_filter($shipping_cost_ranges, function ($item) {
+								if (!$item->has_validate_ranges()) {
 									return false;
 								}
 
-								return Main::get_instance()->is_matched_conditions($item['condition_groups']);
+								return $item->is_condition_matched();
 							});
 
-							if (count($calculation_tiers) == 0) {
+							if (count($shipping_cost_ranges) == 0) {
 								throw new Shipping_Cost(-1);
 							}
 
-							$calculation_tier = end($this->order_priority($calculation_tiers));
-
-							error_log(print_r($metrics_total, true));
-
-							$previous_max = 0;
-
-							$range_costs = array_map(function ($range) use (&$metrics_total, &$previous_max) {
-								if (empty($range['type']) || !in_array($range['type'], array('fixed_amount', 'per_unit_or_percentage'))) {
-									$range['type'] = 'fixed_amount';
-								}
-
-								if (empty($range['max'])) {
-									$range['max'] = 9999999999999999;
-								}
-
-								$calculate_with = min($metrics_total, $range['max'] - $previous_max);
-								if ($calculate_with <= 0) {
-									return 0;
-								}
-
-								$previous_max = $range['max'];
-								$metrics_total = $metrics_total - $calculate_with;
-
-
-								$range_cost = $range['value'];
-								if ('per_unit_or_percentage' === $range['type']) {
-									$range_cost = $calculate_with * $range['value'];
-								}
-
-								return $range_cost;
-							}, $calculation_tier['shipping_cost_ranges']);
-
-							throw new Shipping_Cost(array_sum($range_costs));
+							usort($shipping_cost_ranges, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
+							$shipping_cost_range = end($shipping_cost_ranges);
+							$shipping_cost = $shipping_cost_range->calculate_shipping_cost($metrics_total);
+							if (false !== $shipping_cost) {
+								throw new Shipping_Cost($shipping_cost);
+							}
 						}
 					}
 				}
@@ -342,14 +286,14 @@ final class Cart_Based_Shipping extends Feature {
 			)
 		), 'cart-tier');
 
-		$settings_fields->add_setting('advanced_calculation', array(
+		$settings_fields->add_setting('shipping_cost_ranges_settings', array(
 			'priority' => 40.20,
 			'default_value' => array((object)array()),
-			'model_key' => 'advanced_calculation_tiers',
-			'label' => esc_html__('Advanced Calculation Settings', 'shipflex'),
-			'callback' => array($this, 'advanced_calculation_setting_field'),
-			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for this tier. Use priority settings and condition groups to control which rates apply.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "advanced_calculation"'),
+			'model_key' => 'shipping_cost_ranges',
+			'label' => esc_html__('Shipping Cost Range Settings', 'shipflex'),
+			'callback' => array($this, 'shipping_cost_ranges_setting_field'),
+			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use priority settings and condition groups to control which rates apply.', 'shipflex'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "shipping_cost_ranges"'),
 		), 'cart-tier');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -400,7 +344,7 @@ final class Cart_Based_Shipping extends Feature {
 					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></template>
 					<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
 				</option>
-				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
+				<option value="shipping_cost_ranges"><?php esc_html_e('Shipping Cost Ranges', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="show_calculation_value">
@@ -438,15 +382,15 @@ final class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function advanced_calculation_setting_field(Form_Control $form_control) {
+	public function shipping_cost_ranges_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
 		<div
 			@end="on_order_change"
 			style="margin-bottom: 10px;"
 			class="sortable-items-container"
-			v-if="advanced_calculation_tiers?.length"
-			data-model-key="advanced_calculation_tiers"
+			v-if="shipping_cost_ranges?.length"
+			data-model-key="shipping_cost_ranges"
 			v-sortable="{options: {handle: '.button-drag'}}">
 			<shipping-cost-range
 				:tier-no="index + 1"
@@ -454,9 +398,9 @@ final class Cart_Based_Shipping extends Feature {
 				:range-data="shipping_rage_data"
 				:calculate-basis="calculate_basis"
 				@delete="delete_shipping_cost_range(index)"
-				:total-tier="advanced_calculation_tiers?.length"
-				v-for="(shipping_rage_data, index) in advanced_calculation_tiers"
-				@update="(range_data) => advanced_calculation_tiers[index] = range_data"
+				:total-tier="shipping_cost_ranges?.length"
+				v-for="(shipping_rage_data, index) in shipping_cost_ranges"
+				@update="(range_data) => shipping_cost_ranges[index] = range_data"
 				@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
 			</shipping-cost-range>
 		</div>
