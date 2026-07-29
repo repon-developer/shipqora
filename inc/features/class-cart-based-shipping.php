@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Cart_Based_Shipping extends Feature {
+class Cart_Based_Shipping extends Feature {
 
 	/**
 	 * Hold the feature id of this feature
@@ -262,6 +262,23 @@ final class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
+		$settings_fields->add_setting('target_products', array(
+			'priority' => 10,
+			'default_value' => (object) array(),
+			'model_key' => 'target_product',
+			'label' => esc_html__('Target Cart Items', 'shipflex'),
+			'callback' => array($this, 'target_products_setting_field'),
+			'label_note' => esc_html__('Select which cart items this rule applies to. You can target all items or filter by specific categories, tags, shipping classes, or taxonomies.', 'shipflex'),
+			'option_note' => esc_html__('Shipping cost calculations will apply to the combined total (subtotal, quantity, weight, or volume) of all matching items found in the cart.', 'shipflex'),
+		), 'cart-tier');
+
+		$settings_fields->add_setting('exclude_products', array(
+			'priority' => 10.10,
+			'conditions' => array('tierNo == 1'),
+			'row_attributes' => array('class' => 'shipflex-notice-row'),
+			'callback' => array($this, 'exclude_products_setting_field'),
+		), 'cart-tier');
+
 		$settings_fields->add_setting('priority', array(
 			'priority' => 30,
 			'default_value' => '',
@@ -287,7 +304,7 @@ final class Cart_Based_Shipping extends Feature {
 		), 'cart-tier');
 
 		$settings_fields->add_setting('shipping_cost_ranges_settings', array(
-			'priority' => 40.20,
+			'priority' => 50,
 			'default_value' => array((object)array()),
 			'model_key' => 'shipping_cost_ranges',
 			'label' => esc_html__('Shipping Cost Range Settings', 'shipflex'),
@@ -305,6 +322,30 @@ final class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
+	 * Output setting field of product source
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function target_products_setting_field(Form_Control $form_control) {
+		$form_control->output_before_input_options(); ?>
+		<div class="field-row">
+			<cart-option
+				based-on=""
+				:hide-operator="true"
+				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
+				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
+				option-label="<?php esc_html_e('All cart items of selected {{option_label_lower}}', 'shipflex') ?>">
+				<template v-slot:based-on-first-option>
+					<option value=""><?php esc_html_e('All cart items', 'shipflex') ?></option>
+				</template>
+			</cart-option>
+		</div>
+	<?php
+		$form_control->output_after_input_options();
+	}
+
+	/**
 	 * Output adjust cost setting field
 	 * 
 	 * @since 1.0.0
@@ -316,7 +357,7 @@ final class Cart_Based_Shipping extends Feature {
 		<td colspan="2">
 			<div class="shipflex-notice-box">
 				<h3>🚀 Want to Exclude Specific Products?</h3>
-				<div class="description">Upgrade to <strong>ShipFlex Pro</strong> to exclude specific products or categories from cart-based shipping rules and gain precise control over product eligibility.</div>
+				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Cart Items"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
 				<div class="gap-10"></div>
 				<?php Utils::get_lite_button($line_button_data) ?>
 			</div>
@@ -358,26 +399,26 @@ final class Cart_Based_Shipping extends Feature {
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'subtotal'">
-			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Advanced Calculation" for subtotal ranges.', 'shipflex') ?>
+			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Shipping Cost Ranges" for subtotal ranges.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'quantity'">
-			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Advanced Calculation" for quantity brackets.', 'shipflex') ?>
+			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Shipping Cost Ranges" for quantity brackets.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'weight'">
-			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Advanced Calculation" for weight brackets.', 'shipflex') ?>
+			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Shipping Cost Ranges" for weight brackets.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'volume'">
-			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Advanced Calculation" for volume brackets.', 'shipflex') ?>
+			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Shipping Cost Ranges" for volume brackets.', 'shipflex') ?>
 		</div>
 	<?php
 		$form_control->output_after_input_options();
 	}
 
 	/**
-	 * Output setting field for advanced calculation
+	 * Output setting field of shipping cost range
 	 * 
 	 * @since 1.0.0
 	 * @return void

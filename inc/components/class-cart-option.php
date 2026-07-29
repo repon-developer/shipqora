@@ -81,9 +81,9 @@ final class Cart_Option {
 			</select>
 
 			<select v-model="operator" v-if="false === hide_operator && !hideOperator">
-				<option value="any_in_list" v-if="!is_operator_disabled('any_in_list')"><?php esc_html_e('Any in list', 'shipflex') ?></option>
-				<option value="all_in_list" v-if="!is_operator_disabled('all_in_list')"><?php esc_html_e('All in list', 'shipflex') ?></option>
-				<option value="not_in_list" v-if="!is_operator_disabled('not_in_list')"><?php esc_html_e('Not in the list', 'shipflex') ?></option>
+				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipflex') ?></option>
+				<option value="all_in_list"><?php esc_html_e('All in list', 'shipflex') ?></option>
+				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipflex') ?></option>
 			</select>
 
 			<template v-for="(option, option_value) in options" :key="'dropdown_' + option_value">
@@ -274,12 +274,7 @@ final class Cart_Option {
 				$current_option = $configured_options[$this->based_on];
 			}
 
-			if (isset($current_option['disabled_operators']) && is_array($current_option['disabled_operators'])) {
-				$disabled_operators = $current_option['disabled_operators'];
-				if (in_array($this->operator, $disabled_operators)) {
-					$this->operator = 'any_in_list';
-				}
-			}
+
 
 			if (isset($current_option['hide_operator']) && true == $current_option['hide_operator']) {
 				$eligible_product = count($matched_values) > 0;

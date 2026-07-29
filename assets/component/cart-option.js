@@ -76,10 +76,6 @@ const Cart_Option = {
 			this[model_key] = value;
 		},
 
-		is_operator_disabled(key) {
-			return this.options?.[this.based_on]?.disabled_operators?.includes(key);
-		},
-
 		get_option_label(option_key) {
 			const option_item = this.options?.[option_key];
 			let option_text = this.optionLabel.toString();

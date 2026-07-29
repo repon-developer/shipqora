@@ -250,11 +250,11 @@ class Utils {
 
 			$taxonomies[$tax_slug] = array(
 				'slug' => $taxonomy->name,
-				'label' => $taxonomy->label,
 				'priority' => $start_priority,
 				'type' => 'taxonomy:' . $tax_slug,
-				'label_lower' => $taxonomy_lower_label,
 				'model' => str_replace('-', '___', $taxonomy->name),
+				'label' => str_replace('Product ', '', $taxonomy->label),
+				'label_lower' => str_replace('product ', '', $taxonomy_lower_label),
 				'placeholder' => sprintf(
 					/* translate: %s for taxonomy label */
 					esc_html__('Choose one or more %s', 'shipflex'),
@@ -268,10 +268,6 @@ class Utils {
 			if (isset($taxonomies[$tax_key])) {
 				$taxonomies[$tax_key]['priority'] = $priority;
 			}
-		}
-
-		if (isset($taxonomies['product_shipping_class'])) {
-			$taxonomies['product_shipping_class']['disabled_operators'] = array('all_in_list');
 		}
 
 		return Utils::priority_rearrange($taxonomies);
@@ -288,7 +284,7 @@ class Utils {
 
 		$global_zone = new \WC_Shipping_Zone(0);
 		$global_zone->set_zone_name(esc_html__('Rest of the world', 'shipflex'));
-		
+
 		$shipping_zones[] = $global_zone;
 		return $shipping_zones;
 	}

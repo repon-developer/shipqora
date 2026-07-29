@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Product_Based_Shipping extends Feature {
+final class Product_Based_Shipping extends Cart_Based_Shipping {
 
 	/**
 	 * Hold the feature id of this feature
@@ -49,88 +49,13 @@ final class Product_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Manage shipping rate object
+	 * Add shipping rate data
 	 * 
 	 * @since 1.0.0
 	 * @param WC_Shipping_Rate $shipping_rate
-	 * @return WC_Shipping_Rate
+	 * @param int $rule_id
 	 */
-	public function modify_shipping_rate($shipping_rate) {
-		$current_shipping_cost = $shipping_rate->get_cost();
-		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'modify-shipping-rate'), array($this->lite_tier));
-
-		$tier_shipping_costs = array();
-		foreach ($tier_items as $tier_item) {
-			$tier_item = wp_parse_args($tier_item, array(
-				'type' => '',
-				'amount' => '',
-				'min_cost' => '',
-				'max_cost' => '',
-				'condition_groups' => array(),
-			));
-
-			if (empty($tier_item['type'])) {
-				continue;
-			}
-
-			$amount = trim($tier_item['amount']);
-			if (strlen($amount) == 0 && 'free_shipping' != $tier_item['type']) {
-				continue;
-			}
-
-			if ('free_shipping' == $tier_item['type']) {
-				$tier_shipping_costs[] = 0.00;
-				continue;
-			}
-
-			$matched = Main::get_instance()->is_matched_conditions($tier_item['condition_groups'], $this);
-			if (false === $matched) {
-				continue;
-			}
-
-			$amount = floatval($tier_item['amount']);
-			if ('increase_percentage' == $tier_item['type']) {
-				$amount = $current_shipping_cost + ($current_shipping_cost * $amount / 100);
-			}
-
-			if ('decrease_percentage' == $tier_item['type']) {
-				$amount = $current_shipping_cost - ($current_shipping_cost * $amount / 100);
-			}
-
-			if ('increase_amount' == $tier_item['type']) {
-				$amount = $current_shipping_cost + $amount;
-			}
-
-			if ('decrease_amount' == $tier_item['type']) {
-				$amount = $current_shipping_cost - $amount;
-			}
-
-			$min_cost = trim($tier_item['min_cost']);
-			if (strlen($min_cost) > 0) {
-				$amount = max(floatval($min_cost), $amount);
-			}
-
-			$max_cost = trim($tier_item['max_cost']);
-			if (strlen($max_cost) > 0) {
-				$amount = min(floatval($max_cost), $amount);
-			}
-
-			if ($amount < 0) {
-				$amount = 0.00;
-			}
-
-			$tier_shipping_costs[] = $amount;
-		}
-
-		if (count($tier_shipping_costs) > 0) {
-			$current_shipping_cost = max($tier_shipping_costs);
-		}
-
-		$hook_name = Utils::get_hook_name('feature', $this->get_id(), 'shipping-cost');
-		$shipping_cost = apply_filters($hook_name, $current_shipping_cost, array($tier_shipping_costs));
-		$shipping_rate->set_cost($shipping_cost);
-
-		return $shipping_rate;
+	public function add_shipping_rate_data($shipping_rate, $rule_id) {
 	}
 
 	/**
@@ -157,12 +82,18 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('layer_items', array(
-			'priority' => 10,
-			'default_value' => array((object) array()),
-			'model_key' => $this->get_model_key('layers'),
-			'callback' => array($this, 'layer_items_setting_field'),
-		), $this->get_id());
+		$editor_settings_fields = Settings_Fields::get_instance('rule-editor');
+
+		$cart_based_shipping_fields = $editor_settings_fields->get_settings_fields('cart-based-shipping');
+		unset($cart_based_shipping_fields['add_new_tier']);
+
+		$layer_items = $editor_settings_fields->get_setting('layer_items', 'cart-based-shipping');
+		$layer_items = wp_parse_args(array(
+			'model_key' => $this->get_configuration_value('base_model'),
+			'callback' => array($this, 'layer_items_setting_field')
+		), $layer_items);
+
+		$settings_fields->add_setting('layer_items', $layer_items, $this->get_id());
 
 		$settings_fields->add_setting('add_new_layer', array(
 			'priority' => 10000,
@@ -206,7 +137,7 @@ final class Product_Based_Shipping extends Feature {
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
 			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('Add Product Rule', 'codiepress-cart-rewards-pro'); ?>
+				<?php esc_html_e('+ Add Product Tier', 'codiepress-cart-rewards-pro'); ?>
 			</a>
 		</td>
 	<?php
@@ -234,7 +165,7 @@ final class Product_Based_Shipping extends Feature {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<?php $this->output_heading_row(esc_html__('Product Rule: Tier #{{tierNo}}', 'shipflex')) ?>
+		<?php $this->output_heading_row(esc_html__('Product Tier #{{tierNo}}', 'shipflex')) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('product') ?>
 		</template>
@@ -248,83 +179,59 @@ final class Product_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('product_source', array(
-			'priority' => 10,
-			'default_value' => (object) array(),
+		$cart_based_component = Settings_Fields::get_instance('cart-based-shipping');
+
+		$product_source = $cart_based_component->get_setting('target_products', 'cart-tier');
+		$product_source = wp_parse_args(array(
 			'model_key' => 'product_source',
 			'label' => esc_html__('Target Products', 'shipflex'),
-			'callback' => array($this, 'product_source_setting_field'),
-			'label_note' => esc_html__('Choose which cart items this rule applies to based on categories, tags, or classes.', 'shipflex'),
-			'option_note' => esc_html__('This rule calculates shipping costs individually for each matching item in the cart.', 'shipflex'),
-		), 'product');
+			'callback' => array($this, 'target_products_setting_field'),
+			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipflex'),
+			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipflex'),
+		), $product_source);
 
-		$settings_fields->add_setting('exclude_products', array(
-			'priority' => 10.10,
-			'conditions' => array('tierNo == 1'),
-			'row_attributes' => array('class' => 'shipflex-notice-row'),
-			'callback' => array($this, 'exclude_products_setting_field'),
-		), 'product');
 
-		$settings_fields->add_setting('priority', array(
-			'priority' => 20,
-			'default_value' => '',
-			'placeholder' => '10',
-			'model_key' => 'priority',
-			'type' => Form_Control::NUMBER,
-			'label' => esc_html__('Priority', 'shipflex'),
-			'label_note' => esc_html__('Set the priority for this product rule. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
-			'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed).', 'shipflex'),
+		$settings_fields->add_setting('product_source', $product_source, 'product');
 
-		), 'product');
+		$exclude_products = $cart_based_component->get_setting('exclude_products', 'cart-tier');
+		$exclude_products['callback'] = array($this, 'exclude_products_setting_field');
+		$settings_fields->add_setting('exclude_products', $exclude_products, 'product');
 
-		$settings_fields->add_setting('shipping_cost_calculation', array(
-			'priority' => 30,
-			'label' => esc_html__('Calculate Cost By', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_setting_field'),
-			'label_note' => esc_html__('Select the product metric used to determine the shipping rate for each matching item.', 'shipflex'),
-			'related_models' => array(
-				'calculation_value' => '',
-				'calculate_basis' => 'fixed_amount',
-				'calculation_type' => 'per_unit_or_percentage',
-			)
-		), 'product');
+		$priority_setting_field = $cart_based_component->get_setting('priority', 'cart-tier');
+		$settings_fields->add_setting('priority', $priority_setting_field, 'product');
 
-		$settings_fields->add_setting('advanced_calculation', array(
-			'priority' => 30.10,
-			'default_value' => array((object)array()),
-			'model_key' => 'advanced_calculation_tiers',
-			'label' => esc_html__('Advanced Calculation Settings', 'shipflex'),
-			'callback' => array($this, 'advanced_calculation_setting_field'),
-			'label_note' => esc_html__('Set up tiered pricing brackets for your products. You can add optional conditions to each block—if multiple blocks match, the one with the highest priority will be applied.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "advanced_calculation"'),
-		), 'product');
+		$shipping_cost_calculation = $cart_based_component->get_setting('shipping_cost_calculation', 'cart-tier');
+		$settings_fields->add_setting('shipping_cost_calculation', $shipping_cost_calculation, 'product');
 
-		$settings_fields->add_setting('condition_groups', array(
-			'priority' => 1000,
-			'default_value' => array(),
-			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'condition_group_setting_field'),
-		), 'product');
+
+		$shipping_cost_ranges_settings = $cart_based_component->get_setting('shipping_cost_ranges_settings', 'cart-tier');
+		$settings_fields->add_setting('shipping_cost_ranges_settings', $shipping_cost_ranges_settings, 'product');
+
+		$condition_groups = $cart_based_component->get_setting('condition_groups', 'cart-tier');
+		$settings_fields->add_setting('condition_groups', $condition_groups, 'product');
 	}
 
 	/**
-	 * Output setting field of product source
+	 * Output setting field of target products
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function product_source_setting_field(Form_Control $form_control) {
+	public function target_products_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<cart-option
+				based-on=""
 				:hide-operator="true"
-				based-on="taxonomy:product_cat"
-				:cart-option-data="product_source"
-				@on-update="(value) => product_source = value"
-				option-label="<?php esc_html_e('{{option_label}}', 'shipflex') ?>">
+				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
+				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
+				option-label="<?php esc_html_e('Products in selected {{option_label_lower}}', 'shipflex') ?>">
+				<template v-slot:based-on-first-option>
+					<option value=""><?php esc_html_e('All products in cart', 'shipflex') ?></option>
+				</template>
 			</cart-option>
 		</div>
-	<?php
+<?php
 		$form_control->output_after_input_options();
 	}
 
@@ -347,91 +254,6 @@ final class Product_Based_Shipping extends Feature {
 		</td>
 	<?php
 		$form_control->output_row('close');
-	}
-
-	/**
-	 * Output shipping cost setting field
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function shipping_cost_setting_field(Form_Control $form_control) {
-		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<select v-model="calculate_basis">
-				<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipflex') ?></option>
-				<option v-for="(metric, value) in calculation_metrics" :value="value" :key="value">{{metric.long_title}}</option>
-			</select>
-
-			<select v-model="calculation_type" v-if="calculate_basis !== 'fixed_amount'">
-				<option value="per_unit_or_percentage">
-					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></template>
-					<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
-				</option>
-				<option value="advanced_calculation"><?php esc_html_e('Advanced Calculation', 'shipflex') ?></option>
-			</select>
-
-			<template v-if="show_calculation_value">
-				<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
-				<span v-if="calculate_basis == 'subtotal'">%</span>
-			</template>
-		</div>
-
-		<div class="field-note" v-if="calculate_basis == 'fixed_amount'">
-			<?php esc_html_e('Applies a single fixed shipping cost to each matching product.', 'shipflex') ?>
-		</div>
-
-		<div class="field-note" v-if="calculate_basis == 'subtotal'">
-			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Advanced Calculation" for subtotal ranges.', 'shipflex') ?>
-		</div>
-
-		<div class="field-note" v-if="calculate_basis == 'quantity'">
-			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Advanced Calculation" for quantity brackets.', 'shipflex') ?>
-		</div>
-
-		<div class="field-note" v-if="calculate_basis == 'weight'">
-			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Advanced Calculation" for weight brackets.', 'shipflex') ?>
-		</div>
-
-		<div class="field-note" v-if="calculate_basis == 'volume'">
-			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Advanced Calculation" for volume brackets.', 'shipflex') ?>
-		</div>
-	<?php
-		$form_control->output_after_input_options();
-	}
-
-	/**
-	 * Output setting field for advanced calculation
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function advanced_calculation_setting_field(Form_Control $form_control) {
-		$form_control->output_before_input_options(); ?>
-
-		<div
-			@end="on_order_change"
-			style="margin-bottom: 10px;"
-			class="sortable-items-container"
-			v-if="advanced_calculation_tiers?.length"
-			data-model-key="advanced_calculation_tiers"
-			v-sortable="{options: {handle: '.button-drag'}}">
-			<shipping-cost-range
-				:tier-no="index + 1"
-				:key="shipping_rage_data?.id"
-				:range-data="shipping_rage_data"
-				:calculate-basis="calculate_basis"
-				@delete="delete_shipping_cost_range(index)"
-				:total-tier="advanced_calculation_tiers?.length"
-				v-for="(shipping_rage_data, index) in advanced_calculation_tiers"
-				@update="(range_data) => advanced_calculation_tiers[index] = range_data"
-				@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
-			</shipping-cost-range>
-		</div>
-
-		<a class="button button-full-width" href="#" @click.prevent="add_shipping_cost_range()"><?php esc_html_e('+ Add New Shipping Cost Range', 'shipflex') ?></a>
-<?php
-		$form_control->output_after_input_options();
 	}
 }
 
