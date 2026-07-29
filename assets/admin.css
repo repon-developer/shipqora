@@ -185,7 +185,7 @@
 }
 
 #shipflex.wrap .form-footer .review-request {
-	margin-top: 20px;
+	margin-top: 10px;
 }
 
 #shipflex select,
@@ -839,7 +839,7 @@ table.table-shipflex-form tr.shipflex-notice-row td {
 }
 
 #shipflex ul.multiple-options-list.multiple-options-list-status li.status-disabled .field-note {
-	color: #b32213;
+	color: #8c8f94;
 }
 
 .shipflex-repeater {
@@ -1235,14 +1235,63 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	background-color: #ffe7e7;
 }
 
-table.shipflex_rules_table ul.shipping-rate-list {
+table.shipflex_rules_table ul.list-item {
 	margin: 0;
 }
 
-table.shipflex_rules_table ul.shipping-rate-list a {
+table.shipflex_rules_table ul.list-item a {
 	color: inherit;
 }
 
-table.shipflex_rules_table ul.shipping-rate-list a:hover {
+table.shipflex_rules_table ul.list-item a:hover {
 	text-decoration: underline;
+}
+
+table.shipflex_rules_table .shipflex-status-wrapper {
+	display: flex;
+	column-gap: 4px;
+	align-items: center;
+}
+
+table.shipflex_rules_table .shipflex-status {
+	width: 14px;
+	height: 14px;
+	flex: 0 0 auto;
+	position: relative;
+	top: 1px;
+	border-radius: 100px;
+}
+
+table.shipflex_rules_table .shipflex-status.shipflex-status-active {
+	background-color: #0b6e31;
+}
+
+table.shipflex_rules_table .shipflex-status.shipflex-status-development {
+	background-color: #d57d01;
+}
+
+table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
+	background-color: #8c8f94;
+}
+
+#shipflex .form-footer {
+	position: fixed;
+	bottom: 0;
+	z-index: 999;
+	display: flex;
+	gap: 20px;
+	align-items: center;
+	padding: 15px 20px;
+	inset-inline-end: 0;
+	inset-inline-start: 160px;
+	background-color: #f0f0f0;
+	border-top: 1px solid #dbd5d5;
+}
+
+#shipflex.shipflex-rule-editor {
+	padding-bottom: 30px;
+}
+
+#shipflex .form-footer .review-request {
+	margin-inline-start: auto;
 }

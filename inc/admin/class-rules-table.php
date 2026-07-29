@@ -85,7 +85,8 @@ class Rule_List_Table extends \WP_List_Table {
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
 			'title' => esc_html__('Title', 'shipflex'),
-			'shipping_methods' => esc_html__('Shippiing Methods', 'shipflex'),
+			'shipping_methods' => esc_html__('Shipping Methods', 'shipflex'),
+			'features' => esc_html__('Active Features', 'shipflex'),
 			'status' => esc_html__('Status', 'shipflex'),
 		);
 
@@ -167,7 +168,24 @@ class Rule_List_Table extends \WP_List_Table {
 			$html_lists[] = '<li>' . $shipping_method_text . '</li>';
 		}
 
-		echo wp_kses_post('<ul class="shipping-rate-list">' . implode('', $html_lists) . '</ul>');
+		echo wp_kses_post('<ul class="list-item">' . implode('', $html_lists) . '</ul>');
+	}
+
+	/**
+	 * Active Features Column 
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function column_features($shipflex_rule) {
+		$activated_features = array();
+		foreach (Feature::get_features() as $feature_id => $feature_object) {
+			if ($shipflex_rule->is_feature_enabled($feature_id)) {
+				$activated_features[] = sprintf('<li>%s</li>', $feature_object->get_configuration_value('name'));
+			}
+		}
+
+		echo '<ul class="list-item">' . implode('', $activated_features) . '</ul>';
 	}
 
 	/**
@@ -199,13 +217,13 @@ class Rule_List_Table extends \WP_List_Table {
 	public function column_status($shipflex_rule) {
 		$all_statuses = array(
 			'active' => esc_html__('Active', 'shipflex'),
-			'disable' => esc_html__('Disabled', 'shipflex'),
+			'disabled' => esc_html__('Disabled', 'shipflex'),
 			'development' => esc_html__('Development', 'shipflex'),
 		);
 
 		$status = !empty($all_statuses[$shipflex_rule->status]) ? $all_statuses[$shipflex_rule->status] : $shipflex_rule->status; ?>
-		<div class="reward-status-wrapper">
-			<span class="reward-status reward-status-<?php echo esc_attr($shipflex_rule->status) ?>"></span>
+		<div class="shipflex-status-wrapper">
+			<span class="shipflex-status shipflex-status-<?php echo esc_attr($shipflex_rule->status) ?>"></span>
 			<?php echo esc_html($status); ?>
 		</div>
 <?php

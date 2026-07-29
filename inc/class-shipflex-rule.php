@@ -126,7 +126,7 @@ final class ShipFlex_Rule {
 	 * 
 	 * @var string
 	 */
-	private $status = 'development';
+	public $status = 'development';
 
 	/**
 	 * Hold all data of current rule
