@@ -17,10 +17,6 @@ const Product_Based_Shipping = {
 			...this.featureData
 		}
 	},
-
-	mounted() {
-		//console.log(this.$data);
-	},
 }
 
 export default Product_Based_Shipping;

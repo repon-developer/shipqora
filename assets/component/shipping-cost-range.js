@@ -63,7 +63,6 @@ const Shipping_Cost_Range_Tier = {
 			deep: true,
 			handler(range_data) {
 				delete range_data.shipping_ranges_errors;
-				//console.log(range_data)
 				this.$emit('update', range_data);
 			}
 		},

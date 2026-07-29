@@ -204,7 +204,8 @@
 }
 
 #shipflex.wrap .form-footer .review-request {
-	margin-top: 10px;
+	font-size: 14px;
+	font-weight: 500;
 }
 
 #shipflex select,
@@ -1308,8 +1309,10 @@ table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
 	box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
-#shipflex .form-footer .review-request {
-	margin-inline-start: auto;
+@media screen and (max-width: 960px) {
+	#shipflex .form-footer {
+		inset-inline-start: 36px
+	}
 }
 
 #shipflex [data-highlight-section].section-highlighted input,
