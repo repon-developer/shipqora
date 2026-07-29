@@ -180,7 +180,7 @@ final class General {
 			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipflex'),
 			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipflex'),
 			'row_attributes' => array(
-				'data-section' => 'general-shipping-methods'
+				'data-highlight-section' => 'general-shipping-methods'
 			)
 		), 'general');
 

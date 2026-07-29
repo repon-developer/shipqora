@@ -1,4 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
 import Cart_Based_Shipping from './cart-based-shipping.min.js?v=@@VERSION';
 
 const Product_Based_Shipping = {

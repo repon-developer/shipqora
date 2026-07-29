@@ -1,5 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
-
 const $ = jQuery;
 const { __ } = wp.i18n;
 
@@ -81,7 +79,7 @@ const Input_Product = {
 	},
 
 	mounted() {
-		const product_variations = Utils.get_cache_data(this.get_cache_key)
+		const product_variations = this.$utils.get_cache_data(this.get_cache_key)
 		if (Array.isArray(product_variations)) {
 			this.product_variations = product_variations;
 		}
@@ -115,7 +113,7 @@ const Input_Product = {
 		},
 
 		product_variations(variations) {
-			Utils.set_cache_data(this.get_cache_key, variations);
+			this.$utils.set_cache_data(this.get_cache_key, variations);
 		}
 	},
 

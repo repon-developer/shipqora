@@ -1,5 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
-
 const { __ } = wp.i18n;
 
 const Condition = {
@@ -22,9 +20,9 @@ const Condition = {
 			value: '',
 			value2: '',
 			type: 'cart:subtotal',
-			id: Utils.generate_uuid(),
 			user_operator: 'any_in_list',
 			cart_operator: 'greater_than',
+			id: this.$utils.generate_uuid(),
 			cart_products_operator: 'any_in_list',
 			billing_shipping_operator: 'any_in_list',
 			...shipflex_admin.condition_models,
@@ -97,8 +95,8 @@ const Condition_Group = {
 
 	data() {
 		return {
-			id: Utils.generate_uuid(),
-			conditions: [{ id: Utils.generate_uuid() }],
+			id: this.$utils.generate_uuid(),
+			conditions: [{ id: this.$utils.generate_uuid() }],
 			...this.group
 		}
 	},
@@ -122,7 +120,7 @@ const Condition_Group = {
 				this.conditions = Array();
 			}
 
-			this.conditions.push({ id: Utils.generate_uuid() })
+			this.conditions.push({ id: this.$utils.generate_uuid() })
 		},
 
 		delete_group() {

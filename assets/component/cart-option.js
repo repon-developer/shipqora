@@ -1,5 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
-
 const { __ } = wp.i18n;
 
 const Cart_Option = {
@@ -96,12 +94,12 @@ const Cart_Option = {
 			option_text = option_text.replace('{{option_label}}', option_item?.label);
 			option_text = option_text.replace('{{option_label_lower}}', option_item?.label_lower);
 
-			return wp.hooks.applyFilters('shipflex.cart-option.option-label', option_text, option_item);
+			return wp.hooks.applyFilters('shipflex.cart_option.option_label', option_text, option_item);
 		},
 
 		handle_cart_option_click() {
 			const modal_name = 'cart-option-advanced';
-			if (Utils.has_key() || this.$root.once_modals?.includes(modal_name)) {
+			if (this.$utils.has_key() || this.$root.once_modals?.includes(modal_name)) {
 				return;
 			}
 

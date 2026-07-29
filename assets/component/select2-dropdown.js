@@ -1,5 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
-
 const $ = jQuery;
 const { __ } = wp.i18n;
 
@@ -133,7 +131,7 @@ const Select2_Dropdown = {
 		},
 
 		option_items(values) {
-			Utils.set_cache_data(this.cache_key, values);
+			this.$utils.set_cache_data(this.cache_key, values);
 		}
 	},
 
@@ -184,7 +182,7 @@ const Select2_Dropdown = {
 
 			this.option_items = Array();
 
-			const cache_data = Utils.get_cache_data(this.cache_key);
+			const cache_data = this.$utils.get_cache_data(this.cache_key);
 			if (cache_data) {
 				return this.option_items = cache_data;
 			}
@@ -217,7 +215,7 @@ const Select2_Dropdown = {
 
 				this.option_items = result.data;
 
-			}).catch((e) => Utils.set_toast_message(e.message)).finally(() => {
+			}).catch((e) => this.$utils.set_toast_message(e.message)).finally(() => {
 				this.loading = false;
 				this.handle_select2_field();
 			})
@@ -264,14 +262,14 @@ const Select2_Dropdown = {
 
 					transport: function (params, success, failure) {
 						const cache_key = JSON.stringify(params.data)
-						const cache_data = Utils.get_cache_data(cache_key);
+						const cache_data = self.$utils.get_cache_data(cache_key);
 						if (cache_data) {
 							return success(cache_data);
 						}
 
 						const request = $.ajax(params);
 						request.then(data => {
-							Utils.set_cache_data(cache_key, data)
+							self.$utils.set_cache_data(cache_key, data)
 							success(data);
 						});
 

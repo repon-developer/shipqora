@@ -1,7 +1,6 @@
 let toast_timer = 0;
 
 const Utils = {
-	app: null,
 	cache_data: {},
 
 	has_key() {
@@ -34,4 +33,4 @@ const Utils = {
 	}
 }
 
-export { Utils };
+export default Utils;

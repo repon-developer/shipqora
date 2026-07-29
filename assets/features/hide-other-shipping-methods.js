@@ -1,6 +1,4 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
 import Base_Component from '../component/base-component.min.js?v=@@VERSION';
-
 
 const Hide_Other_Shipping_Methods = {
 	extends: Base_Component,

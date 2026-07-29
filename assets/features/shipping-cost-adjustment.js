@@ -1,4 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
 import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Shipping_Cost_Adjustment = {

@@ -264,7 +264,7 @@ final class Rule_Editor {
 				<hr class="wp-header-end">
 
 				<div class="shipflex-editor-container">
-					<div class="rule-title" data-section="shipflex-rule-title">
+					<div class="rule-title" data-highlight-section="shipflex-rule-title">
 						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Enter rule title (e.g., Free Shipping Over $50)', 'shipflex') ?>">
 					</div>
 

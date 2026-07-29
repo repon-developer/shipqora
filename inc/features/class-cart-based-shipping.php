@@ -327,6 +327,9 @@ class Cart_Based_Shipping extends Feature {
 			'label' => esc_html__('Calculate Cost By', 'shipflex'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__('Choose how the shipping cost is determined based on cart subtotal, item quantity, total weight, or total volume.', 'shipflex'),
+			'row_attributes' => array(
+				':data-highlight-section' => "'shipping-cost-calculation-' + id"
+			),
 			'related_models' => array(
 				'calculation_value' => '',
 				'calculate_basis' => 'fixed_amount',

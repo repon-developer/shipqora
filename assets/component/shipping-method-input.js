@@ -1,5 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
-
 const $ = jQuery;
 const { __ } = wp.i18n;
 
@@ -27,7 +25,7 @@ const Shipping_Method_Input = {
 			method_id: method_id,
 			instance_id: instance_id,
 			shipping_instances: [],
-			id: Utils.generate_uuid(),
+			id: this.$utils.generate_uuid(),
 		}
 	},
 	created() {
@@ -59,11 +57,11 @@ const Shipping_Method_Input = {
 	watch: {
 		method_id() {
 			this.load_shipping_instances();
-			this.instance_id = Utils.get_cache_data(this.chosen_instance_cache_key);
+			this.instance_id = this.$utils.get_cache_data(this.chosen_instance_cache_key);
 		},
 
 		instance_id(current_instance_id) {
-			Utils.set_cache_data(this.chosen_instance_cache_key, current_instance_id);
+			this.$utils.set_cache_data(this.chosen_instance_cache_key, current_instance_id);
 		},
 
 		shipping_method_data(method_data) {
@@ -80,7 +78,7 @@ const Shipping_Method_Input = {
 			// 	}
 			// }
 
-			Utils.set_cache_data(this.cache_key, shipping_instances);
+			this.$utils.set_cache_data(this.cache_key, shipping_instances);
 		}
 	},
 
@@ -97,7 +95,7 @@ const Shipping_Method_Input = {
 				return this.shipping_instances = [];
 			}
 
-			const cache_data = Utils.get_cache_data(this.cache_key);
+			const cache_data = this.$utils.get_cache_data(this.cache_key);
 			if (cache_data) {
 				return this.shipping_instances = cache_data;
 			}
@@ -125,7 +123,7 @@ const Shipping_Method_Input = {
 
 				this.shipping_instances = result?.data || [];
 
-			}).catch((e) => Utils.set_toast_message(e.message)).finally(() => {
+			}).catch((e) => this.$utils.set_toast_message(e.message)).finally(() => {
 				this.loading = false;
 			})
 		}

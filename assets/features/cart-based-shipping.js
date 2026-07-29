@@ -1,4 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
 import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Cart_Based_Shipping = {
@@ -47,7 +46,7 @@ const Cart_Based_Shipping = {
 				this.shipping_cost_range_layers = []
 			}
 
-			this.shipping_cost_range_layers.push({ id: Utils.generate_uuid() })
+			this.shipping_cost_range_layers.push({ id: this.$utils.generate_uuid() })
 		},
 
 		duplicate_shipping_cost_range(data, position) {

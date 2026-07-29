@@ -183,7 +183,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('lite_tier', array(
 			'priority' => 10,
-			'default_value' => array(),
+			'default_value' => (object) array(),
 			'model_key' => $this->get_model_key('lite_tier'),
 			'callback' => array($this, 'lite_tier_setting_field'),
 		), $this->get_id());

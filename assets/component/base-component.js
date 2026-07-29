@@ -1,4 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
 const { __ } = wp.i18n;
 
 const Base_Component = {
@@ -35,8 +34,12 @@ const Base_Component = {
 		return {
 			collapse: false,
 			condition_groups: [],
-			id: Utils.generate_uuid()
+			id: this.$utils.generate_uuid()
 		}
+	},
+
+	mounted() {
+		console.log(this.$utils);
 	},
 
 	computed: {
@@ -52,6 +55,8 @@ const Base_Component = {
 	},
 
 	watch: {
+		...wp.hooks.applyFilters('shipflex.base_component.watch', {}),
+
 		component_data: {
 			deep: true,
 			handler(data) {
@@ -64,7 +69,7 @@ const Base_Component = {
 		...wp.hooks.applyFilters('shipflex.base_component.methods', {}),
 
 		duplicate_tier() {
-			this.$emit('duplicate', { ...this.component_data, id: Utils.generate_uuid(), collapse: false })
+			this.$emit('duplicate', { ...this.component_data, id: this.$utils.generate_uuid(), collapse: false })
 		},
 
 		delete_tier() {
@@ -84,7 +89,7 @@ const Base_Component = {
 			}
 
 			this.condition_groups?.push({
-				id: Utils.generate_uuid()
+				id: this.$utils.generate_uuid()
 			})
 		},
 

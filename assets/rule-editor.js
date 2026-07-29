@@ -1,4 +1,4 @@
-import { Utils } from './utils.min.js?v=@@VERSION';
+import Utils from './utils.min.js?v=@@VERSION';
 import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
@@ -46,8 +46,6 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	created() {
-		Utils.app = this;
-
 		if (!Array.isArray(this.active_features)) {
 			this.active_features = []
 		}
@@ -100,11 +98,11 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	updated() {
-		//console.log(this.$data);
+		console.log(this.$data);
 	},
 
 	methods: {
-		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}, Utils),
+		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}),
 
 		add_collection(model_keys, default_value = {}) {
 			if (!model_keys || !model_keys?.length) {

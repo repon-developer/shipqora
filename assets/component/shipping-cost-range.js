@@ -1,4 +1,3 @@
-import { Utils } from '../utils.min.js?v=@@VERSION';
 import Base_Component from './base-component.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
@@ -53,7 +52,7 @@ const Shipping_Cost_Range_Tier = {
 
 	created() {
 		this.range_lines = this.range_lines.map((range_data) => ({
-			id: Utils.generate_uuid(),
+			id: this.$utils.generate_uuid(),
 			...this.range_default_data,
 			...range_data
 		}))
@@ -151,7 +150,7 @@ const Shipping_Cost_Range_Tier = {
 				return alert(__('Please enter "Rate" of the previous range.', 'shipflex'))
 			}
 
-			this.range_lines.push({ id: Utils.generate_uuid(), ...this.range_default_data })
+			this.range_lines.push({ id: this.$utils.generate_uuid(), ...this.range_default_data })
 		},
 
 		delete_cost_range(index) {
