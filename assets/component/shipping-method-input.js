@@ -71,12 +71,13 @@ const Shipping_Method_Input = {
 		shipping_instances(shipping_instances) {
 			this.loading = false;
 
-			// if (this.instance_id) {
-			// 	const existed = shipping_instances.find((item) => item.id == this.instance_id)
-			// 	if (!existed) {
-			// 		this.shipping_instances.push({ id: this.instance_id, name: __('[Deleted] - Remove it', 'shipflex') })
-			// 	}
-			// }
+			if (this.instance_id && this.instance_id?.length) {
+				const [zone_id] = this.instance_id.split('-');
+				const current_instance = shipping_instances?.[zone_id]?.instances?.[this.instance_id];
+				if (!current_instance) {
+					this.shipping_instances[zone_id].instances[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipflex');
+				}
+			}
 
 			this.$utils.set_cache_data(this.cache_key, shipping_instances);
 		}

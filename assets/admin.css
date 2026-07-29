@@ -34,6 +34,20 @@
 	}
 }
 
+@keyframes shipflex_section_hightlight {
+	0% {
+		background-color: #fff
+	}
+
+	70% {
+		background-color: #fff0f1;
+	}
+
+	100% {
+		background-color: #fff
+	}
+}
+
 #shipflex * {
 	box-sizing: border-box;
 }
@@ -154,7 +168,8 @@
 	pointer-events: none;
 	transition: all 400ms;
 	border-radius: 5px;
-	max-width: 450px;
+	max-width: 480px;
+	font-weight: 500;
 	background-color: #fff;
 	transform: translateX(-50%);
 	box-shadow: 0 0 10px 5px rgba(0, 0, 0, .15)
@@ -1295,4 +1310,12 @@ table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
 
 #shipflex .form-footer .review-request {
 	margin-inline-start: auto;
+}
+
+#shipflex [data-highlight-section].section-highlighted input,
+#shipflex tr[data-highlight-section].section-highlighted :is(th, td) {
+	animation-name: shipflex_section_hightlight;
+	animation-duration: 1000ms;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
 }

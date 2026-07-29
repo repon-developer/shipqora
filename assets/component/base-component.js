@@ -38,10 +38,6 @@ const Base_Component = {
 		}
 	},
 
-	mounted() {
-		console.log(this.$utils);
-	},
-
 	computed: {
 		...wp.hooks.applyFilters('shipflex.base_component.computed', {}),
 

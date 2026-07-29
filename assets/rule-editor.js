@@ -46,6 +46,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	created() {
+		this.$utils.app = this;
 		if (!Array.isArray(this.active_features)) {
 			this.active_features = []
 		}
@@ -98,7 +99,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	updated() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	methods: {
@@ -153,11 +154,18 @@ const ShipFlex_Rule_Editor = {
 
 		save_rule() {
 			if (!this.title?.length) {
-				return Utils.set_toast_message(__('Please provide a rule title to save your ShipFlex rule.', 'shipflex'));
+				this.$utils.highlight_section('shipflex-rule-title')
+				return this.$utils.set_toast_message(__('Please provide a rule title to save your ShipFlex rule.', 'shipflex'));
 			}
 
 			if (this.title?.length > 200) {
-				return Utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipflex'));
+				this.$utils.highlight_section('shipflex-rule-title')
+				return this.$utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipflex'));
+			}
+
+			if (!this.shipping_methods?.length) {
+				this.$utils.highlight_section('general-shipping-methods');
+				return this.$utils.set_toast_message(__('At least one shipping method is required to apply this rule.', 'shipflex'));
 			}
 
 			this.saving = true;

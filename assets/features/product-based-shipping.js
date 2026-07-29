@@ -19,7 +19,7 @@ const Product_Based_Shipping = {
 	},
 
 	mounted() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 }
 
