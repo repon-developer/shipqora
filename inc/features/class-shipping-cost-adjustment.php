@@ -258,7 +258,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'conditions' => array('type != "free_shipping"'),
 			'callback' => array($this, 'shipping_cost_limit_setting_field'),
 			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
-			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
+			'option_note' => esc_html__('Leave blank for no limit.', 'shipflex'),
 			'related_models' => array(
 				'min_cost' => '',
 				'max_cost' => '',
@@ -270,8 +270,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => 'shipping_method_title',
 			'label' => esc_html__('Overwrite shipping method title', 'shipflex'),
-			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
-			'option_note' => esc_html__('Leave either field empty to disable that limit.', 'shipflex'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages (leave blank to keep original).', 'shipflex'),
+			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipflex'),
 		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(

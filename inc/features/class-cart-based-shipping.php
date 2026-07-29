@@ -3,6 +3,7 @@
 namespace ShipFlex\Feature;
 
 use ShipFlex\Cart_Total;
+use ShipFlex\Component\Cart_Option;
 use ShipFlex\Utils;
 use ShipFlex\Feature;
 use ShipFlex\Form_Control;
@@ -64,10 +65,98 @@ class Cart_Based_Shipping extends Feature {
 		}
 
 		$tier_items = $this->order_priority($tier_items);
+
 		$best_tier = apply_filters($this->get_hook('applicable-layer'), end($tier_items), $this);
 		if (isset($best_tier['calculated_shipping_cost'])) {
 			$shipping_rate->set_cost($best_tier['calculated_shipping_cost']);
 		}
+	}
+
+	/**
+	 * Calculate shipping cost of tier item
+	 * 
+	 * @since 1.0.0
+	 * @param array $tier_item
+	 */
+	public function calculate_tier_item_shipping_cost($tier_item, $cart_total) {
+		$tier_item = wp_parse_args($tier_item, array(
+			'calculate_basis' => '',
+			'calculation_type' => '',
+			'calculation_value' => '',
+			'target_products' => array(),
+			'condition_groups' => array(),
+			'shipping_cost_range_layers' => array(),
+		));
+
+		$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
+
+		$calculate_basis = isset($tier_item['calculate_basis']) ? $tier_item['calculate_basis'] : null;
+		if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
+			return;
+		}
+
+		$calculation_value = isset($tier_item['calculation_value']) ? trim($tier_item['calculation_value']) : '';
+		$calculation_value = apply_filters($this->get_hook('layer', 'calculation-value'), $calculation_value, $tier_item, $this);
+		if (strlen($calculation_value) == 0 && 'based_on_ranges' !== $tier_item['calculation_type']) {
+			return;
+		}
+
+		try {
+			$calculation_value = floatval($calculation_value);
+			if ('fixed_amount' == $calculate_basis) {
+				throw new Shipping_Cost($calculation_value);
+			}
+
+			if (in_array($calculate_basis, $calculate_metrics)) {
+				$calculation_type = isset($tier_item['calculation_type']) ? $tier_item['calculation_type'] : null;
+
+				$metrics_total = $cart_total->get_total($calculate_basis);
+
+				if ($metrics_total > 0) {
+					if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
+						$shipping_cost = $metrics_total * $calculation_value;
+						if ('subtotal' == $calculate_basis) {
+							$shipping_cost = $shipping_cost / 100;
+						}
+
+						throw new Shipping_Cost($shipping_cost);
+					}
+
+					if (
+						'based_on_ranges' == $calculation_type &&
+						isset($tier_item['shipping_cost_range_layers']) &&
+						is_array($tier_item['shipping_cost_range_layers']) &&
+						count($tier_item['shipping_cost_range_layers']) > 0
+					) {
+						$shipping_cost_range_layers = array_map(fn($range_layer) => new Shipping_Cost_Range_Tier($range_layer), $tier_item['shipping_cost_range_layers']);
+						$shipping_cost_range_layers = array_filter($shipping_cost_range_layers, function ($item) {
+							if (!$item->has_validate_ranges()) {
+								return false;
+							}
+
+							return $item->is_condition_matched();
+						});
+
+						if (count($shipping_cost_range_layers) == 0) {
+							throw new Shipping_Cost(-1);
+						}
+
+						usort($shipping_cost_range_layers, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
+						$shipping_cost_range = end($shipping_cost_range_layers);
+						$shipping_cost = $shipping_cost_range->calculate_shipping_cost($metrics_total, $tier_item['calculate_basis']);
+						if (false !== $shipping_cost) {
+							throw new Shipping_Cost($shipping_cost);
+						}
+					}
+				}
+			}
+
+			throw new Shipping_Cost(-1);
+		} catch (Shipping_Cost $e) {
+			$tier_item['calculated_shipping_cost'] = $e->getAmount();
+		}
+
+		return $tier_item;
 	}
 
 	/**
@@ -88,84 +177,26 @@ class Cart_Based_Shipping extends Feature {
 			$existsed_tiers = array();
 		}
 
-		$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
+		$cart_total = new Cart_Total();
 
-		array_walk($tier_items, function (&$tier_item) use ($calculate_metrics, &$existsed_tiers, $rule_id) {
-			$tier_item = wp_parse_args($tier_item, array(
-				'rule_id' => $rule_id,
-				'calculate_basis' => '',
-				'calculation_type' => '',
-				'calculation_value' => '',
-				'condition_groups' => array(),
-				'shipping_cost_ranges' => array(),
-			));
-
-			$calculate_basis = isset($tier_item['calculate_basis']) ? $tier_item['calculate_basis'] : null;
-			if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
-				return;
-			}
-
-			$calculation_value = isset($tier_item['calculation_value']) ? trim($tier_item['calculation_value']) : '';
-			$calculation_value = apply_filters($this->get_hook('layer', 'calculation-value'), $calculation_value, $tier_item, $this);
-			if (strlen($calculation_value) == 0 && 'shipping_cost_ranges' !== $tier_item['calculation_type']) {
-				return;
-			}
-
-			try {
-				$calculation_value = floatval($calculation_value);
-				if ('fixed_amount' == $calculate_basis) {
-					throw new Shipping_Cost($calculation_value);
+		array_walk($tier_items, function (&$tier_item) use (&$existsed_tiers, $rule_id, $cart_total) {
+			if (isset($group['condition_groups'])) {
+				$is_matched = Main::get_instance()->is_matched_conditions($group['condition_groups']);
+				if (!$is_matched) {
+					return;
 				}
-
-				if (in_array($calculate_basis, $calculate_metrics)) {
-					$calculation_type = isset($tier_item['calculation_type']) ? $tier_item['calculation_type'] : null;
-
-					$metrics_total = (new Cart_Total())->get_total($calculate_basis);
-
-					if ($metrics_total > 0) {
-						if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
-							$shipping_cost = $metrics_total * $calculation_value;
-							if ('subtotal' == $calculate_basis) {
-								$shipping_cost = $shipping_cost / 100;
-							}
-
-							throw new Shipping_Cost($shipping_cost);
-						}
-
-						if (
-							'shipping_cost_ranges' == $calculation_type &&
-							isset($tier_item['shipping_cost_ranges']) &&
-							is_array($tier_item['shipping_cost_ranges']) &&
-							count($tier_item['shipping_cost_ranges']) > 0
-						) {
-							$shipping_cost_ranges = array_map(fn($range_layer) => new Shipping_Cost_Range_Tier($range_layer), $tier_item['shipping_cost_ranges']);
-
-							$shipping_cost_ranges = array_filter($shipping_cost_ranges, function ($item) {
-								if (!$item->has_validate_ranges()) {
-									return false;
-								}
-
-								return $item->is_condition_matched();
-							});
-
-							if (count($shipping_cost_ranges) == 0) {
-								throw new Shipping_Cost(-1);
-							}
-
-							usort($shipping_cost_ranges, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
-							$shipping_cost_range = end($shipping_cost_ranges);
-							$shipping_cost = $shipping_cost_range->calculate_shipping_cost($metrics_total);
-							if (false !== $shipping_cost) {
-								throw new Shipping_Cost($shipping_cost);
-							}
-						}
-					}
-				}
-
-				throw new Shipping_Cost(-1);
-			} catch (Shipping_Cost $e) {
-				$tier_item['calculated_shipping_cost'] = $e->getAmount();
 			}
+
+			if (!isset($tier_item['target_products'])) {
+				$tier_item['target_products'] = array();
+			}
+
+			$cart_option = new Cart_Option($tier_item['target_products']);
+			$cart_total->set_cart_items_keys($cart_option->get_cart_items_keys());
+
+
+			$tier_item = $this->calculate_tier_item_shipping_cost($tier_item, $cart_total);
+			$tier_item['rule_id'] = $rule_id;
 
 			if (!isset($tier_item['id'])) {
 				$tier_item['id'] = md5(wp_json_encode($tier_item));
@@ -173,7 +204,7 @@ class Cart_Based_Shipping extends Feature {
 
 			if ($tier_item['calculated_shipping_cost'] >= 0) {
 				$tier_item_key = $rule_id . '-' . $tier_item['id'];
-				$existsed_tiers[$tier_item_key] = apply_filters($this->get_hook('layer'), $tier_item, $tier_item_key, $this);
+				$existsed_tiers[$tier_item_key] = apply_filters($this->get_hook('layer'), $tier_item, $this);
 			}
 		});
 
@@ -187,11 +218,11 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('layer_items', array(
+		$settings_fields->add_setting('lite_tier_settings', array(
 			'priority' => 10,
-			'default_value' => array((object) array()),
-			'model_key' => $this->get_model_key('layers'),
-			'callback' => array($this, 'layer_items_setting_field'),
+			'default_value' => (object) array(),
+			'model_key' => $this->get_model_key('lite_tier'),
+			'callback' => array($this, 'lite_tier_settings_field'),
 		), $this->get_id());
 
 		$settings_fields->add_setting('add_new_tier', array(
@@ -202,12 +233,12 @@ class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Output line items setting field
+	 * Output lite tier settings field
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function layer_items_setting_field() { ?>
+	public function lite_tier_settings_field() { ?>
 		<template
 			:hide-heading="true"
 			is="vue:feature-cart-based-shipping"
@@ -265,7 +296,7 @@ class Cart_Based_Shipping extends Feature {
 		$settings_fields->add_setting('target_products', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => 'target_product',
+			'model_key' => 'target_products',
 			'label' => esc_html__('Target Cart Items', 'shipflex'),
 			'callback' => array($this, 'target_products_setting_field'),
 			'label_note' => esc_html__('Select which cart items this rule applies to. You can target all items or filter by specific categories, tags, shipping classes, or taxonomies.', 'shipflex'),
@@ -303,14 +334,14 @@ class Cart_Based_Shipping extends Feature {
 			)
 		), 'cart-tier');
 
-		$settings_fields->add_setting('shipping_cost_ranges_settings', array(
+		$settings_fields->add_setting('shipping_cost_range_layers', array(
 			'priority' => 50,
 			'default_value' => array((object)array()),
-			'model_key' => 'shipping_cost_ranges',
+			'model_key' => 'shipping_cost_range_layers',
 			'label' => esc_html__('Shipping Cost Range Settings', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_ranges_setting_field'),
+			'callback' => array($this, 'shipping_cost_range_layers_setting_field'),
 			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use priority settings and condition groups to control which rates apply.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "shipping_cost_ranges"'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "based_on_ranges"'),
 		), 'cart-tier');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -333,6 +364,7 @@ class Cart_Based_Shipping extends Feature {
 			<cart-option
 				based-on=""
 				:hide-operator="true"
+				cart-option-type="cart-items"
 				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
 				option-label="<?php esc_html_e('All cart items of selected {{option_label_lower}}', 'shipflex') ?>">
@@ -385,7 +417,7 @@ class Cart_Based_Shipping extends Feature {
 					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></template>
 					<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
 				</option>
-				<option value="shipping_cost_ranges"><?php esc_html_e('Shipping Cost Ranges', 'shipflex') ?></option>
+				<option value="based_on_ranges"><?php esc_html_e('Shipping Cost Ranges', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="show_calculation_value">
@@ -423,15 +455,15 @@ class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function shipping_cost_ranges_setting_field(Form_Control $form_control) {
+	public function shipping_cost_range_layers_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
 		<div
 			@end="on_order_change"
 			style="margin-bottom: 10px;"
 			class="sortable-items-container"
-			v-if="shipping_cost_ranges?.length"
-			data-model-key="shipping_cost_ranges"
+			v-if="shipping_cost_range_layers?.length"
+			data-model-key="shipping_cost_range_layers"
 			v-sortable="{options: {handle: '.button-drag'}}">
 			<shipping-cost-range
 				:tier-no="index + 1"
@@ -439,9 +471,9 @@ class Cart_Based_Shipping extends Feature {
 				:range-data="shipping_rage_data"
 				:calculate-basis="calculate_basis"
 				@delete="delete_shipping_cost_range(index)"
-				:total-tier="shipping_cost_ranges?.length"
-				v-for="(shipping_rage_data, index) in shipping_cost_ranges"
-				@update="(range_data) => shipping_cost_ranges[index] = range_data"
+				:total-tier="shipping_cost_range_layers?.length"
+				v-for="(shipping_rage_data, index) in shipping_cost_range_layers"
+				@update="(range_data) => shipping_cost_range_layers[index] = range_data"
 				@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
 			</shipping-cost-range>
 		</div>

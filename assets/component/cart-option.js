@@ -5,6 +5,14 @@ const { __ } = wp.i18n;
 const Cart_Option = {
 	template: '#shipflex-cart-option-component',
 	props: {
+		cartOptionType: {
+			default: 'cart-total', //cart-items, products, 
+			type: [String, null]
+		},
+
+		//Cart items of selected products
+		//Cart items of selected variations
+
 		cartOptionData: {
 			required: true
 		},
@@ -32,7 +40,8 @@ const Cart_Option = {
 			based_on: this.basedOn,
 			operator: 'any_in_list',
 			...shipflex_admin.cart_option_models,
-			...this.cartOptionData
+			...this.cartOptionData,
+			cart_option_type: this.cartOptionType
 		}
 	},
 
@@ -48,11 +57,15 @@ const Cart_Option = {
 		},
 
 		hide_operator() {
-			if (!this.based_on?.length || this.based_on == 'of_the_cart') {
+			if (!this.based_on?.length || this.based_on == 'of_the_cart' || this.hideOperator) {
 				return true;
 			}
 
-			const option_settings = shipflex_admin.cart_options?.[this.based_on];
+			if (Array('cart-items', 'products').includes(this.cartOptionType)) {
+				return true;
+			}
+
+			const option_settings = this.options?.[this.based_on];
 			if (true === option_settings?.hide_operator) {
 				return true;
 			}
@@ -79,8 +92,11 @@ const Cart_Option = {
 		get_option_label(option_key) {
 			const option_item = this.options?.[option_key];
 			let option_text = this.optionLabel.toString();
+
 			option_text = option_text.replace('{{option_label}}', option_item?.label);
-			return option_text.replace('{{option_label_lower}}', option_item?.label_lower);
+			option_text = option_text.replace('{{option_label_lower}}', option_item?.label_lower);
+
+			return wp.hooks.applyFilters('shipflex.cart-option.option-label', option_text, option_item);
 		},
 
 		handle_cart_option_click() {

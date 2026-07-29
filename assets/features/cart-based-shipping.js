@@ -16,7 +16,7 @@ const Cart_Based_Shipping = {
 		return {
 			calculation_value: '',
 			calculate_basis: 'fixed_amount',
-			shipping_cost_ranges: [],
+			shipping_cost_range_layers: [],
 			calculation_type: 'per_unit_or_percentage',
 			...shipflex_admin?.features?.['cart-based-shipping'],
 			...this.featureData
@@ -29,7 +29,7 @@ const Cart_Based_Shipping = {
 		},
 
 		show_calculation_value() {
-			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_type != 'shipping_cost_ranges')
+			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_type != 'based_on_ranges')
 		},
 
 		calculation_metrics() {
@@ -43,19 +43,19 @@ const Cart_Based_Shipping = {
 
 	methods: {
 		add_shipping_cost_range() {
-			if (!Array.isArray(this.shipping_cost_ranges)) {
-				this.shipping_cost_ranges = []
+			if (!Array.isArray(this.shipping_cost_range_layers)) {
+				this.shipping_cost_range_layers = []
 			}
 
-			this.shipping_cost_ranges.push({ id: Utils.generate_uuid() })
+			this.shipping_cost_range_layers.push({ id: Utils.generate_uuid() })
 		},
 
 		duplicate_shipping_cost_range(data, position) {
-			this.shipping_cost_ranges.splice(position, 0, data)
+			this.shipping_cost_range_layers.splice(position, 0, data)
 		},
 
 		delete_shipping_cost_range(index) {
-			this.shipping_cost_ranges.splice(index, 1)
+			this.shipping_cost_range_layers.splice(index, 1)
 		}
 	}
 }

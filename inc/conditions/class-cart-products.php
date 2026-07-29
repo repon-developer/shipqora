@@ -28,24 +28,6 @@ final class Cart_Products {
 	 * @return array
 	 */
 	public function add_condition_types($types) {
-		$types['cart_products:products'] = array(
-			'priority' => 1,
-			'default_value' => array(),
-			'model_key' => 'cart_products_products',
-			'template' => array($this, 'products_template'),
-			'label' => esc_html__('Products', 'shipflex'),
-			'validate_callback' => array($this, 'validate_condition'),
-		);
-
-		$types['cart_products:variation_products'] = array(
-			'priority' => 2,
-			'default_value' => array(),
-			'model_key' => 'cart_products_variation_products',
-			'template' => array($this, 'variation_product_template'),
-			'label' => esc_html__('Variation products', 'shipflex'),
-			'validate_callback' => array($this, 'validate_condition'),
-		);
-
 		foreach (Utils::get_product_taxonomies() as $tax_key => $taxonomy) {
 			$types['cart_products:' . $tax_key] = wp_parse_args($taxonomy, array(
 				'group' => 'cart_products',
@@ -71,17 +53,6 @@ final class Cart_Products {
 
 		$model_key = null;
 		$current_cart_values = array();
-		if ('cart_products:products' === $condition['type']) {
-			$model_key = 'cart_products_products';
-			$current_cart_values = array_map(fn($cart_item) => $cart_item['product_id'], $cart_items);
-		}
-
-		if ('cart_products:variation_products' === $condition['type']) {
-			$model_key = 'cart_products_variation_products';
-			$current_cart_values = array_map(fn($cart_item) => $cart_item['variation_id'], $cart_items);
-			$current_cart_values = array_unique(array_filter($current_cart_values));
-		}
-
 		foreach (Utils::get_product_taxonomies() as $tax_key => $taxonomy) {
 			if ('cart_products:' . $tax_key === $condition['type']) {
 				$model_key = 'cart_products_' . $taxonomy['model'];

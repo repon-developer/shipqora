@@ -2,6 +2,7 @@
 
 namespace ShipFlex\Condition;
 
+use ShipFlex\Cart_Total;
 use ShipFlex\Utils;
 
 if (!defined('ABSPATH')) {
@@ -211,7 +212,7 @@ class Main {
 			return true;
 		}
 
-		$hash = md5(wp_json_encode($condition_groups));
+		$hash = md5(wp_json_encode($condition_groups) . wp_json_encode(Cart_Total::get_cart_items()));
 		if (array_key_exists($hash, $this->condition_results)) {
 			return $this->condition_results[$hash];
 		}

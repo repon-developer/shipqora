@@ -117,7 +117,7 @@ final class Cart {
 
 		$compare_value = 0.00;
 		if (array_key_exists($condition['type'], $type_total_keys)) {
-			$cart_total = new Cart_Total($cart_option->get_matched_cart_items_keys());
+			$cart_total = new Cart_Total($cart_option->get_cart_items_keys());
 			$compare_value = $cart_total->get_total($type_total_keys[$condition['type']]);
 		}
 

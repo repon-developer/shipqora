@@ -167,9 +167,10 @@ final class Shipping_Cost_Range_Tier {
 	 * @since 1.0.0
 	 * @return mixed
 	 */
-	public function calculate_shipping_cost($total_value) {
+	public function calculate_shipping_cost($total_value, $calculate_basis) {
 		$previous_max = 0;
-		$range_costs = array_map(function ($range) use (&$total_value, &$previous_max) {
+
+		$range_costs = array_map(function ($range) use (&$total_value, &$previous_max, $calculate_basis) {
 			if (empty($range['type']) || !in_array($range['type'], array('fixed_amount', 'per_unit_or_percentage'))) {
 				$range['type'] = 'fixed_amount';
 			}
@@ -189,6 +190,9 @@ final class Shipping_Cost_Range_Tier {
 			$range_cost = $range['value'];
 			if ('per_unit_or_percentage' === $range['type']) {
 				$range_cost = $calculate_with * $range['value'];
+				if ('subtotal' == $calculate_basis) {
+					$range_cost = $range_cost / 100;
+				}
 			}
 
 			return $range_cost;
@@ -232,12 +236,12 @@ final class Shipping_Cost_Range_Tier {
 	public function add_settings_fields() {
 		$settings_fields = Settings_Fields::get_instance('shipping-cost-range');
 
-		$settings_fields->add_setting('shipping_cost_ranges', array(
+		$settings_fields->add_setting('range_lines', array(
 			'priority' => 10,
 			'model_key' => 'range_lines',
 			'default_value' => array(array()),
 			'label' => esc_html__('Shipping Cost Ranges', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_ranges_setting_field'),
+			'callback' => array($this, 'range_lines_setting_field'),
 			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this range.', 'shipflex'),
 			'option_note' => esc_html__("Define item quantity brackets and their corresponding calculation types. The system will match the exact bracket for the cart's item count to compute the final shipping cost.", 'shipflex'),
 		), 'general');
@@ -268,7 +272,7 @@ final class Shipping_Cost_Range_Tier {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function shipping_cost_ranges_setting_field($form_control) {
+	public function range_lines_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
 		<table class="shipflex-cost-range-table" v-if="range_lines?.length">
 			<thead>

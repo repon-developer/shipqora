@@ -72,7 +72,7 @@ final class Cart_Option {
 	 */
 	public static function output_component() { ?>
 		<template id="shipflex-cart-option-component">
-			<select ref="cart_option_dropdown" v-model="based_on" click="handle_cart_option_click()">
+			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
 				<slot name="based-on-first-option"></slot>
 				<option
 					:key="option_value"
@@ -80,7 +80,7 @@ final class Cart_Option {
 					:value="option_value">{{get_option_label(option_value)}}</option>
 			</select>
 
-			<select v-model="operator" v-if="false === hide_operator && !hideOperator">
+			<select v-model="operator" v-if="false === hide_operator">
 				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipflex') ?></option>
 				<option value="all_in_list"><?php esc_html_e('All in list', 'shipflex') ?></option>
 				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipflex') ?></option>
@@ -140,6 +140,13 @@ final class Cart_Option {
 	 * @var array
 	 */
 	public $extra_data = [];
+
+	/**
+	 * Hold cart option type
+	 * 
+	 * @var string
+	 */
+	private $cart_option_type = 'cart-total';
 
 	/**
 	 * Constructor.
@@ -266,7 +273,14 @@ final class Cart_Option {
 				}
 			}
 
-			$compare_values = apply_filters('shipflex/cart_option/is_eligible_product/compare_values', $compare_values, $product_id, $variation_id, $this);
+			$compare_values = apply_filters(
+				Utils::get_hook_name('cart-option', 'is-eligible-product', 'compare-values'),
+				$compare_values,
+				$product_id,
+				$variation_id,
+				$this
+			);
+
 			$matched_values = array_intersect($this->model_values, $compare_values);
 
 			$current_option = false;
@@ -293,7 +307,7 @@ final class Cart_Option {
 			}
 		}
 
-		return apply_filters('shipflex/cart_option/is_eligible_product', $eligible_product, $product_id, $variation_id, $this);
+		return apply_filters(Utils::get_hook_name('cart-option', 'is-eligible-product'), $eligible_product, $product_id, $variation_id, $this);
 	}
 
 	/**
@@ -302,7 +316,7 @@ final class Cart_Option {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_matched_cart_items_keys() {
+	public function get_cart_items_keys() {
 		$matched_cart_items_keys = array();
 		foreach (Cart_Total::get_cart_items() as $cart_item_key => $cart_item) {
 			$eligible_product = $this->is_eligible_product($cart_item['product_id'], $cart_item['variation_id']);

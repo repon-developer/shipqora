@@ -4,9 +4,11 @@ namespace ShipFlex\Feature;
 
 use ShipFlex\Utils;
 use ShipFlex\Feature;
+use ShipFlex\Cart_Total;
 use ShipFlex\Form_Control;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -20,6 +22,14 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @var string
 	 */
 	protected $feature_id = 'product-based-shipping';
+
+	/**
+	 * Hold product groups
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	protected $groups = array();
 
 	/**
 	 * Constructor.
@@ -49,6 +59,35 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 
 	/**
+	 * Set shipping cost
+	 * 
+	 * @since 1.0.0
+	 * @param WC_Shipping_Rate $shipping_rate
+	 */
+	public function set_shipping_cost($shipping_rate) {
+		$product_items = $shipping_rate->{$this->get_id()};
+		if (!is_array($product_items) || count($product_items) == 0) {
+			return;
+		}
+
+		$product_costs = array_map(function ($product_tiers) {
+			$product_item = end($this->order_priority($product_tiers));
+			if (array_key_exists('calculated_shipping_cost', $product_item) && $product_item['calculated_shipping_cost'] >= 0) {
+				return $product_item['calculated_shipping_cost'];
+			}
+
+			return false;
+		}, $product_items);
+
+		$shipping_cost = array_sum(array_filter($product_costs));
+		$shipping_cost = apply_filters($this->get_hook('shipping-cost'), $shipping_cost, $product_items, $this);
+
+		if ($shipping_cost >= 0) {
+			$shipping_rate->set_cost($shipping_cost);
+		}
+	}
+
+	/**
 	 * Add shipping rate data
 	 * 
 	 * @since 1.0.0
@@ -56,6 +95,51 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @param int $rule_id
 	 */
 	public function add_shipping_rate_data($shipping_rate, $rule_id) {
+		if (!is_array($this->groups) || (is_array($this->groups) && count($this->groups) == 0)) {
+			return;
+		}
+
+		$product_items = $shipping_rate->{$this->get_id()};
+		if (!is_array($product_items)) {
+			$product_items = array();
+		}
+
+		$cart_total = new Cart_Total();
+
+		array_walk($this->groups, function (&$group) use (&$product_items, $rule_id, $cart_total) {
+			if (isset($group['condition_groups'])) {
+				$is_matched = Main::get_instance()->is_matched_conditions($group['condition_groups']);
+				if (!$is_matched) {
+					return;
+				}
+			}
+
+			$group['rule_id'] = $rule_id;
+			if (isset($group['product_source'])) {
+				$group['target_products'] = $group['product_source'];
+			}
+
+			$cart_items = $cart_total->get_cart_items();
+
+			$cart_option = new Cart_Option($group['target_products']);
+
+			foreach ($cart_items as $cart_item_key => $cart_item) {
+				$is_eligible_product = $cart_option->is_eligible_product($cart_item['product_id'], $cart_item['variation_id']);
+				if (!$is_eligible_product) {
+					continue;
+				}
+
+				$cart_total->set_cart_items_keys(array($cart_item_key));
+				$product_item = $this->calculate_tier_item_shipping_cost($group, $cart_total);
+
+				if ($product_item['calculated_shipping_cost'] >= 0) {
+					$product_slug = $cart_item['product_id'] . '-' . $cart_item['variation_id'];
+					$product_items[$product_slug][] = apply_filters($this->get_hook('product'), $product_item, $group, $this);
+				}
+			}
+		});
+
+		$shipping_rate->{$this->get_id()} = $product_items;
 	}
 
 	/**
@@ -82,22 +166,16 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$editor_settings_fields = Settings_Fields::get_instance('rule-editor');
+		$settings_fields->add_setting('product_groups_settings_field', array(
+			'priority' => 10,
+			'default_value' => array((object) array()),
+			'model_key' => $this->get_model_key('groups'),
+			'callback' => array($this, 'product_groups_settings_field'),
+		), $this->get_id());
 
-		$cart_based_shipping_fields = $editor_settings_fields->get_settings_fields('cart-based-shipping');
-		unset($cart_based_shipping_fields['add_new_tier']);
-
-		$layer_items = $editor_settings_fields->get_setting('layer_items', 'cart-based-shipping');
-		$layer_items = wp_parse_args(array(
-			'model_key' => $this->get_configuration_value('base_model'),
-			'callback' => array($this, 'layer_items_setting_field')
-		), $layer_items);
-
-		$settings_fields->add_setting('layer_items', $layer_items, $this->get_id());
-
-		$settings_fields->add_setting('add_new_layer', array(
+		$settings_fields->add_setting('add_new_product_group', array(
 			'priority' => 10000,
-			'callback' => array($this, 'add_new_layer_setting_field'),
+			'callback' => array($this, 'add_group_setting_field'),
 		), $this->get_id());
 	}
 
@@ -107,23 +185,22 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function layer_items_setting_field() { ?>
+	public function product_groups_settings_field() { ?>
 		<tbody
 			:key="layer?.id"
 			class="sortable-item"
-			v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('layers')) ?>">
+			v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('groups')) ?>">
 			<template
 				:feature-data="layer"
 				:tier-no="layer_index + 1"
 				is="vue:feature-product-based-shipping"
-				:total-tier="<?php echo esc_attr($this->get_model_key('layers')) ?>?.length"
-				delete-warning="<?php esc_html_e('Are you sure you want to delete this "Product Rule"?', 'shipflex') ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('layers')) ?>[layer_index] = value"
-				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', layer_index)"
-				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>', value, position)">
+				:total-tier="<?php echo esc_attr($this->get_model_key('groups')) ?>?.length"
+				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipflex') ?>"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[layer_index] = value"
+				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', layer_index)"
+				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', value, position)">
 			</template>
 		</tbody>
-
 	<?php
 	}
 
@@ -133,11 +210,11 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_new_layer_setting_field(Form_Control $form_control) {
+	public function add_group_setting_field(Form_Control $form_control) {
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
-			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('layers')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('+ Add Product Tier', 'codiepress-cart-rewards-pro'); ?>
+			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>')" class="button button-primary button-full-width" href="#">
+				<?php esc_html_e('+ Add Product Group', 'codiepress-cart-rewards-pro'); ?>
 			</a>
 		</td>
 	<?php
@@ -165,7 +242,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<?php $this->output_heading_row(esc_html__('Product Tier #{{tierNo}}', 'shipflex')) ?>
+		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipflex')) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('product') ?>
 		</template>
@@ -204,8 +281,8 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$settings_fields->add_setting('shipping_cost_calculation', $shipping_cost_calculation, 'product');
 
 
-		$shipping_cost_ranges_settings = $cart_based_component->get_setting('shipping_cost_ranges_settings', 'cart-tier');
-		$settings_fields->add_setting('shipping_cost_ranges_settings', $shipping_cost_ranges_settings, 'product');
+		$shipping_cost_range_layers = $cart_based_component->get_setting('shipping_cost_range_layers', 'cart-tier');
+		$settings_fields->add_setting('shipping_cost_range_layers', $shipping_cost_range_layers, 'product');
 
 		$condition_groups = $cart_based_component->get_setting('condition_groups', 'cart-tier');
 		$settings_fields->add_setting('condition_groups', $condition_groups, 'product');
@@ -223,6 +300,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			<cart-option
 				based-on=""
 				:hide-operator="true"
+				cart-option-type="products"
 				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
 				option-label="<?php esc_html_e('Products in selected {{option_label_lower}}', 'shipflex') ?>">
@@ -231,7 +309,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				</template>
 			</cart-option>
 		</div>
-<?php
+	<?php
 		$form_control->output_after_input_options();
 	}
 
@@ -252,7 +330,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				<?php Utils::get_lite_button($line_button_data) ?>
 			</div>
 		</td>
-	<?php
+<?php
 		$form_control->output_row('close');
 	}
 }

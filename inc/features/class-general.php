@@ -51,7 +51,7 @@ final class General {
 			</div>
 
 			<button class="button button-large-dashed button-full-width" @click.prevent="<?php echo esc_attr($add_group_method) ?>">
-				<?php esc_html_e('Add condition group', 'shipflex') ?>
+				<?php esc_html_e('+ Add Condition Group', 'shipflex') ?>
 			</button>
 		</td>
 	<?php

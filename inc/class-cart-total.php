@@ -57,13 +57,6 @@ final class Cart_Total {
 	}
 
 	/**
-	 * Hold cart items
-	 * 
-	 * @var array
-	 */
-	private $cart_items = [];
-
-	/**
 	 * Hold cart items keys for return values
 	 * 
 	 * @var array
@@ -74,13 +67,23 @@ final class Cart_Total {
 	 * Constructor
 	 */
 	public function __construct($cart_items_keys = null) {
-		$this->cart_items = self::get_cart_items();
-
 		if (!is_array($cart_items_keys)) {
-			$cart_items_keys = array_keys($this->cart_items);
+			$cart_items_keys = array_keys(self::get_cart_items());
 		}
 
-		$this->cart_items_keys = $cart_items_keys;
+		$this->set_cart_items_keys($cart_items_keys);
+	}
+
+	/**
+	 * Set cart items keys
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_cart_items_keys($cart_items_keys) {
+		if (is_array($cart_items_keys)) {
+			$this->cart_items_keys = $cart_items_keys;
+		}
 	}
 
 	/**
@@ -104,7 +107,7 @@ final class Cart_Total {
 	 * @return array
 	 */
 	public function get_filtered_cart_items() {
-		$cart_items = $this->cart_items;
+		$cart_items = self::get_cart_items();
 		foreach ($cart_items as $cart_item_key => $cart_item) {
 			if (!in_array($cart_item_key, $this->cart_items_keys)) {
 				unset($cart_items[$cart_item_key]);

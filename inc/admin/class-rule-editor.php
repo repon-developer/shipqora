@@ -298,20 +298,20 @@ final class Rule_Editor {
 				<div class="shipflex-modal" :class="{shown: current_modal !== null}">
 					<div class="modal-content">
 						<header class="modal-header">
-							<h2 v-if="current_modal == 'cart-option-advanced'">🚀 Unlock Advanced Cart Calculations</h2>
+							<h2 v-if="current_modal == 'cart-option-advanced'">🚀 Unlock Advanced Product Targeting</h2>
 							<span class="btn-modal-close dashicons dashicons-no-alt" @click.prevent="current_modal = null"></span>
 						</header>
 
 						<div class="modal-body">
 							<template v-if="current_modal == 'cart-option-advanced'">
-								<p>Unlock advanced calculation options based on cart items in the <strong>selected products</strong> or <strong>selected product variations</strong>.</p>
+								<p>Target specific products or individual variations to calculate shipping costs based only on matching items in the cart.</p>
 
-								<h3 style="margin-block: 5px;">Advanced options available in the Pro version:</h3>
+								<h3 style="margin-block: 5px;">What you can do with Pro:</h3>
 								<ul style="margin-top: 0;font-size: 15px">
-									<li><strong>Products</strong>: Checks only cart items that match the selected products.</li>
-									<li><strong>Product variations</strong>: Checks only cart items that match the selected product variations.</li>
+									<li><strong>Products</strong>: Filter and calculate costs using only specific chosen products in the cart.</li>
+									<li><strong>Product variations</strong>: Target specific product variations and attributes (e.g., T-Shirt — Large / Blue) so shipping rules apply strictly to variable product selections.</li>
 								</ul>
-								<p>Upgrade to the <strong>Pro version</strong> to calculate subtotal, quantity, weight, or volume using only the matching products or product variations in the cart.</p>
+								<p>Upgrade to <strong>ShipFlex Pro</strong> to unlock per-product filtering and advanced cart calculation rules.</p>
 							</template>
 						</div>
 						<footer class="modal-footer">
