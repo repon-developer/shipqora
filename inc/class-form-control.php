@@ -91,7 +91,7 @@ final class Form_Control {
 	/**
 	 * Constructor.
 	 */
-	public function __construct($options = '', $field_id = null, $reward_type = null) {
+	public function __construct($options = '', $field_id = null) {
 		$options = wp_parse_args($options, array(
 			'type' => '',
 			'label' => '',
@@ -232,34 +232,6 @@ final class Form_Control {
 	}
 
 	/**
-	 * Output settings fields group
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_settings_fields_group() {
-		if (!isset($this->options['sub_settings_fields']) || !is_array($this->options['sub_settings_fields'])) {
-			return;
-		}
-
-		echo '<tbody ' . wp_kses($this->output_row_attributes(), $this->allow_vue_attrs()) . '>';
-
-		if (!empty($this->options['title'])) {
-			echo '<tr class="row-group-heading"><th colspan="2">';
-			echo '<div class="heading-line">' . esc_html($this->options['title']) . '</div>';
-			echo '</th></tr>';
-		}
-
-		$settings_fields = Utils::priority_rearrange($this->options['sub_settings_fields']);
-		foreach ($settings_fields as $settings_field) {
-			$form_control = new self($settings_field);
-			$form_control->render();
-		}
-
-		echo '</tbody>';
-	}
-
-	/**
 	 * Output tag of row
 	 * 
 	 * @since 1.0.0
@@ -341,10 +313,6 @@ final class Form_Control {
 	 * @return void
 	 */
 	public function render() {
-		if ('settings_fields_group' === $this->type) {
-			return $this->output_settings_fields_group();
-		}
-
 		if (isset($this->options['callback'])) {
 			return call_user_func($this->options['callback'], $this);
 		}
@@ -470,31 +438,5 @@ final class Form_Control {
 		echo '<input ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . '>';
 		echo esc_html($this->options['checkbox_label']);
 		echo '</label>';
-	}
-
-	/**
-	 * Multiple checkbox control
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function checkbox_multiple($model_suffix = null) {
-		$options = $this->get_option('options');
-		if (!is_array($options) || count($options) == 0) {
-			return;
-		}
-
-		$this->add_attribute('type', 'checkbox');
-
-		echo '<ul class="multiple-options-list">';
-		foreach ($options as $option_value => $option_label) {
-			$this->add_attribute('value', $option_value);
-
-			echo '<li><label>';
-			echo '<input ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . '>';
-			echo esc_html($option_label);
-			echo '</label></li>';
-		}
-		echo '</ul>';
 	}
 }

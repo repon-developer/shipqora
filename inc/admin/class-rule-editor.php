@@ -148,8 +148,7 @@ final class Rule_Editor {
 		}
 
 		Condition\Main::output_component();
-		Component\Cart_Option::output_component();
-		Component\Shipping_Cost_Range_Tier::output_component(); ?>
+		Component\Cart_Option::output_component(); ?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">
@@ -259,9 +258,17 @@ final class Rule_Editor {
 					</table>
 
 					<?php foreach ($registered_features as $feature_id => $feature_instance) : ?>
-						<template v-if="active_features?.includes('<?php echo esc_attr($feature_id)  ?>')">
-							<?php $feature_instance->output_rule_editor($settings_fields); ?>
-						</template>
+						<table class="table-shipflex-form" v-if="active_features?.includes('<?php echo esc_attr($feature_id) ?>')" <?php $feature_instance->output_wrapper_attributes() ?>>
+							<thead>
+								<tr>
+									<td colspan="2">
+										<?php echo esc_html($feature_instance->get_configuration_value('section_title')) ?>
+									</td>
+								</tr>
+							</thead>
+
+							<?php $settings_fields->output_fields($feature_instance->get_id()); ?>
+						</table>
 					<?php endforeach; ?>
 
 					<footer class="form-footer">

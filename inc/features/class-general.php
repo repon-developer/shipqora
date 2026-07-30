@@ -284,7 +284,7 @@ final class General {
 
 		<div class="shipflex-notice-box shipflex-notice-box-left">
 			<h3>💡 Looking for Additional Features?</h3>
-			<div class="description">Missing a key feature for your workflow? Reach out directly to <a href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">support@shipflexpro.com</a> and our team will help build it for you.</div>
+			<div class="description">Missing a key feature for your workflow or any improvements? Reach out directly to <a href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">support@shipflexpro.com</a> and our team will help build it for you.</div>
 			<div class="gap-10"></div>
 			<a class="button" href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">Request a Feature</a>
 		</div>

@@ -131,8 +131,8 @@ class Rule_List_Table extends \WP_List_Table {
 
 		$row_actions[] = sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit', 'shipflex'));
 
-		$delete_url = add_query_arg(array('id' => $shipflex_rule->get_id(), 'delete' => wp_create_nonce('shipflex/reward_delete_nonce')), $menu_page);
-		$row_actions[] = sprintf('<a href="%s" class="delete-reward">%s</a>', esc_url($delete_url), __('Delete', 'shipflex'));
+		$delete_url = add_query_arg(array('id' => $shipflex_rule->get_id(), 'delete' => wp_create_nonce('shipflex/rule_delete_nonce')), $menu_page);
+		$row_actions[] = sprintf('<a href="%s" class="delete-rule">%s</a>', esc_url($delete_url), __('Delete', 'shipflex'));
 
 		echo '<div class="row-actions">' . wp_kses_post(implode(' | ', $row_actions)) . '</div>';
 	}

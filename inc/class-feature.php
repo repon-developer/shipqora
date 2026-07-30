@@ -19,7 +19,7 @@ class Feature {
 	private static $features = array();
 
 	/**
-	 * Get available reward types configurations
+	 * Register feature
 	 * 
 	 * @since 1.0.0
 	 * @return array
@@ -192,54 +192,29 @@ class Feature {
 	}
 
 	/**
-	 * Output section wrapper attributes
+	 * Get wrapper attributes of current section
+	 * 
+	 * @since 1.0.0
+	 * @return mixed
+	 */
+	public function get_wrapper_attributes() {
+		return array();
+	}
+
+	/**
+	 * Output wrapper attributes
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
 	public function output_wrapper_attributes() {
-	}
+		$wrapper_attributes = apply_filters(Utils::get_hook_name($this->get_id(), 'wrapper-attributes'), $this->get_wrapper_attributes());
+		if (!is_array($wrapper_attributes) || count($wrapper_attributes) == 0) {
+			return;
+		}
 
-	/**
-	 * Output settings fields of rule editor
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_rule_editor(Settings_Fields $settings_fields) {
-?>
-		<table class="table-shipflex-form" <?php $this->output_wrapper_attributes() ?>>
-			<thead>
-				<tr>
-					<td colspan="2">
-						<?php echo esc_html($this->get_configuration_value('section_title')) ?>
-					</td>
-				</tr>
-			</thead>
-
-			<?php $settings_fields->output_fields($this->get_id()); ?>
-		</table>
-<?php
-	}
-
-	/**
-	 * Get actions button of component heading
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function get_component_heading_actions() {
-		return null;
-	}
-
-	/**
-	 * Output feature heading row
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_heading_row($title) {
-		$action_contents = apply_filters(Utils::get_component_heading_actions_hook($this->get_id()), $this->get_component_heading_actions());
-		Utils::output_component_heading_row($title, $action_contents);
+		foreach ($wrapper_attributes as $key => $value) {
+			echo esc_attr($key) . '="' . esc_attr($value) . '" ';
+		}
 	}
 }

@@ -2,17 +2,25 @@
 
 namespace ShipFlex\Feature;
 
+use ShipFlex\Utils;
 use ShipFlex\Feature;
 use ShipFlex\Form_Control;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
-use ShipFlex\Utils;
+use ShipFlex\Component_Methods;
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 final class Hide_Other_Shipping_Methods extends Feature {
+
+	/**
+	 * Provides common helper methods of component
+	 *
+	 * @since 1.0.0
+	 */
+	use Component_Methods;
 
 	/**
 	 * Hold the feature id of this feature
@@ -91,14 +99,13 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+		$settings_fields = Settings_Fields::get_instance($this->get_id());
+		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), null);	?>
 
-		<tbody>
-			<?php $this->output_heading_row(esc_html__('Hide Rule #{{tierNo}}', 'shipflex')) ?>
-			<template v-if="!collapse && !additionalTier">
-				<?php $settings_fields->output_fields('tier-item') ?>
-			</template>
-		</tbody>
+		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipflex'), $action_contents) ?>
+		<template v-if="!collapse">
+			<?php $settings_fields->output_fields('tier-item') ?>
+		</template>
 	<?php
 	}
 
@@ -111,13 +118,13 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('lite_tier', array(
 			'priority' => 10,
-			'default_value' => array(),
+			'default_value' => (object) array(),
 			'model_key' => $this->get_model_key('lite_tier'),
 			'callback' => array($this, 'lite_tier_setting_field'),
 		), $this->get_id());
 
 		$settings_fields->add_setting('add_new_tier', array(
-			'priority' => 10,
+			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipflex-notice-row'),
 			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
@@ -130,13 +137,19 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function lite_tier_setting_field() { ?>
-		<template
-			:draggable="false"
-			:hide-heading="true"
-			is="vue:feature-hide-other-shipping-methods"
-			:feature-data="hide_other_shipping_methods?.lite_tier"
-			@update="(value) => hide_other_shipping_methods.lite_tier = value">
-		</template>
+		<tbody>
+			<template
+				:draggable="true"
+				is="vue:feature-hide-other-shipping-methods"
+				:feature-data="hide_other_shipping_methods?.lite_tier"
+				@update="(value) => hide_other_shipping_methods.lite_tier = value"
+				<?php $this->output_component_attrs(array(), array(
+					'type' => 'feature',
+					'model' => 'lite_tier',
+					'component' => $this->get_id()
+				)) ?>>
+			</template>
+		</tbody>
 	<?php
 	}
 

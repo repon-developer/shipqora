@@ -8,6 +8,7 @@ use ShipFlex\Cart_Total;
 use ShipFlex\Form_Control;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Component_Methods;
 use ShipFlex\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
@@ -15,6 +16,13 @@ if (!defined('ABSPATH')) {
 }
 
 final class Product_Based_Shipping extends Cart_Based_Shipping {
+
+	/**
+	 * Provides common helper methods of component
+	 *
+	 * @since 1.0.0
+	 */
+	use Component_Methods;
 
 	/**
 	 * Hold the feature id of this feature
@@ -143,20 +151,18 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 
 	/**
-	 * Add settings field of rule editor of current feature
+	 * Get wrapper attributes of this feature section
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function output_wrapper_attributes() {
-		printf(
-			'@end="(event) => on_order_change(event, \'%s\', 1)"',
-			esc_attr($this->get_model_key('layers'))
+	public function get_wrapper_attributes() {
+		return array(
+			'data-skip-order' => 1,
+			'@end' => 'on_order_change',
+			'data-model-key' => $this->get_model_key('groups'),
+			'v-sortable' => '{options: {handle: \'tr.row-group-heading .button-drag\'}, filter: \'>tbody.sortable-item\'}',
 		);
-
-		echo ' v-sortable="{options: {handle: \'tr.row-group-heading .button-drag\'}, filter: \'>tbody.sortable-item\'}"';
-
-		echo ' :key="' . $this->get_model_key('layers') . '?.length"';
 	}
 
 	/**
@@ -214,23 +220,11 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
 			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('+ Add Product Group', 'codiepress-cart-rewards-pro'); ?>
+				<?php esc_html_e('+ Add Product Group', 'shipflex'); ?>
 			</a>
 		</td>
 	<?php
 		$form_control->output_row('close');
-	}
-
-	/**
-	 * Get actions button of component heading
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function get_component_heading_actions() {
-		$actions = Utils::get_component_heading_actions();
-		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
-		return $actions;
 	}
 
 	/**
@@ -240,9 +234,12 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+		$settings_fields = Settings_Fields::get_instance($this->get_id());
 
-		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipflex')) ?>
+		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), $this->get_heading_actions());
+		$action_contents['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'; ?>
+
+		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipflex'), $action_contents) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('product') ?>
 		</template>

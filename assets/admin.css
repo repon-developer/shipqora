@@ -794,16 +794,17 @@ table.table-shipflex-form tr.row-group-heading .component-heading-actions .butto
 	margin-inline-start: -3px
 }
 
-table.table-shipflex-form tr.row-group-heading .component-heading-actions .btn-collapse {
-	--size: 28px;
+#shipflex table.table-shipflex-form tr.row-group-heading .component-heading-actions .button {
+	--inputHeight: 30px;
 	display: flex;
-	align-items: center;
-	width: var(--size);
-	height: var(--size);
 	justify-content: center;
-	color: var(--primaryColor);
-	border: 1px solid var(--primaryColor);
-	border-radius: var(--borderRadius)
+	height: var(--inputHeight);
+}
+
+#shipflex table.table-shipflex-form tr.row-group-heading .component-heading-actions .btn-collapse {
+	padding: 0;
+	font-size: 16px;
+	width: var(--inputHeight);
 }
 
 table.table-shipflex-form td>table.table-shipflex-form {
@@ -1297,9 +1298,9 @@ table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
 #shipflex .form-footer {
 	position: fixed;
 	bottom: 0;
-	z-index: 999;
-	display: flex;
 	gap: 20px;
+	display: flex;
+	z-index: 9990;
 	align-items: center;
 	padding: 15px 20px;
 	inset-inline-end: 0;

@@ -10,6 +10,7 @@ use ShipFlex\Form_Control;
 use ShipFlex\Shipping_Cost;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Component_Methods;
 use ShipFlex\Component\Shipping_Cost_Range_Tier;
 
 if (!defined('ABSPATH')) {
@@ -17,6 +18,13 @@ if (!defined('ABSPATH')) {
 }
 
 class Cart_Based_Shipping extends Feature {
+
+	/**
+	 * Provides common helper methods of component
+	 *
+	 * @since 1.0.0
+	 */
+	use Component_Methods;
 
 	/**
 	 * Hold the feature id of this feature
@@ -276,9 +284,10 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+		$settings_fields = Settings_Fields::get_instance($this->get_id());
+		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), null); ?>
 		<tbody>
-			<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex')) ?>
+			<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex'), $action_contents) ?>
 			<template v-if="!collapse">
 				<?php $settings_fields->output_fields('cart-tier') ?>
 			</template>

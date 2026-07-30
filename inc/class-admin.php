@@ -44,7 +44,7 @@ final class Admin {
 	public $rule_list = null;
 
 	/**
-	 * Hold instance of reward settings form
+	 * Hold instance of settings form
 	 * 
 	 * @since 1.0.0
 	 * @var Settings_Form
@@ -124,7 +124,7 @@ final class Admin {
 	}
 
 	/**
-	 * Save reward
+	 * Save rule
 	 * 
 	 * @since 1.0.0
 	 * @return void

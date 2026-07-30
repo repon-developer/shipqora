@@ -57,6 +57,7 @@ final class Main {
 		require_once ShipFlex_PATH . 'inc/class-shipflex-rule.php';
 		require_once ShipFlex_PATH . 'inc/class-settings-fields.php';
 		require_once ShipFlex_PATH . 'inc/conditions/class-main.php';
+		require_once ShipFlex_PATH . 'inc/components/trait-component.php';
 
 		/* Load components */
 		require_once ShipFlex_PATH . 'inc/components/class-select2.php';

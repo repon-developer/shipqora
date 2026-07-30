@@ -131,12 +131,14 @@ final class Select2 {
 			$meta_data['search_values'] = array_map('sanitize_text_field', wp_unslash($_POST['values']));
 		}
 
+		$results = array();
+
 		$meta_data = wp_parse_args($meta_data, $_POST);
 		$method_name = 'get_' . str_replace('-', '_', $meta_data['object_type']);
 
-		$results = array();
-		if (method_exists($this, $method_name)) {
-			$results = call_user_func(array($this, $method_name), $meta_data);
+		$callback_method = apply_filters(Utils::get_hook_name('select2', 'method'), array($this, $method_name), $meta_data, $this);		
+		if (method_exists(...$callback_method)) {
+			$results = call_user_func($callback_method, $meta_data);
 		}
 
 		wp_send_json_success(apply_filters('shipflex/select2/results', $results, $meta_data));

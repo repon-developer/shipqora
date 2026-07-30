@@ -7,12 +7,20 @@ use ShipFlex\Utils;
 use ShipFlex\Form_Control;
 use ShipFlex\Feature\General;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Component_Methods;
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 final class Shipping_Cost_Range_Tier {
+	/**
+	 * Provides common helper methods of component
+	 *
+	 * @since 1.0.0
+	 */
+	use Component_Methods;
+
 	/**
 	 * Hold the current instance
 	 * 
@@ -33,32 +41,6 @@ final class Shipping_Cost_Range_Tier {
 		}
 
 		return self::$instance;
-	}
-
-	/**
-	 * VueJS component of cart option
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public static function output_component() {
-		$actions = Utils::get_component_heading_actions();
-		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
-		$actions = apply_filters(Utils::get_component_heading_actions_hook('shipping-cost-range'), $actions);
-
-		$settings_fields = Settings_Fields::get_instance('shipping-cost-range'); ?>
-		<template id="shipflex-shipping-cost-range-component">
-			<table class="table-shipflex-form table-shipping-cost-range-tier">
-				<thead>
-					<?php Utils::output_component_heading_row(esc_html__('Cost Ranges #{{tierNo}}', 'shipflex'), $actions) ?>
-				</thead>
-
-				<tbody v-if="!collapse">
-					<?php $settings_fields->output_fields('general'); ?>
-				</tbody>
-			</table>
-		</template>
-	<?php
 	}
 
 	/**
@@ -209,7 +191,34 @@ final class Shipping_Cost_Range_Tier {
 	 */
 	public function init_hook() {
 		add_action('init', array($this, 'add_settings_fields'), 1);
+		add_action('admin_footer', array($this, 'output_vue_component'));
 		add_filter('shipflex/admin_enqueue_scripts', array($this, 'enqueue_scripts'), 10, 2);
+	}
+
+	/**
+	 * VueJS component of cart option
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_vue_component() {
+		$actions = $this->get_heading_actions();
+		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
+		$actions = apply_filters(Utils::get_hook_name('component-heading-actions','shipping-cost-range'), $actions);
+
+		$settings_fields = Settings_Fields::get_instance('shipping-cost-range'); ?>
+		<template id="shipflex-shipping-cost-range-component">
+			<table class="table-shipflex-form table-shipping-cost-range-tier">
+				<thead>
+					<?php $this->output_heading_row(esc_html__('Cost Ranges #{{tierNo}}', 'shipflex'), $actions) ?>
+				</thead>
+
+				<tbody v-if="!collapse">
+					<?php $settings_fields->output_fields('general'); ?>
+				</tbody>
+			</table>
+		</template>
+	<?php
 	}
 
 	/**

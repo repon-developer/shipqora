@@ -12,14 +12,9 @@ const Base_Component = {
 			type: Number
 		},
 
-		totalTier: {
-			default: 1,
-			type: Number
-		},
-
 		hideHeading: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 
 		deleteWarning: {
@@ -47,6 +42,10 @@ const Base_Component = {
 
 		collapse_button_class() {
 			return { 'dashicons-arrow-up-alt2': this.collapse, 'dashicons-arrow-down-alt2': !this.collapse }
+		},
+
+		hide_heading() {
+			return wp.hooks.applyFilters('shipflex.base_component.hide_heading', this.hideHeading);
 		}
 	},
 

@@ -33,30 +33,3 @@ body.shipflex_page_shipflex-edit[class*="shipflex-status-"] li.toplevel_page_shi
 #toplevel_page_shipflex .wp-menu-image img {
 	padding-top: 6px;
 }
-
-table.shipflex_rules_table .reward-status-wrapper,
-table.shipflex_rules_table .reward-validity-wrapper {
-	gap: 4px;
-	display: inline-flex;
-	align-items: center;
-}
-
-table.shipflex_rules_table .reward-status,
-table.shipflex_rules_table [class*="validity-color-"] {
-	--size: 12px;
-	width: var(--size);
-	height: var(--size);
-	border-radius: 100px;
-	display: inline-block;
-	background-color: #d32010;
-}
-
-table.shipflex_rules_table .reward-status-development,
-table.shipflex_rules_table .validity-color-upcoming {
-	background-color: #e99e32;
-}
-
-table.shipflex_rules_table .reward-status-active,
-table.shipflex_rules_table .validity-color-active {
-	background-color: #00bf1f;
-}

@@ -112,7 +112,7 @@ final class Billing_Shipping {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function validate_billing_shipping($matched, $condition, $reward_session) {
+	public function validate_billing_shipping($matched, $condition) {
 		$operator = 'any_in_list';
 		if (!empty($condition['billing_shipping_operator'])) {
 			$operator = $condition['billing_shipping_operator'];

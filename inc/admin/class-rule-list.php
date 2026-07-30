@@ -23,7 +23,7 @@ final class Rule_List {
 	}
 
 	/**
-	 * Handle delete of reward
+	 * Handle delete of rule
 	 * 
 	 * @since 1.0.0
 	 * @return void
@@ -33,14 +33,14 @@ final class Rule_List {
 			return;
 		}
 
-		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['delete'])), 'shipflex/reward_delete_nonce')) {
+		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['delete'])), 'shipflex/rule_delete_nonce')) {
 			return;
 		}
 
-		$reward_id = absint($_GET['id']);
+		$rule_id = absint($_GET['id']);
 
 		global $wpdb;
-		$wpdb->delete($wpdb->shipflex_rules_table, array('id' => $reward_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->delete($wpdb->shipflex_rules_table, array('id' => $rule_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		wp_safe_redirect(remove_query_arg(array('id', 'delete'))); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
 	}
@@ -62,7 +62,7 @@ final class Rule_List {
 	 * @return void
 	 */
 	public function process_bulk_delete_action() {
-		if (wp_doing_ajax() || empty($_POST['reward_rules']) || !is_array($_POST['reward_rules'])) {
+		if (wp_doing_ajax() || empty($_POST['rules']) || !is_array($_POST['rules'])) {
 			return;
 		}
 
@@ -80,9 +80,9 @@ final class Rule_List {
 		}
 
 		global $wpdb;
-		$reward_rules = array_map('absint', $_POST['reward_rules']);
-		foreach ($reward_rules as $reward_id) {
-			$wpdb->delete($wpdb->shipflex_rules_table, array('id' => $reward_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rules = array_map('absint', $_POST['rules']);
+		foreach ($rules as $rule_id) {
+			$wpdb->delete($wpdb->shipflex_rules_table, array('id' => $rule_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		}
 	}
 

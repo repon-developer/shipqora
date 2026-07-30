@@ -7,6 +7,7 @@ use ShipFlex\Feature;
 use ShipFlex\Form_Control;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
+use ShipFlex\Component_Methods;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -16,6 +17,13 @@ if (!defined('ABSPATH')) {
  * Shipping Cost Adjustment class
  */
 final class Shipping_Cost_Adjustment extends Feature {
+
+	/**
+	 * Provides common helper methods of component
+	 *
+	 * @since 1.0.0
+	 */
+	use Component_Methods;
 
 	/**
 	 * Hold the feature id of this feature
@@ -163,11 +171,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+		$settings_fields = Settings_Fields::get_instance($this->get_id());
+		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), null); ?>
 
 		<tbody>
-			<?php $this->output_heading_row(esc_html__('Adjustment: Tier #{{tierNo}}', 'shipflex')) ?>
-			<template v-if="!collapse && !additionalTier">
+			<?php $this->output_heading_row(esc_html__('Adjustment: Tier #{{tierNo}}', 'shipflex'), $action_contents) ?>
+			<template v-if="!collapse">
 				<?php $settings_fields->output_fields('tier-item') ?>
 			</template>
 		</tbody>

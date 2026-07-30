@@ -93,7 +93,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	updated() {
-		//console.log(this.$data);
+		console.log(this.$data);
 	},
 
 	methods: {
@@ -134,14 +134,17 @@ const ShipFlex_Rule_Editor = {
 			collections.splice(index_no, 1)
 		},
 
-		on_order_change(event, model_keys, skip = 0) {
+		on_order_change(event) {
 			const source_element = jQuery(event.from);
+
+			const model_keys = source_element.data('model-key');
 			if (!model_keys || !model_keys?.length) {
-				throw new Error("Please pass 'Model Key'");
+				throw new Error("Please add 'data-model' attribute");
 			}
 
-			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
+			const skip = parseInt(source_element.data('skip-order')) || 0;
 
+			let collections = model_keys.split('.').reduce((obj, key) => obj?.[key], this);
 			const item = collections.splice(event.oldIndex - skip, 1)[0];
 			collections.splice(event.newIndex - skip, 0, item);
 		},
