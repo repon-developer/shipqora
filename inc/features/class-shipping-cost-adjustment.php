@@ -67,7 +67,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return WC_Shipping_Rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$tier_items = apply_filters($this->get_hook('tier-items'), array($this->lite_tier));
+		$tier_items = apply_filters($this->get_hook('layers'), array($this->lite_tier));
 		if (count($tier_items) == 0) {
 			return;
 		}
@@ -171,15 +171,11 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function output_component() {
-		$settings_fields = Settings_Fields::get_instance($this->get_id());
-		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), null); ?>
-
-		<tbody>
-			<?php $this->output_heading_row(esc_html__('Adjustment: Tier #{{tierNo}}', 'shipflex'), $action_contents) ?>
-			<template v-if="!collapse">
-				<?php $settings_fields->output_fields('tier-item') ?>
-			</template>
-		</tbody>
+		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
+		<template v-if="!collapse">
+			<?php $settings_fields->output_fields('tier-item') ?>
+		</template>
 	<?php
 	}
 
@@ -197,8 +193,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'callback' => array($this, 'lite_tier_setting_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('add_new_tier', array(
-			'priority' => 10,
+		$settings_fields->add_setting('add_new_tier_setting_field', array(
+			'priority' => 10000,
 			'row_attributes' => array('class' => 'shipflex-notice-row'),
 			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
@@ -211,13 +207,19 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function lite_tier_setting_field() { ?>
-		<template
-			:draggable="false"
-			:hide-heading="true"
-			is="vue:feature-shipping-cost-adjustment"
-			:feature-data="shipping_cost_adjustment?.lite_tier"
-			@update="(value) => shipping_cost_adjustment.lite_tier = value">
-		</template>
+		<tbody>
+			<template
+				:draggable="false"
+				is="vue:feature-shipping-cost-adjustment"
+				:feature-data="shipping_cost_adjustment?.lite_tier"
+				@update="(value) => shipping_cost_adjustment.lite_tier = value"
+				<?php
+				$this->output_component_attrs(
+					array(':hide-heading' => 'true'),
+					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
+				) ?>>
+			</template>
+		</tbody>
 	<?php
 	}
 

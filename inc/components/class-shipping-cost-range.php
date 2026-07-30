@@ -202,15 +202,11 @@ final class Shipping_Cost_Range_Tier {
 	 * @return void
 	 */
 	public function output_vue_component() {
-		$actions = $this->get_heading_actions();
-		$actions['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>';
-		$actions = apply_filters(Utils::get_hook_name('component-heading-actions','shipping-cost-range'), $actions);
-
 		$settings_fields = Settings_Fields::get_instance('shipping-cost-range'); ?>
 		<template id="shipflex-shipping-cost-range-component">
 			<table class="table-shipflex-form table-shipping-cost-range-tier">
 				<thead>
-					<?php $this->output_heading_row(esc_html__('Cost Ranges #{{tierNo}}', 'shipflex'), $actions) ?>
+					<?php $this->output_heading_row(esc_html__('Cost Ranges #{{tierNo}}', 'shipflex'), array('shipping-cost-range')) ?>
 				</thead>
 
 				<tbody v-if="!collapse">

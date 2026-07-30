@@ -39,8 +39,13 @@ trait Component_Methods {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	protected function output_heading_row($title, $action_contents = null) {?>
-		<tr class="row-group-heading" v-if="!hide_heading">
+	protected function output_heading_row($title, $filter_slugs = array()) {
+		$action_contents = apply_filters(
+			Utils::get_hook_name('component-heading-actions', ...$filter_slugs),
+			$this->get_heading_actions()
+		); ?>
+
+		<tr class="row-group-heading" v-if="!hideHeading">
 			<td colspan="2">
 				<span class="button-drag dashicons dashicons-menu-alt" v-if="draggable"></span>
 				<div class="heading-line">

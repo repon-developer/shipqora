@@ -286,7 +286,7 @@ class Cart_Based_Shipping extends Feature {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 		<tbody>
-			<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex')) ?>
+			<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
 			<template v-if="!collapse">
 				<?php $settings_fields->output_fields('cart-tier') ?>
 			</template>

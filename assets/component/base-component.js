@@ -19,7 +19,7 @@ const Base_Component = {
 
 		deleteWarning: {
 			type: String,
-			default: __('Do you want to delete this tier?', 'shipflex'),
+			default: __('Are you sure you want to delete this tier?', 'shipflex'),
 		},
 	},
 
@@ -42,10 +42,6 @@ const Base_Component = {
 
 		collapse_button_class() {
 			return { 'dashicons-arrow-up-alt2': this.collapse, 'dashicons-arrow-down-alt2': !this.collapse }
-		},
-
-		hide_heading() {
-			return wp.hooks.applyFilters('shipflex.base_component.hide_heading', this.hideHeading);
 		}
 	},
 

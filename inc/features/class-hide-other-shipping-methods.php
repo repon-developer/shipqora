@@ -102,7 +102,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		$settings_fields = Settings_Fields::get_instance($this->get_id());
 		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), null);	?>
 
-		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipflex'), $action_contents) ?>
+		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('tier-item') ?>
 		</template>
