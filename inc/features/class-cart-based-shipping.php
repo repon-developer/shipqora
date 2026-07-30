@@ -233,8 +233,8 @@ class Cart_Based_Shipping extends Feature {
 			'callback' => array($this, 'lite_tier_settings_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('add_new_tier', array(
-			'priority' => 10,
+		$settings_fields->add_setting('add_new_tier_setting_field', array(
+			'priority' => 10000,
 			'row_attributes' => array('class' => 'shipflex-notice-row'),
 			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
@@ -247,12 +247,18 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function lite_tier_settings_field() { ?>
-		<template
-			:hide-heading="true"
-			is="vue:feature-cart-based-shipping"
-			:feature-data="<?php echo esc_attr($this->get_model_key('lite_tier')) ?>"
-			@update="(value) => <?php echo esc_attr($this->get_model_key('lite_tier')) ?> = value">
-		</template>
+		<tbody>
+			<template
+				:draggable="false"
+				is="vue:feature-cart-based-shipping"
+				:feature-data="<?php echo esc_attr($this->get_model_key('lite_tier')) ?>"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_tier')) ?> = value"
+				<?php $this->output_component_attrs(
+					array(':hide-heading' => 'true'),
+					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
+				) ?>>
+			</template>
+		</tbody>
 	<?php
 	}
 
@@ -285,12 +291,10 @@ class Cart_Based_Shipping extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<tbody>
-			<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
-			<template v-if="!collapse">
-				<?php $settings_fields->output_fields('cart-tier') ?>
-			</template>
-		</tbody>
+		<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
+		<template v-if="!collapse">
+			<?php $settings_fields->output_fields('cart-tier') ?>
+		</template>
 	<?php
 	}
 
