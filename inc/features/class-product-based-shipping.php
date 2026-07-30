@@ -161,7 +161,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			'data-skip-order' => 1,
 			'@end' => 'on_order_change',
 			'data-model-key' => $this->get_model_key('groups'),
-			'v-sortable' => '{options: {handle: \'tr.row-group-heading .button-drag\'}, filter: \'>tbody.sortable-item\'}',
+			'v-sortable' => '{options: {handle: \'tr.row-group-heading .button-drag\', draggable: \'>tbody.sortable-item\'}}',
 		);
 	}
 
@@ -193,17 +193,18 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 */
 	public function product_groups_settings_field() { ?>
 		<tbody
-			:key="layer?.id"
+			:key="product_group?.id"
 			class="sortable-item"
-			v-for="(layer, layer_index) in <?php echo esc_attr($this->get_model_key('groups')) ?>">
+			v-for="(product_group, index_no) in <?php echo esc_attr($this->get_model_key('groups')) ?>">
 			<template
-				:feature-data="layer"
-				:tier-no="layer_index + 1"
+				:hide-heading="false"
+				:tier-no="index_no + 1"
+				:feature-data="product_group"
 				is="vue:feature-product-based-shipping"
 				:total-tier="<?php echo esc_attr($this->get_model_key('groups')) ?>?.length"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[index_no] = value"
+				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', index_no)"
 				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipflex') ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[layer_index] = value"
-				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', layer_index)"
 				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', value, position)">
 			</template>
 		</tbody>
@@ -235,9 +236,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id());
-
-		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), $this->get_heading_actions());
-		$action_contents['delete']['content'] = '<a @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'; ?>
+		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), $this->get_heading_actions()); ?>
 
 		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipflex'), $action_contents) ?>
 		<template v-if="!collapse">

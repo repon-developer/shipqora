@@ -139,7 +139,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	public function lite_tier_setting_field() { ?>
 		<tbody>
 			<template
-				:draggable="true"
+				:draggable="false"
 				is="vue:feature-hide-other-shipping-methods"
 				:feature-data="hide_other_shipping_methods?.lite_tier"
 				@update="(value) => hide_other_shipping_methods.lite_tier = value"
