@@ -74,7 +74,7 @@ trait Component_Methods {
 	protected function output_component_attrs($attributes = array(), $extra_data = null) {
 		$attributes = apply_filters(Utils::get_hook_name('component', 'attributes'), $attributes, $extra_data);
 		foreach ($attributes as $key => $value) {
-			echo esc_attr($key) . '="' . esc_attr($value) . '"';
+			echo esc_attr($key) . '="' . esc_attr($value) . '" ';
 		}
 	}
 }

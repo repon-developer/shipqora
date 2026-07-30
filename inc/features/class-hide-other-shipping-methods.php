@@ -143,11 +143,10 @@ final class Hide_Other_Shipping_Methods extends Feature {
 				is="vue:feature-hide-other-shipping-methods"
 				:feature-data="hide_other_shipping_methods?.lite_tier"
 				@update="(value) => hide_other_shipping_methods.lite_tier = value"
-				<?php $this->output_component_attrs(array(), array(
-					'type' => 'feature',
-					'model' => 'lite_tier',
-					'component' => $this->get_id()
-				)) ?>>
+				<?php $this->output_component_attrs(
+					array(':hide-heading' => 'true'),
+					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
+				) ?>>
 			</template>
 		</tbody>
 	<?php
