@@ -144,7 +144,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 				:feature-data="hide_other_shipping_methods?.lite_tier"
 				@update="(value) => hide_other_shipping_methods.lite_tier = value"
 				<?php $this->output_component_attrs(
-					array(':hide-heading' => 'true'),
+					array(':hide-heading' => 'true', ':hide-actions' => '["delete"]'),
 					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
 				) ?>>
 			</template>
@@ -182,13 +182,12 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('shipping_methods', array(
 			'priority' => 10,
+			'default_value' => array(''),
+			'model_key' => 'shipping_methods',
+			'type' => Form_Control::SHIPPING_METHODS,
 			'label' => esc_html__('Shipping Methods to Hide', 'shipflex'),
-			'callback' => array($this, 'shipping_methods_setting_field'),
 			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipflex'),
 			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipflex'),
-			'related_models' => array(
-				'shipping_methods' => array(''),
-			)
 		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -197,33 +196,6 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
 		), 'tier-item');
-	}
-
-	/**
-	 * Output adjust cost setting field
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function shipping_methods_setting_field(Form_Control $form_control) {
-		$form_control->output_before_input_options(); ?>
-
-		<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">
-			<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
-				<shipping-method-input
-					:shipping-method="shipping_method"
-					@update="(value) => shipping_methods[index] = value"
-					@delete="delete_shipping_method(index)">
-				</shipping-method-input>
-			</li>
-		</ul>
-
-		<a href="#" class="button" :class="add_shipping_method_button_class" @click.prevent="add_shipping_method()">
-			<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
-		</a>
-
-	<?php
-		$form_control->output_after_input_options();
 	}
 
 	/**

@@ -28,23 +28,6 @@ const Hide_Other_Shipping_Methods = {
 	component: {
 		component_data() {
 			return JSON.parse(JSON.stringify(this.$data));
-		},
-
-		add_shipping_method_button_class() {
-			return {
-				'button-small': this.shipping_methods?.length > 0,
-				'button-large-dashed': !shipping_methods?.length
-			}
-		}
-	},
-
-	methods: {
-		add_shipping_method() {
-			this.shipping_methods.push('')
-		},
-
-		delete_shipping_method(index) {
-			this.shipping_methods.splice(index, 1);
 		}
 	}
 }

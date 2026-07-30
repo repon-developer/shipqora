@@ -47,6 +47,13 @@ final class Form_Control {
 	const MULTIPLE_OPTIONS = 'multiple_options';
 
 	/**
+	 * Hold input type of Shipping Method Groups
+	 * 
+	 * @var string
+	 */
+	const SHIPPING_METHODS = 'shipping_method_input';
+
+	/**
 	 * Hold control type
 	 * 
 	 * @var string
@@ -438,5 +445,20 @@ final class Form_Control {
 		echo '<input ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . '>';
 		echo esc_html($this->options['checkbox_label']);
 		echo '</label>';
+	}
+
+	/**
+	 * Output shipping methods group field
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function shipping_method_input() {
+		$model_key = $this->get_model_key(); ?>
+		<shipping-methods-group
+			:shipping-methods="<?php echo esc_attr($model_key) ?>"
+			@update="(value) => <?php echo esc_attr($model_key) ?> = value">
+		</shipping-methods-group>
+<?php
 	}
 }

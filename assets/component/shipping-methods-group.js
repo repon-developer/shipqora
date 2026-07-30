@@ -131,4 +131,55 @@ const Shipping_Method_Input = {
 	},
 }
 
-export default Shipping_Method_Input;
+const Shipping_Methods_Group = {
+	template: '#shipflex-shipping-methods-group-component',
+
+	components: {
+		'shipping-method-input': Shipping_Method_Input
+	},
+
+	props: {
+		shippingMethods: {
+			default: Array(''),
+			type: [Array, null],
+		}
+	},
+
+	emits: ['update'],
+
+	data() {
+		return {
+			shipping_methods: this.shippingMethods
+		}
+	},
+
+	computed: {
+		button_class() {
+			return {
+				'button-small': this.shipping_methods?.length > 0,
+				'button-large-dashed': !this.shipping_methods?.length
+			}
+		}
+	},
+
+	watch: {
+		shipping_methods: {
+			deep: true,
+			handler(data) {
+				this.$emit('update', data)
+			}
+		}
+	},
+
+	methods: {
+		add_shipping_method() {
+			this.shipping_methods.push('')
+		},
+
+		delete_shipping_method(index) {
+			this.shipping_methods.splice(index, 1);
+		}
+	}
+}
+
+export default Shipping_Methods_Group;

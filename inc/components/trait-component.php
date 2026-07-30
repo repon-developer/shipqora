@@ -23,7 +23,7 @@ trait Component_Methods {
 
 			'delete' => array(
 				'priority' => 10,
-				'content' => '<a v-if="tierNo &gt; 1" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
+				'content' => '<a v-if="!hide_action(\'delete\')" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipflex') . '</a>'
 			),
 
 			'collapse' => array(
@@ -47,7 +47,7 @@ trait Component_Methods {
 
 		<tr class="row-group-heading" v-if="!hideHeading">
 			<td colspan="2">
-				<span class="button-drag dashicons dashicons-menu-alt" v-if="draggable"></span>
+				<span :class="drag_button_classes" class="dashicons dashicons-menu-alt" v-if="draggable"></span>
 				<div class="heading-line">
 					<?php
 					if (!empty($title)) {

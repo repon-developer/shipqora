@@ -48,6 +48,10 @@ const Shipping_Cost_Range_Tier = {
 		calculation_type_label() {
 			return this.get_calculation_type_label(this.calculateBasis)
 		},
+
+		drag_button_classes() {
+			return {'button-drag': true, 'button-drag-shipping-cost-range': true}
+		}
 	},
 
 	created() {

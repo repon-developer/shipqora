@@ -17,6 +17,11 @@ const Base_Component = {
 			default: true,
 		},
 
+		hideActions: {
+			default: Array(),
+			type: [null, Array],
+		},
+
 		deleteWarning: {
 			type: String,
 			default: __('Are you sure you want to delete this tier?', 'shipflex'),
@@ -42,6 +47,10 @@ const Base_Component = {
 
 		collapse_button_class() {
 			return { 'dashicons-arrow-up-alt2': this.collapse, 'dashicons-arrow-down-alt2': !this.collapse }
+		},
+
+		drag_button_classes() {
+			return {'button-drag': true, 'button-drag-feature': true}
 		}
 	},
 
@@ -62,6 +71,10 @@ const Base_Component = {
 
 	methods: {
 		...wp.hooks.applyFilters('shipflex.base_component.methods', {}),
+
+		hide_action(action_key) {
+			return this.hideActions?.includes(action_key) === true;
+		},
 
 		duplicate_tier() {
 			this.$emit('duplicate', { ...this.component_data, id: this.$utils.generate_uuid(), collapse: false })
@@ -100,7 +113,7 @@ const Base_Component = {
 			this.condition_groups.splice(index_no, 1)
 		},
 
-		on_order_change(event) {
+		layers_order_change(event) {
 			const source_element = jQuery(event.from);
 			const model_key = source_element.data('model-key')
 			if (!this?.[model_key]?.length) {

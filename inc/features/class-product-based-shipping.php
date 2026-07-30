@@ -201,7 +201,6 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				:tier-no="index_no + 1"
 				:feature-data="product_group"
 				is="vue:feature-product-based-shipping"
-				:total-tier="<?php echo esc_attr($this->get_model_key('groups')) ?>?.length"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[index_no] = value"
 				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', index_no)"
 				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipflex') ?>"

@@ -254,7 +254,7 @@ class Cart_Based_Shipping extends Feature {
 				:feature-data="<?php echo esc_attr($this->get_model_key('lite_tier')) ?>"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_tier')) ?> = value"
 				<?php $this->output_component_attrs(
-					array(':hide-heading' => 'true'),
+					array(':hide-heading' => 'true', ':hide-actions' => '["delete"]'),
 					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
 				) ?>>
 			</template>
@@ -474,19 +474,19 @@ class Cart_Based_Shipping extends Feature {
 		$form_control->output_before_input_options(); ?>
 
 		<div
-			@end="on_order_change"
-			style="margin-bottom: 10px;"
+			@end="layers_order_change"
 			class="sortable-items-container"
+			data-group="shipping-cost-range-layers"
 			v-if="shipping_cost_range_layers?.length"
 			data-model-key="shipping_cost_range_layers"
-			v-sortable="{options: {handle: '.button-drag'}}">
+			v-sortable="{options: {handle: '.button-drag.button-drag-shipping-cost-range'}}">
 			<shipping-cost-range
 				:tier-no="index + 1"
+				:hide-heading="false"
 				:key="shipping_rage_data?.id"
 				:range-data="shipping_rage_data"
 				:calculate-basis="calculate_basis"
 				@delete="delete_shipping_cost_range(index)"
-				:total-tier="shipping_cost_range_layers?.length"
 				v-for="(shipping_rage_data, index) in shipping_cost_range_layers"
 				@update="(range_data) => shipping_cost_range_layers[index] = range_data"
 				@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">

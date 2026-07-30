@@ -184,6 +184,23 @@ final class Rule_Editor {
 			</template>
 		</template>
 
+		<template id="shipflex-shipping-methods-group-component">
+			<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">
+				<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
+					<shipping-method-input
+						:shipping-method="shipping_method"
+						@delete="delete_shipping_method(index)"
+						:draggable="shipping_methods?.length > 1"
+						@update="(value) => shipping_methods[index] = value">
+					</shipping-method-input>
+				</li>
+			</ul>
+
+			<a href="#" class="button" :class="button_class" @click.prevent="add_shipping_method()">
+				<?php esc_html_e('Add Shipping Method', 'shipflex') ?>
+			</a>
+		</template>
+
 		<template id="shipflex-shipping-method-input-component">
 			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading && draggable"></span>
 

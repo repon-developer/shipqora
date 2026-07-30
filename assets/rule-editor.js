@@ -4,7 +4,7 @@ import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Shipping_Cost_Range from './component/shipping-cost-range.min.js?v=@@VERSION';
-import Shipping_Method_Input from './component/shipping-method-input.min.js?v=@@VERSION';
+import Shipping_Methods_Group from './component/shipping-methods-group.min.js?v=@@VERSION';
 
 import Cart_Based_Shipping from './features/cart-based-shipping.min.js?v=@@VERSION';
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
@@ -136,6 +136,10 @@ const ShipFlex_Rule_Editor = {
 
 		on_order_change(event) {
 			const source_element = jQuery(event.from);
+			const drag_group = source_element.data('group');
+			if ('feature' !== drag_group) {
+				return;
+			}
 
 			const model_keys = source_element.data('model-key');
 			if (!model_keys || !model_keys?.length) {
@@ -250,7 +254,7 @@ if ($('.shipflex-rule-editor').length) {
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
 		'shipping-cost-range': Shipping_Cost_Range,
-		'shipping-method-input': Shipping_Method_Input,
+		'shipping-methods-group': Shipping_Methods_Group,
 	});
 
 	for (const key in components) {

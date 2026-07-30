@@ -183,15 +183,6 @@ class Feature {
 	}
 
 	/**
-	 * Add settings field of rule editor
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-	}
-
-	/**
 	 * Get wrapper attributes of current section
 	 * 
 	 * @since 1.0.0
