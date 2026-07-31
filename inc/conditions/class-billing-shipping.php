@@ -28,16 +28,16 @@ final class Billing_Shipping {
 	 */
 	public function add_condition_types($condition_types) {
 		$condition_types = array_merge($condition_types, array(
-			'billing:cities' => array(
-				'priority' => 5,
+			'billing_shipping:billing_cities' => array(
+				'priority' => 10,
 				'model_key' => 'billing_cities',
 				'template' => array($this, 'billing_shipping_cities'),
 				'label' => esc_html__('Billing Cities', 'shipflex'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
 			),
 
-			'billing:states' => array(
-				'priority' => 10,
+			'billing_shipping:billing_states' => array(
+				'priority' => 20,
 				'default_value' => array(),
 				'model_key' => 'billing_states',
 				'template' => array($this, 'billing_shipping_states'),
@@ -48,16 +48,16 @@ final class Billing_Shipping {
 				)
 			),
 
-			'billing:zipcodes' => array(
-				'priority' => 15,
+			'billing_shipping:billing_zipcodes' => array(
+				'priority' => 30,
 				'model_key' => 'billing_zipcodes',
-				'template' => array($this, 'billing_shipping_zipcodes'),
+				'template' => array($this, 'billing_zipcodes_template'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
 				'label' => esc_html__('Billing ZIP Codes', 'shipflex'),
 			),
 
-			'billing:countries' => array(
-				'priority' => 20,
+			'billing_shipping:billing_countries' => array(
+				'priority' => 40,
 				'default_value' => array(),
 				'model_key' => 'billing_countries',
 				'template' => array($this, 'billing_shipping_country'),
@@ -65,16 +65,22 @@ final class Billing_Shipping {
 				'label' => esc_html__('Billing Countries', 'shipflex'),
 			),
 
-			'shipping:cities' => array(
-				'priority' => 5,
+			'billing_shipping:separator' => array(
+				'priority' => 100,
+				'type' => 'separator',
+				'label' => '------------------------'
+			),
+
+			'billing_shipping:shipping_cities' => array(
+				'priority' => 200,
 				'model_key' => 'shipping_cities',
 				'template' => array($this, 'billing_shipping_cities'),
 				'label' => esc_html__('Shipping Cities', 'shipflex'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
 			),
 
-			'shipping:states' => array(
-				'priority' => 10,
+			'billing_shipping:shipping_states' => array(
+				'priority' => 210,
 				'default_value' => array(),
 				'model_key' => 'shipping_states',
 				'template' => array($this, 'billing_shipping_states'),
@@ -85,16 +91,8 @@ final class Billing_Shipping {
 				)
 			),
 
-			'shipping:zipcodes' => array(
-				'priority' => 15,
-				'model_key' => 'shipping_zipcodes',
-				'template' => array($this, 'billing_shipping_zipcodes'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Shipping ZIP Codes', 'shipflex'),
-			),
-
-			'shipping:countries' => array(
-				'priority' => 20,
+			'billing_shipping:shipping_countries' => array(
+				'priority' => 220,
 				'default_value' => array(),
 				'model_key' => 'shipping_countries',
 				'template' => array($this, 'billing_shipping_country'),
@@ -118,7 +116,7 @@ final class Billing_Shipping {
 			$operator = $condition['billing_shipping_operator'];
 		}
 
-		if ('billing:cities' === $condition['type'] || 'shipping:cities' === $condition['type']) {
+		if ('billing_shipping:billing_cities' === $condition['type'] || 'billing_shipping:shipping_cities' === $condition['type']) {
 			$cities = $condition['billing_cities'] ?? '';
 			$customer_city = strtolower(WC()->customer->get_billing_city());
 
@@ -137,8 +135,8 @@ final class Billing_Shipping {
 			}
 		}
 
-		if ('billing:states' === $condition['type'] || 'shipping:states' === $condition['type']) {
-			$model_key = 'billing:states' === $condition['type'] ? 'billing_states' : 'shipping_states';
+		if ('billing_shipping:billing_states' === $condition['type'] || 'billing_shipping:shipping_states' === $condition['type']) {
+			$model_key = 'billing:billing_states' === $condition['type'] ? 'billing_states' : 'shipping_states';
 
 			$states = array();
 			if (isset($condition[$model_key]) && is_array($condition[$model_key])) {
@@ -159,21 +157,11 @@ final class Billing_Shipping {
 			}
 		}
 
-		if ('billing:zipcodes' === $condition['type'] || 'shipping:zipcodes' === $condition['type']) {
+		if ('billing_shipping:billing_zipcodes' === $condition['type']) {
 			$zipcodes = $condition['billing_zipcodes'] ?? '';
 			$customer_postcode = strtolower(WC()->customer->get_billing_postcode());
 
-			if ('shipping:city' === $condition['type']) {
-				$zipcodes = $condition['shipping_zipcodes'] ?? '';
-				$customer_postcode = strtolower(WC()->customer->get_shipping_postcode());
-			}
-
-			$zipcodes = Utils::comma_separator_to_array($zipcodes);
-			$matched = array_filter($zipcodes, function ($zipcode) use ($customer_postcode) {
-				$regex = str_replace(['\*', '\?'], ['.*', '.'], preg_quote($zipcode, '/'));
-				return preg_match('/^' . $regex . '$/i', $customer_postcode);
-			});
-
+			$matched = Main::get_instance()->get_matched_postal_codes($customer_postcode, $zipcodes);
 			if ('any_in_list' === $operator) {
 				return count($matched) > 0;
 			}
@@ -183,16 +171,16 @@ final class Billing_Shipping {
 			}
 		}
 
-		if ('billing:countries' === $condition['type'] || 'shipping:countries' === $condition['type']) {
+		if ('billing_shipping:billing_countries' === $condition['type'] || 'billing_shipping:shipping_countries' === $condition['type']) {
 			$countries_model_key = 'billing_countries';
-			if ('shipping:countries' === $condition['type']) {
+			if ('billing_shipping:shipping_countries' === $condition['type']) {
 				$countries_model_key = 'shipping_countries';
 			}
 
 			$countries = isset($condition[$countries_model_key]) && is_array($condition[$countries_model_key]) ? $condition[$countries_model_key] : array();
 
 			$customer_country = WC()->customer->get_shipping_country();
-			if ('billing:countries' === $condition['type']) {
+			if ('billing_shipping:billing_countries' === $condition['type']) {
 				$customer_country = WC()->customer->get_billing_country();
 			}
 
@@ -205,7 +193,7 @@ final class Billing_Shipping {
 			}
 		}
 
-		return $matched;
+		return apply_filters(Utils::get_hook_name('condition', 'billing-shipping', 'matched'), $matched, $condition);
 	}
 
 	/**
@@ -254,7 +242,7 @@ final class Billing_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function billing_shipping_zipcodes($condition_settings, $type_key) {
+	public function billing_zipcodes_template($condition_settings, $type_key) {
 		$model_key = !empty($condition_settings['model_key']) ? $condition_settings['model_key'] : 'billing_zipcodes'; ?>
 		<template v-if="type == '<?php echo esc_attr($type_key) ?>'">
 			<select>
@@ -262,7 +250,7 @@ final class Billing_Shipping {
 			</select>
 
 			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipflex'); ?>">
-			<div class="field-note" style="margin-top: 0;" v-if="type == 'billing:zipcodes' || type == 'shipping:zipcodes'">
+			<div class="field-note" style="margin-top: 0;" v-if="type == 'billing_shipping:billing_zipcodes'">
 				<?php
 				printf(
 					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipflex'),

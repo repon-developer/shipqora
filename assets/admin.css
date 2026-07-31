@@ -52,15 +52,6 @@
 	box-sizing: border-box;
 }
 
-#shipflex,
-.select2-dropdown.shipflex-select2-dropdown {
-	--inputHeight: 36px;
-	--borderRadius: 4px;
-	--primaryColor: #4C2DC1;
-	--borderColor: #b5b5b5;
-	--primaryColorLight: #6D4AFF;
-}
-
 #shipflex.wrap {
 	margin: 0;
 	padding: 20px;
@@ -271,88 +262,10 @@
 	width: 600px;
 }
 
-#shipflex .button {
-	--inputHeight: 36px;
-	min-height: 0;
-	position: relative;
-	text-align: center;
-	height: var(--inputHeight);
-	color: var(--primaryColor);
-	box-shadow: none !important;
-	padding-block: 0 !important;
-	line-height: calc(var(--inputHeight) - 2px);
-	border-color: color-mix(in srgb, #fff 10%, var(--primaryColor))
-}
-
-#shipflex .button.button-flat {
-	border-radius: 0 !important
-}
-
-#shipflex .button-primary {
-	color: #fff;
-	background-color: var(--primaryColor);
-}
-
-#shipflex .button-small {
-	--inputHeight: 30px;
-}
-
-#shipflex .button.button-full-width {
-	width: 100%;
-	font-size: 120%;
-}
-
-#shipflex .button-large-dashed {
-	--inputHeight: 40px;
-	min-width: 200px;
-	font-size: 120%;
-	border-style: dashed;
-}
-
-#shipflex .button:has(.dashicons) {
-	column-gap: 2px;
-	display: inline-flex;
-	align-items: center;
-}
-
-#shipflex .button .dashicons {
-	--size: 20px;
-	width: var(--size);
-	height: var(--size);
-	font-size: var(--size);
-	line-height: var(--size);
-}
-
-#shipflex .button-small .dashicons {
-	--size: 15px;
-}
-
 #shipflex textarea {
 	height: unset;
 }
 
-#shipflex .button.in-progress {
-	color: transparent !important;
-}
-
-#shipflex .button.in-progress:after {
-	content: "";
-	width: 20px;
-	top: calc(50% - 10px);
-	left: calc(50% - 10px);
-	position: absolute;
-	aspect-ratio: 1 / 1;
-	border-radius: 100px;
-	box-sizing: border-box;
-	animation-duration: 1000ms;
-	border: 2px solid #dbdbdb;
-	margin-top: calc(var(--size) / -2);
-	margin-left: calc(var(--size) / -2);
-	border-top-color: var(--primaryColor) !important;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
-	animation-name: shipflex_rotate;
-}
 
 #shipflex .range-slider-input {
 	column-gap: 5px;
@@ -547,20 +460,6 @@
 .select2-container.select2-container--open .select2-dropdown.shipflex-select2-dropdown {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
-}
-
-#shipflex [class*="gap-"] {
-	--gap: 10px;
-	flex: 0 0 auto !important;
-	margin-block: var(--gap) !important;
-}
-
-#shipflex .gap-10 {
-	--gap: 10px;
-}
-
-#shipflex .gap-20 {
-	--gap: 20px;
 }
 
 #shipflex.wrap .wrap-header {
@@ -1318,6 +1217,23 @@ table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
 	#shipflex .form-footer {
 		inset-inline-start: 36px
 	}
+}
+
+#shipflex .current-status-info {
+	display: flex;
+	font-size: 15px;
+	font-weight: 500;
+	column-gap: 6px;
+	align-items: center;
+	border-radius: 3px;
+}
+
+#shipflex .form-footer .separator {
+	width: 1px;
+	flex: 0 0 auto;
+	margin-block: -5px;
+	align-self: stretch;
+	background-color: #d5d5d5;
 }
 
 #shipflex [data-highlight-section].section-highlighted input,

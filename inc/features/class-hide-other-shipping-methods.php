@@ -49,6 +49,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 20,
+			'calculation_priority' => 2,
 			'base_model' => 'hide_other_shipping_methods',
 			'name' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
 			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipflex'),

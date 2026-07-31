@@ -33,6 +33,11 @@ class Main {
 
 					echo '<optgroup label="' . esc_attr($group_label) . '">';
 					foreach ($conditions as $key => $condition) {
+						if (isset($condition['type']) && 'separator' == $condition['type']) {
+							echo '<option disabled>' . $condition['label'] . '</option>';
+							continue;
+						}
+
 						printf('<option value="%s">%s</option>', esc_attr($key), esc_html($condition['label']));
 					}
 					echo '</optgroup>';
@@ -137,12 +142,11 @@ class Main {
 		return apply_filters('shipflex/condition/groups', array(
 			'cart' => esc_html__('Cart', 'shipflex'),
 			'cart_products' => esc_html__('Cart Products', 'shipflex'),
+			'billing_shipping' => esc_html__('Billing & Shipping', 'shipflex'),
 			'date' => esc_html__('Date', 'shipflex'),
-			'billing' => esc_html__('Billing', 'shipflex'),
-			'shipping' => esc_html__('Shipping', 'shipflex'),
 			'user' => esc_html__('Customer', 'shipflex'),
-			'order_history' => esc_html__('Order History', 'shipflex'),
 			'others' => esc_html__('Others', 'shipflex'),
+			'order_history' => esc_html__('Order History', 'shipflex'),
 		));
 	}
 
@@ -199,6 +203,21 @@ class Main {
 
 		uasort($group_condition_types, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : -1);
 		return $group_condition_types;
+	}
+
+	/**
+	 * Get matched postal codes
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_matched_postal_codes($customer_postal_code, $postal_codes) {
+		$postal_codes = Utils::comma_separator_to_array($postal_codes);
+
+		return array_filter($postal_codes, function ($postal_code) use ($customer_postal_code) {
+			$regex = str_replace(['\*', '\?'], ['.*', '.'], preg_quote($postal_code, '/'));
+			return preg_match('/^' . $regex . '$/i', $customer_postal_code);
+		});
 	}
 
 	/**

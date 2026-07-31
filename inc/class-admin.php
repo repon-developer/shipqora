@@ -76,6 +76,7 @@ final class Admin {
 	public function load_files() {
 		require_once ShipFlex_PATH . 'inc/admin/class-rule-list.php';
 		require_once ShipFlex_PATH . 'inc/admin/class-rule-editor.php';
+		require_once ShipFlex_PATH . 'inc/admin/class-shipping-editor.php';
 	}
 
 	/**
@@ -189,12 +190,13 @@ final class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts() {
-		wp_enqueue_style('shipflex-global');
 		wp_enqueue_style('shipflex-admin');
 		wp_enqueue_script('shipflex-admin');
+		wp_enqueue_style('shipflex-global');
 
 		$localize_script_values = apply_filters('shipflex/admin_enqueue_scripts', array(
 			'ajax_url' => admin_url('admin-ajax.php'),
+			'statuses' => Utils::get_statuses()
 		), 'localize');
 
 		wp_localize_script('shipflex-admin', 'shipflex_admin', $localize_script_values);

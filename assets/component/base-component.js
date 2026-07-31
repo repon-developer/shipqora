@@ -50,7 +50,7 @@ const Base_Component = {
 		},
 
 		drag_button_classes() {
-			return {'button-drag': true, 'button-drag-feature': true}
+			return { 'button-drag': true, 'button-drag-feature': true }
 		}
 	},
 

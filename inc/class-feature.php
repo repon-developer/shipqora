@@ -142,6 +142,16 @@ class Feature {
 	}
 
 	/**
+	 * Get priority for run feature
+	 * 
+	 * @since 1.0.0
+	 * @return int
+	 */
+	public function get_calculation_priority() {
+		return absint($this->get_configuration_value('calculation_priority'));
+	}
+
+	/**
 	 * Get model key after add  base model as a prefix
 	 * 
 	 * @since 1.0.0

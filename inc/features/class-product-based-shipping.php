@@ -59,6 +59,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	protected function get_configuration() {
 		return array(
 			'priority' => 50,
+			'calculation_priority' => 20,
 			'base_model' => 'product_based_shipping',
 			'name' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
 			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipflex'),

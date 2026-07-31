@@ -6,6 +6,7 @@ use ShipFlex\Feature;
 use ShipFlex\Form_Control;
 use ShipFlex\Settings_Fields;
 use ShipFlex\ShipFlex_Rule;
+use ShipFlex\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -129,6 +130,8 @@ final class General {
 			});
 		}
 
+		uasort($features, fn($a, $b) => $a->get_calculation_priority() <=> $b->get_calculation_priority());
+
 		array_walk($rates, function (&$shipping_rate) use ($features) {
 			$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
 
@@ -219,26 +222,11 @@ final class General {
 			'model_key' => 'status',
 			'option_type' => 'radio',
 			'default_value' => 'development',
+			'options' => Utils::get_statuses(),
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'label' => esc_html__('Rule Status', 'shipflex'),
 			'callback' => array($this, 'status_setting_field'),
 			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipflex'),
-			'options' => array(
-				'active' => array(
-					'label' => esc_html__('Active', 'shipflex'),
-					'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipflex')
-				),
-
-				'development' => array(
-					'label' => esc_html__('Test Mode', 'shipflex'),
-					'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipflex')
-				),
-
-				'disabled' => array(
-					'label' => esc_html__('Disabled', 'shipflex'),
-					'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipflex')
-				)
-			),
 		), 'general');
 	}
 

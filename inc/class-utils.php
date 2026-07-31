@@ -22,6 +22,34 @@ class Utils {
 	}
 
 	/**
+	 * Get available status of ShipFlex rule
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function get_statuses() {
+		return array(
+			'active' => array(
+				'label' => esc_html__('Active', 'shipflex'),
+				'currently_text' => esc_html__('Currently Live', 'shipflex'),
+				'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipflex'),
+			),
+
+			'development' => array(
+				'label' => esc_html__('Test Mode', 'shipflex'),
+				'currently_text' => esc_html__('Currently in Test Mode', 'shipflex'),
+				'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipflex')
+			),
+
+			'disabled' => array(
+				'label' => esc_html__('Disabled', 'shipflex'),
+				'currently_text' => esc_html__('Currently Disabled', 'shipflex'),
+				'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipflex')
+			),
+		);
+	}
+
+	/**
 	 * JSON string to array
 	 * 
 	 * @since 1.0.0
@@ -253,7 +281,7 @@ class Utils {
 				'priority' => $start_priority,
 				'type' => 'taxonomy:' . $tax_slug,
 				'model' => str_replace('-', '___', $taxonomy->name),
-				'label' => str_replace('Product ', '', $taxonomy->label),
+				'label' => ucwords(str_replace('Product ', '', $taxonomy->label)),
 				'label_lower' => str_replace('product ', '', $taxonomy_lower_label),
 				'placeholder' => sprintf(
 					/* translate: %s for taxonomy label */
@@ -287,30 +315,6 @@ class Utils {
 
 		$shipping_zones[] = $global_zone;
 		return $shipping_zones;
-	}
-
-	/**
-	 * Supported VueJS attributes for table heading
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public static function table_header_action_vuejs_attr() {
-		$allow_html_tags = wp_kses_allowed_html('post');
-		$vuejs_attributes = array('v-if', ':class', '@click.prevent');
-
-		$supported_tags = array('div', 'span', 'a');
-		foreach ($supported_tags as $tag) {
-			if (!isset($allow_html_tags[$tag])) {
-				continue;
-			}
-
-			foreach ($vuejs_attributes as $attribute) {
-				$allow_html_tags[$tag][$attribute] = true;
-			}
-		}
-
-		return $allow_html_tags;
 	}
 
 	/**

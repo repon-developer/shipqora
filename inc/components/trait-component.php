@@ -9,6 +9,30 @@ if (!defined('ABSPATH')) {
 trait Component_Methods {
 
 	/**
+	 * Supported VueJS attributes
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public static function vuejs_attr() {
+		$allow_html_tags = wp_kses_allowed_html('post');
+		$vuejs_attributes = array('v-if', ':class', '@click.prevent');
+
+		$supported_tags = array('div', 'span', 'a');
+		foreach ($supported_tags as $tag) {
+			if (!isset($allow_html_tags[$tag])) {
+				continue;
+			}
+
+			foreach ($vuejs_attributes as $attribute) {
+				$allow_html_tags[$tag][$attribute] = true;
+			}
+		}
+
+		return $allow_html_tags;
+	}
+
+	/**
 	 * Get actions buttons of component heading
 	 * 
 	 * @since 1.0.0
@@ -57,7 +81,7 @@ trait Component_Methods {
 					if (is_array($action_contents) && count($action_contents) > 0) {
 						$html_contents = array_map(fn($item) => $item['content'], Utils::priority_rearrange($action_contents));
 						$html = '<div class="component-heading-actions">' . join('', $html_contents) . '</div>';
-						echo wp_kses($html, Utils::table_header_action_vuejs_attr());
+						echo wp_kses($html, $this->vuejs_attr());
 					} ?>
 				</div>
 			</td>

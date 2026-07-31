@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Rule_Editor {
+final class Shipping_Editor {
 
 	/**
 	 * Constructor
@@ -15,8 +15,19 @@ final class Rule_Editor {
 	 * @return void
 	 */
 	public function __construct() {
+		add_action('init', array($this, 'add_shipping_notice_field'), 1000);
 		add_action('admin_footer', array($this, 'output_vue_component'));
-		add_filter('shipflex/admin_enqueue_scripts', array($this, 'enqueue_scripts'), 10, 2);
+		add_filter('woocommerce_generate_shipflex_notice_html', array($this, 'output_setting_field'), 10);
+	}
+
+	/**
+	 * Check if currently opened shipping editor screen
+	 * 
+	 * @since 1.0.0
+	 * @return boolean
+	 */
+	public function is_shipping_editor_screen() {
+		return isset($_GET['page']) && 'wc-settings' == $_GET['page'] && isset($_GET['tab']) && 'shipping' == $_GET['tab'];
 	}
 
 	/**
@@ -25,106 +36,49 @@ final class Rule_Editor {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function enqueue_scripts($values, $source) {
-		if (!Utils::is_plugin_screen('rule-editor')) {
-			return $values;
+	public function enqueue_scripts() {
+		if (!$this->is_shipping_editor_screen()) {
+			return;
 		}
 
-		if ('scripts' == $source) {
-			$values[] = 'shipflex-rule-editor';
+		wp_enqueue_script('shipflex-shipping-editor', ShipFlex_URI . 'assets/shipping-editor.min.js', array('jquery'), Utils::get_plugin_version(), true);
+	}
+
+	public function add_shipping_notice_field() {
+		$methods = WC()->shipping->get_shipping_methods();
+		foreach ($methods as $method) {
+			add_filter('woocommerce_shipping_instance_form_fields_' . $method->id, array($this, 'add_setting_field'), 100000);
 		}
+	}
 
-		if ('localize' == $source) {
-			$main_condition = Condition\Main::get_instance();
+	public function add_setting_field($settings) {
+		$settings['shipflex_notice'] = array(
+			'title' => __('ShipFlex', 'woocommerce'),
+			'default' => '', //Don't remove this one. Otherwise system will show error
+			'type' => 'shipflex_notice',
+		);
 
-			$values['condition_models'] = $main_condition->get_models();
-			$values['save_rule_nonce'] = wp_create_nonce('shipflex/save_rule_nonce');
+		return $settings;
+	}
 
-			$shipflex_rule = new ShipFlex_Rule();
-			if (!empty($_GET['id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$shipflex_rule = ShipFlex_Rule::get(sanitize_text_field(wp_unslash($_GET['id']))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			}
+	public function output_setting_field() {
+		ob_start(); ?>
 
-			$values['rule_data'] = $shipflex_rule->get_models();
 
-			$registered_features = Feature::get_features();
-			foreach ($registered_features as $feature_id => $feature_instance) {
-				$settings_fields = Settings_Fields::get_instance($feature_id);
-				$values['features'][$feature_id] = $settings_fields->get_models();
-			}
+		<tr valign="top">
+			<th scope="row">
+				<label><?php esc_html_e('ShipFlex', 'shipflex') ?></label>
+			</th>
+			<td class="forminp">
+				<div id="shipflex-shipping-editor">
+					Need dynamic conditions or advanced rate calculations? Create a <strong>ShipFlex Rule</strong> to manage this shipping method. Active ShipFlex rules will take precedence over these default settings.
 
-			$shipping_method_options = array();
-			$registered_shipping_methods = WC()->shipping()->get_shipping_methods();
-			foreach ($registered_shipping_methods as $shipping_id => $shipping_method) {
-				$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
-			}
-
-			unset($shipping_method_options['local_pickup'], $shipping_method_options['pickup_location']);
-			$values['shipping_methods'] = $shipping_method_options;
-
-			$weight_label = get_option('woocommerce_weight_unit');
-			if (empty($weight_label)) {
-				$weight_label = 'weight';
-			}
-
-			$dimension_label = get_option('woocommerce_dimension_unit');
-			if (empty($dimension_label)) {
-				$dimension_label = 'unit';
-			}
-
-			$values['calculation_types'] = array(
-				'subtotal' => esc_html__('Percentage', 'shipflex'),
-				'quantity' => esc_html__('Cost per Item', 'shipflex'),
-				'weight' => sprintf(
-					/* translators: %s: weight unit */
-					esc_html__('Cost per %s', 'shipflex'),
-					$weight_label
-				),
-
-				'volume' => sprintf(
-					/* translators: %s: weight unit */
-					esc_html__('Cost per %s', 'shipflex'),
-					$dimension_label
-				)
-			);
-
-			$values['calculation_metrics'] = array(
-				'subtotal' => array(
-					'short_lower' => esc_html__('subtotal', 'shipflex'),
-					'long_title' => esc_html__('Product Subtotal', 'shipflex'),
-				),
-
-				'quantity' => array(
-					'short_lower' => esc_html__('quantity', 'shipflex'),
-					'long_title' => esc_html__('Product Quantity', 'shipflex'),
-				),
-
-				'weight' => array(
-					'short_lower' => esc_html__('weight', 'shipflex'),
-					'long_title' => sprintf(
-						/* translators: %s: weight unit */
-						esc_html__('Product Weight (%s)', 'shipflex'),
-						$weight_label
-					)
-				),
-
-				'volume' => array(
-					'short_lower' => esc_html__('volume', 'shipflex'),
-					'long_title' => sprintf(
-						/* translators: %s: dimension unit */
-						esc_html__('Product Volume (%s)', 'shipflex'),
-						$dimension_label
-					),
-				),
-			);
-
-			$values['debugging_nonce'] = Debugging::get_instance()->get_nonce_value();
-			$values['is_debugging_enabled'] = Debugging::get_instance()->is_debugging_mode_enabled() ? 'yes' : 'no';
-
-			//error_log(print_r($values, true));
-		}
-
-		return $values;
+					<a class="button" href="#"><?php esc_html_e('+ Create ShipFlex Rule', 'shipflex') ?></a>
+				</div>
+			</td>
+		</tr>
+	<?php
+		return ob_get_clean();
 	}
 
 	/**
@@ -134,21 +88,7 @@ final class Rule_Editor {
 	 * @return void
 	 */
 	public function output_vue_component() {
-		if (!Utils::is_plugin_screen('rule-editor')) {
-			return;
-		}
-
-		$registered_features = Feature::get_features();
-		foreach ($registered_features as $feature_id => $feature_instance) {
-			if (method_exists($feature_instance, 'output_component')) {
-				echo '<template id="shipflex-' . esc_attr($feature_id) . '-feature-component">';
-				$feature_instance->output_component();
-				echo '</template>';
-			}
-		}
-
-		Condition\Main::output_component();
-		Component\Cart_Option::output_component(); ?>
+	?>
 
 		<template id="shipflex-product-input-component">
 			<div class="shipflex-content-loader" v-if="loading">
@@ -293,10 +233,6 @@ final class Rule_Editor {
 							<?php esc_html_e('Save ShipFlex Rule', 'shipflex') ?>
 						</button>
 
-						<div class="current-status-info" v-if="id > 0" v-html="get_current_status_info"></div>
-
-						<div class="separator"></div>
-
 						<div class="review-request">
 							If you enjoy this plugin, please <a href="https://wordpress.org/support/plugin/shipflex/reviews/#new-post" target="_blank">leave us</a> a 5-star review and help it grow! ⭐⭐⭐⭐⭐
 						</div>
@@ -335,3 +271,6 @@ final class Rule_Editor {
 <?php
 	}
 }
+
+
+new Shipping_Editor();

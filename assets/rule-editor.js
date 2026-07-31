@@ -23,6 +23,7 @@ const helper_models = {
 	show_toast_message: false,
 	toast_message_type: 'error',
 	enabling_debugging_mode: false,
+	original_status: null,
 	is_debugging_enabled: shipflex_admin?.is_debugging_enabled == 'yes'
 }
 
@@ -54,6 +55,8 @@ const ShipFlex_Rule_Editor = {
 		if (!Array.isArray(this.shipping_methods)) {
 			this.shipping_methods = []
 		}
+
+		this.original_status = this.status;
 	},
 
 	computed: {
@@ -65,6 +68,10 @@ const ShipFlex_Rule_Editor = {
 
 		rule_title() {
 			return this.title?.length ? ': ' + this.title : '';
+		},
+
+		get_current_status_info() {
+			return `<span class="status-circle status-circle-${this.original_status}"></span>` + shipflex_admin.statuses?.[this.original_status].currently_text
 		}
 	},
 
@@ -199,6 +206,8 @@ const ShipFlex_Rule_Editor = {
 
 					throw new Error(result?.data?.message);
 				}
+
+				this.original_status = this.status;
 
 				this.id = result.data.id;
 				Utils.set_toast_message(__('Successfully saved rule.', 'shipflex'), 'success');
