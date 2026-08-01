@@ -263,7 +263,7 @@ body.shipflex_page_shipflex-edit[class*="shipflex-status-"] li.toplevel_page_shi
 }
 
 #shipflex.shipflex-shipping-editor .attached-rules {
-	row-gap: 3px;	
+	row-gap: 3px;
 	display: flex;
 	font-size: 13px;
 	list-style: disc;
@@ -278,4 +278,8 @@ body.shipflex_page_shipflex-edit[class*="shipflex-status-"] li.toplevel_page_shi
 
 #shipflex.shipflex-shipping-editor .attached-rules a {
 	text-decoration: none;
+}
+
+.wc-shipping-zone-method-fields label:has(+ #shipflex) {
+	display: none !important;
 }

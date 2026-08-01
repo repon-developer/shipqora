@@ -14,6 +14,7 @@ const Shipping_Editor = {
 
 	watch: {
 		instance_id() {
+			console.log(this.instance_id)
 			this.load_instance();
 		}
 	},
@@ -59,12 +60,11 @@ const Shipping_Editor = {
 		},
 
 		create_rule() {
-			if (!this.instance_id?.length) {
+			if (!this.instance_id) {
 				return;
 			}
 
 			this.creating_rule = true;
-
 			const title_fields = ['woocommerce_free_shipping_title', 'woocommerce_flat_rate_title']
 
 			const shipping_method_title = title_fields.map((field_name) => {
