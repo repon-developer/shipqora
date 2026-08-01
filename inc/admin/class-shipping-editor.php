@@ -18,6 +18,7 @@ final class Shipping_Editor {
 		add_action('admin_footer', array($this, 'output_vue_component'));
 		add_action('init', array($this, 'add_shipping_notice_field'), 1000);
 		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
+		add_action('wp_ajax_shipflex/get_attached_rule', array($this, 'get_attached_rule'));
 		add_action('wp_ajax_shipflex/create_and_attach_rule', array($this, 'create_and_attach_rule'));
 		add_filter('woocommerce_generate_shipflex_notice_html', array($this, 'output_setting_field'), 10);
 	}
@@ -43,7 +44,7 @@ final class Shipping_Editor {
 			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipflex')));
 		}
 
-		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipflex/create-shipping-editor-rule-nonce')) {
+		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipflex/shipping-editor-nonce')) {
 			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipflex')));
 		}
 
@@ -87,6 +88,40 @@ final class Shipping_Editor {
 	}
 
 	/**
+	 * Create and attach rule with shipping method
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function get_attached_rule() {
+		if (!isset($_POST['instance_id'])  || !isset($_POST['nonce'])) {
+			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipflex')));
+		}
+
+		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipflex/shipping-editor-nonce')) {
+			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipflex')));
+		}
+
+		if (!current_user_can('manage_woocommerce')) {
+			wp_send_json_error(array('message' => esc_html__('You do not have permission to create and attach ShipFlex rule.', 'shipflex')));
+		}
+
+		$instance_id = sanitize_text_field(wp_unslash($_POST['instance_id']));
+		$rules = ShipFlex_Rule::get_by_instance_id($instance_id);
+
+		$attached_rules = array();
+		foreach ($rules as $rule) {
+			$attached_rules[] = array(
+				'title' => $rule->title,
+				'status' => $rule->status,
+				'url' => add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipflex-edit'))
+			);
+		}
+
+		wp_send_json_success($attached_rules);
+	}
+
+	/**
 	 * Add dependencies for rule edit form
 	 * 
 	 * @since 1.0.0
@@ -101,7 +136,7 @@ final class Shipping_Editor {
 		wp_enqueue_script('shipflex-shipping-editor', ShipFlex_URI . 'assets/shipping-editor.min.js', array('jquery', 'shipflex-vue'), Utils::get_plugin_version(), true);
 		wp_localize_script('shipflex-shipping-editor', 'shipflex_shipping_editor', array(
 			'instance_id' => $instance_id,
-			'nonce' => wp_create_nonce('shipflex/create-shipping-editor-rule-nonce')
+			'nonce' => wp_create_nonce('shipflex/shipping-editor-nonce')
 		));
 	}
 
@@ -163,7 +198,23 @@ final class Shipping_Editor {
 								) ?>
 							</div>
 							<div class="gap-5"></div>
-							<a class="button button-primary" :href="created_rule.url" target="_blank"><?php esc_html_e('Configure Rule', 'shipflex') ?></a>
+							<a class="button button-primary" :href="created_rule?.url" target="_blank"><?php esc_html_e('Configure Rule', 'shipflex') ?></a>
+						</template>
+
+						<template v-if="attached_rules && attached_rules?.length > 0">
+							<h3><?php esc_html_e('Connected ShipFlex Rules', 'shipflex') ?></h3>
+							<div class="description">
+								<?php
+								printf(
+									/* translators: %s: for ShipFlex Rule, %s: URL of created rule */
+									esc_html__('Below are the custom rules configured for this shipping method. You can enable, disable, or adjust rule priorities from your %s settings.', 'shipflex'),
+									'<strong>ShipFlex Rule</strong>',
+								) ?>
+								<ul class="attached-rules" v-if="attached_rules?.length">
+									<li v-for="(rule, index) in attached_rules" :key="index">
+										<a :href="rule?.url" v-html="rule?.title" target="_blank"></a> - <strong>{{get_status(rule?.status)}}</strong>
+									</li>
+								</ul>
 						</template>
 					</template>
 				</div>

@@ -36,6 +36,67 @@ final class ShipFlex_Rule {
 	}
 
 	/**
+	 * Hold ShipFlex Rules of instance id of shipping method
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private static $instances_ids = array();
+
+	/**
+	 * Get ShipFlex Rules by instance ID of shipping method
+	 * 
+	 * @since 1.0.0
+	 * @param int $instance_id
+	 * @return array
+	 */
+	public static function get_by_instance_id($instance_id) {
+		if (isset(self::$instances_ids[$instance_id])) {
+			return self::$instances_ids[$instance_id];
+		}
+
+		$shipping_method = \WC_Shipping_Zones::get_shipping_method($instance_id);
+		if (!is_a($shipping_method, 'WC_Shipping_Method')) {
+			return array();
+		}
+
+		$zone_id = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id)->get_id();
+
+		global $wpdb;
+		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
+
+		$json_search = array(
+			$shipping_method->id,
+			$shipping_method->id . ':' . $zone_id . '-0',
+			$shipping_method->id . ':' . $zone_id . '-' . $instance_id,
+		);
+
+		$shipping_method_sql = array();
+		while ($shpping_method_id = current($json_search)) {
+			$shipping_method_sql[] = $wpdb->prepare('JSON_CONTAINS(shipping_methods, %s)', wp_json_encode($shpping_method_id));
+			next($json_search);
+		}
+
+		$prepared_sql .= " AND (" . implode(' OR ', $shipping_method_sql) . ")";
+		if (current_user_can('manage_woocommerce')) {
+			$prepared_sql .= " AND status IN ('active', 'development')";
+		} else {
+			$prepared_sql .= " AND status = 'active'";
+		}
+
+		$results = $wpdb->get_results($prepared_sql, ARRAY_A);
+		foreach ($results as $rule_data) {
+			self::$instances_ids[$instance_id][$rule_data['id']] = new ShipFlex_Rule($rule_data);
+		}
+
+		if (isset(self::$instances_ids[$instance_id])) {
+			return self::$instances_ids[$instance_id];
+		}
+
+		return array();
+	}
+
+	/**
 	 * Hold ShipFlex rule id of shipping rate
 	 * 
 	 * @since 1.0.0

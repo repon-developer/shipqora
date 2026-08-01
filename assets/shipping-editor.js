@@ -22,18 +22,40 @@ const Shipping_Editor = {
 		this.loading = false;
 	},
 
-	updated() {
-		//console.log(this.$data);
-	},
-
 	methods: {
+		get_status(status) {
+			return shipflex_admin.statuses?.[status]?.currently_text
+		},
+		
 		load_instance() {
 			this.loading = true;
 			this.created_rule = null;
 			this.attached_rules = [];
-			console.log(this.instance_id)
 
+			const formData = new FormData();
+			formData.append('instance_id', this.instance_id);
+			formData.append('nonce', shipflex_shipping_editor.nonce);
+			formData.append('action', 'shipflex/get_attached_rule');
 
+			fetch(shipflex_admin.ajax_url, {
+				method: 'POST',
+				body: formData
+			}).then(async (response) => {
+				const result = await response.json();
+				if (typeof result !== 'object' || !response.ok) {
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
+				}
+
+				if (false === result.success) {
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
+				}
+
+				if (Array.isArray(result?.data)) {
+					this.attached_rules = result.data;
+				}
+			}).catch((e) => { console.error(e) }).finally(() => {
+				this.loading = false;
+			})
 		},
 
 		create_rule() {
@@ -53,10 +75,6 @@ const Shipping_Editor = {
 				return null;
 			}).find((current_title) => current_title && current_title?.length)
 
-			console.log(shipping_method_title)
-			console.log(shipflex_shipping_editor)
-
-
 			const formData = new FormData();
 			formData.append('title', shipping_method_title);
 			formData.append('instance_id', this.instance_id);
@@ -68,7 +86,6 @@ const Shipping_Editor = {
 				body: formData
 			}).then(async (response) => {
 				const result = await response.json();
-				console.log(result)
 				if (typeof result !== 'object' || !response.ok) {
 					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
 				}
@@ -79,7 +96,7 @@ const Shipping_Editor = {
 
 				this.created_rule = result.data;
 
-			}).catch((e) => { console.log(e) }).finally(() => {
+			}).catch((e) => { console.error(e) }).finally(() => {
 				this.creating_rule = false;
 			})
 		}

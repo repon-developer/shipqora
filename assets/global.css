@@ -248,6 +248,10 @@ body.shipflex_page_shipflex-edit[class*="shipflex-status-"] li.toplevel_page_shi
 	border: 1px solid #bca9ff;
 }
 
+#shipflex.shipflex-shipping-editor .shipflex-content-loader .loader-item {
+	background-color: #eeeaff;
+}
+
 #shipflex.shipflex-shipping-editor h3 {
 	font-size: 15px;
 	font-weight: 600;
@@ -256,4 +260,22 @@ body.shipflex_page_shipflex-edit[class*="shipflex-status-"] li.toplevel_page_shi
 
 #shipflex.shipflex-shipping-editor .description a {
 	font-weight: 600;
+}
+
+#shipflex.shipflex-shipping-editor .attached-rules {
+	row-gap: 3px;	
+	display: flex;
+	font-size: 13px;
+	list-style: disc;
+	margin-block: 6px 0;
+	flex-direction: column;
+	padding-inline-start: 16px;
+}
+
+#shipflex.shipflex-shipping-editor .attached-rules li {
+	margin: 0;
+}
+
+#shipflex.shipflex-shipping-editor .attached-rules a {
+	text-decoration: none;
 }
