@@ -65,20 +65,34 @@ final class Debugging {
 	private $position = 'right';
 
 	/**
+	 * Hold debugging information of shipping rate
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $debug_data = array();
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		$debugging_settings = wp_parse_args(get_option('shipflex_debugging'), array('enabled' => true, 'collapse' => false, 'position' => 'right'));
-		$this->is_collapse = $debugging_settings['collapse'];
-		$this->is_debugging_mode_enabled = $debugging_settings['enabled'] !== false;
+		add_action('wp_ajax_shipflex/update_debugging_mode', array($this, 'update_debugging_mode'));
+		add_action('shipflex/after_statuses_options', array($this, 'add_debugging_notice_settings'));
 
+		$debugging_settings = wp_parse_args(get_option('shipflex_debugging'), array('enabled' => true, 'collapse' => false, 'position' => 'right'));
+		$this->is_debugging_mode_enabled = $debugging_settings['enabled'] !== false;
+		$this->is_collapse = $debugging_settings['collapse'];
 		if ('left' === $debugging_settings['position']) {
 			$this->position = 'left';
 		}
 
+		if (!$this->is_debugging()) {
+			return;
+		}
+
 		add_action('wp_footer', array($this, 'output_debugging_section'));
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 1);
-		add_action('wp_ajax_shipflex/update_debugging_mode', array($this, 'update_debugging_mode'));
+		// add_action('wp_ajax_shipflex/debugging_information', array($this, 'get_debugging_information'));
 	}
 
 	/**
@@ -122,6 +136,23 @@ final class Debugging {
 	}
 
 	/**
+	 * Add debugging notice settings after statuses options
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_debugging_notice_settings() {
+?>
+		<div class="shipflex-notice-box shipflex-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
+			<h3><?php esc_html_e('💡 Debugging Mode is Disabled', 'shipflex') ?></h3>
+			<div class="description"><?php esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipFlex rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipflex') ?></div>
+			<div class="gap-10"></div>
+			<a @click.prevent="enable_debugging_mode()" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#"><?php esc_html_e('Enable Debugging Mode', 'shipflex') ?></a>
+		</div>
+	<?php
+	}
+
+	/**
 	 * Ajax function to update settings for debugging mode
 	 * 
 	 * @since 1.0.0
@@ -159,6 +190,18 @@ final class Debugging {
 		));
 
 		wp_send_json_success();
+	}
+
+	public function get_debugging_information() {
+
+		$debugging_information = get_transient('testing');
+
+
+
+		error_log(print_r($debugging_information, true));
+
+
+		wp_send_json_success($debugging_information);
 	}
 
 	/**
@@ -206,8 +249,8 @@ final class Debugging {
 			return;
 		}
 
-		wp_enqueue_style('shipflex', ShipFlex_URI . 'assets/frontend.min.css', array(), Utils::get_plugin_version());
-		wp_enqueue_script('shipflex', ShipFlex_URI . 'assets/frontend.min.js', array('jquery'), Utils::get_plugin_version(), true);
+		wp_enqueue_style('shipflex', ShipFlex_URI . 'assets/debugging.min.css', array(), Utils::get_plugin_version());
+		wp_enqueue_script('shipflex', ShipFlex_URI . 'assets/debugging.min.js', array('jquery', 'wp-data', 'wc-blocks-checkout'), Utils::get_plugin_version(), true);
 		wp_localize_script('shipflex', 'shipflex', array(
 			'ajax_url' => admin_url('admin-ajax.php'),
 			'debugging_nonce' => Debugging::get_instance()->get_nonce_value()
@@ -274,6 +317,20 @@ final class Debugging {
 		</div>
 <?php
 	}
+
+	/**
+	 * Add debugging information of shipping rate
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add($rate_id, $information) {
+		if (!isset($this->debug_data[$rate_id]) || !is_array($this->debug_data[$rate_id])) {
+			$this->debug_data[$rate_id] = array();
+		}
+
+		$this->debug_data[$rate_id][] = $information;
+	}
 }
 
-Debugging::get_instance();
+add_action('init', array(Debugging::class, 'get_instance'));

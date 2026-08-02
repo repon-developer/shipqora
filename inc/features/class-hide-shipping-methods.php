@@ -3,6 +3,7 @@
 namespace ShipFlex\Feature;
 
 use ShipFlex\Feature;
+use ShipFlex\Debugging;
 use ShipFlex\Form_Control;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
@@ -83,7 +84,7 @@ final class Hide_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function hide_shipping_methods() {
+	public function hide_shipping_methods($shipping_rate, $shipflex_rule) {
 		return Main::get_instance()->is_matched_conditions($this->condition_groups, $this);
 	}
 }

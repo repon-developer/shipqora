@@ -227,7 +227,6 @@ class Main {
 	 * @return boolean
 	 */
 	public function is_matched_conditions($condition_groups) {
-		error_log(print_r($condition_groups, true));
 		if (empty($condition_groups) || !is_array($condition_groups)) {
 			return true;
 		}

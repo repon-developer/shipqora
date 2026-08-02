@@ -43,6 +43,4 @@
 		update_debugging_mode_settings('enable_debugging', false);
 	})
 
-
-
 })(jQuery)

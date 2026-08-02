@@ -204,7 +204,7 @@ final class Table_Rates_Shipping {
 	public function output_vue_component() {
 		$settings_fields = Settings_Fields::get_instance('table-rates-shipping'); ?>
 		<template id="shipflex-table-rates-shipping-component">
-			<table class="table-shipflex-form">
+			<table class="table-shipflex-form table-shipflex-table-rates-layer">
 				<thead>
 					<?php $this->output_heading_row(esc_html__('Table Rates #{{tierNo}}', 'shipflex'), array('table-rates-shipping')) ?>
 				</thead>
@@ -318,7 +318,7 @@ final class Table_Rates_Shipping {
 
 					<td><input v-model="shipping_rate.value" class="range-input-value" type="number" placeholder="0.00" min="0" step="0.001"></td>
 					<td class="column-delete">
-						<a @click.prevent="delete_cost_range(index)" class="btn-delete dashicons dashicons-remove" href="#"></a>
+						<a @click.prevent="delete_shipping_rate(index)" class="btn-delete dashicons dashicons-remove" href="#"></a>
 					</td>
 				</tr>
 			</tbody>

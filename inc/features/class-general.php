@@ -87,7 +87,7 @@ final class General {
 						if ($rule->is_feature_enabled('hide-shipping-methods')) {
 							$feature_object = $rule->get_feature_object('hide-shipping-methods');
 							if ($feature_object) {
-								$hide_shipping_methos[] = $feature_object->hide_shipping_methods();
+								$hide_shipping_methos[] = $feature_object->hide_shipping_methods($shipping_rate, $rule);
 							}
 						}
 					}
@@ -109,7 +109,7 @@ final class General {
 						if ($rule->is_feature_enabled('hide-other-shipping-methods')) {
 							$feature_object = $rule->get_feature_object('hide-other-shipping-methods');
 							if ($feature_object) {
-								$hideable_rate_ids = array_merge($hideable_rate_ids, $feature_object->get_shipping_rates());
+								$hideable_rate_ids = array_merge($hideable_rate_ids, $feature_object->get_shipping_rates($shipping_rate, $rule));
 							}
 						}
 					}
@@ -246,7 +246,7 @@ final class General {
 			<div class="gap-10"></div>
 			<a class="button" href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">Request a Feature</a>
 		</div>
-	<?php
+<?php
 		$form_control->output_after_input_options();
 	}
 
@@ -258,15 +258,8 @@ final class General {
 	 */
 	public function status_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options();
-		$form_control->output_control(); ?>
-
-		<div class="shipflex-notice-box shipflex-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
-			<h3><?php esc_html_e('💡 Debugging Mode is Disabled', 'shipflex') ?></h3>
-			<div class="description"><?php esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipFlex rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipflex') ?></div>
-			<div class="gap-10"></div>
-			<a @click.prevent="enable_debugging_mode()" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#"><?php esc_html_e('Enable Debugging Mode', 'shipflex') ?></a>
-		</div>
-<?php
+		$form_control->output_control();
+		do_action('shipflex/after_statuses_options');
 		$form_control->output_after_input_options();
 	}
 }

@@ -838,7 +838,7 @@ ul.shipflex-repeater {
 }
 
 .shipflex-repeater.shipflex-repeater-condition-groups>.repeater-item:not(.repeater-item-separator) {
-	padding: 15px;
+	padding: 9px;
 	display: block;
 	position: relative;
 	border: 1px solid #eeeff1;
@@ -1053,9 +1053,8 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 
 #shipflex table.table-rates-shipping-rates {
 	width: 100%;
-	margin-top: 5px;
-	margin-bottom: 10px;
 	text-align: center;
+	margin-block: 5px 10px;
 	background-color: #fff;
 	border-collapse: collapse;
 }
@@ -1151,4 +1150,8 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 
 #shipflex .sortable-items-container {
 	margin-bottom: 10px;
+}
+
+#shipflex table.table-shipflex-table-rates-layer {
+	margin-bottom: 5px;
 }

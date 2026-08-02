@@ -18,7 +18,7 @@ const Table_Rates_Shipping = {
 
 		deleteWarning: {
 			type: String,
-			default: __('Do you want to delete this shipping cost range?', 'shipflex'),
+			default: __('Do you want to delete this table rates?', 'shipflex'),
 		},
 	},
 
@@ -50,7 +50,7 @@ const Table_Rates_Shipping = {
 		},
 
 		drag_button_classes() {
-			return {'button-drag': true, 'button-drag-table-rates-layer': true}
+			return { 'button-drag': true, 'button-drag-table-rates-layer': true }
 		}
 	},
 
@@ -144,20 +144,21 @@ const Table_Rates_Shipping = {
 				this.shipping_rates = []
 			}
 
-			const last_item = this.get_prev_rate(this.shipping_rates?.length - 1);
-			if (last_item && !last_item?.max) {
-				return alert(__('Please enter "Max" value of the previous range.', 'shipflex'))
+			const prev_item = this.get_prev_rate(this.shipping_rates?.length - 1);
+			if (prev_item && !prev_item?.max) {
+				return alert(__('Please enter "Max" value of the previous shipping rate.', 'shipflex'))
 			}
 
+			const last_item = this.get_prev_rate(this.shipping_rates?.length);
 			if (last_item && !last_item?.value) {
-				return alert(__('Please enter "Rate" of the previous range.', 'shipflex'))
+				return alert(__('Please enter "Cost" of the previous shipping rate.', 'shipflex'))
 			}
 
 			this.shipping_rates.push({ id: this.$utils.generate_uuid(), ...this.shipping_rate_default_data })
 		},
 
 		delete_shipping_rate(index) {
-			const response = confirm(__('Do you want to delete this range?', 'shipflex'));
+			const response = confirm(__('Do you want to delete this shipping rate?', 'shipflex'));
 			if (response) {
 				this.shipping_rates.splice(index, 1)
 			}
