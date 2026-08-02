@@ -28,7 +28,7 @@ const Cart_Based_Shipping = {
 		},
 
 		show_calculation_value() {
-			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_type != 'based_on_ranges')
+			return this.calculate_basis == 'fixed_amount' || (this.calculate_basis != 'fixed_amount' && this.calculation_type != 'table_rates')
 		},
 
 		calculation_metrics() {
@@ -41,20 +41,20 @@ const Cart_Based_Shipping = {
 	},
 
 	methods: {
-		add_shipping_cost_range() {
-			if (!Array.isArray(this.shipping_cost_range_layers)) {
-				this.shipping_cost_range_layers = []
+		add_new_table_rates() {
+			if (!Array.isArray(this.table_rates_layers)) {
+				this.table_rates_layers = []
 			}
 
-			this.shipping_cost_range_layers.push({ id: this.$utils.generate_uuid() })
+			this.table_rates_layers.push({ id: this.$utils.generate_uuid() })
 		},
 
-		duplicate_shipping_cost_range(data, position) {
-			this.shipping_cost_range_layers.splice(position, 0, data)
+		duplicate_table_rates_layer(data, position) {
+			this.table_rates_layers.splice(position, 0, data)
 		},
 
-		delete_shipping_cost_range(index) {
-			this.shipping_cost_range_layers.splice(index, 1)
+		delete_table_rates_layer(index) {
+			this.table_rates_layers.splice(index, 1)
 		}
 	}
 }

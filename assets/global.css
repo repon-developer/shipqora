@@ -103,25 +103,8 @@
 	--gap: 20px;
 }
 
-#shipflex .button {
-	min-height: 0;
-	position: relative;
-	text-align: center;
-	height: var(--inputHeight);
-	color: var(--primaryColor);
-	box-shadow: none !important;
-	padding-block: 0 !important;
-	line-height: calc(var(--inputHeight) - 2px);
-	border-color: color-mix(in srgb, #fff 10%, var(--primaryColor))
-}
-
 #shipflex .button.button-flat {
 	border-radius: 0 !important
-}
-
-#shipflex .button-primary {
-	color: #fff;
-	background-color: var(--primaryColor);
 }
 
 #shipflex .button-small {
@@ -130,7 +113,6 @@
 
 #shipflex .button.button-full-width {
 	width: 100%;
-	font-size: 120%;
 }
 
 #shipflex .button-large-dashed {
@@ -145,7 +127,6 @@
 	display: inline-flex;
 	align-items: center;
 }
-
 
 #shipflex .button.in-progress {
 	color: transparent !important;
@@ -182,7 +163,25 @@
 	--size: 15px;
 }
 
-#shipflex .status-circle {
+#shipflex button.button-large {
+	--inputHeight: 50px!important;
+	font-size: 16px;
+	font-weight: 500;
+	padding-inline: 25px;
+	min-width: 250px;
+	padding-block: 0 !important;
+}
+
+#shipflex .shipflex-status-wrapper {
+	font-size: 15px;
+	font-weight: 500;
+	column-gap: 6px;
+	align-items: center;
+	border-radius: 3px;
+	display: inline-flex;
+}
+
+#shipflex .shipflex-status {
 	--size: 16px;
 	flex: 0 0 auto;
 	width: var(--size);
@@ -191,51 +190,38 @@
 	background-color: #8c8f94;
 }
 
-#shipflex .status-circle.status-circle-active {
+#shipflex .shipflex-status.shipflex-status-active {
 	border-radius: 50%;
 	background-color: #0b6e31;
 	box-shadow: 0 0 0 rgba(11, 110, 49, 1);
 	animation: shipflex_live_flash 2s infinite ease-in-out;
 }
 
-#shipflex .status-circle.status-circle-development {
+#shipflex .shipflex-status.shipflex-status-development {
 	background-color: #d57d01;
-}
-
-body.shipflex_page_shipflex-edit {
-	--shipflex_color: #dc3929
-}
-
-body.shipflex_page_shipflex-edit.shipflex-status-disable {
-	--shipflex_color: #9d1003
-}
-
-body.shipflex_page_shipflex-edit.shipflex-status-active {
-	--shipflex_color: #228f4c
-}
-
-body.shipflex_page_shipflex-edit.shipflex-status-development {
-	--shipflex_color: #d7840d
-}
-
-body.shipflex_page_shipflex-edit li.toplevel_page_shipflex li.current a:after {
-	top: 3px;
-	content: "";
-	width: 12px;
-	display: none;
-	position: relative;
-	aspect-ratio: 1 / 1;
-	border-radius: 100px;
-	margin-inline-start: 5px;
-	background-color: var(--shipflex_color);
-}
-
-body.shipflex_page_shipflex-edit[class*="shipflex-status-"] li.toplevel_page_shipflex li.current a:after {
-	display: inline-block;
 }
 
 #toplevel_page_shipflex .wp-menu-image img {
 	padding-top: 6px;
+}
+
+
+table.shipflex_rules_table ul.list-item {
+	margin: 0;
+}
+
+table.shipflex_rules_table ul.list-item a {
+	color: inherit;
+}
+
+table.shipflex_rules_table ul.list-item a:hover {
+	text-decoration: underline;
+}
+
+table.shipflex_rules_table .shipflex-status-wrapper {
+	display: flex;
+	column-gap: 4px;
+	align-items: center;
 }
 
 #shipflex.shipflex-shipping-editor {

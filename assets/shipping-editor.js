@@ -14,21 +14,6 @@ const Shipping_Editor = {
 
 	watch: {
 		instance_id() {
-			console.log(this.instance_id)
-			this.load_instance();
-		}
-	},
-
-	mounted() {
-		this.loading = false;
-	},
-
-	methods: {
-		get_status(status) {
-			return shipflex_admin.statuses?.[status]?.currently_text
-		},
-		
-		load_instance() {
 			this.loading = true;
 			this.created_rule = null;
 			this.attached_rules = [];
@@ -57,6 +42,12 @@ const Shipping_Editor = {
 			}).catch((e) => { console.error(e) }).finally(() => {
 				this.loading = false;
 			})
+		}
+	},
+
+	methods: {
+		get_status(status) {
+			return shipflex_admin.statuses?.[status]?.currently_text
 		},
 
 		create_rule() {

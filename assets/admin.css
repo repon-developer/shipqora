@@ -42,9 +42,6 @@
 	}
 }
 
-#shipflex * {
-	box-sizing: border-box;
-}
 
 #shipflex.wrap {
 	margin: 0;
@@ -56,10 +53,13 @@
 	padding-bottom: 30px;
 }
 
+#shipflex.shipflex-rule-editor * {
+	box-sizing: border-box;
+}
+
 #shipflex a {
 	box-shadow: none !important;
 }
-
 
 .shipflex-loading-spinner {
 	--size: 22px;
@@ -145,18 +145,18 @@
 	font-weight: 500;
 }
 
-#shipflex select,
-#shipflex textarea,
-#shipflex button,
-#shipflex .button,
-#shipflex [type="radio"],
-#shipflex [type="checkbox"],
-#shipflex [type="date"],
-#shipflex [type="text"],
-#shipflex [type="time"],
-#shipflex [type="url"],
-#shipflex [type="number"],
-#shipflex [type="datetime-local"],
+#shipflex.shipflex-rule-editor select,
+#shipflex.shipflex-rule-editor textarea,
+#shipflex.shipflex-rule-editor button,
+#shipflex.shipflex-rule-editor .button,
+#shipflex.shipflex-rule-editor [type="radio"],
+#shipflex.shipflex-rule-editor [type="checkbox"],
+#shipflex.shipflex-rule-editor [type="date"],
+#shipflex.shipflex-rule-editor [type="text"],
+#shipflex.shipflex-rule-editor [type="time"],
+#shipflex.shipflex-rule-editor [type="url"],
+#shipflex.shipflex-rule-editor [type="number"],
+#shipflex.shipflex-rule-editor [type="datetime-local"],
 .select2-dropdown.shipflex-select2-dropdown {
 	margin: 0;
 	min-height: 0;
@@ -164,65 +164,79 @@
 	border-color: var(--borderColor)
 }
 
-#shipflex select,
-#shipflex textarea,
-#shipflex button,
-#shipflex .button,
-#shipflex [type="date"],
-#shipflex [type="text"],
-#shipflex [type="time"],
-#shipflex [type="url"],
-#shipflex [type="number"],
-#shipflex [type="datetime-local"] {
+#shipflex.shipflex-rule-editor select,
+#shipflex.shipflex-rule-editor textarea,
+#shipflex.shipflex-rule-editor button,
+#shipflex.shipflex-rule-editor .button,
+#shipflex.shipflex-rule-editor [type="date"],
+#shipflex.shipflex-rule-editor [type="text"],
+#shipflex.shipflex-rule-editor [type="time"],
+#shipflex.shipflex-rule-editor [type="url"],
+#shipflex.shipflex-rule-editor [type="number"],
+#shipflex.shipflex-rule-editor [type="datetime-local"] {
 	height: var(--inputHeight);
 }
 
-#shipflex [type="radio"],
-#shipflex [type="checkbox"] {
+#shipflex.shipflex-rule-editor [type="radio"],
+#shipflex.shipflex-rule-editor [type="checkbox"] {
 	--inputHeight: 1rem;
 	--borderColor: #8f8d8d;
 	margin-inline-end: 6px;
 	vertical-align: text-bottom;
 }
 
-#shipflex [type="radio"] {
+#shipflex.shipflex-rule-editor [type="radio"] {
 	border-radius: 100px !important;
 }
 
-#shipflex [type="number"] {
+#shipflex.shipflex-rule-editor [type="number"] {
 	width: 80px;
 	text-align: center;
 	padding-inline-end: 0;
 }
 
-#shipflex select {
+#shipflex.shipflex-rule-editor select {
 	padding-inline-end: 25px !important;
 	line-height: calc(var(--inputHeight) - 2px);
 }
 
-#shipflex select[multiple] {
+#shipflex.shipflex-rule-editor select[multiple] {
 	height: auto;
 }
 
-#shipflex input.regular-text-box {
+#shipflex.shipflex-rule-editor input.regular-text-box {
 	width: 600px;
 }
 
-#shipflex textarea {
+#shipflex.shipflex-rule-editor textarea {
 	height: unset;
 }
 
+#shipflex.shipflex-rule-editor .button {
+	position: relative;
+	text-align: center;
+	color: var(--primaryColor);
+	box-shadow: none !important;
+	padding-block: 0 !important;
+	line-height: calc(var(--inputHeight) - 2px);
+	border-color: color-mix(in srgb, #fff 10%, var(--primaryColor))
+}
 
-#shipflex .range-slider-input {
+#shipflex.shipflex-rule-editor .button-primary {
+	color: #fff;
+	background-color: var(--primaryColor);
+}
+
+#shipflex.shipflex-rule-editor .range-slider-input {
 	column-gap: 5px;
 	display: inline-flex;
 }
 
-#shipflex .range-slider-input [type="range"] {
+#shipflex.shipflex-rule-editor .range-slider-input [type="range"] {
 	flex: 1;
 }
 
-#shipflex .range-slider-input [type="number"] {
+#shipflex.shipflex-rule-editor .range-slider-input [type="number"] {
 	--inputHeight: 30px;
 	font-size: 12px;
 	width: 40px;
@@ -233,18 +247,18 @@
 	/* Firefox */
 }
 
-#shipflex .range-slider-input [type="number"]::-webkit-outer-spin-button,
-#shipflex .range-slider-input [type="number"]::-webkit-inner-spin-button {
+#shipflex.shipflex-rule-editor .range-slider-input [type="number"]::-webkit-outer-spin-button,
+#shipflex.shipflex-rule-editor .range-slider-input [type="number"]::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
 
-#shipflex input.textbox-number {
+#shipflex.shipflex-rule-editor input.textbox-number {
 	width: 80px;
 	text-align: center;
 }
 
-#shipflex .shipflex-toggle-input {
+#shipflex.shipflex-rule-editor .shipflex-toggle-input {
 	display: inline-flex;
 	overflow: hidden;
 	background-color: #f1f1f1;
@@ -252,7 +266,7 @@
 	border: 2px solid var(--primaryColor);
 }
 
-#shipflex .shipflex-toggle-input input {
+#shipflex.shipflex-rule-editor .shipflex-toggle-input input {
 	display: none;
 }
 
@@ -270,21 +284,6 @@
 
 #shipflex span.select2-safety-span {
 	display: none !important;
-}
-
-#shipflex button.button-large {
-	height: auto;
-	font-size: 16px;
-	font-weight: 500;
-	line-height: 50px;
-	padding-inline: 25px;
-	min-width: 250px;
-	padding-block: 0 !important;
-}
-
-#shipflex button.button-primary.button-large {
-	color: #fff;
-	background-color: var(--primaryColor);
 }
 
 #shipflex .select2-container {
@@ -644,10 +643,9 @@ table.table-shipflex-form tr.row-group-heading .component-heading-actions .butto
 }
 
 #shipflex table.table-shipflex-form tr.row-group-heading .component-heading-actions .button {
-	--inputHeight: 30px;
+	--inputHeight: 28px;
 	display: flex;
 	justify-content: center;
-	height: var(--inputHeight);
 }
 
 #shipflex table.table-shipflex-form tr.row-group-heading .component-heading-actions .btn-collapse {
@@ -1053,7 +1051,7 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	margin-bottom: 3px;
 }
 
-#shipflex table.shipflex-cost-range-table {
+#shipflex table.table-rates-shipping-rates {
 	width: 100%;
 	margin-top: 5px;
 	margin-bottom: 10px;
@@ -1062,12 +1060,12 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	border-collapse: collapse;
 }
 
-#shipflex table.shipflex-cost-range-table,
-#shipflex table.shipflex-cost-range-table :is(th, td) {
+#shipflex table.table-rates-shipping-rates,
+#shipflex table.table-rates-shipping-rates :is(th, td) {
 	border: 1px solid #ccc !important
 }
 
-#shipflex table.shipflex-cost-range-table thead th {
+#shipflex table.table-rates-shipping-rates thead th {
 	min-width: 0;
 	text-align: center;
 	padding-inline: 16px;
@@ -1076,72 +1074,33 @@ table.table-shipflex-form td:has(>.table-shipping-cost-range-tier) {
 	white-space: nowrap
 }
 
-#shipflex table.shipflex-cost-range-table tbody td {
+#shipflex table.table-rates-shipping-rates tbody td {
 	padding: 0 !important
 }
 
-#shipflex table.shipflex-cost-range-table tbody td input,
-#shipflex table.shipflex-cost-range-table tbody td select {
-	width: 100%;
-	max-width: none;
-	border: none;
+#shipflex table.table-rates-shipping-rates tbody td input,
+#shipflex table.table-rates-shipping-rates tbody td select {
+	border: none !important;
+	width: 100% !important;
+	max-width: none !important;
 	outline: none !important;
 	border-radius: 0 !important;
 	box-shadow: none !important;
 }
 
-#shipflex table.shipflex-cost-range-table .column-delete {
+#shipflex table.table-rates-shipping-rates .column-delete {
 	width: 1%;
 	vertical-align: middle;
 }
 
-#shipflex table.shipflex-cost-range-table .btn-delete {
+#shipflex table.table-rates-shipping-rates .btn-delete {
 	color: #3c434a;
 }
 
-#shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-max-empty .range-input-max,
-#shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-less-value .range-input-max,
-#shipflex table.shipflex-cost-range-table tr.range-has-error.range-error-value-empty .range-input-value {
+#shipflex table.table-rates-shipping-rates tr.range-has-error.range-error-max-empty .range-input-max,
+#shipflex table.table-rates-shipping-rates tr.range-has-error.range-error-less-value .range-input-max,
+#shipflex table.table-rates-shipping-rates tr.range-has-error.range-error-value-empty .range-input-value {
 	background-color: #ffe7e7;
-}
-
-table.shipflex_rules_table ul.list-item {
-	margin: 0;
-}
-
-table.shipflex_rules_table ul.list-item a {
-	color: inherit;
-}
-
-table.shipflex_rules_table ul.list-item a:hover {
-	text-decoration: underline;
-}
-
-table.shipflex_rules_table .shipflex-status-wrapper {
-	display: flex;
-	column-gap: 4px;
-	align-items: center;
-}
-
-table.shipflex_rules_table .shipflex-status {
-	width: 14px;
-	height: 14px;
-	flex: 0 0 auto;
-	position: relative;
-	top: 1px;
-	border-radius: 100px;
-}
-
-table.shipflex_rules_table .shipflex-status.shipflex-status-active {
-	background-color: #0b6e31;
-}
-
-table.shipflex_rules_table .shipflex-status.shipflex-status-development {
-	background-color: #d57d01;
-}
-
-table.shipflex_rules_table .shipflex-status.shipflex-status-disabled {
-	background-color: #8c8f94;
 }
 
 #shipflex .form-footer {

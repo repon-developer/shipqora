@@ -215,13 +215,9 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function column_status($shipflex_rule) {
-		$all_statuses = array(
-			'active' => esc_html__('Active', 'shipflex'),
-			'disabled' => esc_html__('Disabled', 'shipflex'),
-			'development' => esc_html__('Development', 'shipflex'),
-		);
+		$all_statuses = Utils::get_statuses();
 
-		$status = !empty($all_statuses[$shipflex_rule->status]) ? $all_statuses[$shipflex_rule->status] : $shipflex_rule->status; ?>
+		$status = !empty($all_statuses[$shipflex_rule->status]['label']) ? $all_statuses[$shipflex_rule->status]['label'] : $shipflex_rule->status; ?>
 		<div class="shipflex-status-wrapper">
 			<span class="shipflex-status shipflex-status-<?php echo esc_attr($shipflex_rule->status) ?>"></span>
 			<?php echo esc_html($status); ?>

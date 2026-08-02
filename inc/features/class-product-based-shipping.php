@@ -330,4 +330,4 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 }
 
-Feature::add_feature(Product_Based_Shipping::class);
+//Feature::add_feature(Product_Based_Shipping::class);

@@ -62,7 +62,7 @@ final class Main {
 		/* Load components */
 		require_once ShipFlex_PATH . 'inc/components/class-select2.php';
 		require_once ShipFlex_PATH . 'inc/components/class-cart-option.php';
-		require_once ShipFlex_PATH . 'inc/components/class-shipping-cost-range.php';
+		require_once ShipFlex_PATH . 'inc/components/class-table-rates-shipping.php';
 
 		// Load Features
 		require_once ShipFlex_PATH . 'inc/features/class-general.php';

@@ -228,7 +228,7 @@ final class Admin {
 		$rule_list_table = new Rule_List_Table();
 		$rule_list_table->prepare_items();
 
-		echo '<div id="shipflex-wrapper" class="wrap">';
+		echo '<div id="shipflex" class="wrap">';
 		echo '<div class="shipflex-wp-heading">';
 		echo '<h1 class="wp-heading-inline">' . esc_html__('ShipFlex Rules', 'shipflex') . '</h1>';
 		echo '<a href="' . esc_url(menu_page_url('shipflex-edit', false)) . '" class="page-title-action">' . esc_html__('Add new rule', 'shipflex') . '</a>';

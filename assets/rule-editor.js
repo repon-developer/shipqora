@@ -3,7 +3,7 @@ import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
-import Shipping_Cost_Range from './component/shipping-cost-range.min.js?v=@@VERSION';
+import Table_Rates_Shipping from './component/table-rates-shipping.min.js?v=@@VERSION';
 import Shipping_Methods_Group from './component/shipping-methods-group.min.js?v=@@VERSION';
 
 import Cart_Based_Shipping from './features/cart-based-shipping.min.js?v=@@VERSION';
@@ -71,7 +71,7 @@ const ShipFlex_Rule_Editor = {
 		},
 
 		get_current_status_info() {
-			return `<span class="status-circle status-circle-${this.original_status}"></span>` + shipflex_admin.statuses?.[this.original_status].currently_text
+			return `<span class="shipflex-status shipflex-status-${this.original_status}"></span>` + shipflex_admin.statuses?.[this.original_status].currently_text
 		}
 	},
 
@@ -262,7 +262,7 @@ if ($('.shipflex-rule-editor').length) {
 		'input-product': Input_Product,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
-		'shipping-cost-range': Shipping_Cost_Range,
+		'table-rates-shipping': Table_Rates_Shipping,
 		'shipping-methods-group': Shipping_Methods_Group,
 	});
 

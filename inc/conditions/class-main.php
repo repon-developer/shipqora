@@ -227,6 +227,7 @@ class Main {
 	 * @return boolean
 	 */
 	public function is_matched_conditions($condition_groups) {
+		error_log(print_r($condition_groups, true));
 		if (empty($condition_groups) || !is_array($condition_groups)) {
 			return true;
 		}
@@ -257,6 +258,8 @@ class Main {
 
 			return count($group_data['conditions']) === count($conditions);
 		});
+
+		
 
 		$hook_name = Utils::get_hook_name('condition-groups', 'matched');
 		$this->condition_results[$hash] = apply_filters($hook_name, count($condition_groups) > 0, $condition_groups);

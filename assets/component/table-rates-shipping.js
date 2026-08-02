@@ -2,11 +2,11 @@ import Base_Component from './base-component.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
-const Shipping_Cost_Range_Tier = {
+const Table_Rates_Shipping = {
 	extends: Base_Component,
-	template: '#shipflex-shipping-cost-range-component',
+	template: '#shipflex-table-rates-shipping-component',
 	props: {
-		rangeData: {
+		tableRateData: {
 			default: null,
 			type: [null, Object]
 		},
@@ -25,10 +25,10 @@ const Shipping_Cost_Range_Tier = {
 	data() {
 		return {
 			collapse: false,
-			range_lines: [],
-			shipping_ranges_errors: [],
-			...shipflex_admin.shipping_cost_range_model,
-			...this.rangeData
+			shipping_rates: [],
+			shipping_rates_errors: [],
+			...shipflex_admin.table_rates_shipping_model,
+			...this.tableRateData
 		}
 	},
 
@@ -37,11 +37,11 @@ const Shipping_Cost_Range_Tier = {
 			return shipflex_admin.calculation_metrics?.[this.calculateBasis]?.short_lower;
 		},
 
-		range_default_data() {
+		shipping_rate_default_data() {
 			return { max: '', type: 'fixed_amount', value: '' }
 		},
 
-		range_data() {
+		table_rates_data() {
 			return JSON.parse(JSON.stringify(this.$data))
 		},
 
@@ -50,39 +50,39 @@ const Shipping_Cost_Range_Tier = {
 		},
 
 		drag_button_classes() {
-			return {'button-drag': true, 'button-drag-shipping-cost-range': true}
+			return {'button-drag': true, 'button-drag-table-rates-layer': true}
 		}
 	},
 
 	created() {
-		this.range_lines = this.range_lines.map((range_data) => ({
+		this.shipping_rates = this.shipping_rates.map((range_data) => ({
 			id: this.$utils.generate_uuid(),
-			...this.range_default_data,
+			...this.shipping_rate_default_data,
 			...range_data
 		}))
 	},
 
 	watch: {
-		range_data: {
+		table_rates_data: {
 			deep: true,
 			handler(range_data) {
-				delete range_data.shipping_ranges_errors;
+				delete range_data.shipping_rates_errors;
 				this.$emit('update', range_data);
 			}
 		},
 
-		range_lines: {
+		shipping_rates: {
 			deep: true,
-			handler(range_items) {
+			handler(shipping_rate_lines) {
 
-				const range_erors = range_items.map((range, index) => {
+				const range_erors = shipping_rate_lines.map((range, index) => {
 					const errors = Array();
 
-					if (range_items?.length !== (index + 1) && (!range?.max || range?.max == 0)) {
+					if (shipping_rate_lines?.length !== (index + 1) && (!range?.max || range?.max == 0)) {
 						errors.push('max_empty')
 					}
 
-					if (range?.max && range?.max <= this.get_range_minimum(index)) {
+					if (range?.max && range?.max <= this.get_shipping_rate_minimum(index)) {
 						errors.push('max_less_than_min')
 					}
 
@@ -93,14 +93,14 @@ const Shipping_Cost_Range_Tier = {
 					return { range_no: index, errors: errors }
 				})
 
-				this.shipping_ranges_errors = range_erors.filter((item) => item?.errors?.length > 0)
+				this.shipping_rates_errors = range_erors.filter((item) => item?.errors?.length > 0)
 			}
 		}
 	},
 
 	methods: {
 		error_classes(index) {
-			const range_error = this.shipping_ranges_errors.find((item) => item?.range_no == index && item?.errors?.length > 0)
+			const range_error = this.shipping_rates_errors.find((item) => item?.range_no == index && item?.errors?.length > 0)
 
 			if (range_error) {
 				const error_classes = {
@@ -125,26 +125,26 @@ const Shipping_Cost_Range_Tier = {
 			return null;
 		},
 
-		get_prev_range(current_index) {
-			return this.range_lines[current_index - 1];
+		get_prev_rate(current_index) {
+			return this.shipping_rates[current_index - 1];
 		},
 
-		get_range_minimum(index) {
-			let prev_item = this.get_prev_range(index);
+		get_shipping_rate_minimum(index) {
+			let prev_item = this.get_prev_rate(index);
 
 			if (prev_item && !prev_item?.max) {
-				return this.get_range_minimum(index - 1)
+				return this.get_shipping_rate_minimum(index - 1)
 			}
 
 			return prev_item?.max || 0;
 		},
 
-		add_cost_range() {
-			if (!Array.isArray(this.range_lines)) {
-				this.range_lines = []
+		add_shipping_rate() {
+			if (!Array.isArray(this.shipping_rates)) {
+				this.shipping_rates = []
 			}
 
-			const last_item = this.get_prev_range(this.range_lines?.length - 1);
+			const last_item = this.get_prev_rate(this.shipping_rates?.length - 1);
 			if (last_item && !last_item?.max) {
 				return alert(__('Please enter "Max" value of the previous range.', 'shipflex'))
 			}
@@ -153,16 +153,16 @@ const Shipping_Cost_Range_Tier = {
 				return alert(__('Please enter "Rate" of the previous range.', 'shipflex'))
 			}
 
-			this.range_lines.push({ id: this.$utils.generate_uuid(), ...this.range_default_data })
+			this.shipping_rates.push({ id: this.$utils.generate_uuid(), ...this.shipping_rate_default_data })
 		},
 
-		delete_cost_range(index) {
+		delete_shipping_rate(index) {
 			const response = confirm(__('Do you want to delete this range?', 'shipflex'));
 			if (response) {
-				this.range_lines.splice(index, 1)
+				this.shipping_rates.splice(index, 1)
 			}
 		}
 	}
 }
 
-export default Shipping_Cost_Range_Tier;
+export default Table_Rates_Shipping;

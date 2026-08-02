@@ -11,7 +11,7 @@ use ShipFlex\Shipping_Cost;
 use ShipFlex\Condition\Main;
 use ShipFlex\Settings_Fields;
 use ShipFlex\Component_Methods;
-use ShipFlex\Component\Shipping_Cost_Range_Tier;
+use ShipFlex\Component\Table_Rates_Shipping;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -94,7 +94,7 @@ class Cart_Based_Shipping extends Feature {
 			'calculation_value' => '',
 			'target_products' => array(),
 			'condition_groups' => array(),
-			'shipping_cost_range_layers' => array(),
+			'table_rates_layers' => array(),
 		));
 
 		$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
@@ -106,7 +106,7 @@ class Cart_Based_Shipping extends Feature {
 
 		$calculation_value = isset($tier_item['calculation_value']) ? trim($tier_item['calculation_value']) : '';
 		$calculation_value = apply_filters($this->get_hook('layer', 'calculation-value'), $calculation_value, $tier_item, $this);
-		if (strlen($calculation_value) == 0 && 'based_on_ranges' !== $tier_item['calculation_type']) {
+		if (strlen($calculation_value) == 0 && 'table_rates' !== $tier_item['calculation_type']) {
 			return;
 		}
 
@@ -132,13 +132,13 @@ class Cart_Based_Shipping extends Feature {
 					}
 
 					if (
-						'based_on_ranges' == $calculation_type &&
-						isset($tier_item['shipping_cost_range_layers']) &&
-						is_array($tier_item['shipping_cost_range_layers']) &&
-						count($tier_item['shipping_cost_range_layers']) > 0
+						'table_rates' == $calculation_type &&
+						isset($tier_item['table_rates_layers']) &&
+						is_array($tier_item['table_rates_layers']) &&
+						count($tier_item['table_rates_layers']) > 0
 					) {
-						$shipping_cost_range_layers = array_map(fn($range_layer) => new Shipping_Cost_Range_Tier($range_layer), $tier_item['shipping_cost_range_layers']);
-						$shipping_cost_range_layers = array_filter($shipping_cost_range_layers, function ($item) {
+						$table_rates_layers = array_map(fn($range_layer) => new Table_Rates_Shipping($range_layer), $tier_item['table_rates_layers']);
+						$table_rates_layers = array_filter($table_rates_layers, function ($item) {
 							if (!$item->has_validate_ranges()) {
 								return false;
 							}
@@ -146,12 +146,12 @@ class Cart_Based_Shipping extends Feature {
 							return $item->is_condition_matched();
 						});
 
-						if (count($shipping_cost_range_layers) == 0) {
+						if (count($table_rates_layers) == 0) {
 							throw new Shipping_Cost(-1);
 						}
 
-						usort($shipping_cost_range_layers, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
-						$shipping_cost_range = end($shipping_cost_range_layers);
+						usort($table_rates_layers, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
+						$shipping_cost_range = end($table_rates_layers);
 						$shipping_cost = $shipping_cost_range->calculate_shipping_cost($metrics_total, $tier_item['calculate_basis']);
 						if (false !== $shipping_cost) {
 							throw new Shipping_Cost($shipping_cost);
@@ -211,7 +211,7 @@ class Cart_Based_Shipping extends Feature {
 				$tier_item['id'] = md5(wp_json_encode($tier_item));
 			}
 
-			if ($tier_item['calculated_shipping_cost'] >= 0) {
+			if (isset($tier_item['calculated_shipping_cost']) && $tier_item['calculated_shipping_cost'] >= 0) {
 				$tier_item_key = $rule_id . '-' . $tier_item['id'];
 				$existsed_tiers[$tier_item_key] = apply_filters($this->get_hook('layer'), $tier_item, $this);
 			}
@@ -350,14 +350,14 @@ class Cart_Based_Shipping extends Feature {
 			)
 		), 'cart-tier');
 
-		$settings_fields->add_setting('shipping_cost_range_layers', array(
+		$settings_fields->add_setting('table_rates_layers', array(
 			'priority' => 50,
 			'default_value' => array((object)array()),
-			'model_key' => 'shipping_cost_range_layers',
-			'label' => esc_html__('Shipping Cost Range Settings', 'shipflex'),
-			'callback' => array($this, 'shipping_cost_range_layers_setting_field'),
+			'model_key' => 'table_rates_layers',
+			'label' => esc_html__('Table Rates Layers', 'shipflex'),
+			'callback' => array($this, 'table_rates_layers_setting_field'),
 			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use priority settings and condition groups to control which rates apply.', 'shipflex'),
-			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "based_on_ranges"'),
+			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "table_rates"'),
 		), 'cart-tier');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -433,7 +433,7 @@ class Cart_Based_Shipping extends Feature {
 					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipflex') ?></template>
 					<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
 				</option>
-				<option value="based_on_ranges"><?php esc_html_e('Shipping Cost Ranges', 'shipflex') ?></option>
+				<option value="table_rates"><?php esc_html_e('Table Rates', 'shipflex') ?></option>
 			</select>
 
 			<template v-if="show_calculation_value">
@@ -447,54 +447,54 @@ class Cart_Based_Shipping extends Feature {
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'subtotal'">
-			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Shipping Cost Ranges" for subtotal ranges.', 'shipflex') ?>
+			<?php esc_html_e('Choose "Percentage" to charge a % of the item value, or "Table Rates" for subtotal ranges.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'quantity'">
-			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Shipping Cost Ranges" for quantity brackets.', 'shipflex') ?>
+			<?php esc_html_e('Charge a rate per item unit (e.g. $2 per item), or choose "Table Rates" for quantity brackets.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'weight'">
-			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Shipping Cost Ranges" for weight brackets.', 'shipflex') ?>
+			<?php esc_html_e('Charge a rate per weight unit (e.g. $1.50 per kg), or choose "Table Rates" for weight brackets.', 'shipflex') ?>
 		</div>
 
 		<div class="field-note" v-if="calculate_basis == 'volume'">
-			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Shipping Cost Ranges" for volume brackets.', 'shipflex') ?>
+			<?php esc_html_e('Charge a rate per volume unit (e.g. $0.50 per cm³), or choose "Table Rates" for volume brackets.', 'shipflex') ?>
 		</div>
 	<?php
 		$form_control->output_after_input_options();
 	}
 
 	/**
-	 * Output setting field of shipping cost range
+	 * Output setting field of table rates
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function shipping_cost_range_layers_setting_field(Form_Control $form_control) {
+	public function table_rates_layers_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 
 		<div
 			@end="layers_order_change"
 			class="sortable-items-container"
-			data-group="shipping-cost-range-layers"
-			v-if="shipping_cost_range_layers?.length"
-			data-model-key="shipping_cost_range_layers"
-			v-sortable="{options: {handle: '.button-drag.button-drag-shipping-cost-range'}}">
-			<shipping-cost-range
+			data-group="table-rates-layers"
+			v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length"
+			data-model-key="<?php echo esc_attr($form_control->get_model_key()) ?>"
+			v-sortable="{options: {handle: '.button-drag.button-drag-table-rates-layer'}}">
+			<table-rates-shipping
 				:tier-no="index + 1"
 				:hide-heading="false"
-				:key="shipping_rage_data?.id"
-				:range-data="shipping_rage_data"
+				:key="table_rates_layer?.id"
 				:calculate-basis="calculate_basis"
-				@delete="delete_shipping_cost_range(index)"
-				v-for="(shipping_rage_data, index) in shipping_cost_range_layers"
-				@update="(range_data) => shipping_cost_range_layers[index] = range_data"
-				@duplicate="(range_data) => duplicate_shipping_cost_range(range_data, index+1)">
-			</shipping-cost-range>
+				:table-rate-data="table_rates_layer"
+				@delete="delete_table_rates_layer(index)"
+				v-for="(table_rates_layer, index) in <?php echo esc_attr($form_control->get_model_key()) ?>"
+				@update="(table_rate_data) => <?php echo esc_attr($form_control->get_model_key()) ?>[index] = table_rate_data"
+				@duplicate="(table_rate_data) => duplicate_table_rates_layer(table_rate_data, index+1)">
+			</table-rates-shipping>
 		</div>
 
-		<a class="button button-full-width" href="#" @click.prevent="add_shipping_cost_range()"><?php esc_html_e('+ Add New Shipping Cost Range', 'shipflex') ?></a>
+		<a class="button button-full-width" href="#" @click.prevent="add_new_table_rates()"><?php esc_html_e('+ Add New Table Rates', 'shipflex') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}
