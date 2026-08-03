@@ -477,7 +477,7 @@
 	margin-bottom: 15px;
 }
 
-#shipflex .rule-title input {
+#shipflex.shipflex-rule-editor .rule-title input {
 	padding: 10px 8px;
 	font-size: 18px;
 	line-height: 1.4;
@@ -1031,7 +1031,7 @@ table.table-shipflex-form thead,
 
 #shipflex .shipflex-notice-box .description {
 	line-height: 1.5;
-	max-width: 1000px;
+	max-width: 1200px;
 	margin-inline: auto;
 }
 

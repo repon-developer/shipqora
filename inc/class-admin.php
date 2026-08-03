@@ -149,8 +149,8 @@ final class Admin {
 			wp_send_json_error(array('message' => esc_html__('Invalid data.', 'shipflex')));
 		}
 
-		$rule = new ShipFlex_Rule($rule_data);
-		$rule->set_id(sanitize_text_field(wp_unslash($_POST['id'])));
+		$rule = ShipFlex_Rule::get(sanitize_text_field(wp_unslash($_POST['id'])));
+		$rule->set_data($rule_data);
 		$rule->save();
 
 		$new_edit_url = add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipflex-edit'));

@@ -68,7 +68,6 @@
 }
 
 #shipflex-debugging-box .store-manager-notice {
-	font-size: 15px;
 	padding: 3px 10px;
 	margin-bottom: 10px;
 	border: 1px solid #f98b8b;
@@ -81,8 +80,9 @@
 
 #shipflex-debugging-box h4 {
 	font-weight: bold;
-	font-size: 17px;
+	font-size: 18px;
 	margin-block: 0 5px;
+	letter-spacing: -0.2px;
 }
 
 #shipflex-debugging-box p {

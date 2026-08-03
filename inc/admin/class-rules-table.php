@@ -88,9 +88,9 @@ class Rule_List_Table extends \WP_List_Table {
 			'shipping_methods' => esc_html__('Shipping Methods', 'shipflex'),
 			'features' => esc_html__('Active Features', 'shipflex'),
 			'status' => esc_html__('Status', 'shipflex'),
+			'updated_at' => esc_html__('Updated', 'shipflex'),
+			'created_at' => esc_html__('Created', 'shipflex'),
 		);
-
-		$columns['created_at'] = esc_html__('Created Date', 'shipflex');
 
 		return $columns;
 	}
@@ -186,6 +186,25 @@ class Rule_List_Table extends \WP_List_Table {
 		}
 
 		echo '<ul class="list-item">' . implode('', $activated_features) . '</ul>';
+	}
+
+	/**
+	 * Updated at column 
+	 * 
+	 * @since 1.0.0
+	 */
+	public function column_updated_at($shipflex_rule) {
+		$updated_timestamp = strtotime(wp_date('Y-m-d H:i:s', strtotime($shipflex_rule->updated_at)));
+		$readable_diff_time = strtotime(wp_date('Y-m-d H:i:s', strtotime('-3days')));
+		if ($updated_timestamp > $readable_diff_time) {
+			echo wp_kses_post(human_time_diff($updated_timestamp, current_time('timestamp')) . ' ago<br>');
+		}
+
+		printf(
+			'%s at %s',
+			esc_html(gmdate(get_option('date_format'), $updated_timestamp)),
+			esc_html(gmdate(get_option('time_format'), $updated_timestamp))
+		);
 	}
 
 	/**

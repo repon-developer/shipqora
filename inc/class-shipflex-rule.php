@@ -197,6 +197,13 @@ final class ShipFlex_Rule {
 	private $meta_data = [];
 
 	/**
+	 * Update time of this rule
+	 * 
+	 * @var stirng
+	 */
+	public $updated_at = '';
+
+	/**
 	 * Created time of this rule
 	 * 
 	 * @var stirng
@@ -218,6 +225,17 @@ final class ShipFlex_Rule {
 	 */
 	public function __construct($data = array()) {
 		$this->created_at = gmdate('Y-m-d H:i:s');
+		$this->set_data($data);
+		$this->id = absint($this->id);
+	}
+
+	/**
+	 * Set ShipFlex rule data
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_data($data) {
 		if (!is_array($data)) {
 			return;
 		}
@@ -232,10 +250,7 @@ final class ShipFlex_Rule {
 			next($array_properties);
 		}
 
-		$features_base_models = array_map(function ($feature) {
-			return $feature->get_configuration_value('base_model');
-		}, Feature::get_features());
-
+		$features_base_models = array_map(fn($feature) => $feature->get_configuration_value('base_model'), Feature::get_features());
 		foreach ($data as $key => $value) {
 			if (in_array($key, $features_base_models)) {
 				$this->feature_settings[$key] = $value;
@@ -243,8 +258,6 @@ final class ShipFlex_Rule {
 				$this->{$key} = $value;
 			}
 		}
-
-		$this->id = absint($this->id);
 	}
 
 	/**
@@ -334,6 +347,7 @@ final class ShipFlex_Rule {
 	public function save() {
 		global $wpdb;
 
+		$this->updated_at = gmdate('Y-m-d H:i:s');
 		$data = get_object_vars($this);
 		unset($data['meta_data']);
 
@@ -366,7 +380,7 @@ final class ShipFlex_Rule {
 	 */
 	public function get_models() {
 		$rule_data = get_object_vars($this);
-		unset($rule_data['created_at'], $rule_data['meta_data'], $rule_data['feature_settings']);
+		unset($rule_data['updated_at'], $rule_data['created_at'], $rule_data['meta_data'], $rule_data['feature_settings']);
 		foreach ($this->feature_settings as $feature_id => $feature_data) {
 			$rule_data[$feature_id] = $feature_data;
 		}

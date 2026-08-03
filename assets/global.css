@@ -269,3 +269,7 @@ table.shipflex_rules_table .shipflex-status-wrapper {
 .wc-shipping-zone-method-fields label:has(+ #shipflex) {
 	display: none !important;
 }
+
+#shipflex table.shipflex_rules_table .shipflex-status-wrapper {
+	font-size: 14px;
+}
