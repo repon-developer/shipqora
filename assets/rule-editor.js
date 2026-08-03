@@ -100,7 +100,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	updated() {
-		console.log(this.$data);
+		//console.log(this.$data);
 	},
 
 	methods: {
@@ -171,7 +171,8 @@ const ShipFlex_Rule_Editor = {
 				return this.$utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipflex'));
 			}
 
-			if (!this.shipping_methods?.length) {
+			const shipping_methods = this.shipping_methods?.filter((item) => item.length > 0)
+			if (!shipping_methods?.length) {
 				this.$utils.highlight_section('general-shipping-methods');
 				return this.$utils.set_toast_message(__('At least one shipping method is required to apply this rule.', 'shipflex'));
 			}

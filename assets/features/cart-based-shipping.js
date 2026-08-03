@@ -15,11 +15,15 @@ const Cart_Based_Shipping = {
 		return {
 			calculation_value: '',
 			calculate_basis: 'fixed_amount',
-			shipping_cost_range_layers: [],
+			table_rates_lite: {},
 			calculation_type: 'per_unit_or_percentage',
 			...shipflex_admin?.features?.['cart-based-shipping'],
 			...this.featureData
 		}
+	},
+
+	mounted() {
+		console.log(this.$data)
 	},
 
 	computed: {

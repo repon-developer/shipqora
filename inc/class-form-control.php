@@ -314,6 +314,33 @@ final class Form_Control {
 	}
 
 	/**
+	 * Output sub settings fields
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_sub_settings_fields() {
+		if (!is_array($this->options['sub_settings_fields'])) {
+			return;
+		}
+
+		$sub_settings_wrapper = $this->get_option('sub_settings_wrapper');
+		if (empty($sub_settings_wrapper) || 'table' == $sub_settings_wrapper) {
+			echo '<table class="table-shipflex-form">';
+		}
+
+		$settings_fields = Utils::priority_rearrange($this->options['sub_settings_fields']);
+		foreach ($settings_fields as $settings_field) {
+			$form_control = new self($settings_field);
+			$form_control->render();
+		}
+
+		if (empty($sub_settings_wrapper) || 'table' == $sub_settings_wrapper) {
+			echo '</table>';
+		}
+	}
+
+	/**
 	 * Render field type
 	 * 
 	 * @since 1.0.0
@@ -325,7 +352,7 @@ final class Form_Control {
 		}
 
 		$model_key = $this->get_model_key();
-		if (empty($model_key)) {
+		if (empty($model_key) && !isset($this->options['sub_settings_fields'])) {
 			throw new \Exception('Missing required key: "model_key".');
 		}
 
@@ -341,6 +368,10 @@ final class Form_Control {
 	 * @return void
 	 */
 	public function output_control($model_suffix = null) {
+		if (isset($this->options['sub_settings_fields'])) {
+			return $this->output_sub_settings_fields();
+		}
+
 		if (method_exists($this, $this->type)) {
 			call_user_func(array($this, $this->type), $model_suffix);
 		}

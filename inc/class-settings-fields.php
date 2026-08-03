@@ -154,6 +154,21 @@ final class Settings_Fields {
 						$this->assign_model($settings_models, $model_key, $related_model_value);
 					}
 				}
+
+				if (isset($setting_field['sub_settings_fields']) && is_array($setting_field['sub_settings_fields'])) {
+					foreach ($setting_field['sub_settings_fields'] as $sub_setting_field) {
+						if (!empty($sub_setting_field['model_key'])) {
+							$model_value = isset($sub_setting_field['default_value']) ? $sub_setting_field['default_value'] : null;
+							$this->assign_model($settings_models, $sub_setting_field['model_key'], $model_value);
+						}
+
+						if (isset($sub_setting_field['related_models']) && is_array($sub_setting_field['related_models'])) {
+							foreach ($sub_setting_field['related_models'] as $model_key => $related_model_value) {
+								$this->assign_model($settings_models, $model_key, $related_model_value);
+							}
+						}
+					}
+				}
 			}
 		}
 

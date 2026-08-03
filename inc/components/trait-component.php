@@ -42,7 +42,7 @@ trait Component_Methods {
 		return array(
 			'duplicate' => array(
 				'priority' => 5,
-				'content' => '<a @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
+				'content' => '<a v-if="!hide_action(\'duplicate\')" @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipflex') . '</a>'
 			),
 
 			'delete' => array(
@@ -52,7 +52,7 @@ trait Component_Methods {
 
 			'collapse' => array(
 				'priority' => 1000,
-				'content' => '<a @click.prevent="collapse = !collapse" class="button btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
+				'content' => '<a v-if="!hide_action(\'collapse\')" @click.prevent="collapse = !collapse" class="button btn-collapse dashicons" :class="collapse_button_class" href="#"></a>'
 			)
 		);
 	}
