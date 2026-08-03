@@ -1014,6 +1014,7 @@ table.table-shipflex-form thead,
 	text-align: center;
 	margin-top: 15px;
 	padding: 10px 15px;
+	font-size: 14px;
 	padding-bottom: 15px;
 	border: 1px solid #dbd5d5;
 	background-color: #f9f9f9;
@@ -1037,6 +1038,17 @@ table.table-shipflex-form thead,
 #shipflex .shipflex-notice-box .description a {
 	color: #333;
 	font-weight: bold;
+}
+
+#shipflex .shipflex-notice-box ul {
+	list-style: disc;
+	margin-block: 5px 0;
+	padding-inline-start: 17px;
+}
+
+#shipflex .shipflex-notice-box ul li {
+	margin: 0;
+	margin-bottom: 3px;
 }
 
 #shipflex .shipflex-notice-box .button {

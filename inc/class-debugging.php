@@ -90,7 +90,7 @@ final class Debugging {
 			return;
 		}
 
-		add_action('wp_footer', array($this, 'output_debugging_section'));
+		add_action('wp_footer', array($this, 'output_debugging_section_temporary_see_above'));
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 1);
 		// add_action('wp_ajax_shipflex/debugging_information', array($this, 'get_debugging_information'));
 	}
@@ -143,12 +143,30 @@ final class Debugging {
 	 */
 	public function add_debugging_notice_settings() {
 ?>
-		<div class="shipflex-notice-box shipflex-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
-			<h3><?php esc_html_e('💡 Debugging Mode is Disabled', 'shipflex') ?></h3>
-			<div class="description"><?php esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipFlex rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipflex') ?></div>
+
+		<div class="shipflex-notice-box shipflex-notice-box-left">
+			<h3><?php esc_html_e('ℹ️ Not Seeing Your Rule Updates on the Front End?', 'shipflex') ?></h3>
+			<div class="description">
+				WooCommerce caches shipping rules during active checkout sessions. To force WooCommerce to re-evaluate and display your updated ShipFlex rules, make a quick adjustment to at least one of these fields on the front end:
+				<ul>
+					<li><strong>Cart Contents:</strong> Add or remove an item</li>
+					<li><strong>Quantity:</strong> Change the quantity of an existing item</li>
+					<li><strong>Billing or Shipping Address:</strong> Update the address details at checkout</li>
+				</ul>
+			</div>
+			<div class="gap-10"></div>
+			<a @click.prevent="enable_debugging_mode()" v-if="!is_debugging_enabled" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#">Show This Notice on Front End</a>
+			<a @click.prevent="enable_debugging_mode()" v-if="is_debugging_enabled" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#">Hide This Notice on Front End</a>
+		</div>
+
+		<!-- <div class="shipflex-notice-box shipflex-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
+			<h3><?php //esc_html_e('💡 Debugging Mode is Disabled', 'shipflex') 
+				?></h3>
+			<div class="description"><?php //esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipFlex rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipflex') 
+										?></div>
 			<div class="gap-10"></div>
 			<a @click.prevent="enable_debugging_mode()" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#"><?php esc_html_e('Enable Debugging Mode', 'shipflex') ?></a>
-		</div>
+		</div> -->
 	<?php
 	}
 
@@ -302,9 +320,6 @@ final class Debugging {
 							</li>
 						</ul>
 					</div>
-
-					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium maiores nobis non atque suscipit perferendis vel odit veniam illo maxime, fuga corrupti recusandae quod consectetur repellendus ipsum dolorum voluptatum iusto!</p>
-					<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium maiores nobis non atque suscipit perferendis vel odit veniam illo maxime, fuga corrupti recusandae quod consectetur repellendus ipsum dolorum voluptatum iusto!</p>
 				</div>
 				<div class="shipflex-footer">
 					<a class="shipflex-button shipflex-position-button" href="#">
@@ -312,6 +327,59 @@ final class Debugging {
 						<span class="right"><?php esc_html_e('Move to Right', 'shipflex') ?></span>
 					</a>
 					<a class="shipflex-button shipflex-disable-button" href="#"><?php esc_html_e('Disable Debugging', 'shipflex') ?></a>
+				</div>
+			</div>
+		</div>
+	<?php
+	}
+
+	/**
+	 * Output debugging content on the frontend
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_debugging_section_temporary_see_above() {
+		if (!$this->is_debugging() || !$this->is_target_pages()) {
+			return;
+		}
+
+		$classes = array($this->get_position());
+		if (true === $this->is_collapse) {
+			$classes[] = 'collapse';
+		} ?>
+		<div id="shipflex-debugging-box" class="<?php echo esc_attr(implode(' ', $classes)) ?>">
+			<div class="title-bar">
+				<?php esc_html_e('Shipflex Test Guideline', 'shipflex') ?>
+			</div>
+
+			<div class="shipflex-box-body">
+				<div class="shipflex-content">
+					<div class="store-manager-notice">
+						<h4><?php esc_html_e('Note for Store Managers:', 'shipflex') ?></h4>
+
+						<ul class="list">
+							<li><strong>Visible Only To:</strong> Logged-in administrators and store managers (when the Notice Box is enabled in backend settings).</li>
+							<li><strong>Hidden From:</strong> All standard store visitors, guest users, and regular customers.</li>
+						</ul>
+					</div>
+
+					<div class="store-manager-notice">
+						<h4>ℹ️ Not Seeing Your Rule Updates on the Front End?</h4>
+						<p><strong>WooCommerce caches</strong> shipping rules during active checkout sessions. To force WooCommerce to re-evaluate and display your updated <strong>ShipFlex</strong> rules, make a quick adjustment to at least one of these fields on the front end:</p>
+						<ul class="list">
+							<li><strong>Cart Contents:</strong> Add or remove an item</li>
+							<li><strong>Quantity:</strong> Change the quantity of an existing item</li>
+							<li><strong>Billing or Shipping Address:</strong> Update the address details at checkout</li>
+						</ul>
+					</div>
+				</div>
+				<div class="shipflex-footer">
+					<a class="shipflex-button shipflex-position-button" href="#">
+						<span class="left"><?php esc_html_e('Move to Left', 'shipflex') ?></span>
+						<span class="right"><?php esc_html_e('Move to Right', 'shipflex') ?></span>
+					</a>
+					<a class="shipflex-button shipflex-disable-button" href="#"><?php esc_html_e('Hide This Guideline', 'shipflex') ?></a>
 				</div>
 			</div>
 		</div>

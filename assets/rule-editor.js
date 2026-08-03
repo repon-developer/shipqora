@@ -226,7 +226,7 @@ const ShipFlex_Rule_Editor = {
 			this.enabling_debugging_mode = true;
 
 			const formData = new FormData();
-			formData.append('enable_debugging', true);
+			formData.append('enable_debugging', !this.is_debugging_enabled);
 			formData.append('nonce', shipflex_admin.debugging_nonce);
 			formData.append('action', 'shipflex/update_debugging_mode');
 
@@ -243,7 +243,8 @@ const ShipFlex_Rule_Editor = {
 					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
 				}
 
-				setTimeout(() => this.is_debugging_enabled = true, 1000)
+				this.is_debugging_enabled = !this.is_debugging_enabled;
+				//setTimeout(() => this.is_debugging_enabled = true, 1000)
 
 			}).catch((e) => Utils.set_toast_message(e.message)).finally(() => {
 				this.enabling_debugging_mode = false;

@@ -33,7 +33,7 @@
 }
 
 #shipflex-debugging-box ul>li+li {
-	margin-top: 7px;
+	margin-top: 4px;
 }
 
 #shipflex-debugging-box p:last-child {
@@ -68,16 +68,29 @@
 }
 
 #shipflex-debugging-box .store-manager-notice {
+	font-size: 15px;
 	padding: 3px 10px;
 	margin-bottom: 10px;
 	border: 1px solid #f98b8b;
 	background-color: #ffd6d6;
 }
 
-#shipflex-debugging-box .store-manager-notice h4 {
+#shipflex-debugging-box .store-manager-notice:last-child {
+	margin-bottom: 0;
+}
+
+#shipflex-debugging-box h4 {
 	font-weight: bold;
-	font-size: 18px;
+	font-size: 17px;
 	margin-block: 0 5px;
+}
+
+#shipflex-debugging-box p {
+	margin-bottom: 8px;
+}
+
+#shipflex-debugging-box p+p {
+	margin-top: 5px;
 }
 
 #shipflex-debugging-box .shipflex-footer {
