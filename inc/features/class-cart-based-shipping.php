@@ -353,7 +353,7 @@ class Cart_Based_Shipping extends Feature {
 		$settings_fields->add_setting('table_rates_settings', array(
 			'priority' => 50,
 			'label' => esc_html__('Table Rates', 'shipflex'),
-			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use priority settings and condition groups to control which rates apply.', 'shipflex'),
+			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use condition groups to control which rates apply.', 'shipflex'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "table_rates"'),
 			'sub_settings_wrap_table' => false,
 			'sub_settings_fields' => array(
@@ -488,7 +488,7 @@ class Cart_Based_Shipping extends Feature {
 			:calculate-basis="calculate_basis"
 			:table-rate-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 			@update="(table_rate_data) => <?php echo esc_attr($form_control->get_model_key()) ?> = table_rate_data"
-			<?php $this->output_component_attrs('table-rates-lite', array(':hide-heading' => 'false', ':hide-actions' => "['duplicate', 'delete']",)) ?>>
+			<?php $this->output_component_attrs('table-rates-lite', array(':hide-heading' => 'false', ':hide-actions' => array('duplicate', 'delete'))) ?>>
 		</table-rates-shipping>
 	<?php
 	}
@@ -503,8 +503,8 @@ class Cart_Based_Shipping extends Feature {
 		$line_button_data = array('utm_source' => 'cart+based+shipping+cost'); ?>
 
 		<div class="shipflex-notice-box">
-			<h3>💡 Unlock Unlimited Cart sdfs Tiers</h3>
-			<div class="description">Upgrade to the Pro version to create unlimited shipping tiers and build complex, tiered shipping rules based on cart conditions.</div>
+			<h3>💡 Unlock Unlimited Table Rate Tiers</h3>
+			<div class="description">Upgrade to the Pro version to create unlimited table rate tiers and build complex, multi-layered shipping rules with advanced conditions.</div>
 			<div class="gap-10"></div>
 			<?php Utils::get_lite_button($line_button_data) ?>
 		</div>

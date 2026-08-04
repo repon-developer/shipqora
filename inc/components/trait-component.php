@@ -98,7 +98,50 @@ trait Component_Methods {
 	protected function output_component_attrs($component_id, $attributes) {
 		$attributes = apply_filters(Utils::get_hook_name('component', 'attributes'), $attributes, $component_id);
 		foreach ($attributes as $key => $value) {
+			if (is_array($value)) {
+				$value = wp_json_encode($value);
+			}
+
 			echo esc_attr($key) . '="' . esc_attr($value) . '" ';
 		}
+	}
+
+	/**
+	 * Get shipping rate data
+	 * 
+	 * @since 1.0.0
+	 * @param $shipping_rate
+	 * @return array
+	 */
+	public function get_shipping_rate_data($shipping_rate) {
+		$existed_data = $shipping_rate->{$this->get_id()};
+		if (!is_array($existed_data)) {
+			$existed_data = array();
+		}
+
+		return $existed_data;
+	}
+
+	/**
+	 * Add data at provided shipping rate
+	 * 
+	 * @since 1.0.0
+	 * @param $shipping_rate
+	 * @param $data_items
+	 * @return void
+	 */
+	protected function add_shipping_rate_data($shipping_rate, $new_data, $data_id = null) {
+		$existed_data = $shipping_rate->{$this->get_id()};
+		if (!is_array($existed_data)) {
+			$existed_data = array();
+		}
+
+		if ($data_id) {
+			$existed_data[$data_id] = $new_data;
+		} else {
+			$existed_data[] = $new_data;
+		}
+
+		$shipping_rate->{$this->get_id()} = $existed_data;
 	}
 }

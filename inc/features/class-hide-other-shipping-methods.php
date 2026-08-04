@@ -63,14 +63,14 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return WC_Shipping_Rate
 	 */
-	public function get_shipping_rates() {
-		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'hideable-shipping-rates'), array($this->lite_tier));
+	public function get_shipping_rates($shipping_rate) {
+		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'hide-shipping-methods'), array($this->lite_tier), $this);
 
 		$hideable_rates = array();
-		foreach ($tier_items as $tier) {
+		foreach ($tier_items as $tier_item) {
 			$shipping_methods = array();
-			if (isset($this->lite_tier['shipping_methods']) && is_array($this->lite_tier['shipping_methods'])) {
-				$shipping_methods = $this->lite_tier['shipping_methods'];
+			if (isset($tier_item['shipping_methods']) && is_array($tier_item['shipping_methods'])) {
+				$shipping_methods = $tier_item['shipping_methods'];
 			}
 
 			if (count($shipping_methods) == 0) {
@@ -78,19 +78,19 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			}
 
 			$condition_groups = array();
-			if (isset($this->lite_tier['condition_groups']) && is_array($this->lite_tier['condition_groups'])) {
-				$condition_groups = $this->lite_tier['condition_groups'];
+			if (isset($tier_item['condition_groups']) && is_array($tier_item['condition_groups'])) {
+				$condition_groups = $tier_item['condition_groups'];
 			}
 
-			$matched = Main::get_instance()->is_matched_conditions($condition_groups, $this);
+			$matched = Main::get_instance()->is_matched_conditions($condition_groups);
 			if (!$matched) {
 				continue;
 			}
 
-			$hideable_rates = array_merge($hideable_rates, $shipping_methods);
+			foreach ($shipping_methods as $shipping_method_id) {
+				$this->add_shipping_rate_data($shipping_rate, $shipping_method_id);
+			}
 		}
-
-		return $hideable_rates;
 	}
 
 	/**
@@ -144,9 +144,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 				is="vue:feature-hide-other-shipping-methods"
 				:feature-data="hide_other_shipping_methods?.lite_tier"
 				@update="(value) => hide_other_shipping_methods.lite_tier = value"
-				<?php $this->output_component_attrs('cart-based-shipping', array(
-					':hide-heading' => 'true', ':hide-actions' => '["delete"]'
-				)) ?>>
+				<?php $this->output_component_attrs('hide-other-shipping-methods', array(':hide-heading' => 'true')) ?>>
 			</template>
 		</tbody>
 	<?php

@@ -64,7 +64,8 @@ final class General {
 	 */
 	public function __construct() {
 		add_action('init', array($this, 'add_settings_fields'), 1);
-		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 20, 2);
+		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 30, 2);
+		add_filter('woocommerce_package_rates', array($this, 'hide_other_shipping_methods'), 10000, 2);
 	}
 
 	/**
@@ -75,6 +76,7 @@ final class General {
 	 */
 	public function modify_shipping_rates($rates, $package) {
 		$features = Feature::get_features();
+		unset($features['hide-other-shipping-methods']);
 
 		if (isset($features['hide-shipping-methods'])) {
 			unset($features['hide-shipping-methods']);
@@ -94,39 +96,6 @@ final class General {
 				}
 
 				return count(array_filter($hide_shipping_methos)) === 0;
-			});
-		}
-
-		if (isset($features['hide-other-shipping-methods'])) {
-			unset($features['hide-other-shipping-methods']);
-
-			$hideable_rate_ids = array();
-			foreach ($rates as $shipping_rate) {
-				$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
-
-				foreach ($shipflex_rules as $rule) {
-					if ($rule->exists()) {
-						if ($rule->is_feature_enabled('hide-other-shipping-methods')) {
-							$feature_object = $rule->get_feature_object('hide-other-shipping-methods');
-							if ($feature_object) {
-								$hideable_rate_ids = array_merge($hideable_rate_ids, $feature_object->get_shipping_rates($shipping_rate, $rule));
-							}
-						}
-					}
-				}
-			}
-
-			$rates = array_filter($rates, function ($shipping_rate) use ($hideable_rate_ids) {
-				$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $shipping_rate->get_instance_id());
-				$zone_id = $zone->get_id();
-
-				$search_methods = array(
-					$shipping_rate->get_method_id(),
-					$shipping_rate->get_method_id() . ':' . $zone_id . '-0',
-					$shipping_rate->get_method_id() . ':' . $zone_id . '-' . $shipping_rate->get_instance_id(),
-				);
-
-				return count(array_intersect($hideable_rate_ids, $search_methods)) === 0;
 			});
 		}
 
@@ -160,6 +129,49 @@ final class General {
 		});
 
 		return $rates;
+	}
+
+
+	/**
+	 * Hide other shipping methods
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function hide_other_shipping_methods($rates, $package) {
+		$features = Feature::get_features();
+		if (!isset($features['hide-other-shipping-methods'])) {
+			return $rates;
+		}
+
+		$hide_shipping_methods = array();
+		foreach ($rates as $shipping_rate) {
+			$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
+			foreach ($shipflex_rules as $rule) {
+				if (!$rule->exists() || !$rule->is_feature_enabled('hide-other-shipping-methods')) {
+					continue;
+				}
+
+				$feature_object = $rule->get_feature_object('hide-other-shipping-methods');
+				if ($feature_object) {
+					$feature_object->get_shipping_rates($shipping_rate);
+					$hide_shipping_methods = array_merge($hide_shipping_methods, $feature_object->get_shipping_rate_data($shipping_rate));
+				}
+			}
+		}
+
+		return array_filter($rates, function ($current_rate) use ($hide_shipping_methods) {
+			$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $current_rate->get_instance_id());
+			$zone_id = $zone->get_id();
+
+			$search_methods = array(
+				$current_rate->get_method_id(),
+				$current_rate->get_method_id() . ':' . $zone_id . '-0',
+				$current_rate->get_method_id() . ':' . $zone_id . '-' . $current_rate->get_instance_id(),
+			);
+
+			return count(array_intersect($hide_shipping_methods, $search_methods)) == 0;
+		});
 	}
 
 	/**

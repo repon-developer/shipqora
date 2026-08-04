@@ -215,7 +215,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 				:feature-data="shipping_cost_adjustment?.lite_tier"
 				@update="(value) => shipping_cost_adjustment.lite_tier = value"
 				<?php $this->output_component_attrs('shipping-cost-adjustment', array(
-					':hide-heading' => 'true', ':hide-actions' => '["delete"]'
+					':hide-heading' => 'true', ':hide-actions' => array('delete')
 				)) ?>>
 			</template>
 		</tbody>
