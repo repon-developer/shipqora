@@ -214,11 +214,9 @@ final class Shipping_Cost_Adjustment extends Feature {
 				is="vue:feature-shipping-cost-adjustment"
 				:feature-data="shipping_cost_adjustment?.lite_tier"
 				@update="(value) => shipping_cost_adjustment.lite_tier = value"
-				<?php
-				$this->output_component_attrs(
-					array(':hide-heading' => 'true', ':hide-actions' => '["delete"]'),
-					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
-				) ?>>
+				<?php $this->output_component_attrs('shipping-cost-adjustment', array(
+					':hide-heading' => 'true', ':hide-actions' => '["delete"]'
+				)) ?>>
 			</template>
 		</tbody>
 	<?php

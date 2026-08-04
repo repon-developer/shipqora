@@ -254,10 +254,10 @@ class Cart_Based_Shipping extends Feature {
 				is="vue:feature-cart-based-shipping"
 				:feature-data="<?php echo esc_attr($this->get_model_key('lite_tier')) ?>"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_tier')) ?> = value"
-				<?php $this->output_component_attrs(
-					array(':hide-heading' => 'true', ':hide-actions' => '["delete"]'),
-					array('type' => 'feature', 'model' => 'lite_tier', 'component' => $this->get_id())
-				) ?>>
+				<?php $this->output_component_attrs('cart-based-shipping', array(
+					':hide-heading' => 'true',
+					':hide-actions' => '["delete"]'
+				)) ?>>
 			</template>
 		</tbody>
 	<?php
@@ -350,21 +350,23 @@ class Cart_Based_Shipping extends Feature {
 			)
 		), 'cart-tier');
 
-		$settings_fields->add_setting('table_rates_layers', array(
+		$settings_fields->add_setting('table_rates_settings', array(
 			'priority' => 50,
-			'label' => esc_html__('Table Rates Layers', 'shipflex'),
+			'label' => esc_html__('Table Rates', 'shipflex'),
 			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use priority settings and condition groups to control which rates apply.', 'shipflex'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "table_rates"'),
-			'sub_settings_wrapper' => 'blank',
+			'sub_settings_wrap_table' => false,
 			'sub_settings_fields' => array(
 				'table_rates_lite_setting_field' => array(
+					'priority' => 5,
 					'model_key' => 'table_rates_lite',
 					'default_value' => (object) array(),
 					'callback' => array($this, 'table_rates_lite_setting_field'),
 				),
 
-				'add_new_table_rates' => array(
-					'callback' => array($this, 'add_new_table_rates_field'),
+				'new_table_rates_notice' => array(
+					'priority' => 100000,
+					'callback' => array($this, 'new_table_rates_notice'),
 				)
 			)
 		), 'cart-tier');
@@ -486,38 +488,9 @@ class Cart_Based_Shipping extends Feature {
 			:calculate-basis="calculate_basis"
 			:table-rate-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 			@update="(table_rate_data) => <?php echo esc_attr($form_control->get_model_key()) ?> = table_rate_data"
-			@duplicate="(table_rate_data) => duplicate_table_rates_layer(table_rate_data, index+1)"
-			<?php $this->output_component_attrs(
-				array(':hide-heading' => 'true'),
-				array('type' => 'component', 'model' => 'lite_tier', 'component' => 'table-rates-shipping')
-			) ?>>
+			<?php $this->output_component_attrs('table-rates-lite', array(':hide-heading' => 'false', ':hide-actions' => "['duplicate', 'delete']",)) ?>>
 		</table-rates-shipping>
-
-		<!-- <div
-			@end="layers_order_change"
-			class="sortable-items-container"
-			data-group="table-rates-layers"
-			v-if="<?php //echo esc_attr($form_control->get_model_key()) 
-					?>?.length"
-			data-model-key="<?php //echo esc_attr($form_control->get_model_key()) 
-							?>"
-			v-sortable="{options: {handle: '.button-drag.button-drag-table-rates-layer'}}">
-			<table-rates-shipping
-				:tier-no="index + 1"
-				:hide-heading="false"
-				:key="table_rates_layer?.id"
-				:calculate-basis="calculate_basis"
-				:table-rate-data="table_rates_layer"
-				@delete="delete_table_rates_layer(index)"
-				v-for="(table_rates_layer, index) in <?php //echo esc_attr($form_control->get_model_key()) 
-														?>"
-				@update="(table_rate_data) => <?php //echo esc_attr($form_control->get_model_key()) 
-												?>[index] = table_rate_data"
-				@duplicate="(table_rate_data) => duplicate_table_rates_layer(table_rate_data, index+1)">
-			</table-rates-shipping>
-		</div> -->
 	<?php
-
 	}
 
 	/**
@@ -526,7 +499,7 @@ class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_new_table_rates_field(Form_Control $form_control) {
+	public function new_table_rates_notice(Form_Control $form_control) {
 		$line_button_data = array('utm_source' => 'cart+based+shipping+cost'); ?>
 
 		<div class="shipflex-notice-box">
@@ -535,8 +508,6 @@ class Cart_Based_Shipping extends Feature {
 			<div class="gap-10"></div>
 			<?php Utils::get_lite_button($line_button_data) ?>
 		</div>
-
-		<a class="button button-full-width" href="#" @click.prevent="add_new_table_rates()"><?php esc_html_e('+ Add New Table Rates', 'shipflex') ?></a>
 <?php
 	}
 }

@@ -251,18 +251,6 @@ final class Table_Rates_Shipping {
 			'option_note' => esc_html__("Define item {{metric_label_short_lower}} brackets and their corresponding calculation types. The system will match the exact bracket for the cart's item count to compute the final shipping cost.", 'shipflex'),
 		), 'general');
 
-		$settings_fields->add_setting('priority', array(
-			'priority' => 20,
-			'default_value' => '',
-			'placeholder' => '10',
-			'model_key' => 'priority',
-			'type' => Form_Control::NUMBER,
-			'label' => esc_html__('Priority', 'shipflex'),
-			'label_note' => esc_html__('Set the priority for this Cost Range block. If multiple blocks match, the block with the highest priority number will apply.', 'shipflex'),
-			'option_note' => esc_html__('Higher numbers take precedence over lower numbers. Only the highest-priority rule will be executed (e.g., if Priority 15 and Priority 10 both match, only Priority 15 will be executed).', 'shipflex'),
-
-		), 'general');
-
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),

@@ -95,8 +95,8 @@ trait Component_Methods {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	protected function output_component_attrs($attributes = array(), $extra_data = null) {
-		$attributes = apply_filters(Utils::get_hook_name('component', 'attributes'), $attributes, $extra_data);
+	protected function output_component_attrs($component_id, $attributes) {
+		$attributes = apply_filters(Utils::get_hook_name('component', 'attributes'), $attributes, $component_id);
 		foreach ($attributes as $key => $value) {
 			echo esc_attr($key) . '="' . esc_attr($value) . '" ';
 		}

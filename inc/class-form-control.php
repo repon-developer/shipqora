@@ -195,17 +195,12 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return string
 	 */
-	public function get_model_key($model_suffix = null) {
+	public function get_model_key() {
 		if (empty($this->options['model_key'])) {
 			return null;
 		}
 
-		$model_keys = array($this->options['model_key']);
-		if (!empty($model_suffix)) {
-			$model_keys[] = $model_suffix;
-		}
-
-		return implode('.', $model_keys);
+		return $this->options['model_key'];
 	}
 
 	/**
@@ -324,8 +319,8 @@ final class Form_Control {
 			return;
 		}
 
-		$sub_settings_wrapper = $this->get_option('sub_settings_wrapper');
-		if (empty($sub_settings_wrapper) || 'table' == $sub_settings_wrapper) {
+		$sub_settings_wrap_table = $this->get_option('sub_settings_wrap_table') !== false;
+		if ($sub_settings_wrap_table) {
 			echo '<table class="table-shipflex-form">';
 		}
 
@@ -335,7 +330,7 @@ final class Form_Control {
 			$form_control->render();
 		}
 
-		if (empty($sub_settings_wrapper) || 'table' == $sub_settings_wrapper) {
+		if ($sub_settings_wrap_table) {
 			echo '</table>';
 		}
 	}
@@ -357,7 +352,13 @@ final class Form_Control {
 		}
 
 		$this->output_before_input_options();
-		$this->output_control();
+
+		if (isset($this->options['sub_settings_fields'])) {
+			$this->output_sub_settings_fields();
+		} else {
+			$this->output_control();
+		}
+
 		$this->output_after_input_options();
 	}
 
@@ -367,13 +368,9 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function output_control($model_suffix = null) {
-		if (isset($this->options['sub_settings_fields'])) {
-			return $this->output_sub_settings_fields();
-		}
-
+	public function output_control() {
 		if (method_exists($this, $this->type)) {
-			call_user_func(array($this, $this->type), $model_suffix);
+			call_user_func(array($this, $this->type));
 		}
 	}
 
@@ -383,7 +380,7 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function textbox($model_suffix = null) {
+	public function textbox() {
 		$this->add_attribute('type', 'text');
 		$this->add_attribute('class', 'regular-text-box');
 		echo '<input ' . wp_kses($this->output_attributes(), $this->allow_vue_attrs()) . ' />';
@@ -395,7 +392,7 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function number($model_suffix = null) {
+	public function number() {
 		$this->add_attribute('min', 0);
 		$this->add_attribute('type', 'number');
 		$this->add_attribute('class', 'textbox-number');
@@ -408,7 +405,7 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function select_dropdown($model_suffix = null) {
+	public function select_dropdown() {
 		$options = $this->get_option('options');
 		if (!is_array($options) || count($options) == 0) {
 			throw new \Exception('You need to declare options.');
@@ -427,14 +424,14 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function multiple_options($model_suffix = null) {
+	public function multiple_options() {
 		$options = $this->get_option('options');
 		if (!is_array($options) || count($options) == 0) {
 			throw new \Exception('You need to declare options.');
 		}
 
 		$option_type = $this->get_option('option_type');
-		$model_key = $this->get_model_key($model_suffix);
+		$model_key = $this->get_model_key();
 		if (!in_array($option_type, array('radio', 'checkbox'))) {
 			throw new \Exception('You need to declare option_type - radio or checkbox.');
 		}
@@ -469,7 +466,7 @@ final class Form_Control {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function checkbox_single($model_suffix = null) {
+	public function checkbox_single() {
 		$this->add_attribute('type', 'checkbox');
 
 		echo '<label>';

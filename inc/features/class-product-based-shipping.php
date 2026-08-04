@@ -275,8 +275,8 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$shipping_cost_calculation = $cart_based_component->get_setting('shipping_cost_calculation', 'cart-tier');
 		$settings_fields->add_setting('shipping_cost_calculation', $shipping_cost_calculation, 'product');
 
-		$table_rates_layers = $cart_based_component->get_setting('table_rates_layers', 'cart-tier');
-		$settings_fields->add_setting('table_rates_layers', $table_rates_layers, 'product');
+		$table_rates_settings = $cart_based_component->get_setting('table_rates_settings', 'cart-tier');
+		$settings_fields->add_setting('table_rates_settings', $table_rates_settings, 'product');
 
 		$condition_groups = $cart_based_component->get_setting('condition_groups', 'cart-tier');
 		$settings_fields->add_setting('condition_groups', $condition_groups, 'product');

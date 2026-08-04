@@ -58,6 +58,10 @@ const Cart_Based_Shipping = {
 		},
 
 		delete_table_rates_layer(index) {
+			if (!Array.isArray(this.table_rates_layers)) {
+				this.table_rates_layers = []
+			}
+
 			this.table_rates_layers.splice(index, 1)
 		}
 	}
