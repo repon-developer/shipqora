@@ -143,30 +143,7 @@ final class Select2 {
 
 		wp_send_json_success(apply_filters('shipflex/select2/results', $results, $meta_data));
 
-		if ('products' == $meta_data['object_type'] || ('post_type' === $meta_data['object_type'] && 'product' === $meta_data['object_slug'])) {
-			$search_args['limit'] = 10;
-			if (count($meta_data['search_values']) > 0) {
-				$search_args['include'] = $meta_data['search_values'];
-			}
-
-			if (!empty($search_term)) {
-				$search_args['s'] = $search_term;
-			}
-
-			$products = wc_get_products($search_args);
-
-			$results = array_map(function ($product) {
-				$data = array('id' => $product->get_id(), 'name' => $product->get_name());
-				if ($product->is_type('variable')) {
-					foreach ($product->get_children() as $variation_id) {
-						$variation = wc_get_product($variation_id);
-						$data['sub_options'][] = array('id' => $variation_id, 'name' => $variation->get_name() . ' (' . $variation_id . ')');
-					}
-				}
-
-				return $data;
-			}, $products);
-		}
+		
 
 		if ('post_type' == $meta_data['object_type'] && !empty($object_slug)) {
 			$search_args['post_type'] = $object_slug;

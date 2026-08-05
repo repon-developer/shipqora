@@ -1,7 +1,6 @@
 import Utils from './utils.min.js?v=@@VERSION';
 import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
-import Input_Product from './component/input-product.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
 import Table_Rates_Shipping from './component/table-rates-shipping.min.js?v=@@VERSION';
 import Shipping_Methods_Group from './component/shipping-methods-group.min.js?v=@@VERSION';
@@ -261,7 +260,6 @@ if ($('.shipflex-rule-editor').length) {
 
 	const components = wp.hooks.applyFilters('shipflex.rule_editor_components', {
 		'cart-option': Cart_Option,
-		'input-product': Input_Product,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
 		'table-rates-shipping': Table_Rates_Shipping,

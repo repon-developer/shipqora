@@ -58,6 +58,10 @@ const Base_Component = {
 		this.$emit('update', this.component_data)
 	},
 
+	updated() {
+		//console.log(this.$data)
+	},
+
 	watch: {
 		...wp.hooks.applyFilters('shipflex.base_component.watch', {}),
 

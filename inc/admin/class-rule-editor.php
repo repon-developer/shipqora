@@ -146,41 +146,9 @@ final class Rule_Editor {
 		}
 
 		Condition\Main::output_component();
-		Component\Cart_Option::output_component(); ?>
+		Component\Cart_Option::output_component();
 
-		<template id="shipflex-product-input-component">
-			<div class="shipflex-content-loader" v-if="loading">
-				<div class="loader-item loader-title"></div>
-				<div class="loader-item loader-text"></div>
-				<div class="loader-item loader-text short"></div>
-			</div>
-
-			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="draggable && !loading"></span>
-
-			<select2-dropdown
-				:multiple="false"
-				:type="select2_type"
-				child-key="variations"
-				:initial-value="product_id"
-				@onloading="(value) => loading = value"
-				@update="(value) => product_id = value"
-				@update-childs="(variations) => product_variations = variations"
-				placeholder="<?php esc_html_e('Choose a product', 'shipflex') ?>">
-			</select2-dropdown>
-
-			<select v-model="variation_id" v-if="product_variations.length > 0">
-				<option v-if="!hideDefaultOption" value="0">{{defaultOptionLabel}}</option>
-				<option v-for="variation in product_variations" :value="variation.id">{{ variation.name }}</option>
-			</select>
-
-			<template v-if="!loading">
-				<slot></slot>
-
-				<div class="tools" v-if="!hideTools">
-					<a href="#" class="btn-delete-item dashicons dashicons-no-alt" @click.prevent="delete_item()"></a>
-				</div>
-			</template>
-		</template>
+		do_action(Utils::get_hook_name('rule-editor', 'output-vue-component')) ?>
 
 		<template id="shipflex-shipping-methods-group-component">
 			<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">

@@ -108,6 +108,8 @@ final class Form_Control {
 			'row_attributes' => array(),
 		));
 
+		$options = apply_filters(Utils::get_hook_name('form-control', 'options'), $options, $field_id);
+
 		$this->type = sanitize_key($options['type']);
 		unset($options['type']);
 
@@ -325,9 +327,8 @@ final class Form_Control {
 		}
 
 		$settings_fields = Utils::priority_rearrange($this->options['sub_settings_fields']);
-		foreach ($settings_fields as $settings_field) {
-			$form_control = new self($settings_field);
-			$form_control->render();
+		foreach ($settings_fields as $field_id => $setting_field) {
+			(new Form_Control($setting_field, $field_id))->render();
 		}
 
 		if ($sub_settings_wrap_table) {

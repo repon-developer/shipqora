@@ -131,7 +131,6 @@ final class General {
 		return $rates;
 	}
 
-
 	/**
 	 * Hide other shipping methods
 	 * 

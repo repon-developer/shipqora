@@ -132,6 +132,8 @@ const Select2_Dropdown = {
 
 		option_items(values) {
 			this.$utils.set_cache_data(this.cache_key, values);
+			const selected_option = values.find(option => option.id == this.value);
+			this.$emit('update', this.value, selected_option?.sub_options);
 		}
 	},
 

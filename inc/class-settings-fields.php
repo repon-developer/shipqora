@@ -106,6 +106,16 @@ final class Settings_Fields {
 	}
 
 	/**
+	 * Remove setting field
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function remove_setting($group, $key) {
+		unset($this->settings_fields[$group][$key]);
+	}
+
+	/**
 	 * Assign deep models
 	 * 
 	 * @since 1.0.0

@@ -22,10 +22,6 @@ const Cart_Based_Shipping = {
 		}
 	},
 
-	mounted() {
-		console.log(this.$data)
-	},
-
 	computed: {
 		component_data() {
 			return JSON.parse(JSON.stringify(this.$data));

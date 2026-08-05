@@ -234,10 +234,10 @@ class Cart_Based_Shipping extends Feature {
 			'callback' => array($this, 'lite_tier_settings_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('add_new_tier_setting_field', array(
+		$settings_fields->add_setting('show_cart_tier_notice', array(
 			'priority' => 10000,
 			'row_attributes' => array('class' => 'shipflex-notice-row'),
-			'callback' => array($this, 'add_new_tier_setting_field'),
+			'callback' => array($this, 'show_cart_tier_notice'),
 		), $this->get_id());
 	}
 
@@ -269,7 +269,7 @@ class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_new_tier_setting_field(Form_Control $form_control) {
+	public function show_cart_tier_notice(Form_Control $form_control) {
 		$line_button_data = array('utm_source' => 'cart+based+shipping+cost');
 		$form_control->output_row(); ?>
 		<td colspan="2">
