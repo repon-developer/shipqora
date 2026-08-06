@@ -29,6 +29,7 @@ final class Shipping_Editor {
 	 * @return boolean
 	 */
 	public function is_shipping_editor_screen() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return isset($_GET['page']) && 'wc-settings' == $_GET['page'] && isset($_GET['tab']) && 'shipping' == $_GET['tab'];
 	}
 
@@ -131,7 +132,7 @@ final class Shipping_Editor {
 			return;
 		}
 
-		$instance_id = isset($_GET['instance_id']) ? $_GET['instance_id'] : null;
+		$instance_id = isset($_GET['instance_id']) ? sanitize_text_field(wp_unslash($_GET['instance_id'])) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		wp_enqueue_script('shipflex-shipping-editor', ShipFlex_URI . 'assets/shipping-editor.min.js', array('jquery', 'shipflex-vue'), Utils::get_plugin_version(), true);
 		wp_localize_script('shipflex-shipping-editor', 'shipflex_shipping_editor', array(
 			'instance_id' => $instance_id,
@@ -160,7 +161,7 @@ final class Shipping_Editor {
 	 */
 	public function add_setting_field($settings) {
 		$settings['shipflex_notice'] = array(
-			'title' => __('ShipFlex', 'woocommerce'),
+			'title' => esc_html__('ShipFlex', 'shipflex'),
 			'default' => '', //Don't remove this one. Otherwise system will show error
 			'type' => 'shipflex_notice',
 		);
@@ -208,8 +209,8 @@ final class Shipping_Editor {
 							<div class="description">
 								<?php
 								printf(
-									/* translators: %s: for ShipFlex Rule, %s: URL of created rule */
-									esc_html__('A new %s %s has been created and linked to this shipping method. Configure your custom conditions and pricing logic to activate it.', 'shipflex'),
+									/* translators: %1$s: ShipFlex Rule text, %2$s: URL of created rule */
+									esc_html__('A new %1$s %2$s has been created and linked to this shipping method. Configure your custom conditions and pricing logic to activate it.', 'shipflex'),
 									'<strong>ShipFlex Rule</strong>',
 									'<a :href="created_rule.url" target="_blank" v-html="created_rule?.title"></a>'
 								) ?>

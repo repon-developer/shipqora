@@ -64,7 +64,12 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return WC_Shipping_Rate
 	 */
 	public function get_shipping_rates($shipping_rate) {
-		$tier_items = apply_filters(Utils::get_hook_name('feature', $this->get_id(), 'hide-shipping-methods'), array($this->lite_tier), $this);
+		$tier_items = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('feature', $this->get_id(), 'hide-shipping-methods'),
+			array($this->lite_tier),
+			$this
+		);
 
 		$hideable_rates = array();
 		foreach ($tier_items as $tier_item) {
@@ -101,7 +106,11 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id());
-		$action_contents = apply_filters(Utils::get_hook_name('component-heading-actions', $this->get_id()), null);	?>
+		$action_contents = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('component-heading-actions', $this->get_id()),
+			null
+		); ?>
 
 		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
 		<template v-if="!collapse">

@@ -148,6 +148,7 @@ final class Rule_Editor {
 		Condition\Main::output_component();
 		Component\Cart_Option::output_component();
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		do_action(Utils::get_hook_name('rule-editor', 'output-vue-component')) ?>
 
 		<template id="shipflex-shipping-methods-group-component">
@@ -209,7 +210,8 @@ final class Rule_Editor {
 				<div class="loading-instruction">
 					<?php
 					printf(
-						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %ssend email%s us.', 'shipflex'),
+						/* translators: %1$s: Mail link open, %2$s: Mail link close */
+						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %1$ssend email%2$s us.', 'shipflex'),
 						'<a href="mailto:support@shipflexpro.com">',
 						'</a>',
 					) ?>
@@ -219,7 +221,10 @@ final class Rule_Editor {
 			<template v-if="!loading">
 				<div class="shipflex-wp-heading">
 					<h1 class="wp-heading-inline">
-						<?php printf(esc_html__('Edit Rule%s', 'shipflex'), '<strong>{{rule_title}}</strong>') ?>
+						<?php printf(
+							/* translators: %s: For ShipFlex rule title */
+							esc_html__('Edit Rule%s', 'shipflex'), '<strong>{{rule_title}}</strong>'
+						) ?>
 					</h1>
 					<a class="button" href="<?php menu_page_url('shipflex-edit') ?>"><?php esc_html_e('Add a Rule', 'shipflex') ?></a>
 				</div>

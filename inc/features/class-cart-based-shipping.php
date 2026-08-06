@@ -75,7 +75,13 @@ class Cart_Based_Shipping extends Feature {
 
 		$tier_items = $this->order_priority($tier_items);
 
-		$best_tier = apply_filters($this->get_hook('applicable-layer'), end($tier_items), $this);
+		$best_tier = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('applicable-layer'),
+			end($tier_items),
+			$this
+		);
+
 		if (isset($best_tier['calculated_shipping_cost'])) {
 			$shipping_rate->set_cost($best_tier['calculated_shipping_cost']);
 		}
@@ -105,7 +111,14 @@ class Cart_Based_Shipping extends Feature {
 		}
 
 		$calculation_value = isset($tier_item['calculation_value']) ? trim($tier_item['calculation_value']) : '';
-		$calculation_value = apply_filters($this->get_hook('layer', 'calculation-value'), $calculation_value, $tier_item, $this);
+		$calculation_value = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('layer', 'calculation-value'),
+			$calculation_value,
+			$tier_item,
+			$this
+		);
+
 		if (strlen($calculation_value) == 0 && 'table_rates' !== $tier_item['calculation_type']) {
 			return;
 		}
@@ -176,7 +189,12 @@ class Cart_Based_Shipping extends Feature {
 	 * @param int $rule_id
 	 */
 	public function add_shipping_rate_data($shipping_rate, $rule_id) {
-		$tier_items = apply_filters($this->get_hook('layers'), array($this->lite_tier));
+		$tier_items = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('layers'),
+			array($this->lite_tier)
+		);
+
 		if (count($tier_items) == 0) {
 			return;
 		}
@@ -213,7 +231,12 @@ class Cart_Based_Shipping extends Feature {
 
 			if (isset($tier_item['calculated_shipping_cost']) && $tier_item['calculated_shipping_cost'] >= 0) {
 				$tier_item_key = $rule_id . '-' . $tier_item['id'];
-				$existsed_tiers[$tier_item_key] = apply_filters($this->get_hook('layer'), $tier_item, $this);
+				$existsed_tiers[$tier_item_key] = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+					$this->get_hook('layer'),
+					$tier_item,
+					$this
+				);
 			}
 		});
 

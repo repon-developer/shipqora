@@ -34,7 +34,7 @@ class Main {
 					echo '<optgroup label="' . esc_attr($group_label) . '">';
 					foreach ($conditions as $key => $condition) {
 						if (isset($condition['type']) && 'separator' == $condition['type']) {
-							echo '<option disabled>' . $condition['label'] . '</option>';
+							echo '<option disabled>' . esc_html($condition['label']) . '</option>';
 							continue;
 						}
 
@@ -251,17 +251,24 @@ class Main {
 					$validated_condition = call_user_func($condition_types[$current_type]['validate_callback'], false, $condition, $this);
 				}
 
-				$hook_name = Utils::get_hook_name('condition', $current_type, 'matched');
-				return apply_filters($hook_name, $validated_condition, $condition);
+				return apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+					Utils::get_hook_name('condition', $current_type, 'matched'),
+					$validated_condition,
+					$condition
+				);
 			});
 
 			return count($group_data['conditions']) === count($conditions);
 		});
 
-		
+		$this->condition_results[$hash] = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('condition-groups', 'matched'),
+			count($condition_groups) > 0,
+			$condition_groups
+		);
 
-		$hook_name = Utils::get_hook_name('condition-groups', 'matched');
-		$this->condition_results[$hash] = apply_filters($hook_name, count($condition_groups) > 0, $condition_groups);
 		return $this->condition_results[$hash];
 	}
 }

@@ -38,6 +38,7 @@ final class Cart_Option {
 			$product_settings_options['taxonomy:' . $tax_key] = $taxonomy;
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		$product_settings_options = apply_filters(Utils::get_hook_name('cart-option', 'options'), $product_settings_options);
 		self::$hold_options = Utils::priority_rearrange($product_settings_options);
 		return self::$hold_options;
@@ -274,6 +275,7 @@ final class Cart_Option {
 			}
 
 			$compare_values = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 				Utils::get_hook_name('cart-option', 'is-eligible-product', 'compare-values'),
 				$compare_values,
 				$product_id,
@@ -307,6 +309,7 @@ final class Cart_Option {
 			}
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		return apply_filters(Utils::get_hook_name('cart-option', 'is-eligible-product'), $eligible_product, $product_id, $variation_id, $this);
 	}
 

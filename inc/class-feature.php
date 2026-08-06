@@ -209,6 +209,7 @@ class Feature {
 	 * @return void
 	 */
 	public function output_wrapper_attributes() {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		$wrapper_attributes = apply_filters(Utils::get_hook_name($this->get_id(), 'wrapper-attributes'), $this->get_wrapper_attributes());
 		if (!is_array($wrapper_attributes) || count($wrapper_attributes) == 0) {
 			return;

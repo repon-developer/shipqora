@@ -108,6 +108,7 @@ final class Form_Control {
 			'row_attributes' => array(),
 		));
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		$options = apply_filters(Utils::get_hook_name('form-control', 'options'), $options, $field_id);
 
 		$this->type = sanitize_key($options['type']);

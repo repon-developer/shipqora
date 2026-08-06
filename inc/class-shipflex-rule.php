@@ -84,7 +84,7 @@ final class ShipFlex_Rule {
 			$prepared_sql .= " AND status = 'active'";
 		}
 
-		$results = $wpdb->get_results($prepared_sql, ARRAY_A);
+		$results = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ($results as $rule_data) {
 			self::$instances_ids[$instance_id][$rule_data['id']] = new ShipFlex_Rule($rule_data);
 		}
@@ -140,7 +140,7 @@ final class ShipFlex_Rule {
 				$prepared_sql .= " AND status = 'active'";
 			}
 
-			$rule_ids = $wpdb->get_col($prepared_sql); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rule_ids = $wpdb->get_col($prepared_sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			self::$shipping_rate_ids[$instance_id] = $rule_ids;
 		}
 
@@ -417,7 +417,12 @@ final class ShipFlex_Rule {
 					$instance_id = 0;
 					$method_slug = $shipping_method->id . ':' . $zone->get_id() . '-0';
 
-					$method_title = sprintf(esc_html__('%s - All rates', 'shipflex'), $zone->get_zone_name());
+					$method_title = sprintf(
+						/* translators: %s: Zone name */
+						esc_html__('%s - All rates', 'shipflex'),
+						$zone->get_zone_name()
+					);
+
 					if (!in_array($method_slug, $this->shipping_methods)) {
 						$method_slug = $shipping_method->id;
 						$method_title = esc_html__('All rates', 'shipflex');

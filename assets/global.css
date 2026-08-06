@@ -22,6 +22,12 @@
 	}
 }
 
+#toplevel_page_shipflex .wp-menu-image img {
+	width: 23px;
+	height: auto;
+	padding-top: 9px;
+}
+
 #shipflex,
 .select2-dropdown.shipflex-select2-dropdown {
 	--inputHeight: 36px;
@@ -30,7 +36,6 @@
 	--borderColor: #b5b5b5;
 	--primaryColorLight: #6D4AFF;
 }
-
 
 #shipflex .shipflex-content-loader {
 	border-radius: 14px;
@@ -200,11 +205,6 @@
 #shipflex .shipflex-status.shipflex-status-development {
 	background-color: #d57d01;
 }
-
-#toplevel_page_shipflex .wp-menu-image img {
-	padding-top: 6px;
-}
-
 
 table.shipflex_rules_table ul.list-item {
 	margin: 0;

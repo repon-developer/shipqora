@@ -136,6 +136,7 @@ final class Select2 {
 		$meta_data = wp_parse_args($meta_data, $_POST);
 		$method_name = 'get_' . str_replace('-', '_', $meta_data['object_type']);
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		$callback_method = apply_filters(Utils::get_hook_name('select2', 'method'), array($this, $method_name), $meta_data, $this);		
 		if (method_exists(...$callback_method)) {
 			$results = call_user_func($callback_method, $meta_data);

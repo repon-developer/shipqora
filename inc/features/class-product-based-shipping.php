@@ -89,7 +89,13 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		}, $product_items);
 
 		$shipping_cost = array_sum(array_filter($product_costs));
-		$shipping_cost = apply_filters($this->get_hook('shipping-cost'), $shipping_cost, $product_items, $this);
+		$shipping_cost = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('shipping-cost'),
+			$shipping_cost,
+			$product_items,
+			$this
+		);
 
 		if ($shipping_cost >= 0) {
 			$shipping_rate->set_cost($shipping_cost);
@@ -143,7 +149,13 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 
 				if ($product_item['calculated_shipping_cost'] >= 0) {
 					$product_slug = $cart_item['product_id'] . '-' . $cart_item['variation_id'];
-					$product_items[$product_slug][] = apply_filters($this->get_hook('product'), $product_item, $group, $this);
+					$product_items[$product_slug][] = apply_filters(
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+						$this->get_hook('product'),
+						$product_item,
+						$group,
+						$this
+					);
 				}
 			}
 		});

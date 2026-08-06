@@ -284,7 +284,7 @@ class Utils {
 				'label' => ucwords(str_replace('Product ', '', $taxonomy->label)),
 				'label_lower' => str_replace('product ', '', $taxonomy_lower_label),
 				'placeholder' => sprintf(
-					/* translate: %s for taxonomy label */
+					/* translators: %s for taxonomy label */
 					esc_html__('Choose one or more %s', 'shipflex'),
 					$taxonomy_lower_label
 				)

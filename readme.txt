@@ -1,4 +1,4 @@
-=== ShipFlex – All-in-One Shipping, Conditional Rules & Dynamic Rates for WooCommerce ===
+=== ShipFlex – All-in-One Shipping ===
 Contributors: ShipFlex
 Tags: woocommerce rewards, woocommerce free shipping, woocommerce discounts, free product, reward rules
 Requires at least: 6.8

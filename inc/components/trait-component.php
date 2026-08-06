@@ -65,6 +65,7 @@ trait Component_Methods {
 	 */
 	protected function output_heading_row($title, $filter_slugs = array()) {
 		$action_contents = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			Utils::get_hook_name('component-heading-actions', ...$filter_slugs),
 			$this->get_heading_actions()
 		); ?>
@@ -96,7 +97,13 @@ trait Component_Methods {
 	 * @return void
 	 */
 	protected function output_component_attrs($component_id, $attributes) {
-		$attributes = apply_filters(Utils::get_hook_name('component', 'attributes'), $attributes, $component_id);
+		$attributes = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('component', 'attributes'),
+			$attributes,
+			$component_id
+		);
+		
 		foreach ($attributes as $key => $value) {
 			if (is_array($value)) {
 				$value = wp_json_encode($value);

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: ShipFlex
+ * Plugin Name: ShipFlex – All-in-One Shipping
  * Description: All-in-One Shipping Solution for WooCommerce with conditional rules, dynamic rates, shipping cost adjustments, and advanced shipping controls.
  * Version: 1.0.0
  * Author: ShipFlex

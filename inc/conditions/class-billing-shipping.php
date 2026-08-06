@@ -193,7 +193,12 @@ final class Billing_Shipping {
 			}
 		}
 
-		return apply_filters(Utils::get_hook_name('condition', 'billing-shipping', 'matched'), $matched, $condition);
+		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('condition', 'billing-shipping', 'matched'),
+			$matched,
+			$condition
+		);
 	}
 
 	/**
@@ -253,6 +258,7 @@ final class Billing_Shipping {
 			<div class="field-note" style="margin-top: 0;" v-if="type == 'billing_shipping:billing_zipcodes'">
 				<?php
 				printf(
+					/* translators: %s: Postal Code guideline */
 					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipflex'),
 					'<strong>' .  esc_html__('Example: T3B 0N3, T3B ???, T3B*', 'shipflex') . '</strong>'
 				) ?>

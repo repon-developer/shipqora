@@ -278,7 +278,7 @@ final class Table_Rates_Shipping {
 						printf(
 							/* translators: %s for currency symbol */
 							esc_html__('Cost (%s) or Percentage', 'shipflex'),
-							get_woocommerce_currency_symbol()
+							esc_html(get_woocommerce_currency_symbol())
 						) ?>
 					</th>
 

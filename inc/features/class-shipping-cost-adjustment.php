@@ -68,7 +68,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return WC_Shipping_Rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$tier_items = apply_filters($this->get_hook('layers'), array($this->lite_tier));
+		$tier_items = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('layers'),
+			array($this->lite_tier)
+		);
+
 		if (count($tier_items) == 0) {
 			return;
 		}
@@ -161,7 +166,13 @@ final class Shipping_Cost_Adjustment extends Feature {
 			$shipping_rate->set_label($best_tier['shipping_method_title']);
 		}
 
-		$shipping_cost = apply_filters($this->get_hook('shipping-cost'), $best_tier['calculated_shipping_cost'], $tier_items, $this);
+		$shipping_cost = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('shipping-cost'),
+			$best_tier['calculated_shipping_cost'],
+			$tier_items,
+			$this
+		);
 		$shipping_rate->set_cost($shipping_cost);
 	}
 
@@ -215,7 +226,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 				:feature-data="shipping_cost_adjustment?.lite_tier"
 				@update="(value) => shipping_cost_adjustment.lite_tier = value"
 				<?php $this->output_component_attrs('shipping-cost-adjustment', array(
-					':hide-heading' => 'true', ':hide-actions' => array('delete')
+					':hide-heading' => 'true',
+					':hide-actions' => array('delete')
 				)) ?>>
 			</template>
 		</tbody>

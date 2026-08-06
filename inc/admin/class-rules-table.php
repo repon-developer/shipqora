@@ -111,7 +111,7 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function column_cb($shipflex_rule) {
-		printf('<input type="checkbox" name="rules[]" value="%d" />', $shipflex_rule->get_id());
+		printf('<input type="checkbox" name="rules[]" value="%d" />', esc_attr($shipflex_rule->get_id()));
 	}
 
 	/**
@@ -185,7 +185,7 @@ class Rule_List_Table extends \WP_List_Table {
 			}
 		}
 
-		echo '<ul class="list-item">' . implode('', $activated_features) . '</ul>';
+		echo '<ul class="list-item">' . esc_html(implode('', $activated_features)) . '</ul>';
 	}
 
 	/**
