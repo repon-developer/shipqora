@@ -68,6 +68,9 @@ final class Select2 {
 				v-model="value"
 				ref="select2_dropdown"
 				:multiple="multiple">
+
+				<slot v-if="$slots.options" name="options">
+
 				<optgroup v-if="has_option_group" v-for="(group_label, group_code) in option_groups" :label="group_label" :key="group_code">
 					<option v-for="(option_label, option_value) in get_group_options(group_code)" :value="option_value" v-html="option_label" :key="option_value"></option>
 				</optgroup>

@@ -69,10 +69,17 @@ const Select2_Dropdown = {
 		},
 
 		has_option_group() {
+			if (this.$slots?.options) {
+				return false;
+			}
+
 			return Object.keys(this.option_groups).length > 0;
 		},
 
 		predefined_options() {
+			if (this.$slots?.options) {
+				return false;
+			}
 			if (Array.isArray(this.options)) {
 				return this.options;
 			}
@@ -100,10 +107,16 @@ const Select2_Dropdown = {
 		},
 
 		is_ajax_based() {
+			if (this.$slots?.options) {
+				return false;
+			}
 			return !(this.has_option_group || false !== this.predefined_options)
 		},
 
 		select_option_items() {
+			if (this.$slots?.options) {
+				return false;
+			}
 			if (false !== this.predefined_options) {
 				return this.predefined_options;
 			}
@@ -237,6 +250,39 @@ const Select2_Dropdown = {
 					allowClear: true,
 					placeholder: self.placeholder,
 					dropdownCssClass: 'shipflex-select2-dropdown',
+					matcher: function (params, data) {
+						const search_terms = params?.term?.toLowerCase();
+						if (search_terms?.length) {
+							if (Array.isArray(data.children)) {
+								const children = data.children.map((item) => {
+									const keywords = item.text.split(' ').map((keyword) => keyword.toLowerCase().trim());
+									keywords.push(item.id)
+									item.keywords = keywords;
+									return item;
+								}).filter((child_item) => {
+									const results = child_item.keywords.filter((keyword) => keyword.indexOf(search_terms) >= 0)
+									return results.length > 0
+								})
+
+								const modifiedData = $.extend({}, data, true);
+								modifiedData.children = children;
+								return modifiedData;
+							} else {
+								const keywords = data?.text?.split(' ')?.map((keyword) => keyword.toLowerCase().trim());
+								if (Array.isArray(keywords)) {
+									keywords.push(data.id)
+									const results = keywords.filter((keyword) => keyword.indexOf(search_terms) >= 0)
+									if (results?.length > 0) {
+										return data
+									}
+								}
+
+								return null
+							}
+						}
+
+						return data;
+					}
 				}).on('change', function () {
 					self.value = $(this).val()
 				})
