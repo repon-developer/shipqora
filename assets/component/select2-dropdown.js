@@ -36,7 +36,7 @@ const Select2_Dropdown = {
 		}
 	},
 
-	emits: ['update', 'onloading'],
+	emits: ['update', 'onloading', 'ondata'],
 
 	data() {
 		return {
@@ -271,6 +271,7 @@ const Select2_Dropdown = {
 
 						const request = $.ajax(params);
 						request.then(data => {
+							self.$emit('ondata', cache_key);
 							self.$utils.set_cache_data(cache_key, data)
 							success(data);
 						});

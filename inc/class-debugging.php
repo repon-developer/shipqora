@@ -90,9 +90,8 @@ final class Debugging {
 			return;
 		}
 
-		add_action('wp_footer', array($this, 'output_debugging_section_temporary_see_above'));
+		add_action('wp_footer', array($this, 'output_debugging_section'));
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'), 1);
-		// add_action('wp_ajax_shipflex/debugging_information', array($this, 'get_debugging_information'));
 	}
 
 	/**
@@ -210,17 +209,6 @@ final class Debugging {
 		wp_send_json_success();
 	}
 
-	public function get_debugging_information() {
-
-		$debugging_information = get_transient('testing');
-
-
-
-		error_log(print_r($debugging_information, true));
-
-
-		wp_send_json_success($debugging_information);
-	}
 
 	/**
 	 * Check if target page for output debugging scripts and content
@@ -292,64 +280,6 @@ final class Debugging {
 		} ?>
 		<div id="shipflex-debugging-box" class="<?php echo esc_attr(implode(' ', $classes)) ?>">
 			<div class="title-bar">
-				<?php esc_html_e('Shipflex Debugging', 'shipflex') ?>
-			</div>
-
-			<div class="shipflex-box-body">
-				<div class="shipflex-content">
-					<div class="store-manager-notice">
-						<h4><?php esc_html_e('Note for Store Managers:', 'shipflex') ?></h4>
-
-						<ul class="list">
-							<li>
-								<?php
-								printf(
-									/* translators: %s for who can see this text, %s: for debugging mode enabled text */
-									esc_html__('%s: Logged-in administrators and store managers who currently have %s.'),
-									'<strong>' . esc_html__('Visible Only To', 'shipflex') . '</strong>',
-									'<strong>' . esc_html__('Debugging Mode enabled', 'shipflex') . '</strong>',
-								) ?>
-							</li>
-							<li>
-								<?php
-								printf(
-									/* translators: %s for who can not see this text */
-									esc_html__('%s: All standard store visitors, guest users, and regular customers.'),
-									'<strong>' . esc_html__('Hidden From', 'shipflex') . '</strong>'
-								) ?>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<div class="shipflex-footer">
-					<a class="shipflex-button shipflex-position-button" href="#">
-						<span class="left"><?php esc_html_e('Move to Left', 'shipflex') ?></span>
-						<span class="right"><?php esc_html_e('Move to Right', 'shipflex') ?></span>
-					</a>
-					<a class="shipflex-button shipflex-disable-button" href="#"><?php esc_html_e('Disable Debugging', 'shipflex') ?></a>
-				</div>
-			</div>
-		</div>
-	<?php
-	}
-
-	/**
-	 * Output debugging content on the frontend
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function output_debugging_section_temporary_see_above() {
-		if (!$this->is_debugging() || !$this->is_target_pages()) {
-			return;
-		}
-
-		$classes = array($this->get_position());
-		if (true === $this->is_collapse) {
-			$classes[] = 'collapse';
-		} ?>
-		<div id="shipflex-debugging-box" class="<?php echo esc_attr(implode(' ', $classes)) ?>">
-			<div class="title-bar">
 				<?php esc_html_e('Shipflex Test Guideline', 'shipflex') ?>
 			</div>
 
@@ -384,20 +314,6 @@ final class Debugging {
 			</div>
 		</div>
 <?php
-	}
-
-	/**
-	 * Add debugging information of shipping rate
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function add($rate_id, $information) {
-		if (!isset($this->debug_data[$rate_id]) || !is_array($this->debug_data[$rate_id])) {
-			$this->debug_data[$rate_id] = array();
-		}
-
-		$this->debug_data[$rate_id][] = $information;
 	}
 }
 

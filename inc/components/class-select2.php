@@ -145,17 +145,6 @@ final class Select2 {
 
 		
 
-		if ('post_type' == $meta_data['object_type'] && !empty($object_slug)) {
-			$search_args['post_type'] = $object_slug;
-			if (!empty($search_term)) {
-				$search_args['s'] = $search_term;
-			}
-
-			$posts = get_posts($search_args);
-			$results = array_map(function ($item) {
-				return array('id' => $item->ID, 'name' => $item->post_title);
-			}, $posts);
-		}
 
 		if ('user' == $meta_data['object_type'] && 'users' == $object_slug) {
 			if (!empty($search_term)) {
@@ -236,56 +225,6 @@ final class Select2 {
 		}
 
 		return $shipping_instances;
-	}
-
-	/**
-	 * Get variation products
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_variation_products($values, $object_slug, $search_term) {
-		$variation_products = get_posts(array(
-			's' => $search_term,
-			'include' => $values,
-			'posts_per_page' => 20,
-			'post_type' => 'product_variation',
-			'search_columns' => array('post_title'),
-		));
-
-		return array_map(function ($variation) {
-			$product_title = get_the_title($variation->ID) . ' (' . $variation->ID . ')';
-			return array('id' => $variation->ID, 'name' => html_entity_decode($product_title));
-		}, $variation_products);
-	}
-
-	/**
-	 * Get variable products
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_variable_products($values, $object_slug, $search_term) {
-		$search_args = array('limit' => 15, 'type' => 'variable');
-		if (count($values) > 0) {
-			$search_args['include'] = $values;
-		}
-
-		if (!empty($search_term)) {
-			$search_args['s'] = $search_term;
-		}
-
-		$products = wc_get_products($search_args);
-
-		return array_map(function ($product) {
-			$data = array('id' => $product->get_id(), 'name' => $product->get_name());
-			foreach ($product->get_children() as $variation_id) {
-				$variation = wc_get_product($variation_id);
-				$data['variations'][] = array('id' => $variation_id, 'name' => $variation->get_name() . ' (' . $variation_id . ')');
-			}
-
-			return $data;
-		}, $products);
 	}
 }
 

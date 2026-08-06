@@ -38,7 +38,7 @@ final class Cart_Option {
 			$product_settings_options['taxonomy:' . $tax_key] = $taxonomy;
 		}
 
-		$product_settings_options = apply_filters($hook_name = Utils::get_hook_name('cart-option', 'options'), $product_settings_options);
+		$product_settings_options = apply_filters(Utils::get_hook_name('cart-option', 'options'), $product_settings_options);
 		self::$hold_options = Utils::priority_rearrange($product_settings_options);
 		return self::$hold_options;
 	}
