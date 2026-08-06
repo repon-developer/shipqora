@@ -143,13 +143,6 @@ final class Cart_Option {
 	public $extra_data = [];
 
 	/**
-	 * Hold cart option type
-	 * 
-	 * @var string
-	 */
-	private $cart_option_type = 'cart-total';
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct($options) {
@@ -290,9 +283,7 @@ final class Cart_Option {
 				$current_option = $configured_options[$this->based_on];
 			}
 
-
-
-			if (isset($current_option['hide_operator']) && true == $current_option['hide_operator']) {
+			if ((isset($current_option['hide_operator']) && true == $current_option['hide_operator'])) {
 				$eligible_product = count($matched_values) > 0;
 			} else {
 				if ('any_in_list' === $this->operator) {
@@ -309,8 +300,14 @@ final class Cart_Option {
 			}
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-		return apply_filters(Utils::get_hook_name('cart-option', 'is-eligible-product'), $eligible_product, $product_id, $variation_id, $this);
+		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('cart-option', 'is-eligible-product'),
+			$eligible_product,
+			$product_id,
+			$variation_id,
+			$this
+		);
 	}
 
 	/**

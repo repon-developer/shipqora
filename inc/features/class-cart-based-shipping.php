@@ -73,8 +73,6 @@ class Cart_Based_Shipping extends Feature {
 			return;
 		}
 
-		$tier_items = $this->order_priority($tier_items);
-
 		$best_tier = apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			$this->get_hook('applicable-layer'),
@@ -218,9 +216,14 @@ class Cart_Based_Shipping extends Feature {
 				$tier_item['target_products'] = array();
 			}
 
-			$cart_option = new Cart_Option($tier_item['target_products']);
-			$cart_total->set_cart_items_keys($cart_option->get_cart_items_keys());
+			$cart_option = apply_filters(
+				$this->get_hook('cart-option-object'),
+				new Cart_Option($tier_item['target_products']),
+				$tier_item,
+				$this
+			);
 
+			$cart_total->set_cart_items_keys($cart_option->get_cart_items_keys());
 
 			$tier_item = $this->calculate_tier_item_shipping_cost($tier_item, $cart_total);
 			$tier_item['rule_id'] = $rule_id;

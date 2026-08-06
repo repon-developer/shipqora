@@ -62,15 +62,11 @@ final class Select2 {
 			<span class="select2-safety-span"><!-- dont-remove-this-line-otherwise-show-error --></span>
 
 			<div class="shipflex-loading-spinner" v-if="loading"></div>
-
 			<select
 				v-else
 				v-model="value"
 				ref="select2_dropdown"
 				:multiple="multiple">
-
-				<slot v-if="$slots.options" name="options">
-
 				<optgroup v-if="has_option_group" v-for="(group_label, group_code) in option_groups" :label="group_label" :key="group_code">
 					<option v-for="(option_label, option_value) in get_group_options(group_code)" :value="option_value" v-html="option_label" :key="option_value"></option>
 				</optgroup>
@@ -129,9 +125,9 @@ final class Select2 {
 		$meta_data['object_type'] = !empty($query_type[0]) ? $query_type[0] : '';
 		$meta_data['object_slug'] = !empty($query_type[1]) ? $query_type[1] : '';
 
-		$meta_data['search_values'] = [];
+		$meta_data['values'] = [];
 		if (isset($_POST['values']) && is_array($_POST['values'])) {
-			$meta_data['search_values'] = array_map('sanitize_text_field', wp_unslash($_POST['values']));
+			$meta_data['values'] = array_map('sanitize_text_field', wp_unslash($_POST['values']));
 		}
 
 		$results = array();
@@ -182,7 +178,7 @@ final class Select2 {
 			$search_args['search'] = $meta_data['search_term'];
 		}
 
-		$search_args['include'] = $meta_data['search_values'];
+		$search_args['include'] = $meta_data['values'];
 		$terms = get_terms($search_args);
 		return array_map(fn($term) => array('id' => $term->term_id, 'name' => $term->name), $terms);
 	}

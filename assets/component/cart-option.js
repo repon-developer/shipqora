@@ -3,14 +3,6 @@ const { __ } = wp.i18n;
 const Cart_Option = {
 	template: '#shipflex-cart-option-component',
 	props: {
-		cartOptionType: {
-			default: 'cart-total', //cart-items, products, 
-			type: [String, null]
-		},
-
-		//Cart items of selected products
-		//Cart items of selected variations
-
 		cartOptionData: {
 			required: true
 		},
@@ -39,7 +31,6 @@ const Cart_Option = {
 			operator: 'any_in_list',
 			...shipflex_admin.cart_option_models,
 			...this.cartOptionData,
-			cart_option_type: this.cartOptionType
 		}
 	},
 
@@ -56,10 +47,6 @@ const Cart_Option = {
 
 		hide_operator() {
 			if (!this.based_on?.length || this.based_on == 'of_the_cart' || this.hideOperator) {
-				return true;
-			}
-
-			if (Array('cart-items', 'products').includes(this.cartOptionType)) {
 				return true;
 			}
 

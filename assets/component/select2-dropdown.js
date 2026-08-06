@@ -69,17 +69,10 @@ const Select2_Dropdown = {
 		},
 
 		has_option_group() {
-			if (this.$slots?.options) {
-				return false;
-			}
-
 			return Object.keys(this.option_groups).length > 0;
 		},
 
 		predefined_options() {
-			if (this.$slots?.options) {
-				return false;
-			}
 			if (Array.isArray(this.options)) {
 				return this.options;
 			}
@@ -107,16 +100,10 @@ const Select2_Dropdown = {
 		},
 
 		is_ajax_based() {
-			if (this.$slots?.options) {
-				return false;
-			}
 			return !(this.has_option_group || false !== this.predefined_options)
 		},
 
 		select_option_items() {
-			if (this.$slots?.options) {
-				return false;
-			}
 			if (false !== this.predefined_options) {
 				return this.predefined_options;
 			}
@@ -317,7 +304,6 @@ const Select2_Dropdown = {
 
 						const request = $.ajax(params);
 						request.then(data => {
-							self.$emit('ondata', cache_key);
 							self.$utils.set_cache_data(cache_key, data)
 							success(data);
 						});
