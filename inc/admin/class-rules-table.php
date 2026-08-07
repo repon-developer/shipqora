@@ -185,7 +185,7 @@ class Rule_List_Table extends \WP_List_Table {
 			}
 		}
 
-		echo '<ul class="list-item">' . esc_html(implode('', $activated_features)) . '</ul>';
+		echo '<ul class="list-item">' . wp_kses_post(implode('', $activated_features)) . '</ul>';
 	}
 
 	/**

@@ -1,6 +1,8 @@
 const $ = jQuery;
 const { __ } = wp.i18n;
 
+let ajax_response_data = null;
+
 const Select2_Dropdown = {
 	template: '#shipflex-select2-dropdown',
 
@@ -33,10 +35,14 @@ const Select2_Dropdown = {
 		isLoading: {
 			default: false,
 			type: Boolean
+		},
+		enableGroup: {
+			type: Boolean,
+			default: false,
 		}
 	},
 
-	emits: ['update', 'onloading', 'ondata'],
+	emits: ['update', 'onloading'],
 
 	data() {
 		return {
@@ -51,56 +57,33 @@ const Select2_Dropdown = {
 			return 'select2_data_' + this.type + JSON.stringify(this.value || '')
 		},
 
-		option_groups() {
-			const option_group_items = {};
-			if ('states' === this.type) {
-				Object.entries(wcSettings.countryStates).forEach(([country_code, country_states]) => {
-					if (typeof country_states === 'object' && Object.keys(country_states).length && wcSettings.countries?.[country_code]) {
-						option_group_items[country_code] = wcSettings.countries?.[country_code];
-					}
-				})
-			}
-
-			if ('shipping_instances' === this.type) {
-				Object.values(this.options).forEach((zone) => option_group_items[zone.id] = zone.name)
-			}
-
-			return option_group_items;
-		},
-
-		has_option_group() {
-			return Object.keys(this.option_groups).length > 0;
-		},
-
 		predefined_options() {
+			if ('states' == this.type) {
+				const option_items = Object.entries(wcSettings.countryStates).map(([country_code, country_states]) => {
+					const option_item = { id: country_code, name: wcSettings.countries?.[country_code] }
+					if (typeof country_states === 'object' && Object.keys(country_states).length) {
+						option_item.sub_options = Object.entries(country_states).map(([id, name]) => ({ id, name }))
+					}
+
+					return option_item;
+				})
+
+				return option_items;
+			}
+
+			if ('countries' == this.type) {
+				return Object.entries(wcSettings?.countries).map(([id, name]) => ({ id, name }))
+			}
+
+			if (typeof shipflex_admin?.select2?.options?.[this.type] === 'object') {
+				return Object.entries(shipflex_admin.select2.options[this.type]).map(([id, name]) => ({ id, name }))
+			}
+
 			if (Array.isArray(this.options)) {
 				return this.options;
 			}
 
-			let option_data = null;
-			if ('countries' == this.type) {
-				option_data = wcSettings?.countries;
-			}
-
-			if (typeof shipflex_admin?.select2?.options?.[this.type] === 'object') {
-				option_data = shipflex_admin.select2.options[this.type];
-			}
-
-			if (this.option?.length && typeof this.options === 'string') {
-				try {
-					option_data = JSON.parse(this.options)
-				} catch (error) {/*do nothing */ }
-			}
-
-			if (option_data && typeof option_data === 'object') {
-				return Object?.keys(option_data)?.map((key) => ({ id: key, name: option_data[key] }))
-			}
-
 			return false;
-		},
-
-		is_ajax_based() {
-			return !(this.has_option_group || false !== this.predefined_options)
 		},
 
 		select_option_items() {
@@ -109,7 +92,16 @@ const Select2_Dropdown = {
 			}
 
 			return this.option_items;
-		}
+		},
+
+		has_option_group() {
+			const has_sub_option = this.select_option_items.find((item) => Array.isArray(item?.sub_options))
+			return typeof has_sub_option !== 'undefined' && this.enableGroup == true;
+		},
+
+		is_ajax_based() {
+			return false === this.predefined_options
+		},
 	},
 
 	watch: {
@@ -118,7 +110,7 @@ const Select2_Dropdown = {
 		},
 
 		value() {
-			const selected_option = this.option_items.find(option => option.id == this.value);
+			const selected_option = ajax_response_data?.find(option => option.id == this.value);
 			this.$emit('update', this.value, selected_option?.sub_options);
 		},
 
@@ -130,9 +122,9 @@ const Select2_Dropdown = {
 			this.loading = loading_state
 		},
 
-		option_items(values) {
+		select_option_items(values) {
 			this.$utils.set_cache_data(this.cache_key, values);
-			const selected_option = values.find(option => option.id == this.value);
+			const selected_option = ajax_response_data?.find(option => option.id == this.value);
 			this.$emit('update', this.value, selected_option?.sub_options);
 		}
 	},
@@ -161,22 +153,6 @@ const Select2_Dropdown = {
 	},
 
 	methods: {
-		get_group_options(key) {
-			let options = {};
-			if ('states' === this.type) {
-				options = wcSettings.countryStates[key];
-			}
-
-			if ('shipping_instances' === this.type) {
-				const current_zone = Object.values(this.options).find((zone) => zone.id == key)
-				if (typeof current_zone?.instances === 'object') {
-					options = current_zone.instances;
-				}
-			}
-
-			return options;
-		},
-
 		load_data() {
 			if (!this.is_ajax_based || !this.value || (Array.isArray(this.value) && !this.value?.length)) {
 				return;
@@ -216,6 +192,7 @@ const Select2_Dropdown = {
 				}
 
 				this.option_items = result.data;
+				ajax_response_data = this.option_items
 
 			}).catch((e) => this.$utils.set_toast_message(e.message)).finally(() => {
 				this.loading = false;
@@ -237,7 +214,7 @@ const Select2_Dropdown = {
 					allowClear: true,
 					placeholder: self.placeholder,
 					dropdownCssClass: 'shipflex-select2-dropdown',
-					matcher: function (params, data) {
+					matchefffffffffffr: function (params, data) {
 						const search_terms = params?.term?.toLowerCase();
 						if (search_terms?.length) {
 							if (Array.isArray(data.children)) {
@@ -303,9 +280,10 @@ const Select2_Dropdown = {
 						}
 
 						const request = $.ajax(params);
-						request.then(data => {
-							self.$utils.set_cache_data(cache_key, data)
-							success(data);
+						request.then(async result => {
+							self.$utils.set_cache_data(cache_key, result)
+							ajax_response_data = result.data;
+							success(result);
 						});
 
 						request.fail(failure);
@@ -313,7 +291,7 @@ const Select2_Dropdown = {
 						return request;
 					},
 
-					processResults: function (result) {
+					processResults: function (result) {						
 						return {
 							results: $.map(result.data, (item) => ({ text: item.name, id: item.id }))
 						};

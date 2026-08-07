@@ -59,6 +59,7 @@ final class Select2 {
 	 */
 	public function output_component() { ?>
 		<template id="shipflex-select2-dropdown">
+
 			<span class="select2-safety-span"><!-- dont-remove-this-line-otherwise-show-error --></span>
 
 			<div class="shipflex-loading-spinner" v-if="loading"></div>
@@ -67,9 +68,11 @@ final class Select2 {
 				v-model="value"
 				ref="select2_dropdown"
 				:multiple="multiple">
-				<optgroup v-if="has_option_group" v-for="(group_label, group_code) in option_groups" :label="group_label" :key="group_code">
-					<option v-for="(option_label, option_value) in get_group_options(group_code)" :value="option_value" v-html="option_label" :key="option_value"></option>
-				</optgroup>
+				<template v-if="has_option_group" v-for="option in select_option_items" :key="option.id">
+					<optgroup :label="option.name" v-if="option?.sub_options?.length">
+						<option v-for="sub_option in option.sub_options" :value="sub_option.id" v-html="sub_option.name" :key="sub_option.id"></option>
+					</optgroup>
+				</template>
 				<option v-else v-for="option in select_option_items" :value="option.id" :key="option.id" v-html="option.name"></option>
 			</select>
 		</template>
@@ -136,14 +139,14 @@ final class Select2 {
 		$method_name = 'get_' . str_replace('-', '_', $meta_data['object_type']);
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-		$callback_method = apply_filters(Utils::get_hook_name('select2', 'method'), array($this, $method_name), $meta_data, $this);		
+		$callback_method = apply_filters(Utils::get_hook_name('select2', 'method'), array($this, $method_name), $meta_data, $this);
 		if (method_exists(...$callback_method)) {
 			$results = call_user_func($callback_method, $meta_data);
 		}
 
 		wp_send_json_success(apply_filters('shipflex/select2/results', $results, $meta_data));
 
-		
+
 
 
 		if ('user' == $meta_data['object_type'] && 'users' == $object_slug) {
@@ -219,7 +222,7 @@ final class Select2 {
 				$shipping_instances[$zone_id] = array(
 					'id' => $zone_id,
 					'name' => $zone->get_zone_name(),
-					'instances' => $zone_instances
+					'sub_options' => $zone_instances
 				);
 			}
 		}

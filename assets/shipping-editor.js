@@ -1,5 +1,4 @@
 const $ = jQuery;
-const { __ } = wp.i18n;
 
 const Shipping_Editor = {
 	data() {

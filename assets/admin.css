@@ -145,18 +145,18 @@
 	font-weight: 500;
 }
 
-#shipflex.shipflex-rule-editor select,
-#shipflex.shipflex-rule-editor textarea,
-#shipflex.shipflex-rule-editor button,
-#shipflex.shipflex-rule-editor .button,
-#shipflex.shipflex-rule-editor [type="radio"],
-#shipflex.shipflex-rule-editor [type="checkbox"],
-#shipflex.shipflex-rule-editor [type="date"],
-#shipflex.shipflex-rule-editor [type="text"],
-#shipflex.shipflex-rule-editor [type="time"],
-#shipflex.shipflex-rule-editor [type="url"],
-#shipflex.shipflex-rule-editor [type="number"],
-#shipflex.shipflex-rule-editor [type="datetime-local"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) select,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) textarea,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) button,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .button,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="radio"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="checkbox"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="date"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="text"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="time"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="url"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="number"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="datetime-local"],
 .select2-dropdown.shipflex-select2-dropdown {
 	margin: 0;
 	min-height: 0;
@@ -164,55 +164,55 @@
 	border-color: var(--borderColor)
 }
 
-#shipflex.shipflex-rule-editor select,
-#shipflex.shipflex-rule-editor textarea,
-#shipflex.shipflex-rule-editor button,
-#shipflex.shipflex-rule-editor .button,
-#shipflex.shipflex-rule-editor [type="date"],
-#shipflex.shipflex-rule-editor [type="text"],
-#shipflex.shipflex-rule-editor [type="time"],
-#shipflex.shipflex-rule-editor [type="url"],
-#shipflex.shipflex-rule-editor [type="number"],
-#shipflex.shipflex-rule-editor [type="datetime-local"] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) select,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) textarea,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) button,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .button,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="date"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="text"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="time"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="url"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="number"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="datetime-local"] {
 	height: var(--inputHeight);
 }
 
-#shipflex.shipflex-rule-editor [type="radio"],
-#shipflex.shipflex-rule-editor [type="checkbox"] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="radio"],
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="checkbox"] {
 	--inputHeight: 1rem;
 	--borderColor: #8f8d8d;
 	margin-inline-end: 6px;
 	vertical-align: text-bottom;
 }
 
-#shipflex.shipflex-rule-editor [type="radio"] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="radio"] {
 	border-radius: 100px !important;
 }
 
-#shipflex.shipflex-rule-editor [type="number"] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) [type="number"] {
 	width: 80px;
 	text-align: center;
 	padding-inline-end: 0;
 }
 
-#shipflex.shipflex-rule-editor select {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) select {
 	padding-inline-end: 25px !important;
 	line-height: calc(var(--inputHeight) - 2px);
 }
 
-#shipflex.shipflex-rule-editor select[multiple] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) select[multiple] {
 	height: auto;
 }
 
-#shipflex.shipflex-rule-editor input.regular-text-box {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) input.regular-text-box {
 	width: 600px;
 }
 
-#shipflex.shipflex-rule-editor textarea {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) textarea {
 	height: unset;
 }
 
-#shipflex.shipflex-rule-editor .button {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .button {
 	position: relative;
 	text-align: center;
 	color: var(--primaryColor);
@@ -222,21 +222,21 @@
 	border-color: color-mix(in srgb, #fff 10%, var(--primaryColor))
 }
 
-#shipflex.shipflex-rule-editor .button-primary {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .button-primary {
 	color: #fff;
 	background-color: var(--primaryColor);
 }
 
-#shipflex.shipflex-rule-editor .range-slider-input {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .range-slider-input {
 	column-gap: 5px;
 	display: inline-flex;
 }
 
-#shipflex.shipflex-rule-editor .range-slider-input [type="range"] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .range-slider-input [type="range"] {
 	flex: 1;
 }
 
-#shipflex.shipflex-rule-editor .range-slider-input [type="number"] {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .range-slider-input [type="number"] {
 	--inputHeight: 30px;
 	font-size: 12px;
 	width: 40px;
@@ -247,18 +247,18 @@
 	/* Firefox */
 }
 
-#shipflex.shipflex-rule-editor .range-slider-input [type="number"]::-webkit-outer-spin-button,
-#shipflex.shipflex-rule-editor .range-slider-input [type="number"]::-webkit-inner-spin-button {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .range-slider-input [type="number"]::-webkit-outer-spin-button,
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .range-slider-input [type="number"]::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
 
-#shipflex.shipflex-rule-editor input.textbox-number {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) input.textbox-number {
 	width: 80px;
 	text-align: center;
 }
 
-#shipflex.shipflex-rule-editor .shipflex-toggle-input {
+:is(#shipflex.shipflex-rule-editor, #shipflex.shipflex-shipping-editor) .shipflex-toggle-input {
 	display: inline-flex;
 	overflow: hidden;
 	background-color: #f1f1f1;

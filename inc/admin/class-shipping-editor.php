@@ -133,7 +133,7 @@ final class Shipping_Editor {
 		}
 
 		$instance_id = isset($_GET['instance_id']) ? sanitize_text_field(wp_unslash($_GET['instance_id'])) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		wp_enqueue_script('shipflex-shipping-editor', ShipFlex_URI . 'assets/shipping-editor.min.js', array('jquery', 'shipflex-vue'), Utils::get_plugin_version(), true);
+		wp_enqueue_script('shipflex-shipping-editor', ShipFlex_URI . 'assets/shipping-editor.min.js', array('jquery', 'wp-i18n', 'shipflex-vue'), Utils::get_plugin_version(), true);
 		wp_localize_script('shipflex-shipping-editor', 'shipflex_shipping_editor', array(
 			'instance_id' => $instance_id,
 			'nonce' => wp_create_nonce('shipflex/shipping-editor-nonce')

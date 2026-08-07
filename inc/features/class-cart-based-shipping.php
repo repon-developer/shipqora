@@ -217,6 +217,7 @@ class Cart_Based_Shipping extends Feature {
 			}
 
 			$cart_option = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 				$this->get_hook('cart-option-object'),
 				new Cart_Option($tier_item['target_products']),
 				$tier_item,

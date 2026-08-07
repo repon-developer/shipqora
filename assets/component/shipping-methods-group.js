@@ -73,9 +73,9 @@ const Shipping_Method_Input = {
 
 			if (this.instance_id && this.instance_id?.length) {
 				const [zone_id] = this.instance_id.split('-');
-				const current_instance = shipping_instances?.[zone_id]?.instances?.[this.instance_id];
+				const current_instance = shipping_instances?.[zone_id]?.sub_options?.[this.instance_id];
 				if (!current_instance) {
-					this.shipping_instances[zone_id].instances[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipflex');
+					this.shipping_instances[zone_id].sub_options[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipflex');
 				}
 			}
 
