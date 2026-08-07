@@ -76,31 +76,9 @@ final class General {
 	 */
 	public function modify_shipping_rates($rates, $package) {
 		$features = Feature::get_features();
-		unset($features['hide-other-shipping-methods']);
-
-		if (isset($features['hide-shipping-methods'])) {
-			unset($features['hide-shipping-methods']);
-			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
-
-				$hide_shipping_methos = array();
-				foreach ($shipflex_rules as $key => $rule) {
-					if ($rule->exists()) {
-						if ($rule->is_feature_enabled('hide-shipping-methods')) {
-							$feature_object = $rule->get_feature_object('hide-shipping-methods');
-							if ($feature_object) {
-								$hide_shipping_methos[] = $feature_object->hide_shipping_methods($shipping_rate, $rule);
-							}
-						}
-					}
-				}
-
-				return count(array_filter($hide_shipping_methos)) === 0;
-			});
-		}
+		unset($features['hide-shipping-methods'], $features['hide-other-shipping-methods']);
 
 		uasort($features, fn($a, $b) => $a->get_calculation_priority() <=> $b->get_calculation_priority());
-
 		array_walk($rates, function (&$shipping_rate) use ($features) {
 			$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
 
@@ -139,6 +117,27 @@ final class General {
 	 */
 	public function hide_other_shipping_methods($rates, $package) {
 		$features = Feature::get_features();
+
+		if (isset($features['hide-shipping-methods'])) {
+			$rates = array_filter($rates, function ($shipping_rate) {
+				$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
+
+				$hide_shipping_methos = array();
+				foreach ($shipflex_rules as $key => $rule) {
+					if ($rule->exists()) {
+						if ($rule->is_feature_enabled('hide-shipping-methods')) {
+							$feature_object = $rule->get_feature_object('hide-shipping-methods');
+							if ($feature_object) {
+								$hide_shipping_methos[] = $feature_object->hide_shipping_methods($shipping_rate, $rule);
+							}
+						}
+					}
+				}
+
+				return count(array_filter($hide_shipping_methos)) === 0;
+			});
+		}
+
 		if (!isset($features['hide-other-shipping-methods'])) {
 			return $rates;
 		}

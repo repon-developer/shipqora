@@ -73,6 +73,8 @@ class Cart_Based_Shipping extends Feature {
 			return;
 		}
 
+		$tier_items = $this->order_priority($tier_items);
+
 		$best_tier = apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			$this->get_hook('applicable-layer'),

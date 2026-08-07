@@ -219,10 +219,10 @@ final class Select2 {
 			}
 
 			if (count($zone_instances) > 1) {
-				$shipping_instances[$zone_id] = array(
+				$shipping_instances[] = array(
 					'id' => $zone_id,
 					'name' => $zone->get_zone_name(),
-					'sub_options' => $zone_instances
+					'instances' => $zone_instances
 				);
 			}
 		}

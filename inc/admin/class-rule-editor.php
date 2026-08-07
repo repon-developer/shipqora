@@ -152,7 +152,7 @@ final class Rule_Editor {
 		do_action(Utils::get_hook_name('rule-editor', 'output-vue-component')) ?>
 
 		<template id="shipflex-shipping-methods-group-component">
-			<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;">
+			<ul class="shipflex-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;" v-sortable="{options: {handle: '.button-drag-item'}}" @end="order_change">
 				<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
 					<shipping-method-input
 						:shipping-method="shipping_method"
@@ -178,6 +178,7 @@ final class Rule_Editor {
 
 			<select2-dropdown
 				:multiple="false"
+				:enable-group="true"
 				:is-loading="loading"
 				type="shipping_instances"
 				:initial-value="instance_id"

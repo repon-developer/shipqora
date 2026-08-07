@@ -79,6 +79,13 @@ const Select2_Dropdown = {
 				return Object.entries(shipflex_admin.select2.options[this.type]).map(([id, name]) => ({ id, name }))
 			}
 
+			if ('shipping_instances' == this.type && typeof this.options == 'object') {
+				return this.options.map((item) => {
+					item.sub_options = Object.entries(item.instances).map(([id, name]) => ({ id, name }))
+					return item;
+				})
+			}
+
 			if (Array.isArray(this.options)) {
 				return this.options;
 			}
@@ -291,7 +298,7 @@ const Select2_Dropdown = {
 						return request;
 					},
 
-					processResults: function (result) {						
+					processResults: function (result) {
 						return {
 							results: $.map(result.data, (item) => ({ text: item.name, id: item.id }))
 						};
