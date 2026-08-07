@@ -1,10 +1,10 @@
 <?php
 
-namespace ShipFlex\Condition;
+namespace ShipQora\Condition;
 
-use ShipFlex\Utils;
-use ShipFlex\Cart_Total;
-use ShipFlex\Component\Cart_Option;
+use ShipQora\Utils;
+use ShipQora\Cart_Total;
+use ShipQora\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -19,8 +19,8 @@ final class Cart {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_filter('shipflex/condition/models', array($this, 'condition_models'));
-		add_filter('shipflex/condition/types', array($this, 'add_condition_types'));
+		add_filter('shipqora/condition/models', array($this, 'condition_models'));
+		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
 	}
 
 	/**
@@ -47,13 +47,13 @@ final class Cart {
 	public function add_condition_types($condition_types) {
 		$weight_option_text = sprintf(
 			/* translators: %s: weight unit of woocommerce */
-			esc_html__('Total weight (%s)', 'shipflex'),
+			esc_html__('Total weight (%s)', 'shipqora'),
 			get_option('woocommerce_weight_unit', 'kg')
 		);
 
 		$dimension_option_text = sprintf(
 			/* translators: %s: volume unit of woocommerce */
-			esc_html__('Total volume (%s)', 'shipflex'),
+			esc_html__('Total volume (%s)', 'shipqora'),
 			get_option('woocommerce_dimension_unit', 'cm')
 		);
 
@@ -62,14 +62,14 @@ final class Cart {
 				'priority' => 10,
 				'template' => array($this, 'cart_common_templates'),
 				'validate_callback' => array($this, 'validate_cart_condition'),
-				'label' => esc_html__('Subtotal', 'shipflex'),
+				'label' => esc_html__('Subtotal', 'shipqora'),
 			),
 
 			'cart:total_quantity' => array(
 				'priority' => 15,
 				'template' => array($this, 'cart_common_templates'),
 				'validate_callback' => array($this, 'validate_cart_condition'),
-				'label' => esc_html__('Total quantity', 'shipflex'),
+				'label' => esc_html__('Total quantity', 'shipqora'),
 			),
 
 			'cart:total_weight' => array(
@@ -171,7 +171,7 @@ final class Cart {
 				:cart-option-data="cart_cart_option"
 				@on-update="(value) => cart_cart_option = value">
 				<template v-slot:based-on-first-option>
-					<option value=""><?php esc_html_e('of the cart items', 'shipflex') ?></option>
+					<option value=""><?php esc_html_e('of the cart items', 'shipqora') ?></option>
 				</template>
 			</cart-option>
 		</template>

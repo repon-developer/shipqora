@@ -23,10 +23,10 @@ const helper_models = {
 	toast_message_type: 'error',
 	enabling_debugging_mode: false,
 	original_status: null,
-	is_debugging_enabled: shipflex_admin?.is_debugging_enabled == 'yes'
+	is_debugging_enabled: shipqora_admin?.is_debugging_enabled == 'yes'
 }
 
-const ShipFlex_Rule_Editor = {
+const ShipQora_Rule_Editor = {
 	components: {
 		'feature-cart-based-shipping': Cart_Based_Shipping,
 		'feature-product-based-shipping': Product_Based_Shipping,
@@ -41,7 +41,7 @@ const ShipFlex_Rule_Editor = {
 			status: 'development',
 
 			...helper_models,
-			...shipflex_admin.rule_data
+			...shipqora_admin.rule_data
 		}
 	},
 
@@ -59,7 +59,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	computed: {
-		...wp.hooks.applyFilters('shipflex.rule_editor.computed', {}),
+		...wp.hooks.applyFilters('shipqora.rule_editor.computed', {}),
 
 		get_root_element() {
 			return $(this.$el.parentElement);
@@ -70,12 +70,12 @@ const ShipFlex_Rule_Editor = {
 		},
 
 		get_current_status_info() {
-			return `<span class="shipflex-status shipflex-status-${this.original_status}"></span>` + shipflex_admin.statuses?.[this.original_status].currently_text
+			return `<span class="shipqora-status shipqora-status-${this.original_status}"></span>` + shipqora_admin.statuses?.[this.original_status].currently_text
 		}
 	},
 
 	watch: {
-		...wp.hooks.applyFilters('shipflex.rule_editor.watch', {}),
+		...wp.hooks.applyFilters('shipqora.rule_editor.watch', {}),
 	},
 
 	mounted() {
@@ -87,7 +87,7 @@ const ShipFlex_Rule_Editor = {
 			}
 		});
 
-		$('body').on('click', '#shipflex .shipflex-modal', function (e) {
+		$('body').on('click', '#shipqora .shipqora-modal', function (e) {
 			if ($(e.target).closest('.modal-content').length) {
 				return;
 			}
@@ -103,7 +103,7 @@ const ShipFlex_Rule_Editor = {
 	},
 
 	methods: {
-		...wp.hooks.applyFilters('shipflex.rule_editor.methods', {}),
+		...wp.hooks.applyFilters('shipqora.rule_editor.methods', {}),
 
 		add_collection(model_keys, default_value = {}) {
 			if (!model_keys || !model_keys?.length) {
@@ -161,19 +161,19 @@ const ShipFlex_Rule_Editor = {
 
 		save_rule() {
 			if (!this.title?.length) {
-				this.$utils.highlight_section('shipflex-rule-title')
-				return this.$utils.set_toast_message(__('Please provide a rule title to save your ShipFlex rule.', 'shipflex'));
+				this.$utils.highlight_section('shipqora-rule-title')
+				return this.$utils.set_toast_message(__('Please provide a rule title to save your ShipQora rule.', 'shipqora'));
 			}
 
 			if (this.title?.length > 200) {
-				this.$utils.highlight_section('shipflex-rule-title')
-				return this.$utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipflex'));
+				this.$utils.highlight_section('shipqora-rule-title')
+				return this.$utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipqora'));
 			}
 
 			const shipping_methods = this.shipping_methods?.filter((item) => item.length > 0)
 			if (!shipping_methods?.length) {
 				this.$utils.highlight_section('general-shipping-methods');
-				return this.$utils.set_toast_message(__('At least one shipping method is required to apply this rule.', 'shipflex'));
+				return this.$utils.set_toast_message(__('At least one shipping method is required to apply this rule.', 'shipqora'));
 			}
 
 			this.saving = true;
@@ -186,17 +186,17 @@ const ShipFlex_Rule_Editor = {
 
 			const formData = new FormData();
 			formData.append('id', this.id);
-			formData.append('nonce', shipflex_admin.save_rule_nonce);
-			formData.append('action', 'shipflex/save_rule');
+			formData.append('nonce', shipqora_admin.save_rule_nonce);
+			formData.append('action', 'shipqora/save_rule');
 			formData.append('data', JSON.stringify(rule_data))
 
-			fetch(shipflex_admin.ajax_url, {
+			fetch(shipqora_admin.ajax_url, {
 				method: 'POST',
 				body: formData
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while saving the rule data.', 'shipflex'));
+					throw new Error(__('Something went wrong while saving the rule data.', 'shipqora'));
 				}
 
 				if (false === result.success) {
@@ -210,7 +210,7 @@ const ShipFlex_Rule_Editor = {
 				this.original_status = this.status;
 
 				this.id = result.data.id;
-				Utils.set_toast_message(__('Successfully saved rule.', 'shipflex'), 'success');
+				Utils.set_toast_message(__('Successfully saved rule.', 'shipqora'), 'success');
 
 				if (true === result.data.is_new) {
 					window.location = result.data.edit_url
@@ -227,20 +227,20 @@ const ShipFlex_Rule_Editor = {
 
 			const formData = new FormData();
 			formData.append('enable_debugging', !this.is_debugging_enabled);
-			formData.append('nonce', shipflex_admin.debugging_nonce);
-			formData.append('action', 'shipflex/update_debugging_mode');
+			formData.append('nonce', shipqora_admin.debugging_nonce);
+			formData.append('action', 'shipqora/update_debugging_mode');
 
-			fetch(shipflex_admin.ajax_url, {
+			fetch(shipqora_admin.ajax_url, {
 				method: 'POST',
 				body: formData
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				if (false === result.success) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipflex'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				this.is_debugging_enabled = !this.is_debugging_enabled;
@@ -253,12 +253,12 @@ const ShipFlex_Rule_Editor = {
 	}
 }
 
-if ($('.shipflex-rule-editor').length) {
-	const ShipFlex_Rule_Editor_App = Vue.createApp(ShipFlex_Rule_Editor).use(sortablejs)
+if ($('.shipqora-rule-editor').length) {
+	const ShipQora_Rule_Editor_App = Vue.createApp(ShipQora_Rule_Editor).use(sortablejs)
 
-	ShipFlex_Rule_Editor_App.config.globalProperties.$utils = Utils;
+	ShipQora_Rule_Editor_App.config.globalProperties.$utils = Utils;
 
-	const components = wp.hooks.applyFilters('shipflex.rule_editor_components', {
+	const components = wp.hooks.applyFilters('shipqora.rule_editor_components', {
 		'cart-option': Cart_Option,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
@@ -267,8 +267,8 @@ if ($('.shipflex-rule-editor').length) {
 	});
 
 	for (const key in components) {
-		ShipFlex_Rule_Editor_App.component(key, components[key]);
+		ShipQora_Rule_Editor_App.component(key, components[key]);
 	}
 
-	ShipFlex_Rule_Editor_App.mount('.shipflex-rule-editor');
+	ShipQora_Rule_Editor_App.mount('.shipqora-rule-editor');
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace ShipFlex\Component;
+namespace ShipQora\Component;
 
-use ShipFlex\Utils;
-use ShipFlex\Cart_Total;
+use ShipQora\Utils;
+use ShipQora\Cart_Total;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -72,7 +72,7 @@ final class Cart_Option {
 	 * @return void
 	 */
 	public static function output_component() { ?>
-		<template id="shipflex-cart-option-component">
+		<template id="shipqora-cart-option-component">
 			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
 				<slot name="based-on-first-option"></slot>
 				<option
@@ -82,9 +82,9 @@ final class Cart_Option {
 			</select>
 
 			<select v-model="operator" v-if="false === hide_operator">
-				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipflex') ?></option>
-				<option value="all_in_list"><?php esc_html_e('All in list', 'shipflex') ?></option>
-				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipflex') ?></option>
+				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipqora') ?></option>
+				<option value="all_in_list"><?php esc_html_e('All in list', 'shipqora') ?></option>
+				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipqora') ?></option>
 			</select>
 
 			<template v-for="(option, option_value) in options" :key="'dropdown_' + option_value">
@@ -329,4 +329,4 @@ final class Cart_Option {
 	}
 }
 
-add_filter('shipflex/admin_enqueue_scripts', array(Cart_Option::class, 'enqueue_scripts'), 10, 2);
+add_filter('shipqora/admin_enqueue_scripts', array(Cart_Option::class, 'enqueue_scripts'), 10, 2);

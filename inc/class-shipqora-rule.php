@@ -1,17 +1,17 @@
 <?php
 
-namespace ShipFlex;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
 /**
- * ShipFlex_Rule class
+ * ShipQora_Rule class
  */
-final class ShipFlex_Rule {
+final class ShipQora_Rule {
 	/**
-	 * Hold all instance of ShipFlex_Rule
+	 * Hold all instance of ShipQora_Rule
 	 * 
 	 * @since 1.0.0
 	 * @var array
@@ -23,20 +23,20 @@ final class ShipFlex_Rule {
 	 * 
 	 * @since 1.0.0
 	 * @param int $id
-	 * @return ShipFlex_Rule
+	 * @return ShipQora_Rule
 	 */
-	public static function get($shipflex_rule_id) {
-		if (!isset(self::$rule_instances[$shipflex_rule_id])) {
+	public static function get($shipqora_rule_id) {
+		if (!isset(self::$rule_instances[$shipqora_rule_id])) {
 			global $wpdb;
-			$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipflex_rules_table, $shipflex_rule_id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			self::$rule_instances[$shipflex_rule_id] = new self($rule_data);
+			$rule_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->shipqora_rules_table, $shipqora_rule_id), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			self::$rule_instances[$shipqora_rule_id] = new self($rule_data);
 		}
 
-		return self::$rule_instances[$shipflex_rule_id];
+		return self::$rule_instances[$shipqora_rule_id];
 	}
 
 	/**
-	 * Hold ShipFlex Rules of instance id of shipping method
+	 * Hold ShipQora Rules of instance id of shipping method
 	 * 
 	 * @since 1.0.0
 	 * @var array
@@ -44,7 +44,7 @@ final class ShipFlex_Rule {
 	private static $instances_ids = array();
 
 	/**
-	 * Get ShipFlex Rules by instance ID of shipping method
+	 * Get ShipQora Rules by instance ID of shipping method
 	 * 
 	 * @since 1.0.0
 	 * @param int $instance_id
@@ -63,7 +63,7 @@ final class ShipFlex_Rule {
 		$zone_id = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id)->get_id();
 
 		global $wpdb;
-		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
+		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipqora_rules_table);
 
 		$json_search = array(
 			$shipping_method->id,
@@ -86,7 +86,7 @@ final class ShipFlex_Rule {
 
 		$results = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ($results as $rule_data) {
-			self::$instances_ids[$instance_id][$rule_data['id']] = new ShipFlex_Rule($rule_data);
+			self::$instances_ids[$instance_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
 		}
 
 		if (isset(self::$instances_ids[$instance_id])) {
@@ -97,7 +97,7 @@ final class ShipFlex_Rule {
 	}
 
 	/**
-	 * Hold ShipFlex rule id of shipping rate
+	 * Hold ShipQora rule id of shipping rate
 	 * 
 	 * @since 1.0.0
 	 * @var array
@@ -108,7 +108,7 @@ final class ShipFlex_Rule {
 	 * Get rule by shipping rate
 	 * 
 	 * @since 1.0.0
-	 * @return ShipFlex_Rule
+	 * @return ShipQora_Rule
 	 */
 	public static function get_by_shipping_rate($shipping_rate) {
 		$instance_id = $shipping_rate->get_instance_id();
@@ -118,7 +118,7 @@ final class ShipFlex_Rule {
 
 		if (!isset(self::$shipping_rate_ids[$instance_id])) {
 			global $wpdb;
-			$prepared_sql = $wpdb->prepare("SELECT id FROM %i WHERE 1 = 1", $wpdb->shipflex_rules_table);
+			$prepared_sql = $wpdb->prepare("SELECT id FROM %i WHERE 1 = 1", $wpdb->shipqora_rules_table);
 
 			$json_search = array(
 				$shipping_rate->method_id,
@@ -230,7 +230,7 @@ final class ShipFlex_Rule {
 	}
 
 	/**
-	 * Set ShipFlex rule data
+	 * Set ShipQora rule data
 	 * 
 	 * @since 1.0.0
 	 * @return void
@@ -357,11 +357,11 @@ final class ShipFlex_Rule {
 			next($array_properties);
 		}
 
-		$result = $wpdb->replace($wpdb->shipflex_rules_table, $data); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->replace($wpdb->shipqora_rules_table, $data); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		if (false === $result) {
 			wp_send_json_error(array(
-				'message' => esc_html__('Unable to save your data. Please contact support if the issue persists.', 'shipflex')
+				'message' => esc_html__('Unable to save your data. Please contact support if the issue persists.', 'shipqora')
 			));
 		}
 
@@ -387,7 +387,7 @@ final class ShipFlex_Rule {
 
 		$rule_editor_settings = Settings_Fields::get_instance('rule-editor');
 
-		$rule_models = apply_filters('shipflex/rule_models', $rule_editor_settings->get_models());
+		$rule_models = apply_filters('shipqora/rule_models', $rule_editor_settings->get_models());
 		return (object) Utils::deep_merge_arrays($rule_models, array_merge($this->meta_data, $rule_data));
 	}
 
@@ -419,13 +419,13 @@ final class ShipFlex_Rule {
 
 					$method_title = sprintf(
 						/* translators: %s: Zone name */
-						esc_html__('%s - All rates', 'shipflex'),
+						esc_html__('%s - All rates', 'shipqora'),
 						$zone->get_zone_name()
 					);
 
 					if (!in_array($method_slug, $this->shipping_methods)) {
 						$method_slug = $shipping_method->id;
-						$method_title = esc_html__('All rates', 'shipflex');
+						$method_title = esc_html__('All rates', 'shipqora');
 					}
 				}
 

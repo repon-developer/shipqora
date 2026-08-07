@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Plugin Name: ShipFlex – All-in-One Shipping
+ * Plugin Name: ShipQora – All-in-One Shipping
  * Description: All-in-One Shipping Solution for WooCommerce with conditional rules, dynamic rates, shipping cost adjustments, and advanced shipping controls.
  * Version: 1.0.0
- * Author: ShipFlex
- * Author URI: https://shipflexpro.com
- * Text Domain: shipflex
+ * Author: ShipQora
+ * Author URI: https://shipqora.com
+ * Text Domain: shipqora
  *
  * Requires Plugins: woocommerce
  * Requires at least: 6.8
@@ -21,10 +21,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-define('ShipFlex_FILE', __FILE__);
-define('ShipFlex_BASENAME', plugin_basename(__FILE__));
-define('ShipFlex_URI', trailingslashit(plugins_url('/', __FILE__)));
-define('ShipFlex_PATH', trailingslashit(plugin_dir_path(__FILE__)));
+define('ShipQora_FILE', __FILE__);
+define('ShipQora_BASENAME', plugin_basename(__FILE__));
+define('ShipQora_URI', trailingslashit(plugins_url('/', __FILE__)));
+define('ShipQora_PATH', trailingslashit(plugin_dir_path(__FILE__)));
+
+
+
+
 
 /**
  * Declare HPOS compatibility
@@ -37,8 +41,8 @@ add_action('before_woocommerce_init', function () {
 	}
 });
 
-require_once ShipFlex_PATH . 'inc/class-utils.php';
-require_once ShipFlex_PATH . 'inc/class-main.php';
+require_once ShipQora_PATH . 'inc/class-utils.php';
+require_once ShipQora_PATH . 'inc/class-main.php';
 
 
 

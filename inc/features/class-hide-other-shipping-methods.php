@@ -1,13 +1,13 @@
 <?php
 
-namespace ShipFlex\Feature;
+namespace ShipQora\Feature;
 
-use ShipFlex\Utils;
-use ShipFlex\Feature;
-use ShipFlex\Form_Control;
-use ShipFlex\Condition\Main;
-use ShipFlex\Settings_Fields;
-use ShipFlex\Component_Methods;
+use ShipQora\Utils;
+use ShipQora\Feature;
+use ShipQora\Form_Control;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
+use ShipQora\Component_Methods;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -51,9 +51,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'priority' => 20,
 			'calculation_priority' => 2,
 			'base_model' => 'hide_other_shipping_methods',
-			'name' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
-			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipflex'),
-			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipflex'),
+			'name' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
+			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
+			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipqora'),
 		);
 	}
 
@@ -112,7 +112,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			null
 		); ?>
 
-		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('tier-item') ?>
 		</template>
@@ -135,7 +135,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 
 		$settings_fields->add_setting('add_new_tier', array(
 			'priority' => 100000,
-			'row_attributes' => array('class' => 'shipflex-notice-row'),
+			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
 	}
@@ -169,9 +169,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		$line_button_data = array('utm_source' => 'hide+other+shipping+methos+tier');
 		$form_control->output_row(); ?>
 		<td colspan="2">
-			<div class="shipflex-notice-box">
+			<div class="shipqora-notice-box">
 				<h3>⚡ Need Multiple Hiding Tiers?</h3>
-				<div class="description">Create complex combinations of conditions and stack multiple hiding tiers seamlessly with <strong>ShipFlex Pro</strong>.</div>
+				<div class="description">Create complex combinations of conditions and stack multiple hiding tiers seamlessly with <strong>ShipQora Pro</strong>.</div>
 				<div class="gap-10"></div>
 				<?php Utils::get_lite_button($line_button_data) ?>
 			</div>
@@ -192,9 +192,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'default_value' => array(''),
 			'model_key' => 'shipping_methods',
 			'type' => Form_Control::SHIPPING_METHODS,
-			'label' => esc_html__('Shipping Methods to Hide', 'shipflex'),
-			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipflex'),
-			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipflex'),
+			'label' => esc_html__('Shipping Methods to Hide', 'shipqora'),
+			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipqora'),
+			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipqora'),
 		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -214,8 +214,8 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<input type="number" v-model="min_shipping_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
-			<input type="number" v-model="max_shipping_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
+			<input type="number" v-model="min_shipping_cost" placeholder="<?php esc_html_e('Min', 'shipqora') ?>">
+			<input type="number" v-model="max_shipping_cost" placeholder="<?php esc_html_e('Max', 'shipqora') ?>">
 		</div>
 <?php
 		$form_control->output_after_input_options();

@@ -2,7 +2,7 @@ import Cart_Based_Shipping from './cart-based-shipping.min.js?v=@@VERSION';
 
 const Product_Based_Shipping = {
 	extends: Cart_Based_Shipping,
-	template: '#shipflex-product-based-shipping-feature-component',
+	template: '#shipqora-product-based-shipping-feature-component',
 
 	props: {
 		featureData: {
@@ -13,7 +13,7 @@ const Product_Based_Shipping = {
 
 	data() {
 		return {
-			...shipflex_admin?.features?.['product-based-shipping'],
+			...shipqora_admin?.features?.['product-based-shipping'],
 			...this.featureData
 		}
 	},

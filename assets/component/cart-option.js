@@ -1,7 +1,7 @@
 const { __ } = wp.i18n;
 
 const Cart_Option = {
-	template: '#shipflex-cart-option-component',
+	template: '#shipqora-cart-option-component',
 	props: {
 		cartOptionData: {
 			required: true
@@ -9,7 +9,7 @@ const Cart_Option = {
 
 		optionLabel: {
 			type: String,
-			default: __('of the cart items in the selected {{option_label_lower}}', 'shipflex')
+			default: __('of the cart items in the selected {{option_label_lower}}', 'shipqora')
 		},
 
 		basedOn: {
@@ -29,14 +29,14 @@ const Cart_Option = {
 		return {
 			based_on: this.basedOn,
 			operator: 'any_in_list',
-			...shipflex_admin.cart_option_models,
+			...shipqora_admin.cart_option_models,
 			...this.cartOptionData,
 		}
 	},
 
 	computed: {
 		options() {
-			return shipflex_admin.cart_options;
+			return shipqora_admin.cart_options;
 		},
 
 		cart_option_data() {
@@ -81,7 +81,7 @@ const Cart_Option = {
 			option_text = option_text.replace('{{option_label}}', option_item?.label);
 			option_text = option_text.replace('{{option_label_lower}}', option_item?.label_lower);
 
-			return wp.hooks.applyFilters('shipflex.cart_option.option_label', option_text, option_item);
+			return wp.hooks.applyFilters('shipqora.cart_option.option_label', option_text, option_item);
 		},
 
 		handle_cart_option_click() {

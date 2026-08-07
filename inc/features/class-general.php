@@ -1,12 +1,12 @@
 <?php
 
-namespace ShipFlex\Feature;
+namespace ShipQora\Feature;
 
-use ShipFlex\Feature;
-use ShipFlex\Form_Control;
-use ShipFlex\Settings_Fields;
-use ShipFlex\ShipFlex_Rule;
-use ShipFlex\Utils;
+use ShipQora\Feature;
+use ShipQora\Form_Control;
+use ShipQora\Settings_Fields;
+use ShipQora\ShipQora_Rule;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -38,9 +38,9 @@ final class General {
 
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
-			<div class="shipflex-repeater shipflex-repeater-condition-groups" v-if="<?php echo esc_attr($model_key); ?>?.length > 0">
+			<div class="shipqora-repeater shipqora-repeater-condition-groups" v-if="<?php echo esc_attr($model_key); ?>?.length > 0">
 				<template v-for="(group, index) in <?php echo esc_attr($model_key); ?>" :key="group?.id">
-					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipflex') ?>"></div>
+					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('or', 'shipqora') ?>"></div>
 					<div class="repeater-item">
 						<condition-group
 							:group="group"
@@ -52,7 +52,7 @@ final class General {
 			</div>
 
 			<button class="button button-large-dashed button-full-width" @click.prevent="<?php echo esc_attr($add_group_method) ?>">
-				<?php esc_html_e('+ Add Condition Group', 'shipflex') ?>
+				<?php esc_html_e('+ Add Condition Group', 'shipqora') ?>
 			</button>
 		</td>
 	<?php
@@ -80,9 +80,9 @@ final class General {
 
 		uasort($features, fn($a, $b) => $a->get_calculation_priority() <=> $b->get_calculation_priority());
 		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 
-			foreach ($shipflex_rules as $rule) {
+			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists()) {
 					continue;
 				}
@@ -120,10 +120,10 @@ final class General {
 
 		if (isset($features['hide-shipping-methods'])) {
 			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
+				$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 
 				$hide_shipping_methos = array();
-				foreach ($shipflex_rules as $key => $rule) {
+				foreach ($shipqora_rules as $key => $rule) {
 					if ($rule->exists()) {
 						if ($rule->is_feature_enabled('hide-shipping-methods')) {
 							$feature_object = $rule->get_feature_object('hide-shipping-methods');
@@ -144,8 +144,8 @@ final class General {
 
 		$hide_shipping_methods = array();
 		foreach ($rates as $shipping_rate) {
-			$shipflex_rules = ShipFlex_Rule::get_by_shipping_rate($shipping_rate);
-			foreach ($shipflex_rules as $rule) {
+			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists() || !$rule->is_feature_enabled('hide-other-shipping-methods')) {
 					continue;
 				}
@@ -186,15 +186,15 @@ final class General {
 			'default_value' => array(''),
 			'model_key' => 'shipping_methods',
 			'type' => Form_Control::SHIPPING_METHODS,
-			'label' => esc_html__('Apply to Shipping Methods', 'shipflex'),
-			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipflex'),
-			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipflex'),
+			'label' => esc_html__('Apply to Shipping Methods', 'shipqora'),
+			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipqora'),
+			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipqora'),
 			'row_attributes' => array(
 				'data-highlight-section' => 'general-shipping-methods'
 			)
 		), 'general');
 
-		$registered_features = \ShipFlex\Feature::get_features();
+		$registered_features = \ShipQora\Feature::get_features();
 
 		$registered_feature_options = array();
 		foreach ($registered_features as $feature_id => $feature_instance) {
@@ -211,9 +211,9 @@ final class General {
 			'option_type' => 'checkbox',
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'options' => $registered_feature_options,
-			'label' => esc_html__('Active Features', 'shipflex'),
+			'label' => esc_html__('Active Features', 'shipqora'),
 			'callback' => array($this, 'active_features_setting_field'),
-			'label_note' => esc_html__('Select the ShipFlex features that should be applied to the selected shipping methods.', 'shipflex'),
+			'label_note' => esc_html__('Select the ShipQora features that should be applied to the selected shipping methods.', 'shipqora'),
 		), 'general');
 
 		foreach ($registered_features as $feature_id => $feature_object) {
@@ -227,16 +227,16 @@ final class General {
 			}
 		}
 
-		$editor_settings_fields->add_setting('shipflex_rule_status', array(
+		$editor_settings_fields->add_setting('shipqora_rule_status', array(
 			'priority' => 1000,
 			'model_key' => 'status',
 			'option_type' => 'radio',
 			'default_value' => 'development',
 			'options' => Utils::get_statuses(),
 			'type' => Form_Control::MULTIPLE_OPTIONS,
-			'label' => esc_html__('Rule Status', 'shipflex'),
+			'label' => esc_html__('Rule Status', 'shipqora'),
 			'callback' => array($this, 'status_setting_field'),
-			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipflex'),
+			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipqora'),
 		), 'general');
 	}
 
@@ -250,11 +250,11 @@ final class General {
 		$form_control->output_before_input_options();
 		$form_control->output_control(); ?>
 
-		<div class="shipflex-notice-box shipflex-notice-box-left">
+		<div class="shipqora-notice-box shipqora-notice-box-left">
 			<h3>💡 Looking for Additional Features?</h3>
-			<div class="description">Missing a key feature for your workflow or any improvements? Reach out directly to <a href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">support@shipflexpro.com</a> and our team will help build it for you.</div>
+			<div class="description">Missing a key feature for your workflow or any improvements? Reach out directly to <a href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">support@shipqora.com</a> and our team will help build it for you.</div>
 			<div class="gap-10"></div>
-			<a class="button" href="mailto:support@shipflexpro.com?subject=ShipFlex%20Feature%20Request">Request a Feature</a>
+			<a class="button" href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">Request a Feature</a>
 		</div>
 <?php
 		$form_control->output_after_input_options();
@@ -269,7 +269,7 @@ final class General {
 	public function status_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options();
 		$form_control->output_control();
-		do_action('shipflex/after_statuses_options');
+		do_action('shipqora/after_statuses_options');
 		$form_control->output_after_input_options();
 	}
 }

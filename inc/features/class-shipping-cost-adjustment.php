@@ -1,13 +1,13 @@
 <?php
 
-namespace ShipFlex\Feature;
+namespace ShipQora\Feature;
 
-use ShipFlex\Utils;
-use ShipFlex\Feature;
-use ShipFlex\Form_Control;
-use ShipFlex\Condition\Main;
-use ShipFlex\Settings_Fields;
-use ShipFlex\Component_Methods;
+use ShipQora\Utils;
+use ShipQora\Feature;
+use ShipQora\Form_Control;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
+use ShipQora\Component_Methods;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -54,9 +54,9 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 60,
 			'calculation_priority' => 10000,
 			'base_model' => 'shipping_cost_adjustment',
-			'name' => esc_html__('Shipping Cost Adjustment', 'shipflex'),
-			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipflex'),
-			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipflex'),
+			'name' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
+			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
+			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipqora'),
 		);
 	}
 
@@ -184,7 +184,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('tier-item') ?>
 		</template>
@@ -207,7 +207,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 
 		$settings_fields->add_setting('add_new_tier_setting_field', array(
 			'priority' => 10000,
-			'row_attributes' => array('class' => 'shipflex-notice-row'),
+			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array($this, 'add_new_tier_setting_field'),
 		), $this->get_id());
 	}
@@ -244,9 +244,9 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$line_button_data = array('utm_source' => 'add+shipping+cost+adjustment+tier');
 		$form_control->output_row(); ?>
 		<td colspan="2">
-			<div class="shipflex-notice-box">
+			<div class="shipqora-notice-box">
 				<h3>⚡ Need Multiple Adjustment Tiers?</h3>
-				<div class="description">Upgrade to <strong>ShipFlex Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.</div>
+				<div class="description">Upgrade to <strong>ShipQora Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.</div>
 				<div class="gap-10"></div>
 				<?php Utils::get_lite_button($line_button_data) ?>
 			</div>
@@ -264,10 +264,10 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('shipping_cost_adjustment', array(
 			'priority' => 10,
-			'label' => esc_html__('Adjustment Method & Value', 'shipflex'),
+			'label' => esc_html__('Adjustment Method & Value', 'shipqora'),
 			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
-			'label_note' => esc_html__('Select how to modify the shipping rate (increase, decrease, or set a fixed price) and enter the value to apply.', 'shipflex'),
-			'option_note' => esc_html__('Enter a numerical value (e.g., 10 for 10% or $10.00 depending on the selected method).', 'shipflex'),
+			'label_note' => esc_html__('Select how to modify the shipping rate (increase, decrease, or set a fixed price) and enter the value to apply.', 'shipqora'),
+			'option_note' => esc_html__('Enter a numerical value (e.g., 10 for 10% or $10.00 depending on the selected method).', 'shipqora'),
 			'related_models' => array(
 				'amount' => '',
 				'type' => 'increase_percentage',
@@ -276,11 +276,11 @@ final class Shipping_Cost_Adjustment extends Feature {
 
 		$settings_fields->add_setting('shipping_cost_limit', array(
 			'priority' => 20,
-			'label' => esc_html__('Cost Limits', 'shipflex'),
+			'label' => esc_html__('Cost Limits', 'shipqora'),
 			'conditions' => array('type != "free_shipping"'),
 			'callback' => array($this, 'shipping_cost_limit_setting_field'),
-			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipflex'),
-			'option_note' => esc_html__('Leave blank for no limit.', 'shipflex'),
+			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipqora'),
+			'option_note' => esc_html__('Leave blank for no limit.', 'shipqora'),
 			'related_models' => array(
 				'min_cost' => '',
 				'max_cost' => '',
@@ -291,9 +291,9 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 30,
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => 'shipping_method_title',
-			'label' => esc_html__('Overwrite Shipping Method Title', 'shipflex'),
-			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipflex'),
-			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipflex'),
+			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
+			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
 		), 'tier-item');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -314,17 +314,17 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<select v-model="type">
-				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipflex') ?></option>
-				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipflex') ?></option>
+				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipqora') ?></option>
+				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipqora') ?></option>
 				<option value="-" disabled>-------------------------</option>
-				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipflex') ?></option>
-				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipflex') ?></option>
-				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipflex') ?></option>
-				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipflex') ?></option>
+				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipqora') ?></option>
+				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipqora') ?></option>
+				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipqora') ?></option>
+				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipqora') ?></option>
 			</select>
 
 			<template v-if="'free_shipping' !== type">
-				<input type="number" v-model="amount" min="0" placeholder="<?php esc_html_e('Amount', 'shipflex') ?>">
+				<input type="number" v-model="amount" min="0" placeholder="<?php esc_html_e('Amount', 'shipqora') ?>">
 				<span v-if="'increase_percentage' == type || 'decrease_percentage' == type">%</span>
 			</template>
 		</div>
@@ -341,8 +341,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipflex') ?>">
-			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipflex') ?>">
+			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipqora') ?>">
+			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipqora') ?>">
 		</div>
 <?php
 		$form_control->output_after_input_options();

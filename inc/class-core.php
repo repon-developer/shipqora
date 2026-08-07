@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipFlex;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -18,13 +18,13 @@ class Core {
 	 */
 	public function __construct() {
 		global $wpdb;
-		$wpdb->shipflex_rules_table = $wpdb->prefix . 'shipflex_rules';
+		$wpdb->shipqora_rules_table = $wpdb->prefix . 'shipqora_rules';
 
 		if (is_multisite()) {
 			add_action('admin_init', array($this, 'activation'));
 		}
 
-		register_activation_hook(ShipFlex_FILE, array($this, 'activation_callback'));
+		register_activation_hook(ShipQora_FILE, array($this, 'activation_callback'));
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Core {
 		global $wpdb;
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		maybe_create_table($wpdb->shipflex_rules_table, "CREATE TABLE $wpdb->shipflex_rules_table (
+		maybe_create_table($wpdb->shipqora_rules_table, "CREATE TABLE $wpdb->shipqora_rules_table (
 			`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, 
 			`title` VARCHAR(200) NOT NULL, 
 			`shipping_methods` JSON DEFAULT NULL,

@@ -2,7 +2,7 @@ import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Shipping_Cost_Adjustment = {
 	extends: Base_Component,
-	template: '#shipflex-shipping-cost-adjustment-feature-component',
+	template: '#shipqora-shipping-cost-adjustment-feature-component',
 
 	props: {
 		featureData: {
@@ -13,7 +13,7 @@ const Shipping_Cost_Adjustment = {
 	
 	data() {
 		return {
-			...shipflex_admin?.features?.['shipping-cost-adjustment'],
+			...shipqora_admin?.features?.['shipping-cost-adjustment'],
 			...this.featureData
 		}
 	},

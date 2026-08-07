@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipFlex;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -16,7 +16,7 @@ final class Debugging {
 	 * 
 	 * @since 1.0.0
 	 */
-	const NONCE = '_nonce_shipflex_debugging';
+	const NONCE = '_nonce_shipqora_debugging';
 
 	/**
 	 * Hold the current instance of plugin
@@ -76,10 +76,10 @@ final class Debugging {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action('wp_ajax_shipflex/update_debugging_mode', array($this, 'update_debugging_mode'));
-		add_action('shipflex/after_statuses_options', array($this, 'add_debugging_notice_settings'));
+		add_action('wp_ajax_shipqora/update_debugging_mode', array($this, 'update_debugging_mode'));
+		add_action('shipqora/after_statuses_options', array($this, 'add_debugging_notice_settings'));
 
-		$debugging_settings = wp_parse_args(get_option('shipflex_debugging'), array('enabled' => true, 'collapse' => false, 'position' => 'right'));
+		$debugging_settings = wp_parse_args(get_option('shipqora_debugging'), array('enabled' => true, 'collapse' => false, 'position' => 'right'));
 		$this->is_debugging_mode_enabled = $debugging_settings['enabled'] !== false;
 		$this->is_collapse = $debugging_settings['collapse'];
 		if ('left' === $debugging_settings['position']) {
@@ -143,10 +143,10 @@ final class Debugging {
 	public function add_debugging_notice_settings() {
 ?>
 
-		<div class="shipflex-notice-box shipflex-notice-box-left">
-			<h3><?php esc_html_e('ℹ️ Not Seeing Your Rule Updates on the Front End?', 'shipflex') ?></h3>
+		<div class="shipqora-notice-box shipqora-notice-box-left">
+			<h3><?php esc_html_e('ℹ️ Not Seeing Your Rule Updates on the Front End?', 'shipqora') ?></h3>
 			<div class="description">
-				WooCommerce caches shipping rules during active checkout sessions. To force WooCommerce to re-evaluate and display your updated ShipFlex rules, make a quick adjustment to at least one of these fields on the front end:
+				WooCommerce caches shipping rules during active checkout sessions. To force WooCommerce to re-evaluate and display your updated ShipQora rules, make a quick adjustment to at least one of these fields on the front end:
 				<ul>
 					<li><strong>Cart Contents:</strong> Add or remove an item</li>
 					<li><strong>Quantity:</strong> Change the quantity of an existing item</li>
@@ -158,13 +158,13 @@ final class Debugging {
 			<a @click.prevent="enable_debugging_mode()" v-if="is_debugging_enabled" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#">Hide This Notice on Front End</a>
 		</div>
 
-		<!-- <div class="shipflex-notice-box shipflex-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
-			<h3><?php //esc_html_e('💡 Debugging Mode is Disabled', 'shipflex') 
+		<!-- <div class="shipqora-notice-box shipqora-notice-box-left" v-if="!is_debugging_enabled && 'development' == status">
+			<h3><?php //esc_html_e('💡 Debugging Mode is Disabled', 'shipqora') 
 				?></h3>
-			<div class="description"><?php //esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipFlex rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipflex') 
+			<div class="description"><?php //esc_html_e('Debugging mode displays on-screen insights on the front end to help you see exactly how ShipQora rules, fees, and calculations are being applied. Enable debugging mode to easily troubleshoot rule execution while testing on your site.', 'shipqora') 
 										?></div>
 			<div class="gap-10"></div>
-			<a @click.prevent="enable_debugging_mode()" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#"><?php esc_html_e('Enable Debugging Mode', 'shipflex') ?></a>
+			<a @click.prevent="enable_debugging_mode()" class="button" :class="{'in-progress': enabling_debugging_mode}" href="#"><?php esc_html_e('Enable Debugging Mode', 'shipqora') ?></a>
 		</div> -->
 	<?php
 	}
@@ -177,15 +177,15 @@ final class Debugging {
 	 */
 	public function update_debugging_mode() {
 		if (!isset($_POST['nonce'])) {
-			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipflex')));
+			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora')));
 		}
 
 		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), self::NONCE)) {
-			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipflex')));
+			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora')));
 		}
 
 		if (!current_user_can('manage_woocommerce')) {
-			wp_send_json_error(array('message' => esc_html__('You do not have permission to save data.', 'shipflex')));
+			wp_send_json_error(array('message' => esc_html__('You do not have permission to save data.', 'shipqora')));
 		}
 
 		if (isset($_POST['enable_debugging'])) {
@@ -200,7 +200,7 @@ final class Debugging {
 			$this->position = sanitize_text_field(wp_unslash($_POST['position']));
 		}
 
-		update_option('shipflex_debugging', array(
+		update_option('shipqora_debugging', array(
 			'position' => $this->position,
 			'collapse' => $this->is_collapse,
 			'enabled' => $this->is_debugging_mode_enabled,
@@ -255,9 +255,9 @@ final class Debugging {
 			return;
 		}
 
-		wp_enqueue_style('shipflex', ShipFlex_URI . 'assets/debugging.min.css', array(), Utils::get_plugin_version());
-		wp_enqueue_script('shipflex', ShipFlex_URI . 'assets/debugging.min.js', array('jquery', 'wp-data', 'wc-blocks-checkout'), Utils::get_plugin_version(), true);
-		wp_localize_script('shipflex', 'shipflex', array(
+		wp_enqueue_style('shipqora', ShipQora_URI . 'assets/debugging.min.css', array(), Utils::get_plugin_version());
+		wp_enqueue_script('shipqora', ShipQora_URI . 'assets/debugging.min.js', array('jquery', 'wp-data', 'wc-blocks-checkout'), Utils::get_plugin_version(), true);
+		wp_localize_script('shipqora', 'shipqora', array(
 			'ajax_url' => admin_url('admin-ajax.php'),
 			'debugging_nonce' => Debugging::get_instance()->get_nonce_value()
 		));
@@ -278,15 +278,15 @@ final class Debugging {
 		if (true === $this->is_collapse) {
 			$classes[] = 'collapse';
 		} ?>
-		<div id="shipflex-debugging-box" class="<?php echo esc_attr(implode(' ', $classes)) ?>">
+		<div id="shipqora-debugging-box" class="<?php echo esc_attr(implode(' ', $classes)) ?>">
 			<div class="title-bar">
-				<?php esc_html_e('Shipflex Test Guideline', 'shipflex') ?>
+				<?php esc_html_e('ShipQora Test Guideline', 'shipqora') ?>
 			</div>
 
-			<div class="shipflex-box-body">
-				<div class="shipflex-content">
+			<div class="shipqora-box-body">
+				<div class="shipqora-content">
 					<div class="store-manager-notice">
-						<h4><?php esc_html_e('Note for Store Managers:', 'shipflex') ?></h4>
+						<h4><?php esc_html_e('Note for Store Managers:', 'shipqora') ?></h4>
 
 						<ul class="list">
 							<li><strong>Visible Only To:</strong> Logged-in administrators and store managers (when the Notice Box is enabled in backend settings).</li>
@@ -296,7 +296,7 @@ final class Debugging {
 
 					<div class="store-manager-notice">
 						<h4>ℹ️ Not Seeing Your Rule Updates on the Front End?</h4>
-						<p><strong>WooCommerce caches</strong> shipping rules during active checkout sessions. To force WooCommerce to re-evaluate and display your updated <strong>ShipFlex</strong> rules, make a quick adjustment to at least one of these fields on the front end:</p>
+						<p><strong>WooCommerce caches</strong> shipping rules during active checkout sessions. To force WooCommerce to re-evaluate and display your updated <strong>ShipQora</strong> rules, make a quick adjustment to at least one of these fields on the front end:</p>
 						<ul class="list">
 							<li><strong>Cart Contents:</strong> Add or remove an item</li>
 							<li><strong>Quantity:</strong> Change the quantity of an existing item</li>
@@ -304,12 +304,12 @@ final class Debugging {
 						</ul>
 					</div>
 				</div>
-				<div class="shipflex-footer">
-					<a class="shipflex-button shipflex-position-button" href="#">
-						<span class="left"><?php esc_html_e('Move to Left', 'shipflex') ?></span>
-						<span class="right"><?php esc_html_e('Move to Right', 'shipflex') ?></span>
+				<div class="shipqora-footer">
+					<a class="shipqora-button shipqora-position-button" href="#">
+						<span class="left"><?php esc_html_e('Move to Left', 'shipqora') ?></span>
+						<span class="right"><?php esc_html_e('Move to Right', 'shipqora') ?></span>
 					</a>
-					<a class="shipflex-button shipflex-disable-button" href="#"><?php esc_html_e('Hide This Guideline', 'shipflex') ?></a>
+					<a class="shipqora-button shipqora-disable-button" href="#"><?php esc_html_e('Hide This Guideline', 'shipqora') ?></a>
 				</div>
 			</div>
 		</div>

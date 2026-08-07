@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipFlex\Condition;
+namespace ShipQora\Condition;
 
-use ShipFlex\Utils;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -17,7 +17,7 @@ final class Billing_Shipping {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_filter('shipflex/condition/types', array($this, 'add_condition_types'));
+		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
 	}
 
 	/**
@@ -32,7 +32,7 @@ final class Billing_Shipping {
 				'priority' => 10,
 				'model_key' => 'billing_cities',
 				'template' => array($this, 'billing_shipping_cities'),
-				'label' => esc_html__('Billing Cities', 'shipflex'),
+				'label' => esc_html__('Billing Cities', 'shipqora'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
 			),
 
@@ -42,9 +42,9 @@ final class Billing_Shipping {
 				'model_key' => 'billing_states',
 				'template' => array($this, 'billing_shipping_states'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Billing States', 'shipflex'),
+				'label' => esc_html__('Billing States', 'shipqora'),
 				'extra_settings' => array(
-					'placeholder' => esc_html__('Billing States', 'shipflex')
+					'placeholder' => esc_html__('Billing States', 'shipqora')
 				)
 			),
 
@@ -53,7 +53,7 @@ final class Billing_Shipping {
 				'model_key' => 'billing_zipcodes',
 				'template' => array($this, 'billing_zipcodes_template'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Billing ZIP Codes', 'shipflex'),
+				'label' => esc_html__('Billing ZIP Codes', 'shipqora'),
 			),
 
 			'billing_shipping:billing_countries' => array(
@@ -62,7 +62,7 @@ final class Billing_Shipping {
 				'model_key' => 'billing_countries',
 				'template' => array($this, 'billing_shipping_country'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Billing Countries', 'shipflex'),
+				'label' => esc_html__('Billing Countries', 'shipqora'),
 			),
 
 			'billing_shipping:separator' => array(
@@ -75,7 +75,7 @@ final class Billing_Shipping {
 				'priority' => 200,
 				'model_key' => 'shipping_cities',
 				'template' => array($this, 'billing_shipping_cities'),
-				'label' => esc_html__('Shipping Cities', 'shipflex'),
+				'label' => esc_html__('Shipping Cities', 'shipqora'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
 			),
 
@@ -85,9 +85,9 @@ final class Billing_Shipping {
 				'model_key' => 'shipping_states',
 				'template' => array($this, 'billing_shipping_states'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Shipping States', 'shipflex'),
+				'label' => esc_html__('Shipping States', 'shipqora'),
 				'extra_settings' => array(
-					'placeholder' => esc_html__('Shipping States', 'shipflex')
+					'placeholder' => esc_html__('Shipping States', 'shipqora')
 				)
 			),
 
@@ -97,7 +97,7 @@ final class Billing_Shipping {
 				'model_key' => 'shipping_countries',
 				'template' => array($this, 'billing_shipping_country'),
 				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Shipping Countries', 'shipflex'),
+				'label' => esc_html__('Shipping Countries', 'shipqora'),
 			),
 		));
 
@@ -213,7 +213,7 @@ final class Billing_Shipping {
 			<select v-model="billing_shipping_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
-			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: Chicago, New York', 'shipflex'); ?>">
+			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: Chicago, New York', 'shipqora'); ?>">
 		</template>
 	<?php
 	}
@@ -254,13 +254,13 @@ final class Billing_Shipping {
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
-			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipflex'); ?>">
+			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipqora'); ?>">
 			<div class="field-note" style="margin-top: 0;" v-if="type == 'billing_shipping:billing_zipcodes'">
 				<?php
 				printf(
 					/* translators: %s: Postal Code guideline */
-					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipflex'),
-					'<strong>' .  esc_html__('Example: T3B 0N3, T3B ???, T3B*', 'shipflex') . '</strong>'
+					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipqora'),
+					'<strong>' .  esc_html__('Example: T3B 0N3, T3B ???, T3B*', 'shipqora') . '</strong>'
 				) ?>
 			</div>
 		</template>
@@ -284,7 +284,7 @@ final class Billing_Shipping {
 				type="countries"
 				:initial-value="<?php echo esc_attr($model_key) ?>"
 				@update="(value) => <?php echo esc_attr($model_key) ?> = value"
-				placeholder="<?php esc_html_e('Choose countries', 'shipflex'); ?>">
+				placeholder="<?php esc_html_e('Choose countries', 'shipqora'); ?>">
 			</select2-dropdown>
 		</template>
 <?php

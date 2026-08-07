@@ -4,7 +4,7 @@ const { __ } = wp.i18n;
 let ajax_response_data = null;
 
 const Select2_Dropdown = {
-	template: '#shipflex-select2-dropdown',
+	template: '#shipqora-select2-dropdown',
 
 	props: {
 		type: {
@@ -75,8 +75,8 @@ const Select2_Dropdown = {
 				return Object.entries(wcSettings?.countries).map(([id, name]) => ({ id, name }))
 			}
 
-			if (typeof shipflex_admin?.select2?.options?.[this.type] === 'object') {
-				return Object.entries(shipflex_admin.select2.options[this.type]).map(([id, name]) => ({ id, name }))
+			if (typeof shipqora_admin?.select2?.options?.[this.type] === 'object') {
+				return Object.entries(shipqora_admin.select2.options[this.type]).map(([id, name]) => ({ id, name }))
 			}
 
 			if ('shipping_instances' == this.type && typeof this.options == 'object') {
@@ -186,16 +186,16 @@ const Select2_Dropdown = {
 			}
 
 			formData.append('type', this.type)
-			formData.append('security', shipflex_admin?.select2.nonce)
-			formData.append('action', 'shipflex/get_select2_dropdown_data')
+			formData.append('security', shipqora_admin?.select2.nonce)
+			formData.append('action', 'shipqora/get_select2_dropdown_data')
 
-			fetch(shipflex_admin.ajax_url, {
+			fetch(shipqora_admin.ajax_url, {
 				method: 'POST',
 				body: formData
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong.', 'shipflex'));
+					throw new Error(__('Something went wrong.', 'shipqora'));
 				}
 
 				if (false === result.success) {
@@ -224,7 +224,7 @@ const Select2_Dropdown = {
 				$(this.$refs.select2_dropdown).select2({
 					allowClear: true,
 					placeholder: self.placeholder,
-					dropdownCssClass: 'shipflex-select2-dropdown',
+					dropdownCssClass: 'shipqora-select2-dropdown',
 					matchefffffffffffr: function (params, data) {
 						const search_terms = params?.term?.toLowerCase();
 						if (search_terms?.length) {
@@ -268,9 +268,9 @@ const Select2_Dropdown = {
 			$(this.$refs.select2_dropdown).select2({
 				allowClear: true,
 				placeholder: self.placeholder,
-				dropdownCssClass: 'shipflex-select2-dropdown',
+				dropdownCssClass: 'shipqora-select2-dropdown',
 				ajax: {
-					url: shipflex_admin.ajax_url,
+					url: shipqora_admin.ajax_url,
 					dataType: "json",
 					type: "POST",
 					delay: 500,
@@ -278,8 +278,8 @@ const Select2_Dropdown = {
 						return {
 							type: self.type,
 							term: params.term,
-							security: shipflex_admin?.select2?.nonce,
-							action: 'shipflex/get_select2_dropdown_data'
+							security: shipqora_admin?.select2?.nonce,
+							action: 'shipqora/get_select2_dropdown_data'
 						}
 					},
 

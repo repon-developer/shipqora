@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipFlex\Condition;
+namespace ShipQora\Condition;
 
-use ShipFlex\Utils;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -17,8 +17,8 @@ final class Order_History {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_filter('shipflex/condition/models', array($this, 'condition_models'));
-		add_filter('shipflex/condition/types', array($this, 'add_condition_types'));
+		add_filter('shipqora/condition/models', array($this, 'condition_models'));
+		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
 	}
 
 	/**
@@ -42,7 +42,7 @@ final class Order_History {
 			'priority' => 5,
 			'template' => array($this, 'first_purchase_template'),
 			'validate_callback' => array($this, 'validate_condition'),
-			'label' => esc_html__('First Purchase', 'shipflex'),
+			'label' => esc_html__('First Purchase', 'shipqora'),
 		);
 
 		return $condition_types;
@@ -57,8 +57,8 @@ final class Order_History {
 	public function first_purchase_template() { ?>
 		<template v-if="type == 'order_history:first_purchase'">
 			<select v-model="first_purchase">
-				<option value="yes"><?php esc_html_e('Yes', 'shipflex'); ?></option>
-				<option value="no"><?php esc_html_e('No', 'shipflex'); ?></option>
+				<option value="yes"><?php esc_html_e('Yes', 'shipqora'); ?></option>
+				<option value="no"><?php esc_html_e('No', 'shipqora'); ?></option>
 			</select>
 		</template>
 <?php

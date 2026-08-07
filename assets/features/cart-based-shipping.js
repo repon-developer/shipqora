@@ -2,7 +2,7 @@ import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Cart_Based_Shipping = {
 	extends: Base_Component,
-	template: '#shipflex-cart-based-shipping-feature-component',
+	template: '#shipqora-cart-based-shipping-feature-component',
 
 	props: {
 		featureData: {
@@ -17,7 +17,7 @@ const Cart_Based_Shipping = {
 			calculate_basis: 'fixed_amount',
 			table_rates_lite: {},
 			calculation_type: 'per_unit_or_percentage',
-			...shipflex_admin?.features?.['cart-based-shipping'],
+			...shipqora_admin?.features?.['cart-based-shipping'],
 			...this.featureData
 		}
 	},
@@ -32,7 +32,7 @@ const Cart_Based_Shipping = {
 		},
 
 		calculation_metrics() {
-			return shipflex_admin.calculation_metrics;
+			return shipqora_admin.calculation_metrics;
 		},
 
 		calculation_type_label() {

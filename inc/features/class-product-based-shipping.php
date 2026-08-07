@@ -1,15 +1,15 @@
 <?php
 
-namespace ShipFlex\Feature;
+namespace ShipQora\Feature;
 
-use ShipFlex\Utils;
-use ShipFlex\Feature;
-use ShipFlex\Cart_Total;
-use ShipFlex\Form_Control;
-use ShipFlex\Condition\Main;
-use ShipFlex\Settings_Fields;
-use ShipFlex\Component_Methods;
-use ShipFlex\Component\Cart_Option;
+use ShipQora\Utils;
+use ShipQora\Feature;
+use ShipQora\Cart_Total;
+use ShipQora\Form_Control;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
+use ShipQora\Component_Methods;
+use ShipQora\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -61,9 +61,9 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			'priority' => 50,
 			'calculation_priority' => 20,
 			'base_model' => 'product_based_shipping',
-			'name' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
-			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipflex'),
-			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipflex'),
+			'name' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
+			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
+			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipqora'),
 		);
 	}
 
@@ -218,7 +218,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				is="vue:feature-product-based-shipping"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[index_no] = value"
 				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', index_no)"
-				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipflex') ?>"
+				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipqora') ?>"
 				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', value, position)">
 			</template>
 		</tbody>
@@ -235,7 +235,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
 			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('+ Add Product Group', 'shipflex'); ?>
+				<?php esc_html_e('+ Add Product Group', 'shipqora'); ?>
 			</a>
 		</td>
 	<?php
@@ -251,7 +251,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipflex'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('product') ?>
 		</template>
@@ -270,10 +270,10 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$target_products = $cart_based_component->get_setting('target_products', 'cart-tier');
 		$target_products = wp_parse_args(array(
 			'model_key' => 'target_products',
-			'label' => esc_html__('Target Products', 'shipflex'),
+			'label' => esc_html__('Target Products', 'shipqora'),
 			'callback' => array($this, 'target_products_setting_field'),
-			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipflex'),
-			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipflex'),
+			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
+			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipqora'),
 		), $target_products);
 
 
@@ -311,9 +311,9 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				cart-option-type="products"
 				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
-				option-label="<?php esc_html_e('Products in selected {{option_label_lower}}', 'shipflex') ?>">
+				option-label="<?php esc_html_e('Products in selected {{option_label_lower}}', 'shipqora') ?>">
 				<template v-slot:based-on-first-option>
-					<option value=""><?php esc_html_e('All products in cart', 'shipflex') ?></option>
+					<option value=""><?php esc_html_e('All products in cart', 'shipqora') ?></option>
 				</template>
 			</cart-option>
 		</div>
@@ -331,7 +331,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$line_button_data = array('utm_source' => 'exclude+products');
 		$form_control->output_row(); ?>
 		<td colspan="2">
-			<div class="shipflex-notice-box">
+			<div class="shipqora-notice-box">
 				<h3>🚀 Want to Exclude Specific Products?</h3>
 				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
 				<div class="gap-10"></div>

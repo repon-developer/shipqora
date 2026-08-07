@@ -1,5 +1,5 @@
-=== ShipFlex – All-in-One Shipping ===
-Contributors: ShipFlex
+=== ShipQora – All-in-One Shipping ===
+Contributors: ShipQora
 Tags: woocommerce rewards, woocommerce free shipping, woocommerce discounts, free product, reward rules
 Requires at least: 6.8
 Tested up to: 7.0

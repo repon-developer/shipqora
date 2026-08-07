@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipFlex\Component;
+namespace ShipQora\Component;
 
-use ShipFlex\Utils;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -18,7 +18,7 @@ final class Select2 {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	const NONCE_VALUE = 'shipflex/select2_dropdown_nonce';
+	const NONCE_VALUE = 'shipqora/select2_dropdown_nonce';
 
 	/**
 	 * Hold the current instance
@@ -47,8 +47,8 @@ final class Select2 {
 	 */
 	public function __construct() {
 		add_action('admin_footer', array($this, 'output_component'));
-		add_filter('shipflex/admin_enqueue_scripts', array($this, 'enqueue_scripts'), 10, 2);
-		add_action('wp_ajax_shipflex/get_select2_dropdown_data', array($this, 'get_select2_data'));
+		add_filter('shipqora/admin_enqueue_scripts', array($this, 'enqueue_scripts'), 10, 2);
+		add_action('wp_ajax_shipqora/get_select2_dropdown_data', array($this, 'get_select2_data'));
 	}
 
 	/**
@@ -58,11 +58,11 @@ final class Select2 {
 	 * @return void
 	 */
 	public function output_component() { ?>
-		<template id="shipflex-select2-dropdown">
+		<template id="shipqora-select2-dropdown">
 
 			<span class="select2-safety-span"><!-- dont-remove-this-line-otherwise-show-error --></span>
 
-			<div class="shipflex-loading-spinner" v-if="loading"></div>
+			<div class="shipqora-loading-spinner" v-if="loading"></div>
 			<select
 				v-else
 				v-model="value"
@@ -87,7 +87,7 @@ final class Select2 {
 	 */
 	public function enqueue_scripts($values, $source) {
 		if ('styles' === $source) {
-			$values[] = 'shipflex-select2';
+			$values[] = 'shipqora-select2';
 		}
 
 		if ('scripts' === $source) {
@@ -96,7 +96,7 @@ final class Select2 {
 
 		if ('localize' === $source) {
 			$customer_roles = wp_roles()->role_names;
-			$customer_roles['guest'] = esc_html__('Guest', 'shipflex');
+			$customer_roles['guest'] = esc_html__('Guest', 'shipqora');
 			unset($customer_roles['administrator'], $customer_roles['author']);
 
 			$values['select2'] = array(
@@ -144,7 +144,7 @@ final class Select2 {
 			$results = call_user_func($callback_method, $meta_data);
 		}
 
-		wp_send_json_success(apply_filters('shipflex/select2/results', $results, $meta_data));
+		wp_send_json_success(apply_filters('shipqora/select2/results', $results, $meta_data));
 
 
 
@@ -205,7 +205,7 @@ final class Select2 {
 			$zone_id = $zone->get_id();
 
 			$zone_instances = array(
-				$zone_id . '-0' => esc_html__('All rates', 'shipflex')
+				$zone_id . '-0' => esc_html__('All rates', 'shipqora')
 			);
 
 			$shipping_methods = $zone->get_shipping_methods();

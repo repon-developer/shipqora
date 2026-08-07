@@ -24,7 +24,7 @@ const Base_Component = {
 
 		deleteWarning: {
 			type: String,
-			default: __('Are you sure you want to delete this tier?', 'shipflex'),
+			default: __('Are you sure you want to delete this tier?', 'shipqora'),
 		},
 	},
 
@@ -39,7 +39,7 @@ const Base_Component = {
 	},
 
 	computed: {
-		...wp.hooks.applyFilters('shipflex.base_component.computed', {}),
+		...wp.hooks.applyFilters('shipqora.base_component.computed', {}),
 
 		component_data() {
 			return JSON.parse(JSON.stringify(this.$data));
@@ -63,7 +63,7 @@ const Base_Component = {
 	},
 
 	watch: {
-		...wp.hooks.applyFilters('shipflex.base_component.watch', {}),
+		...wp.hooks.applyFilters('shipqora.base_component.watch', {}),
 
 		component_data: {
 			deep: true,
@@ -74,7 +74,7 @@ const Base_Component = {
 	},
 
 	methods: {
-		...wp.hooks.applyFilters('shipflex.base_component.methods', {}),
+		...wp.hooks.applyFilters('shipqora.base_component.methods', {}),
 
 		hide_action(action_key) {
 			return this.hideActions?.includes(action_key) === true;
@@ -92,7 +92,7 @@ const Base_Component = {
 		},
 
 		get_calculation_type_label(calculate_basis) {
-			return shipflex_admin.calculation_types?.[calculate_basis];
+			return shipqora_admin.calculation_types?.[calculate_basis];
 		},
 
 		add_condition_group() {

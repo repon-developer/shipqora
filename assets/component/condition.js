@@ -1,7 +1,7 @@
 const { __ } = wp.i18n;
 
 const Condition = {
-	template: '#shipflex-condition',
+	template: '#shipqora-condition',
 
 	props: {
 		condition: {
@@ -25,7 +25,7 @@ const Condition = {
 			id: this.$utils.generate_uuid(),
 			cart_products_operator: 'any_in_list',
 			billing_shipping_operator: 'any_in_list',
-			...shipflex_admin.condition_models,
+			...shipqora_admin.condition_models,
 			...this.condition
 		}
 	},
@@ -41,10 +41,10 @@ const Condition = {
 
 		cart_products_prefix() {
 			const cart_prefixes = {
-				'cart:subtotal': __('Subtotal of', 'shipflex'),
-				'cart:total_quantity': __('Total quantity of', 'shipflex'),
-				'cart:total_weight': __('Total weight of', 'shipflex'),
-				'cart:total_volume': __('Total volume of', 'shipflex'),
+				'cart:subtotal': __('Subtotal of', 'shipqora'),
+				'cart:total_quantity': __('Total quantity of', 'shipqora'),
+				'cart:total_weight': __('Total weight of', 'shipqora'),
+				'cart:total_volume': __('Total volume of', 'shipqora'),
 			}
 
 			return cart_prefixes?.[this.type] ? cart_prefixes?.[this.type] : '';
@@ -62,14 +62,14 @@ const Condition = {
 	},
 
 	methods: {
-		...wp.hooks.applyFilters('shipflex.condition.methods', {}),
+		...wp.hooks.applyFilters('shipqora.condition.methods', {}),
 
 		set_value(value, model_key) {
 			this[model_key] = value;
 		},
 
 		delete_condition() {
-			const response = confirm(__('Do you want to delete this condition?', 'shipflex'))
+			const response = confirm(__('Do you want to delete this condition?', 'shipqora'))
 			if (response) {
 				this.$parent.conditions.splice(this.number, 1);
 			}
@@ -78,7 +78,7 @@ const Condition = {
 }
 
 const Condition_Group = {
-	template: '#shipflex-condition-group',
+	template: '#shipqora-condition-group',
 
 	components: {
 		'condition': Condition
@@ -124,7 +124,7 @@ const Condition_Group = {
 		},
 
 		delete_group() {
-			const response = confirm(__('Do you want to delete this condition group?', 'shipflex'))
+			const response = confirm(__('Do you want to delete this condition group?', 'shipqora'))
 			if (response) {
 				this.$emit('delete');
 			}

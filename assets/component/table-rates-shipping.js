@@ -4,7 +4,7 @@ const { __ } = wp.i18n;
 
 const Table_Rates_Shipping = {
 	extends: Base_Component,
-	template: '#shipflex-table-rates-shipping-component',
+	template: '#shipqora-table-rates-shipping-component',
 	props: {
 		tableRateData: {
 			default: null,
@@ -18,7 +18,7 @@ const Table_Rates_Shipping = {
 
 		deleteWarning: {
 			type: String,
-			default: __('Do you want to delete this table rates?', 'shipflex'),
+			default: __('Do you want to delete this table rates?', 'shipqora'),
 		},
 	},
 
@@ -27,14 +27,14 @@ const Table_Rates_Shipping = {
 			collapse: false,
 			shipping_rates: [],
 			shipping_rates_errors: [],
-			...shipflex_admin.table_rates_shipping_model,
+			...shipqora_admin.table_rates_shipping_model,
 			...this.tableRateData
 		}
 	},
 
 	computed: {
 		metric_label_short_lower() {
-			return shipflex_admin.calculation_metrics?.[this.calculateBasis]?.short_lower;
+			return shipqora_admin.calculation_metrics?.[this.calculateBasis]?.short_lower;
 		},
 
 		shipping_rate_default_data() {
@@ -146,19 +146,19 @@ const Table_Rates_Shipping = {
 
 			const prev_item = this.get_prev_rate(this.shipping_rates?.length - 1);
 			if (prev_item && !prev_item?.max) {
-				return alert(__('Please enter "Max" value of the previous shipping rate.', 'shipflex'))
+				return alert(__('Please enter "Max" value of the previous shipping rate.', 'shipqora'))
 			}
 
 			const last_item = this.get_prev_rate(this.shipping_rates?.length);
 			if (last_item && !last_item?.value) {
-				return alert(__('Please enter "Cost" of the previous shipping rate.', 'shipflex'))
+				return alert(__('Please enter "Cost" of the previous shipping rate.', 'shipqora'))
 			}
 
 			this.shipping_rates.push({ id: this.$utils.generate_uuid(), ...this.shipping_rate_default_data })
 		},
 
 		delete_shipping_rate(index) {
-			const response = confirm(__('Do you want to delete this shipping rate?', 'shipflex'));
+			const response = confirm(__('Do you want to delete this shipping rate?', 'shipqora'));
 			if (response) {
 				this.shipping_rates.splice(index, 1)
 			}

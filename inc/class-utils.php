@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipFlex;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -18,11 +18,11 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_plugin_version() {
-		return get_plugin_data(ShipFlex_FILE)['Version'];
+		return get_plugin_data(ShipQora_FILE)['Version'];
 	}
 
 	/**
-	 * Get available status of ShipFlex rule
+	 * Get available status of ShipQora rule
 	 * 
 	 * @since 1.0.0
 	 * @return array
@@ -30,21 +30,21 @@ class Utils {
 	public static function get_statuses() {
 		return array(
 			'active' => array(
-				'label' => esc_html__('Active', 'shipflex'),
-				'currently_text' => esc_html__('Currently Live', 'shipflex'),
-				'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipflex'),
+				'label' => esc_html__('Active', 'shipqora'),
+				'currently_text' => esc_html__('Currently Live', 'shipqora'),
+				'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipqora'),
 			),
 
 			'development' => array(
-				'label' => esc_html__('Test Mode', 'shipflex'),
-				'currently_text' => esc_html__('Currently in Test Mode', 'shipflex'),
-				'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipflex')
+				'label' => esc_html__('Test Mode', 'shipqora'),
+				'currently_text' => esc_html__('Currently in Test Mode', 'shipqora'),
+				'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipqora')
 			),
 
 			'disabled' => array(
-				'label' => esc_html__('Disabled', 'shipflex'),
-				'currently_text' => esc_html__('Currently Disabled', 'shipflex'),
-				'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipflex')
+				'label' => esc_html__('Disabled', 'shipqora'),
+				'currently_text' => esc_html__('Currently Disabled', 'shipqora'),
+				'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipqora')
 			),
 		);
 	}
@@ -90,11 +90,11 @@ class Utils {
 	 */
 	public static function is_plugin_screen($screen_name = 'plugin-screen') {
 		if ('rule-editor' === $screen_name) {
-			return strpos(get_current_screen()->id, 'shipflex-edit') !== false;
+			return strpos(get_current_screen()->id, 'shipqora-edit') !== false;
 		}
 
 		if ('rule-list-table' === $screen_name) {
-			return strpos(get_current_screen()->id, 'shipflex') !== false;
+			return strpos(get_current_screen()->id, 'shipqora') !== false;
 		}
 
 		return false;
@@ -108,7 +108,7 @@ class Utils {
 	 */
 	public static function get_hook_name(...$hook_slugs) {
 		$hook_slugs = array_filter($hook_slugs);
-		array_unshift($hook_slugs, 'shipflex');
+		array_unshift($hook_slugs, 'shipqora');
 		return join('/', $hook_slugs);
 	}
 
@@ -210,18 +210,18 @@ class Utils {
 	 */
 	public static function get_operators($operators = array()) {
 		$supported_operators = array(
-			'equal_to' => __('Equal To', 'shipflex'),
-			'less_than' => __('Less than ( < )', 'shipflex'),
-			'less_than_or_equal' => __('Less than or equal to ( <= )', 'shipflex'),
-			'greater_than_or_equal' => __('Greater than or equal to ( >= )', 'shipflex'),
-			'greater_than' => __('Greater than ( > )', 'shipflex'),
-			'between' => __('Between', 'shipflex'),
-			'any_in_list' => __('Any in list', 'shipflex'),
-			'all_in_list' => __('All in list', 'shipflex'),
-			'not_in_list' => __('Not in list', 'shipflex'),
+			'equal_to' => __('Equal To', 'shipqora'),
+			'less_than' => __('Less than ( < )', 'shipqora'),
+			'less_than_or_equal' => __('Less than or equal to ( <= )', 'shipqora'),
+			'greater_than_or_equal' => __('Greater than or equal to ( >= )', 'shipqora'),
+			'greater_than' => __('Greater than ( > )', 'shipqora'),
+			'between' => __('Between', 'shipqora'),
+			'any_in_list' => __('Any in list', 'shipqora'),
+			'all_in_list' => __('All in list', 'shipqora'),
+			'not_in_list' => __('Not in list', 'shipqora'),
 
-			'before' => __('Before', 'shipflex'),
-			'after' => __('After', 'shipflex'),
+			'before' => __('Before', 'shipqora'),
+			'after' => __('After', 'shipqora'),
 		);
 
 		$return_operators = [];
@@ -285,7 +285,7 @@ class Utils {
 				'label_lower' => str_replace('product ', '', $taxonomy_lower_label),
 				'placeholder' => sprintf(
 					/* translators: %s for taxonomy label */
-					esc_html__('Choose one or more %s', 'shipflex'),
+					esc_html__('Choose one or more %s', 'shipqora'),
 					$taxonomy_lower_label
 				)
 			);
@@ -311,7 +311,7 @@ class Utils {
 		$shipping_zones = \WC_Shipping_Zones::get_shipping_zones();
 
 		$global_zone = new \WC_Shipping_Zone(0);
-		$global_zone->set_zone_name(esc_html__('Rest of the world', 'shipflex'));
+		$global_zone->set_zone_name(esc_html__('Rest of the world', 'shipqora'));
 
 		$shipping_zones[] = $global_zone;
 		return $shipping_zones;
@@ -324,10 +324,10 @@ class Utils {
 	 * @return array
 	 */
 	public static function get_lite_button($button_data = null) {
-		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipflex', 'utm_medium' => 'shipflex+rule'));
+		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipqora', 'utm_medium' => 'shipqora+rule'));
 		$button_attributes = array_map(fn($value, $attribute) => sprintf('%s="%s"', $attribute, $value), $button_data, array_keys($button_data));
-		$button_link = 'https://shipflexpro.com/?' . implode('&', $button_attributes);
-		$button = apply_filters('shipflex/lite_button', '<a class="button button-primary" target="_blank" href="' . esc_url($button_link) . '">' . esc_html__('Get Pro', 'shipflex') . '</a>');
+		$button_link = 'https://shipqora.com/?' . implode('&', $button_attributes);
+		$button = apply_filters('shipqora/lite_button', '<a class="button button-primary" target="_blank" href="' . esc_url($button_link) . '">' . esc_html__('Get Pro', 'shipqora') . '</a>');
 		if (!empty($button)) {
 			echo wp_kses_post($button);
 		}

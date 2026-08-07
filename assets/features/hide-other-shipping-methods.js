@@ -2,7 +2,7 @@ import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Hide_Other_Shipping_Methods = {
 	extends: Base_Component,
-	template: '#shipflex-hide-other-shipping-methods-feature-component',
+	template: '#shipqora-hide-other-shipping-methods-feature-component',
 
 	props: {
 		featureData: {
@@ -14,7 +14,7 @@ const Hide_Other_Shipping_Methods = {
 	data() {
 		return {
 			shipping_methods: [],
-			...shipflex_admin?.features?.['hide-other-shipping-methods'],
+			...shipqora_admin?.features?.['hide-other-shipping-methods'],
 			...this.featureData
 		}
 	},

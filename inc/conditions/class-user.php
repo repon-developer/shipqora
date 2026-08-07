@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipFlex\Condition;
+namespace ShipQora\Condition;
 
-use ShipFlex\Utils;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -17,7 +17,7 @@ final class User {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_filter('shipflex/condition/types', array($this, 'add_condition_types'));
+		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
 	}
 
 	/**
@@ -34,7 +34,7 @@ final class User {
 				'default_value' => array(),
 				'template' => array($this, 'users_condition_template'),
 				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Users', 'shipflex'),
+				'label' => esc_html__('Users', 'shipqora'),
 			),
 			'user:roles' => array(
 				'priority' => 15,
@@ -42,7 +42,7 @@ final class User {
 				'default_value' => array(),
 				'template' => array($this, 'user_roles_template'),
 				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Customer Roles', 'shipflex'),
+				'label' => esc_html__('Customer Roles', 'shipqora'),
 			),
 			'user:logged_in' => array(
 				'priority' => 20,
@@ -50,7 +50,7 @@ final class User {
 				'model_key' => 'user_logged_in',
 				'template' => array($this, 'logged_in_template'),
 				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Logged In', 'shipflex'),
+				'label' => esc_html__('Logged In', 'shipqora'),
 			),
 		));
 
@@ -125,7 +125,7 @@ final class User {
 				type="user:users"
 				:initial-value="users"
 				@update="(value) => users = value"
-				placeholder="<?php esc_attr_e('Choose users', 'shipflex'); ?>">
+				placeholder="<?php esc_attr_e('Choose users', 'shipqora'); ?>">
 			</select2-dropdown>
 		</template>
 	<?php
@@ -147,7 +147,7 @@ final class User {
 				type="user_roles"
 				:initial-value="user_roles"
 				@update="(value) => user_roles = value"
-				placeholder="<?php esc_attr_e('Customer Roles', 'shipflex'); ?>">
+				placeholder="<?php esc_attr_e('Customer Roles', 'shipqora'); ?>">
 			</select2-dropdown>
 		</template>
 	<?php
@@ -162,8 +162,8 @@ final class User {
 	public function logged_in_template() { ?>
 		<template v-if="type == 'user:logged_in'">
 			<select v-model="user_logged_in">
-				<option value="yes"><?php esc_html_e('Yes', 'shipflex'); ?></option>
-				<option value="no"><?php esc_html_e('No', 'shipflex'); ?></option>
+				<option value="yes"><?php esc_html_e('Yes', 'shipqora'); ?></option>
+				<option value="no"><?php esc_html_e('No', 'shipqora'); ?></option>
 			</select>
 		</template>
 <?php

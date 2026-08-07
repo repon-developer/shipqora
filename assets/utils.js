@@ -4,7 +4,7 @@ const Utils = {
 	app: null,
 	cache_data: {},
 	has_key() {
-		return wp.hooks.applyFilters('shipflex.has_key', false);
+		return wp.hooks.applyFilters('shipqora.has_key', false);
 	},
 
 	generate_uuid() {
@@ -38,7 +38,7 @@ const Utils = {
 		}
 
 		setTimeout(() => {
-			const section_item = jQuery('#shipflex').find(`[data-highlight-section="${section_name}"]`);
+			const section_item = jQuery('#shipqora').find(`[data-highlight-section="${section_name}"]`);
 			if (!section_item?.length) {
 				return;
 			}

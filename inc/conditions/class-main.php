@@ -1,9 +1,9 @@
 <?php
 
-namespace ShipFlex\Condition;
+namespace ShipQora\Condition;
 
-use ShipFlex\Cart_Total;
-use ShipFlex\Utils;
+use ShipQora\Cart_Total;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -22,7 +22,7 @@ class Main {
 	 */
 	public static function output_component() {
 		$main_condition = self::get_instance(); ?>
-		<template id="shipflex-condition">
+		<template id="shipqora-condition">
 			<select class="condition-types" v-model="type">
 				<?php
 				foreach ($main_condition->get_groups() as $group_key => $group_label) {
@@ -64,12 +64,12 @@ class Main {
 			</div>
 		</template>
 
-		<template id="shipflex-condition-group">
+		<template id="shipqora-condition-group">
 			<span @click="delete_group()" class="btn-delete-item btn-delete-group dashicons dashicons-trash"></span>
 
-			<div class="shipflex-repeater" v-if="conditions?.length">
+			<div class="shipqora-repeater" v-if="conditions?.length">
 				<template v-for="(condition, index) in conditions" :key="condition.id">
-					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipflex') ?>"></div>
+					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipqora') ?>"></div>
 					<div class="repeater-item">
 						<condition :condition="condition" :number="index" :key="condition?.id"></condition>
 					</div>
@@ -77,7 +77,7 @@ class Main {
 			</div>
 
 			<a class="button button-small" href="#" @click.prevent="add_condition()">
-				<?php esc_html_e('Add condition', 'shipflex') ?>
+				<?php esc_html_e('Add condition', 'shipqora') ?>
 			</a>
 		</template>
 <?php
@@ -125,11 +125,11 @@ class Main {
 	 * Constructor.
 	 */
 	public function __construct() {
-		require_once ShipFlex_PATH . 'inc/conditions/class-cart.php';
-		require_once ShipFlex_PATH . 'inc/conditions/class-user.php';
-		require_once ShipFlex_PATH . 'inc/conditions/class-order-history.php';
-		require_once ShipFlex_PATH . 'inc/conditions/class-cart-products.php';
-		require_once ShipFlex_PATH . 'inc/conditions/class-billing-shipping.php';
+		require_once ShipQora_PATH . 'inc/conditions/class-cart.php';
+		require_once ShipQora_PATH . 'inc/conditions/class-user.php';
+		require_once ShipQora_PATH . 'inc/conditions/class-order-history.php';
+		require_once ShipQora_PATH . 'inc/conditions/class-cart-products.php';
+		require_once ShipQora_PATH . 'inc/conditions/class-billing-shipping.php';
 	}
 
 	/**
@@ -139,14 +139,14 @@ class Main {
 	 * @return array
 	 */
 	public function get_groups() {
-		return apply_filters('shipflex/condition/groups', array(
-			'cart' => esc_html__('Cart', 'shipflex'),
-			'cart_products' => esc_html__('Cart Products', 'shipflex'),
-			'billing_shipping' => esc_html__('Billing & Shipping', 'shipflex'),
-			'date' => esc_html__('Date', 'shipflex'),
-			'user' => esc_html__('Customer', 'shipflex'),
-			'others' => esc_html__('Others', 'shipflex'),
-			'order_history' => esc_html__('Order History', 'shipflex'),
+		return apply_filters('shipqora/condition/groups', array(
+			'cart' => esc_html__('Cart', 'shipqora'),
+			'cart_products' => esc_html__('Cart Products', 'shipqora'),
+			'billing_shipping' => esc_html__('Billing & Shipping', 'shipqora'),
+			'date' => esc_html__('Date', 'shipqora'),
+			'user' => esc_html__('Customer', 'shipqora'),
+			'others' => esc_html__('Others', 'shipqora'),
+			'order_history' => esc_html__('Order History', 'shipqora'),
 		));
 	}
 
@@ -158,7 +158,7 @@ class Main {
 	 */
 	public function get_types() {
 		if (empty($this->types) || !is_array($this->types)) {
-			$this->types = apply_filters('shipflex/condition/types', array());
+			$this->types = apply_filters('shipqora/condition/types', array());
 		}
 
 		return $this->types;
@@ -179,7 +179,7 @@ class Main {
 			}
 		}
 
-		return apply_filters('shipflex/condition/models', $models);
+		return apply_filters('shipqora/condition/models', $models);
 	}
 
 	/**

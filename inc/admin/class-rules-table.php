@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipFlex;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -11,7 +11,7 @@ if (!class_exists('WP_List_Table')) {
 }
 
 /**
- * WP List table of Rewards
+ * WP List table of Rules
  */
 class Rule_List_Table extends \WP_List_Table {
 	/**
@@ -27,8 +27,8 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->per_page = $this->get_items_per_page('shipflex_rules_per_page', 15);
-		parent::__construct(array('singular' => 'shipflex_rule_table', 'plural' => 'shipflex_rules_table', 'ajax' => false));
+		$this->per_page = $this->get_items_per_page('shipqora_rules_per_page', 15);
+		parent::__construct(array('singular' => 'shipqora_rule_table', 'plural' => 'shipqora_rules_table', 'ajax' => false));
 	}
 
 	/**
@@ -45,7 +45,7 @@ class Rule_List_Table extends \WP_List_Table {
 		$offset = absint($page_number - 1) * $this->per_page;
 
 		$prepared_sqls = array(
-			'select' => $wpdb->prepare("SELECT * FROM %i", $wpdb->shipflex_rules_table),
+			'select' => $wpdb->prepare("SELECT * FROM %i", $wpdb->shipqora_rules_table),
 			'order' => "ORDER BY id DESC",
 			'limit' => $wpdb->prepare("LIMIT %d, %d", $offset, $this->per_page)
 		);
@@ -53,7 +53,7 @@ class Rule_List_Table extends \WP_List_Table {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rules = $wpdb->get_results(implode(' ', $prepared_sqls), ARRAY_A);
 
-		$this->items = array_map(fn($item) => new ShipFlex_Rule($item), $rules);
+		$this->items = array_map(fn($item) => new ShipQora_Rule($item), $rules);
 
 		unset($prepared_sqls['limit']);
 
@@ -72,7 +72,7 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 */
 	public function get_bulk_actions() {
-		return array('bulk-delete' => __('Delete', 'shipflex'));
+		return array('bulk-delete' => __('Delete', 'shipqora'));
 	}
 
 	/**
@@ -84,12 +84,12 @@ class Rule_List_Table extends \WP_List_Table {
 	public function get_columns() {
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
-			'title' => esc_html__('Title', 'shipflex'),
-			'shipping_methods' => esc_html__('Shipping Methods', 'shipflex'),
-			'features' => esc_html__('Active Features', 'shipflex'),
-			'status' => esc_html__('Status', 'shipflex'),
-			'updated_at' => esc_html__('Updated', 'shipflex'),
-			'created_at' => esc_html__('Created', 'shipflex'),
+			'title' => esc_html__('Title', 'shipqora'),
+			'shipping_methods' => esc_html__('Shipping Methods', 'shipqora'),
+			'features' => esc_html__('Active Features', 'shipqora'),
+			'status' => esc_html__('Status', 'shipqora'),
+			'updated_at' => esc_html__('Updated', 'shipqora'),
+			'created_at' => esc_html__('Created', 'shipqora'),
 		);
 
 		return $columns;
@@ -101,7 +101,7 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @param  String $column_name - Current column name
 	 * @since 1.0.0
 	 */
-	public function column_default($shipflex_rule, $column_name) {
+	public function column_default($shipqora_rule, $column_name) {
 	}
 
 	/**
@@ -110,8 +110,8 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function column_cb($shipflex_rule) {
-		printf('<input type="checkbox" name="rules[]" value="%d" />', esc_attr($shipflex_rule->get_id()));
+	public function column_cb($shipqora_rule) {
+		printf('<input type="checkbox" name="rules[]" value="%d" />', esc_attr($shipqora_rule->get_id()));
 	}
 
 	/**
@@ -120,19 +120,19 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function column_title($shipflex_rule) {
+	public function column_title($shipqora_rule) {
 		$edit_url = add_query_arg(array(
-			'id' => $shipflex_rule->get_id(),
-		), menu_page_url('shipflex-edit', false));
+			'id' => $shipqora_rule->get_id(),
+		), menu_page_url('shipqora-edit', false));
 
-		printf('<strong><a class="row-title" href="%s">%s</a></strong>', esc_url($edit_url), esc_html($shipflex_rule->title));
+		printf('<strong><a class="row-title" href="%s">%s</a></strong>', esc_url($edit_url), esc_html($shipqora_rule->title));
 
-		$menu_page = menu_page_url('shipflex', false);
+		$menu_page = menu_page_url('shipqora', false);
 
-		$row_actions[] = sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit', 'shipflex'));
+		$row_actions[] = sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit', 'shipqora'));
 
-		$delete_url = add_query_arg(array('id' => $shipflex_rule->get_id(), 'delete' => wp_create_nonce('shipflex/rule_delete_nonce')), $menu_page);
-		$row_actions[] = sprintf('<a href="%s" class="delete-rule">%s</a>', esc_url($delete_url), __('Delete', 'shipflex'));
+		$delete_url = add_query_arg(array('id' => $shipqora_rule->get_id(), 'delete' => wp_create_nonce('shipqora/rule_delete_nonce')), $menu_page);
+		$row_actions[] = sprintf('<a href="%s" class="delete-rule">%s</a>', esc_url($delete_url), __('Delete', 'shipqora'));
 
 		echo '<div class="row-actions">' . wp_kses_post(implode(' | ', $row_actions)) . '</div>';
 	}
@@ -143,8 +143,8 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function column_shipping_methods($shipflex_rule) {
-		$shipping_methods = $shipflex_rule->get_shipping_methods();
+	public function column_shipping_methods($shipqora_rule) {
+		$shipping_methods = $shipqora_rule->get_shipping_methods();
 
 		$html_lists = array();
 
@@ -177,10 +177,10 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function column_features($shipflex_rule) {
+	public function column_features($shipqora_rule) {
 		$activated_features = array();
 		foreach (Feature::get_features() as $feature_id => $feature_object) {
-			if ($shipflex_rule->is_feature_enabled($feature_id)) {
+			if ($shipqora_rule->is_feature_enabled($feature_id)) {
 				$activated_features[] = sprintf('<li>%s</li>', $feature_object->get_configuration_value('name'));
 			}
 		}
@@ -193,8 +193,8 @@ class Rule_List_Table extends \WP_List_Table {
 	 * 
 	 * @since 1.0.0
 	 */
-	public function column_updated_at($shipflex_rule) {
-		$updated_timestamp = strtotime(wp_date('Y-m-d H:i:s', strtotime($shipflex_rule->updated_at)));
+	public function column_updated_at($shipqora_rule) {
+		$updated_timestamp = strtotime(wp_date('Y-m-d H:i:s', strtotime($shipqora_rule->updated_at)));
 		$readable_diff_time = strtotime(wp_date('Y-m-d H:i:s', strtotime('-3days')));
 		if ($updated_timestamp > $readable_diff_time) {
 			echo wp_kses_post(human_time_diff($updated_timestamp, current_time('timestamp')) . ' ago<br>');
@@ -212,8 +212,8 @@ class Rule_List_Table extends \WP_List_Table {
 	 * 
 	 * @since 1.0.0
 	 */
-	public function column_created_at($shipflex_rule) {
-		$created_timestamp = strtotime(wp_date('Y-m-d H:i:s', strtotime($shipflex_rule->created_at)));
+	public function column_created_at($shipqora_rule) {
+		$created_timestamp = strtotime(wp_date('Y-m-d H:i:s', strtotime($shipqora_rule->created_at)));
 
 		$readable_diff_time = strtotime(wp_date('Y-m-d H:i:s', strtotime('-3days')));
 		if ($created_timestamp > $readable_diff_time) {
@@ -233,12 +233,12 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function column_status($shipflex_rule) {
+	public function column_status($shipqora_rule) {
 		$all_statuses = Utils::get_statuses();
 
-		$status = !empty($all_statuses[$shipflex_rule->status]['label']) ? $all_statuses[$shipflex_rule->status]['label'] : $shipflex_rule->status; ?>
-		<div class="shipflex-status-wrapper">
-			<span class="shipflex-status shipflex-status-<?php echo esc_attr($shipflex_rule->status) ?>"></span>
+		$status = !empty($all_statuses[$shipqora_rule->status]['label']) ? $all_statuses[$shipqora_rule->status]['label'] : $shipqora_rule->status; ?>
+		<div class="shipqora-status-wrapper">
+			<span class="shipqora-status shipqora-status-<?php echo esc_attr($shipqora_rule->status) ?>"></span>
 			<?php echo esc_html($status); ?>
 		</div>
 <?php

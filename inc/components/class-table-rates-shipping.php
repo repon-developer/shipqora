@@ -1,13 +1,13 @@
 <?php
 
-namespace ShipFlex\Component;
+namespace ShipQora\Component;
 
-use ShipFlex\Utils;
-use ShipFlex\Form_Control;
-use ShipFlex\Feature\General;
-use ShipFlex\Condition\Main;
-use ShipFlex\Settings_Fields;
-use ShipFlex\Component_Methods;
+use ShipQora\Utils;
+use ShipQora\Form_Control;
+use ShipQora\Feature\General;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
+use ShipQora\Component_Methods;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -192,7 +192,7 @@ final class Table_Rates_Shipping {
 	public function init_hook() {
 		add_action('init', array($this, 'add_settings_fields'), 1);
 		add_action('admin_footer', array($this, 'output_vue_component'));
-		add_filter('shipflex/admin_enqueue_scripts', array($this, 'enqueue_scripts'), 10, 2);
+		add_filter('shipqora/admin_enqueue_scripts', array($this, 'enqueue_scripts'), 10, 2);
 	}
 
 	/**
@@ -203,10 +203,10 @@ final class Table_Rates_Shipping {
 	 */
 	public function output_vue_component() {
 		$settings_fields = Settings_Fields::get_instance('table-rates-shipping'); ?>
-		<template id="shipflex-table-rates-shipping-component">
-			<table class="table-shipflex-form table-shipflex-table-rates-layer">
+		<template id="shipqora-table-rates-shipping-component">
+			<table class="table-shipqora-form table-shipqora-table-rates-layer">
 				<thead>
-					<?php $this->output_heading_row(esc_html__('Table Rates #{{tierNo}}', 'shipflex'), array('table-rates-shipping')) ?>
+					<?php $this->output_heading_row(esc_html__('Table Rates #{{tierNo}}', 'shipqora'), array('table-rates-shipping')) ?>
 				</thead>
 
 				<tbody v-if="!collapse">
@@ -245,10 +245,10 @@ final class Table_Rates_Shipping {
 			'priority' => 10,
 			'model_key' => 'shipping_rates',
 			'default_value' => array(array()),
-			'label' => esc_html__('Shipping Rates', 'shipflex'),
+			'label' => esc_html__('Shipping Rates', 'shipqora'),
 			'callback' => array($this, 'shipping_rates_setting_field'),
-			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this shipping rates.', 'shipflex'),
-			'option_note' => esc_html__("Define item {{metric_label_short_lower}} brackets and their corresponding calculation types. The system will match the exact bracket for the cart's item count to compute the final shipping cost.", 'shipflex'),
+			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this shipping rates.', 'shipqora'),
+			'option_note' => esc_html__("Define item {{metric_label_short_lower}} brackets and their corresponding calculation types. The system will match the exact bracket for the cart's item count to compute the final shipping cost.", 'shipqora'),
 		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -270,14 +270,14 @@ final class Table_Rates_Shipping {
 		<table class="table-rates-shipping-rates" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length">
 			<thead>
 				<tr>
-					<th><?php esc_html_e('From ( > )', 'shipflex') ?></th>
-					<th><?php esc_html_e('To ( <= )', 'shipflex') ?></th>
-					<th><?php esc_html_e('Cost Type', 'shipflex') ?></th>
+					<th><?php esc_html_e('From ( > )', 'shipqora') ?></th>
+					<th><?php esc_html_e('To ( <= )', 'shipqora') ?></th>
+					<th><?php esc_html_e('Cost Type', 'shipqora') ?></th>
 					<th>
 						<?php
 						printf(
 							/* translators: %s for currency symbol */
-							esc_html__('Cost (%s) or Percentage', 'shipflex'),
+							esc_html__('Cost (%s) or Percentage', 'shipqora'),
 							esc_html(get_woocommerce_currency_symbol())
 						) ?>
 					</th>
@@ -294,12 +294,12 @@ final class Table_Rates_Shipping {
 							type="number"
 							class="range-input-max"
 							v-model="shipping_rate.max"
-							placeholder="<?php esc_html_e('max', 'shipflex') ?>"
-							title="<?php esc_attr_e('Leave empty or enter "max" to apply to any value above the lower bound', 'shipflex') ?>" />
+							placeholder="<?php esc_html_e('max', 'shipqora') ?>"
+							title="<?php esc_attr_e('Leave empty or enter "max" to apply to any value above the lower bound', 'shipqora') ?>" />
 					</td>
 					<td>
 						<select v-model="shipping_rate.type">
-							<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipflex') ?></option>
+							<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipqora') ?></option>
 							<option value="per_unit_or_percentage">{{calculation_type_label}}</option>
 						</select>
 					</td>
@@ -313,7 +313,7 @@ final class Table_Rates_Shipping {
 
 		</table>
 
-		<a class="button button-small" @click.prevent="add_shipping_rate()" href="#"><?php esc_html_e('+ Add Shipping Rate', 'shipflex') ?></a>
+		<a class="button button-small" @click.prevent="add_shipping_rate()" href="#"><?php esc_html_e('+ Add Shipping Rate', 'shipqora') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}

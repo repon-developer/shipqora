@@ -1,9 +1,9 @@
 <?php
 
-namespace ShipFlex\Condition;
+namespace ShipQora\Condition;
 
-use ShipFlex\Utils;
-use ShipFlex\Cart_Total;
+use ShipQora\Utils;
+use ShipQora\Cart_Total;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -18,7 +18,7 @@ final class Cart_Products {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_filter('shipflex/condition/types', array($this, 'add_condition_types'));
+		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
 	}
 
 	/**
@@ -103,7 +103,7 @@ final class Cart_Products {
 				type="products"
 				:initial-value="cart_products_products"
 				@update="(value) => cart_products_products = value"
-				placeholder="<?php esc_html_e('Products', 'shipflex'); ?>">
+				placeholder="<?php esc_html_e('Products', 'shipqora'); ?>">
 			</select2-dropdown>
 		</template>
 	<?php
@@ -125,7 +125,7 @@ final class Cart_Products {
 				type="variation_products"
 				:initial-value="cart_products_variation_products"
 				@update="(value) => cart_products_variation_products = value"
-				placeholder="<?php esc_html_e('Variation products', 'shipflex'); ?>">
+				placeholder="<?php esc_html_e('Variation products', 'shipqora'); ?>">
 			</select2-dropdown>
 		</template>
 	<?php

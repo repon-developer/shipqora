@@ -2,7 +2,7 @@ const $ = jQuery;
 const { __ } = wp.i18n;
 
 const Shipping_Method_Input = {
-	template: '#shipflex-shipping-method-input-component',
+	template: '#shipqora-shipping-method-input-component',
 	props: {
 		shippingMethod: {
 			type: [String, null],
@@ -42,7 +42,7 @@ const Shipping_Method_Input = {
 		},
 
 		registered_shipping_methods() {
-			return shipflex_admin?.shipping_methods;
+			return shipqora_admin?.shipping_methods;
 		},
 
 		shipping_method_data() {
@@ -75,7 +75,7 @@ const Shipping_Method_Input = {
 				const [zone_id] = this.instance_id.split('-');
 				const current_instance = shipping_instances?.[zone_id]?.instances?.[this.instance_id];
 				if (!current_instance) {
-					this.shipping_instances[zone_id].instances[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipflex');
+					this.shipping_instances[zone_id].instances[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipqora');
 				}
 			}
 
@@ -85,7 +85,7 @@ const Shipping_Method_Input = {
 
 	methods: {
 		delete_item() {
-			const response = confirm(__('Do you want to delete this shipping method?', 'shipflex'))
+			const response = confirm(__('Do you want to delete this shipping method?', 'shipqora'))
 			if (response) {
 				this.$emit('delete')
 			}
@@ -106,16 +106,16 @@ const Shipping_Method_Input = {
 			const formData = new FormData();
 			formData.append('type', 'shipping_instances')
 			formData.append('shipping_method', this.method_id)
-			formData.append('security', shipflex_admin?.select2.nonce)
-			formData.append('action', 'shipflex/get_select2_dropdown_data')
+			formData.append('security', shipqora_admin?.select2.nonce)
+			formData.append('action', 'shipqora/get_select2_dropdown_data')
 
-			fetch(shipflex_admin.ajax_url, {
+			fetch(shipqora_admin.ajax_url, {
 				method: 'POST',
 				body: formData
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong.', 'shipflex'));
+					throw new Error(__('Something went wrong.', 'shipqora'));
 				}
 
 				if (false === result.success) {
@@ -132,7 +132,7 @@ const Shipping_Method_Input = {
 }
 
 const Shipping_Methods_Group = {
-	template: '#shipflex-shipping-methods-group-component',
+	template: '#shipqora-shipping-methods-group-component',
 
 	components: {
 		'shipping-method-input': Shipping_Method_Input

@@ -1,12 +1,12 @@
 <?php
 
-namespace ShipFlex\Feature;
+namespace ShipQora\Feature;
 
-use ShipFlex\Feature;
-use ShipFlex\Debugging;
-use ShipFlex\Form_Control;
-use ShipFlex\Condition\Main;
-use ShipFlex\Settings_Fields;
+use ShipQora\Feature;
+use ShipQora\Debugging;
+use ShipQora\Form_Control;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -53,9 +53,9 @@ final class Hide_Shipping_Methods extends Feature {
 			'priority' => 10,
 			'calculation_priority' => 1,
 			'base_model' => 'hide_shipping_methods',
-			'name' => esc_html__('Hide Selected Shipping Methods', 'shipflex'),
-			'section_title' => esc_html__('Hide Selected Shipping Methods', 'shipflex'),
-			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipflex'),
+			'name' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
+			'section_title' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
+			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipqora'),
 		);
 	}
 
@@ -84,7 +84,7 @@ final class Hide_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function hide_shipping_methods($shipping_rate, $shipflex_rule) {
+	public function hide_shipping_methods($shipping_rate, $shipqora_rule) {
 		return Main::get_instance()->is_matched_conditions($this->condition_groups, $this);
 	}
 }
