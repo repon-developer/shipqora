@@ -102,6 +102,10 @@ const Select2_Dropdown = {
 		},
 
 		has_option_group() {
+			if ('states' == this.type || 'shipping_instances' == this.type) {
+				return true;
+			}
+
 			const has_sub_option = this.select_option_items.find((item) => Array.isArray(item?.sub_options))
 			return typeof has_sub_option !== 'undefined' && this.enableGroup == true;
 		},

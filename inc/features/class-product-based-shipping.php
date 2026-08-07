@@ -130,13 +130,15 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			}
 
 			$group['rule_id'] = $rule_id;
-			if (isset($group['product_source'])) {
-				$group['target_products'] = $group['product_source'];
-			}
 
 			$cart_items = $cart_total->get_cart_items();
-
-			$cart_option = new Cart_Option($group['target_products']);
+			$cart_option = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+				$this->get_hook('cart-option-object'),
+				new Cart_Option($group['target_products']),
+				$group,
+				$this
+			);
 
 			foreach ($cart_items as $cart_item_key => $cart_item) {
 				$is_eligible_product = $cart_option->is_eligible_product($cart_item['product_id'], $cart_item['variation_id']);
@@ -265,20 +267,20 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$cart_based_component = Settings_Fields::get_instance('cart-based-shipping');
 
-		$product_source = $cart_based_component->get_setting('target_products', 'cart-tier');
-		$product_source = wp_parse_args(array(
-			'model_key' => 'product_source',
+		$target_products = $cart_based_component->get_setting('target_products', 'cart-tier');
+		$target_products = wp_parse_args(array(
+			'model_key' => 'target_products',
 			'label' => esc_html__('Target Products', 'shipflex'),
 			'callback' => array($this, 'target_products_setting_field'),
 			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipflex'),
 			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipflex'),
-		), $product_source);
+		), $target_products);
 
 
-		$settings_fields->add_setting('product_source', $product_source, 'product');
+		$settings_fields->add_setting('target_products', $target_products, 'product');
 
 		$exclude_products = $cart_based_component->get_setting('exclude_products', 'cart-tier');
-		$exclude_products['callback'] = array($this, 'exclude_products_setting_field');
+		$exclude_products['callback'] = array($this, 'exclude_products_notice');
 		$settings_fields->add_setting('exclude_products', $exclude_products, 'product');
 
 		$priority_setting_field = $cart_based_component->get_setting('priority', 'cart-tier');
@@ -325,7 +327,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function exclude_products_setting_field(Form_Control $form_control) {
+	public function exclude_products_notice(Form_Control $form_control) {
 		$line_button_data = array('utm_source' => 'exclude+products');
 		$form_control->output_row(); ?>
 		<td colspan="2">

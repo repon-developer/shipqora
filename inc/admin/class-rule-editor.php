@@ -178,7 +178,6 @@ final class Rule_Editor {
 
 			<select2-dropdown
 				:multiple="false"
-				:enable-group="true"
 				:is-loading="loading"
 				type="shipping_instances"
 				:initial-value="instance_id"
