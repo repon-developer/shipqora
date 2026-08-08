@@ -47,12 +47,13 @@ class Main {
 			<?php
 			$rendered_templates = array();
 			foreach ($main_condition->get_types() as $type_key => $condition_type) {
-				if (!isset($condition_type['template']) || !is_callable($condition_type['template'])) {
+				if (!isset($condition_type['template'])) {
 					continue;
 				}
 
 				$model_key = !empty($condition_type['model_key']) ? $condition_type['model_key'] : '';
 				$template_id = md5($model_key . maybe_serialize($condition_type['template']));
+
 				if (!in_array($template_id, $rendered_templates)) {
 					$rendered_templates[] = $template_id;
 					call_user_func($condition_type['template'], $condition_type, $type_key);

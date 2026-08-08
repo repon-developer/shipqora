@@ -92,7 +92,7 @@ final class Billing_Shipping {
 			),
 
 			'billing_shipping:shipping_countries' => array(
-				'priority' => 220,
+				'priority' => 230,
 				'default_value' => array(),
 				'model_key' => 'shipping_countries',
 				'template' => array($this, 'billing_shipping_country'),
@@ -161,13 +161,13 @@ final class Billing_Shipping {
 			$zipcodes = $condition['billing_zipcodes'] ?? '';
 			$customer_postcode = strtolower(WC()->customer->get_billing_postcode());
 
-			$matched = Main::get_instance()->get_matched_postal_codes($customer_postcode, $zipcodes);
+			$matched_zipcodes = Main::get_instance()->get_matched_postal_codes($customer_postcode, $zipcodes);
 			if ('any_in_list' === $operator) {
-				return count($matched) > 0;
+				return count($matched_zipcodes) > 0;
 			}
 
 			if ('not_in_list' === $operator) {
-				return count($matched) === 0;
+				return count($matched_zipcodes) === 0;
 			}
 		}
 
@@ -193,12 +193,7 @@ final class Billing_Shipping {
 			}
 		}
 
-		return apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			Utils::get_hook_name('condition', 'billing-shipping', 'matched'),
-			$matched,
-			$condition
-		);
+		return $matched;
 	}
 
 	/**

@@ -36,14 +36,7 @@ final class User {
 				'validate_callback' => array($this, 'validate_condition'),
 				'label' => esc_html__('Users', 'shipqora'),
 			),
-			'user:roles' => array(
-				'priority' => 15,
-				'model_key' => 'user_roles',
-				'default_value' => array(),
-				'template' => array($this, 'user_roles_template'),
-				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Customer Roles', 'shipqora'),
-			),
+			
 			'user:logged_in' => array(
 				'priority' => 20,
 				'default_value' => 'yes',
@@ -77,27 +70,6 @@ final class User {
 			}
 		}
 
-		if ('user:roles' === $condition['type']) {
-			$condition_roles = isset($condition['user_roles']) && is_array($condition['user_roles']) ? $condition['user_roles'] : array();
-			if (count($condition_roles) === 0) {
-				return false;
-			}
-
-			$user_roles = wp_get_current_user()->roles;
-			if (!is_user_logged_in()) {
-				$user_roles[] = 'guest';
-			}
-
-			$matched_roles = array_intersect($condition_roles, $user_roles);
-			if ('any_in_list' === $operator) {
-				return count($matched_roles) > 0;
-			}
-
-			if ('not_in_list' === $operator) {
-				return count($matched_roles) == 0;
-			}
-		}
-
 		if ('user:logged_in' === $condition['type'] && 'yes' == $condition['user_logged_in']) {
 			return is_user_logged_in();
 		}
@@ -126,28 +98,6 @@ final class User {
 				:initial-value="users"
 				@update="(value) => users = value"
 				placeholder="<?php esc_attr_e('Choose users', 'shipqora'); ?>">
-			</select2-dropdown>
-		</template>
-	<?php
-	}
-
-	/**
-	 * Add user roles template
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function user_roles_template() { ?>
-		<template v-if="type == 'user:roles'">
-			<select v-model="user_operator">
-				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
-			</select>
-
-			<select2-dropdown
-				type="user_roles"
-				:initial-value="user_roles"
-				@update="(value) => user_roles = value"
-				placeholder="<?php esc_attr_e('Customer Roles', 'shipqora'); ?>">
 			</select2-dropdown>
 		</template>
 	<?php

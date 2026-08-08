@@ -136,6 +136,13 @@ final class Cart_Option {
 	public $model_values = [];
 
 	/**
+	 * Hold if current instance allow operator
+	 * 
+	 * @var boolean
+	 */
+	public $has_operator = true;
+
+	/**
 	 * Extra data
 	 * 
 	 * @var array
@@ -283,9 +290,7 @@ final class Cart_Option {
 				$current_option = $configured_options[$this->based_on];
 			}
 
-			if ((isset($current_option['hide_operator']) && true == $current_option['hide_operator'])) {
-				$eligible_product = count($matched_values) > 0;
-			} else {
+			if ($this->has_operator) {
 				if ('any_in_list' === $this->operator) {
 					$eligible_product = count($matched_values) > 0;
 				}
@@ -297,6 +302,8 @@ final class Cart_Option {
 				if ('all_in_list' === $this->operator) {
 					$eligible_product = count($matched_values) == count($this->model_values);
 				}
+			} else {
+				$eligible_product = count($matched_values) > 0;
 			}
 		}
 
