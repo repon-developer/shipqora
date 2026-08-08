@@ -95,6 +95,22 @@ const ShipQora_Rule_Editor = {
 			self.modal = null;
 		})
 
+		$('body').on('click', '[data-once-modal]', function () {
+			const modal_name = $(this).data('once-modal');
+			if (!modal_name) {
+				return;
+			}
+
+			const allow_once_modal = wp.hooks.applyFilters('shipqora.allow_once_modal', true, modal_name, 'rule-editor');
+			if (true !== allow_once_modal || self.once_modals?.includes(modal_name)) {
+				return;
+			}
+
+			self.current_modal = modal_name;
+			self.once_modals.push(modal_name);
+			$(this).blur();
+		})
+
 		this.loading = false;
 	},
 

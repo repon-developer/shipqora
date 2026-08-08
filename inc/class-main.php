@@ -48,33 +48,33 @@ final class Main {
 	 * @return void
 	 */
 	public function load_files() {
-		require_once ShipQora_PATH . 'inc/class-core.php';
-		require_once ShipQora_PATH . 'inc/class-feature.php';
-		require_once ShipQora_PATH . 'inc/class-debugging.php';
-		require_once ShipQora_PATH . 'inc/class-cart-total.php';
-		require_once ShipQora_PATH . 'inc/class-form-control.php';
-		require_once ShipQora_PATH . 'inc/class-shipping-cost.php';
-		require_once ShipQora_PATH . 'inc/class-shipqora-rule.php';
-		require_once ShipQora_PATH . 'inc/class-settings-fields.php';
-		require_once ShipQora_PATH . 'inc/conditions/class-main.php';
-		require_once ShipQora_PATH . 'inc/components/trait-component.php';
+		require_once SHIPQORA_PATH . 'inc/class-core.php';
+		require_once SHIPQORA_PATH . 'inc/class-feature.php';
+		require_once SHIPQORA_PATH . 'inc/class-debugging.php';
+		require_once SHIPQORA_PATH . 'inc/class-cart-total.php';
+		require_once SHIPQORA_PATH . 'inc/class-form-control.php';
+		require_once SHIPQORA_PATH . 'inc/class-shipping-cost.php';
+		require_once SHIPQORA_PATH . 'inc/class-shipqora-rule.php';
+		require_once SHIPQORA_PATH . 'inc/class-settings-fields.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-main.php';
+		require_once SHIPQORA_PATH . 'inc/components/trait-component.php';
 
 		/* Load components */
-		require_once ShipQora_PATH . 'inc/components/class-select2.php';
-		require_once ShipQora_PATH . 'inc/components/class-cart-option.php';
-		require_once ShipQora_PATH . 'inc/components/class-table-rates-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/components/class-select2.php';
+		require_once SHIPQORA_PATH . 'inc/components/class-cart-option.php';
+		require_once SHIPQORA_PATH . 'inc/components/class-table-rates-shipping.php';
 
 		// Load Features
-		require_once ShipQora_PATH . 'inc/features/class-general.php';
-		require_once ShipQora_PATH . 'inc/features/class-cart-based-shipping.php';
-		require_once ShipQora_PATH . 'inc/features/class-hide-shipping-methods.php';
-		require_once ShipQora_PATH . 'inc/features/class-product-based-shipping.php';
-		require_once ShipQora_PATH . 'inc/features/class-shipping-cost-adjustment.php';
-		require_once ShipQora_PATH . 'inc/features/class-hide-other-shipping-methods.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-general.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-shipping-cost-adjustment.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 
 
 		if (is_admin()) {
-			require_once ShipQora_PATH . 'inc/class-admin.php';
+			require_once SHIPQORA_PATH . 'inc/class-admin.php';
 		}
 	}
 
@@ -85,7 +85,7 @@ final class Main {
 	 * @return array
 	 */
 	public function add_plugin_links($actions, $plugin_file) {
-		if (ShipQora_BASENAME == $plugin_file) {
+		if (SHIPQORA_BASENAME == $plugin_file) {
 			$new_links['shipqora_rules'] = sprintf('<a href="%s">%s</a>', menu_page_url('shipqora', false), esc_html__('ShipQora Rules', 'shipqora'));
 			$new_links['shipqora_lite'] = sprintf('<a target="_blank" href="%s">%s</a>', 'https://shipqora.com/', __('Get Pro', 'shipqora'));
 			$actions = array_merge($new_links, $actions);

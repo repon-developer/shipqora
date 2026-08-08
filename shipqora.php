@@ -21,14 +21,10 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-define('ShipQora_FILE', __FILE__);
-define('ShipQora_BASENAME', plugin_basename(__FILE__));
-define('ShipQora_URI', trailingslashit(plugins_url('/', __FILE__)));
-define('ShipQora_PATH', trailingslashit(plugin_dir_path(__FILE__)));
-
-
-
-
+define('SHIPQORA_FILE', __FILE__);
+define('SHIPQORA_BASENAME', plugin_basename(__FILE__));
+define('SHIPQORA_URI', trailingslashit(plugins_url('/', __FILE__)));
+define('SHIPQORA_PATH', trailingslashit(plugin_dir_path(__FILE__)));
 
 /**
  * Declare HPOS compatibility
@@ -41,8 +37,8 @@ add_action('before_woocommerce_init', function () {
 	}
 });
 
-require_once ShipQora_PATH . 'inc/class-utils.php';
-require_once ShipQora_PATH . 'inc/class-main.php';
+require_once SHIPQORA_PATH . 'inc/class-utils.php';
+require_once SHIPQORA_PATH . 'inc/class-main.php';
 
 
 

@@ -72,7 +72,7 @@ final class Shipping_Editor {
 			$shipping_method->get_instance_id()
 		);
 
-		$rule = new ShipQora_Rule(array(
+		$rule = new SHIPQORA_Rule(array(
 			'title' => $shipping_method_title,
 			'shipping_methods' => array($instance_slug)
 		));
@@ -107,7 +107,7 @@ final class Shipping_Editor {
 		}
 
 		$instance_id = sanitize_text_field(wp_unslash($_POST['instance_id']));
-		$rules = ShipQora_Rule::get_by_instance_id($instance_id);
+		$rules = SHIPQORA_Rule::get_by_instance_id($instance_id);
 
 		$attached_rules = array();
 		foreach ($rules as $rule) {
@@ -133,7 +133,7 @@ final class Shipping_Editor {
 		}
 
 		$instance_id = isset($_GET['instance_id']) ? sanitize_text_field(wp_unslash($_GET['instance_id'])) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		wp_enqueue_script('shipqora-shipping-editor', ShipQora_URI . 'assets/shipping-editor.min.js', array('jquery', 'wp-i18n', 'shipqora-vue'), Utils::get_plugin_version(), true);
+		wp_enqueue_script('shipqora-shipping-editor', SHIPQORA_URI . 'assets/shipping-editor.min.js', array('jquery', 'wp-i18n', 'shipqora-vue'), Utils::get_plugin_version(), true);
 		wp_localize_script('shipqora-shipping-editor', 'shipqora_shipping_editor', array(
 			'instance_id' => $instance_id,
 			'nonce' => wp_create_nonce('shipqora/shipping-editor-nonce')

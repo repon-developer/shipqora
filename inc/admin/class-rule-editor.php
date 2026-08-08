@@ -40,9 +40,9 @@ final class Rule_Editor {
 			$values['condition_models'] = $main_condition->get_models();
 			$values['save_rule_nonce'] = wp_create_nonce('shipqora/save_rule_nonce');
 
-			$shipqora_rule = new ShipQora_Rule();
+			$shipqora_rule = new SHIPQORA_Rule();
 			if (!empty($_GET['id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$shipqora_rule = ShipQora_Rule::get(sanitize_text_field(wp_unslash($_GET['id']))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$shipqora_rule = SHIPQORA_Rule::get(sanitize_text_field(wp_unslash($_GET['id']))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
 			$values['rule_data'] = $shipqora_rule->get_models();
@@ -280,6 +280,7 @@ final class Rule_Editor {
 					<div class="modal-content">
 						<header class="modal-header">
 							<h2 v-if="current_modal == 'cart-option-advanced'">🚀 Unlock Advanced Product Targeting</h2>
+							<h2 v-if="current_modal == 'advanced-condition-types'">🚀 Unlock Advanced Pro Conditions</h2>
 							<span class="btn-modal-close dashicons dashicons-no-alt" @click.prevent="current_modal = null"></span>
 						</header>
 
@@ -288,11 +289,23 @@ final class Rule_Editor {
 								<p>Target specific products or individual variations to calculate shipping costs based only on matching items in the cart.</p>
 
 								<h3 style="margin-block: 5px;">What you can do with Pro:</h3>
-								<ul style="margin-top: 0;font-size: 15px">
+								<ul style="margin-top: 0">
 									<li><strong>Products</strong>: Filter and calculate costs using only specific chosen products in the cart.</li>
 									<li><strong>Product variations</strong>: Target specific product variations and attributes (e.g., T-Shirt — Large / Blue) so shipping rules apply strictly to variable product selections.</li>
 								</ul>
 								<p>Upgrade to <strong>ShipQora Pro</strong> to unlock per-product filtering and advanced cart calculation rules.</p>
+							</template>
+
+							<template v-if="current_modal == 'advanced-condition-types'">
+								<h4>Take full control over when your shipping rules apply.</h4>
+								<p>Upgrading to ShipQora Pro unlocks advanced condition rules that let you target exact customer criteria, specific cart items, and detailed location data with precision:</p>
+
+								<ul style="margin-top: 0">
+									<li><strong>Cart Products:</strong> Target rules down to specific <strong>Products</strong> or individual <strong>Product Variations</strong> present in the cart.</li>
+									<li><strong>Location Targeting:</strong> Match rules precisely using customer Shipping Post Codes / ZIP codes.</li>
+									<li><strong>Customer Roles:</strong> Trigger shipping options dynamically based on logged-in <strong>User Roles</strong> (e.g., VIP, Wholesale, Subscriber).</li>
+								</ul>
+								<p>Fine-tune your store's shipping options to protect profit margins, offer targeted discounts, and deliver a seamless checkout experience.</p>
 							</template>
 						</div>
 						<footer class="modal-footer">

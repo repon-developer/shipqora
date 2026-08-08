@@ -23,7 +23,7 @@ class Main {
 	public static function output_component() {
 		$main_condition = self::get_instance(); ?>
 		<template id="shipqora-condition">
-			<select class="condition-types" v-model="type">
+			<select class="condition-types" v-model="type" data-once-modal="advanced-condition-types">
 				<?php
 				foreach ($main_condition->get_groups() as $group_key => $group_label) {
 					$conditions = $main_condition->get_types_by_group($group_key);
@@ -125,11 +125,11 @@ class Main {
 	 * Constructor.
 	 */
 	public function __construct() {
-		require_once ShipQora_PATH . 'inc/conditions/class-cart.php';
-		require_once ShipQora_PATH . 'inc/conditions/class-user.php';
-		require_once ShipQora_PATH . 'inc/conditions/class-order-history.php';
-		require_once ShipQora_PATH . 'inc/conditions/class-cart-products.php';
-		require_once ShipQora_PATH . 'inc/conditions/class-billing-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
 	}
 
 	/**

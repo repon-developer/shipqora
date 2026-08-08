@@ -7,11 +7,11 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * ShipQora_Rule class
+ * SHIPQORA_Rule class
  */
-final class ShipQora_Rule {
+final class SHIPQORA_Rule {
 	/**
-	 * Hold all instance of ShipQora_Rule
+	 * Hold all instance of SHIPQORA_Rule
 	 * 
 	 * @since 1.0.0
 	 * @var array
@@ -23,7 +23,7 @@ final class ShipQora_Rule {
 	 * 
 	 * @since 1.0.0
 	 * @param int $id
-	 * @return ShipQora_Rule
+	 * @return SHIPQORA_Rule
 	 */
 	public static function get($shipqora_rule_id) {
 		if (!isset(self::$rule_instances[$shipqora_rule_id])) {
@@ -86,7 +86,7 @@ final class ShipQora_Rule {
 
 		$results = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ($results as $rule_data) {
-			self::$instances_ids[$instance_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
+			self::$instances_ids[$instance_id][$rule_data['id']] = new SHIPQORA_Rule($rule_data);
 		}
 
 		if (isset(self::$instances_ids[$instance_id])) {
@@ -108,7 +108,7 @@ final class ShipQora_Rule {
 	 * Get rule by shipping rate
 	 * 
 	 * @since 1.0.0
-	 * @return ShipQora_Rule
+	 * @return SHIPQORA_Rule
 	 */
 	public static function get_by_shipping_rate($shipping_rate) {
 		$instance_id = $shipping_rate->get_instance_id();

@@ -73,7 +73,7 @@ final class Cart_Option {
 	 */
 	public static function output_component() { ?>
 		<template id="shipqora-cart-option-component">
-			<select ref="cart_option_dropdown" v-model="based_on" @click="handle_cart_option_click()">
+			<select ref="cart_option_dropdown" v-model="based_on" data-once-modal="cart-option-advanced">
 				<slot name="based-on-first-option"></slot>
 				<option
 					:key="option_value"

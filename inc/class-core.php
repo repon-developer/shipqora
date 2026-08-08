@@ -24,7 +24,7 @@ class Core {
 			add_action('admin_init', array($this, 'activation'));
 		}
 
-		register_activation_hook(ShipQora_FILE, array($this, 'activation_callback'));
+		register_activation_hook(SHIPQORA_FILE, array($this, 'activation_callback'));
 	}
 
 	/**

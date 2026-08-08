@@ -952,6 +952,11 @@ ul.shipqora-repeater {
 	margin-block: 0 10px;
 }
 
+.shipqora-modal .modal-body h4 {
+	margin-block: 0 5px;
+	font-size: 16px;
+}
+
 .shipqora-modal .modal-body p {
 	font-size: inherit;
 	line-height: inherit;
@@ -973,6 +978,10 @@ ul.shipqora-repeater {
 
 .shipqora-modal .modal-body ul li {
 	margin: 0;
+}
+
+.shipqora-modal .modal-body ul li+li {
+	margin-top: 5px;
 }
 
 .shipqora-modal .modal-footer .button {

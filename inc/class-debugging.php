@@ -140,9 +140,7 @@ final class Debugging {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function add_debugging_notice_settings() {
-?>
-
+	public function add_debugging_notice_settings() { ?>
 		<div class="shipqora-notice-box shipqora-notice-box-left">
 			<h3><?php esc_html_e('ℹ️ Not Seeing Your Rule Updates on the Front End?', 'shipqora') ?></h3>
 			<div class="description">
@@ -255,8 +253,8 @@ final class Debugging {
 			return;
 		}
 
-		wp_enqueue_style('shipqora', ShipQora_URI . 'assets/debugging.min.css', array(), Utils::get_plugin_version());
-		wp_enqueue_script('shipqora', ShipQora_URI . 'assets/debugging.min.js', array('jquery', 'wp-data', 'wc-blocks-checkout'), Utils::get_plugin_version(), true);
+		wp_enqueue_style('shipqora', SHIPQORA_URI . 'assets/debugging.min.css', array(), Utils::get_plugin_version());
+		wp_enqueue_script('shipqora', SHIPQORA_URI . 'assets/debugging.min.js', array('jquery', 'wp-data', 'wc-blocks-checkout'), Utils::get_plugin_version(), true);
 		wp_localize_script('shipqora', 'shipqora', array(
 			'ajax_url' => admin_url('admin-ajax.php'),
 			'debugging_nonce' => Debugging::get_instance()->get_nonce_value()

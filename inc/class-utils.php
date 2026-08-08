@@ -18,7 +18,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_plugin_version() {
-		return get_plugin_data(ShipQora_FILE)['Version'];
+		return get_plugin_data(SHIPQORA_FILE)['Version'];
 	}
 
 	/**
@@ -267,8 +267,9 @@ class Utils {
 		$start_priority = 30;
 
 		$product_taxonomies = get_object_taxonomies('product', 'objects');
+
 		foreach ($product_taxonomies as $tax_slug => $taxonomy) {
-			if (false === $taxonomy->public) {
+			if (false === $taxonomy->public && 'product_shipping_class' !== $tax_slug) {
 				continue;
 			}
 

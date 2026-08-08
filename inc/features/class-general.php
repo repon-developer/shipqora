@@ -5,7 +5,7 @@ namespace ShipQora\Feature;
 use ShipQora\Feature;
 use ShipQora\Form_Control;
 use ShipQora\Settings_Fields;
-use ShipQora\ShipQora_Rule;
+use ShipQora\SHIPQORA_Rule;
 use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
@@ -80,7 +80,7 @@ final class General {
 
 		uasort($features, fn($a, $b) => $a->get_calculation_priority() <=> $b->get_calculation_priority());
 		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
 
 			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists()) {
@@ -120,7 +120,7 @@ final class General {
 
 		if (isset($features['hide-shipping-methods'])) {
 			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+				$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
 
 				$hide_shipping_methos = array();
 				foreach ($shipqora_rules as $key => $rule) {
@@ -144,7 +144,7 @@ final class General {
 
 		$hide_shipping_methods = array();
 		foreach ($rates as $shipping_rate) {
-			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
 			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists() || !$rule->is_feature_enabled('hide-other-shipping-methods')) {
 					continue;
