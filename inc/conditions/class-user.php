@@ -8,46 +8,62 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * User Condition class
- */
 final class User {
 
 	/**
-	 * Constructor.
+	 * Hold condtion group id
+	 * 
+	 * @since 1.0.0
+	 * @var string
 	 */
-	public function __construct() {
-		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
-	}
+	public $group_id = 'user';
 
 	/**
-	 * Add condition types
+	 * Condition models
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function add_condition_types($condition_types) {
-		$condition_types = array_merge($condition_types, array(
-			'user:users' => array(
-				'priority' => 10,
-				'model_key' => 'users',
-				'default_value' => array(),
-				'template' => array($this, 'users_condition_template'),
-				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Users', 'shipqora'),
-			),
-			
-			'user:logged_in' => array(
-				'priority' => 20,
-				'default_value' => 'yes',
-				'model_key' => 'user_logged_in',
-				'template' => array($this, 'logged_in_template'),
-				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Logged In', 'shipqora'),
-			),
+	public function get_name() {
+		return esc_html__('Customer', 'shipqora');
+	}
+
+	/**
+	 * Get model keys of this group
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_model_keys() {
+		return array(
+			'user_operator' => 'any_in_list',
+		);
+	}
+
+	/**
+	 * Register condition types
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function register_conditions($main_object) {
+		$main_object->add_condition_types('user_users', array(
+			'priority' => 10,
+			'model_key' => 'user_users',
+			'default_value' => array(),
+			'label' => esc_html__('Users', 'shipqora'),
+			'template' => array($this, 'users_condition_template'),
+			'validate_callback' => array($this, 'validate_condition'),
 		));
 
-		return $condition_types;
+		$main_object->add_condition_types('user_logged_in', array(
+			'priority' => 20,
+			'default_value' => 'yes',
+			'model_key' => 'user_logged_in',
+			'template' => array($this, 'logged_in_template'),
+			'validate_callback' => array($this, 'validate_condition'),
+			'label' => esc_html__('Logged In', 'shipqora'),
+		));
 	}
 
 	/**
@@ -87,17 +103,17 @@ final class User {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function users_condition_template() { ?>
-		<template v-if="type == 'user:users'">
+	public function users_condition_template($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="user_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
 			<select2-dropdown
 				type="user:users"
-				:initial-value="users"
-				@update="(value) => users = value"
-				placeholder="<?php esc_attr_e('Choose users', 'shipqora'); ?>">
+				placeholder="<?php esc_attr_e('Choose users', 'shipqora'); ?>"
+				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
+				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
 			</select2-dropdown>
 		</template>
 	<?php
@@ -109,9 +125,9 @@ final class User {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function logged_in_template() { ?>
-		<template v-if="type == 'user:logged_in'">
-			<select v-model="user_logged_in">
+	public function logged_in_template($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
+			<select v-model="<?php echo esc_attr($condition->get_model_key()) ?>">
 				<option value="yes"><?php esc_html_e('Yes', 'shipqora'); ?></option>
 				<option value="no"><?php esc_html_e('No', 'shipqora'); ?></option>
 			</select>
@@ -120,4 +136,4 @@ final class User {
 	}
 }
 
-new User();
+Main::register_condition_group(User::class);

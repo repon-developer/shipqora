@@ -8,100 +8,107 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Billing & Shipping condition class
- */
 final class Billing_Shipping {
 
 	/**
-	 * Constructor.
+	 * Hold condtion group id
+	 * 
+	 * @since 1.0.0
+	 * @var string
 	 */
-	public function __construct() {
-		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
-	}
+	public $group_id = 'billing_shipping';
 
 	/**
-	 * Add condition types
+	 * Condition models
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function add_condition_types($condition_types) {
-		$condition_types = array_merge($condition_types, array(
-			'billing_shipping:billing_cities' => array(
-				'priority' => 10,
-				'model_key' => 'billing_cities',
-				'template' => array($this, 'billing_shipping_cities'),
-				'label' => esc_html__('Billing Cities', 'shipqora'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-			),
+	public function get_name() {
+		return esc_html__('Billing & Shipping', 'shipqora');
+	}
 
-			'billing_shipping:billing_states' => array(
-				'priority' => 20,
-				'default_value' => array(),
-				'model_key' => 'billing_states',
-				'template' => array($this, 'billing_shipping_states'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Billing States', 'shipqora'),
-				'extra_settings' => array(
-					'placeholder' => esc_html__('Billing States', 'shipqora')
-				)
-			),
+	/**
+	 * Get model keys of this group
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_model_keys() {
+		return array(
+			'billing_shipping_operator' => 'any_in_list',
+		);
+	}
 
-			'billing_shipping:billing_zipcodes' => array(
-				'priority' => 30,
-				'model_key' => 'billing_zipcodes',
-				'template' => array($this, 'billing_zipcodes_template'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Billing ZIP Codes', 'shipqora'),
-			),
-
-			'billing_shipping:billing_countries' => array(
-				'priority' => 40,
-				'default_value' => array(),
-				'model_key' => 'billing_countries',
-				'template' => array($this, 'billing_shipping_country'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Billing Countries', 'shipqora'),
-			),
-
-			'billing_shipping:separator' => array(
-				'priority' => 100,
-				'type' => 'separator',
-				'label' => '------------------------'
-			),
-
-			'billing_shipping:shipping_cities' => array(
-				'priority' => 200,
-				'model_key' => 'shipping_cities',
-				'template' => array($this, 'billing_shipping_cities'),
-				'label' => esc_html__('Shipping Cities', 'shipqora'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-			),
-
-			'billing_shipping:shipping_states' => array(
-				'priority' => 210,
-				'default_value' => array(),
-				'model_key' => 'shipping_states',
-				'template' => array($this, 'billing_shipping_states'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Shipping States', 'shipqora'),
-				'extra_settings' => array(
-					'placeholder' => esc_html__('Shipping States', 'shipqora')
-				)
-			),
-
-			'billing_shipping:shipping_countries' => array(
-				'priority' => 230,
-				'default_value' => array(),
-				'model_key' => 'shipping_countries',
-				'template' => array($this, 'billing_shipping_country'),
-				'validate_callback' => array($this, 'validate_billing_shipping'),
-				'label' => esc_html__('Shipping Countries', 'shipqora'),
-			),
+	/**
+	 * Register condition types
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function register_conditions($main_object) {
+		$main_object->add_condition_types('billing_cities', array(
+			'priority' => 10,
+			'default_value' => array(),
+			'model_key' => 'billing_cities',
+			'template' => array($this, 'billing_shipping_cities'),
+			'label' => esc_html__('Billing Cities', 'shipqora'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
 
-		return $condition_types;
+		$main_object->add_condition_types('billing_states', array(
+			'priority' => 20,
+			'default_value' => array(),
+			'model_key' => 'billing_states',
+			'template' => array($this, 'billing_shipping_states'),
+			'label' => esc_html__('Billing States', 'shipqora'),
+			'placeholder' => esc_html__('Billing States', 'shipqora'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
+		));
+
+		$main_object->add_condition_types('billing_postal_codes', array(
+			'priority' => 30,
+			'model_key' => 'billing_postal_codes',
+			'template' => array($this, 'postal_code_template'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
+			'label' => esc_html__('Billing Postal Codes', 'shipqora'),
+		));
+
+		$main_object->add_condition_types('billing_countries', array(
+			'priority' => 40,
+			'default_value' => array(),
+			'model_key' => 'billing_countries',
+			'template' => array($this, 'billing_shipping_country'),
+			'label' => esc_html__('Billing Countries', 'shipqora'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
+		));
+
+		$main_object->add_condition_types('shipping_cities', array(
+			'priority' => 200,
+			'model_key' => 'shipping_cities',
+			'label' => esc_html__('Shipping Cities', 'shipqora'),
+			'template' => array($this, 'billing_shipping_cities'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
+		));
+
+		$main_object->add_condition_types('shipping_states', array(
+			'priority' => 210,
+			'default_value' => array(),
+			'model_key' => 'shipping_states',
+			'label' => esc_html__('Shipping States', 'shipqora'),
+			'template' => array($this, 'billing_shipping_states'),
+			'placeholder' => esc_html__('Shipping States', 'shipqora'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
+		));
+
+		$main_object->add_condition_types('shipping_states', array(
+			'priority' => 230,
+			'default_value' => array(),
+			'model_key' => 'shipping_countries',
+			'template' => array($this, 'billing_shipping_country'),
+			'validate_callback' => array($this, 'validate_billing_shipping'),
+			'label' => esc_html__('Shipping Countries', 'shipqora'),
+		));
 	}
 
 	/**
@@ -202,13 +209,12 @@ final class Billing_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function billing_shipping_cities($condition_settings, $type_key) {
-		$model_key = !empty($condition_settings['model_key']) ? $condition_settings['model_key'] : 'billing_cities'; ?>
-		<template v-if="type == '<?php echo esc_attr($type_key) ?>'">
+	public function billing_shipping_cities($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="billing_shipping_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
-			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: Chicago, New York', 'shipqora'); ?>">
+			<input v-model="<?php echo esc_attr($condition->get_model_key()) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: Chicago, New York', 'shipqora'); ?>">
 		</template>
 	<?php
 	}
@@ -219,38 +225,36 @@ final class Billing_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function billing_shipping_states($condition_settings, $type_key) {
-		$model_key = !empty($condition_settings['model_key']) ? $condition_settings['model_key'] : 'billing_states';
-		$placeholder = !empty($condition_settings['extra_settings']['placeholder']) ? $condition_settings['extra_settings']['placeholder'] : ''; ?>
-		<template v-if="type == '<?php echo esc_attr($type_key) ?>'">
+	public function billing_shipping_states($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="billing_shipping_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
 			<select2-dropdown
 				type="states"
-				:initial-value="<?php echo esc_attr($model_key) ?>"
-				@update="(value) => <?php echo esc_attr($model_key) ?> = value"
-				placeholder="<?php echo esc_attr($placeholder) ?>"></select2-dropdown>
+				placeholder="<?php echo esc_attr($condition->get_placeholder()) ?>"
+				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
+				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
+			</select2-dropdown>
 		</template>
 	<?php
 	}
 
 	/**
-	 * Add zipcode template of billing
+	 * Add postal code template
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function billing_zipcodes_template($condition_settings, $type_key) {
-		$model_key = !empty($condition_settings['model_key']) ? $condition_settings['model_key'] : 'billing_zipcodes'; ?>
-		<template v-if="type == '<?php echo esc_attr($type_key) ?>'">
+	public function postal_code_template($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select>
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
-			<input v-model="<?php echo esc_attr($model_key) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipqora'); ?>">
-			<div class="field-note" style="margin-top: 0;" v-if="type == 'billing_shipping:billing_zipcodes'">
+			<input v-model="<?php echo esc_attr($condition->get_model_key()) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipqora'); ?>">
+			<div class="field-note" style="margin-top: 0;">
 				<?php
 				printf(
 					/* translators: %s: Postal Code guideline */
@@ -268,22 +272,21 @@ final class Billing_Shipping {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function billing_shipping_country($condition_settings, $type_key) {
-		$model_key = !empty($condition_settings['model_key']) ? $condition_settings['model_key'] : 'billing_countries'; ?>
-		<template v-if="type == '<?php echo esc_attr($type_key) ?>'">
+	public function billing_shipping_country($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="billing_shipping_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
 			<select2-dropdown
 				type="countries"
-				:initial-value="<?php echo esc_attr($model_key) ?>"
-				@update="(value) => <?php echo esc_attr($model_key) ?> = value"
-				placeholder="<?php esc_html_e('Choose countries', 'shipqora'); ?>">
+				placeholder="<?php esc_html_e('Choose countries', 'shipqora'); ?>"
+				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
+				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
 			</select2-dropdown>
 		</template>
 <?php
 	}
 }
 
-new Billing_Shipping();
+Main::register_condition_group(Billing_Shipping::class);

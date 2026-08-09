@@ -288,7 +288,7 @@ final class Cart_Option {
 				$cart_items_values = $this->get_terms_of_product($cart_item['product_id'], $this->object_name);
 			}
 
-			$cart_items_values = apply_filters(Utils::get_hook_name('cart-option', 'cart-items-values'), $cart_items_values, $cart_item, $this);
+			$cart_items_values = apply_filters(Utils::get_hook_name('cart-option', 'is-matched-model-values', 'cart-items-values'), $cart_items_values, $cart_item, $this);
 
 			$all_cart_items_values = array_merge($all_cart_items_values, $cart_items_values);
 		}

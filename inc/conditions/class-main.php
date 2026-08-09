@@ -70,6 +70,7 @@ class Main {
 	 * Constructor.
 	 */
 	public function __construct() {
+		add_action('init', array($this, 'register_condition_types'), 100); //Don't use priority less than 6, otherwise taxonomy will not return
 	}
 
 	/**
@@ -138,10 +139,10 @@ class Main {
 	public function load_files() {
 		require_once SHIPQORA_PATH . 'inc/conditions/class-condition.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
-		// require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
 		// require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
-		// require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
-		// require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
 	}
 
 	/**
@@ -150,42 +151,28 @@ class Main {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function register_condition($group_class) {
-		$group_instance = new $group_class();
+	public function register_condition_group($group_class) {
+		$group_object = new $group_class();
 
-		if (!property_exists($group_instance, 'group_id')) {
+		if (!property_exists($group_object, 'group_id')) {
 			throw new \Exception(sprintf(esc_html__('The %s class must have a public $group_id property.', 'shipqora'), $group_class));
 		}
 
-		$group_id = $group_instance->group_id;
+		$group_id = $group_object->group_id;
 		if (empty($group_id)) {
 			throw new \Exception(sprintf(esc_html__('The %s class must have a value for the $group_id property.', 'shipqora'), $group_class));
 		}
 
-		if (!method_exists($group_instance, 'get_name')) {
+		if (!method_exists($group_object, 'get_name')) {
 			throw new \Exception(sprintf(esc_html__('The %s class must have a public get_name() method.', 'shipqora'), $group_class));
 		}
 
-		$group_name = $group_instance->get_name();
+		$group_name = $group_object->get_name();
 		if (empty($group_name)) {
 			throw new \Exception(sprintf(esc_html__('The get_name() method of the %s class should return a valid group name.', 'shipqora'), $group_class));
 		}
 
-		$this->registerd_groups[$group_id] = $group_instance;
-		if (method_exists($group_instance, 'register_conditions')) {
-			$this->add_condition_group_id = $group_id;
-
-			$group_instance->register_conditions($this);
-
-			do_action(
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-				Utils::get_hook_name('condition', 'register-type'),
-				$group_id,
-				$group_instance
-			);
-
-			$this->add_condition_group_id = null;
-		}
+		$this->registerd_groups[$group_id] = $group_object;
 	}
 
 	/**
@@ -198,14 +185,33 @@ class Main {
 		return $this->registerd_groups;
 
 		return apply_filters('shipqora/condition/groups', array(
-			'cart' => esc_html__('Cart', 'shipqora'),
-			'cart_products' => esc_html__('Cart Products', 'shipqora'),
-			'billing_shipping' => esc_html__('Billing & Shipping', 'shipqora'),
+
 			'date' => esc_html__('Date', 'shipqora'),
-			'user' => esc_html__('Customer', 'shipqora'),
-			'others' => esc_html__('Others', 'shipqora'),
+			
 			'order_history' => esc_html__('Order History', 'shipqora'),
 		));
+	}
+
+	/**
+	 * Register condition types of condition group
+	 */
+	public function register_condition_types() {
+		foreach ($this->get_groups() as $group_id => $group_object) {
+			if (method_exists($group_object, 'register_conditions')) {
+				$this->add_condition_group_id = $group_id;
+
+				$group_object->register_conditions($this);
+
+				do_action(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+					Utils::get_hook_name('condition', 'register-type'),
+					$group_id,
+					$group_object
+				);
+
+				$this->add_condition_group_id = null;
+			}
+		}
 	}
 
 	/**
@@ -253,6 +259,13 @@ class Main {
 		foreach ($this->get_groups() as $group_object) {
 			if (method_exists($group_object, 'get_model_keys')) {
 				$model_keys = wp_parse_args($model_keys, $group_object->get_model_keys());
+			}
+		}
+
+		foreach ($this->get_condition_types() as $condition_id => $object) {
+			$model_key = $object->get_model_key();
+			if (!empty($model_key)) {
+				$model_keys[$model_key] = $object->get_default_value();
 			}
 		}
 
@@ -313,8 +326,6 @@ class Main {
 
 				$validated_condition = $condition_types[$condition_id]->validate_condition($condition_data);
 
-				error_log(print_r($validated_condition, true));
-
 				return apply_filters(
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 					Utils::get_hook_name('condition', $condition_id, 'matched'),
@@ -338,6 +349,9 @@ class Main {
 }
 
 Main::get_instance()->load_files();
-// $data = Main::get_instance()->get_group_options();
-// var_dump($data);
-// exit;
+
+add_action('wp_loadedd', function () {
+	$data = Main::get_instance()->get_group_options();
+	var_dump($data);
+	exit;
+}, 1000);

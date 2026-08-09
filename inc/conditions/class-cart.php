@@ -47,7 +47,6 @@ final class Cart {
 		);
 	}
 
-
 	/**
 	 * Register condition types
 	 * 
@@ -75,63 +74,25 @@ final class Cart {
 		));
 
 		$main_object->add_condition_types('cart_total_quantity', array(
-			'priority' => 10,
+			'priority' => 20,
 			'label' => esc_html__('Total quantity', 'shipqora'),
 			'template' => array($this, 'cart_common_templates'),
 			'validate_callback' => array($this, 'validate_condition'),
 		));
-	}
 
-	/**
-	 * Add condition types
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function add_condition_tdypes($condition_types) {
-		$weight_option_text = sprintf(
-			/* translators: %s: weight unit of woocommerce */
-			esc_html__('Total weight (%s)', 'shipqora'),
-			get_option('woocommerce_weight_unit', 'kg')
-		);
-
-		$dimension_option_text = sprintf(
-			/* translators: %s: volume unit of woocommerce */
-			esc_html__('Total volume (%s)', 'shipqora'),
-			get_option('woocommerce_dimension_unit', 'cm')
-		);
-
-		$condition_types = array_merge($condition_types, array(
-			'cart:subtotal' => array(
-				'priority' => 10,
-				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Subtotal', 'shipqora'),
-			),
-
-			'cart:total_quantity' => array(
-				'priority' => 15,
-				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_condition'),
-				'label' => esc_html__('Total quantity', 'shipqora'),
-			),
-
-			'cart:total_weight' => array(
-				'priority' => 20,
-				'label' => $weight_option_text,
-				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_condition'),
-			),
-
-			'cart:total_volume' => array(
-				'priority' => 25,
-				'label' => $dimension_option_text,
-				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_condition'),
-			),
+		$main_object->add_condition_types('cart_total_weight', array(
+			'priority' => 30,
+			'label' => $weight_option_text,
+			'template' => array($this, 'cart_common_templates'),
+			'validate_callback' => array($this, 'validate_condition'),
 		));
 
-		return $condition_types;
+		$main_object->add_condition_types('cart_total_volume', array(
+			'priority' => 40,
+			'label' => $dimension_option_text,
+			'template' => array($this, 'cart_common_templates'),
+			'validate_callback' => array($this, 'validate_condition'),
+		));
 	}
 
 	/**
@@ -158,9 +119,6 @@ final class Cart {
 			$cart_total = new Cart_Total($cart_option->get_cart_items_keys());
 			$compare_value = $cart_total->get_total($type_total_keys[$condition->get_id()]);
 		}
-
-		error_log($operator);
-		error_log($compare_value);
 
 		if ($compare_value <= 0) {
 			return false;
@@ -220,5 +178,4 @@ final class Cart {
 	}
 }
 
-
-Main::register_condition(Cart::class);
+Main::register_condition_group(Cart::class);

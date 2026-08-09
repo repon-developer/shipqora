@@ -55,6 +55,10 @@ const Condition = {
 		this.$parent.conditions[this.number] = JSON.parse(this.condition_data)
 	},
 
+	updated() {
+		console.log(this.$data);
+	},
+
 	watch: {
 		condition_data(data) {
 			this.$parent.conditions[this.number] = JSON.parse(data)

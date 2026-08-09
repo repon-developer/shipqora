@@ -9,36 +9,52 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Cart products condition class
- */
 final class Cart_Products {
 
 	/**
-	 * Constructor.
+	 * Hold condtion group id
+	 * 
+	 * @since 1.0.0
+	 * @var string
 	 */
-	public function __construct() {
-		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
-	}
+	public $group_id = 'cart_products';
 
 	/**
-	 * Add condition types of cart products
+	 * Condition models
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function add_condition_types($types) {
+	public function get_name() {
+		return esc_html__('Cart Products', 'shipqora');
+	}
+
+	/**
+	 * Get model keys of this group
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_model_keys() {
+		return array('cart_products_operator' => 'any_in_list');
+	}
+
+	/**
+	 * Register condition types
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function register_conditions($main_object) {
 		foreach (Utils::get_product_taxonomies() as $tax_key => $taxonomy) {
-			$types['cart_products:' . $tax_key] = wp_parse_args($taxonomy, array(
-				'group' => 'cart_products',
+			$main_object->add_condition_types('cart_products_' . $tax_key, wp_parse_args(array(
 				'default_value' => array(),
+				'data_type' => $taxonomy['type'],
 				'template' => array($this, 'taxonomy_templates'),
 				'model_key' => 'cart_products_' . $taxonomy['model'],
 				'validate_callback' => array($this, 'validate_condition'),
-			));
+			), $taxonomy));
 		}
-
-		return $types;
 	}
 
 	/**
@@ -85,7 +101,6 @@ final class Cart_Products {
 
 		return $matched;
 	}
-
 
 	/**
 	 * Products template
@@ -137,21 +152,21 @@ final class Cart_Products {
 	 * @since 1.0.4
 	 * @return void
 	 */
-	public function taxonomy_templates($settings, $field_type_key) {?>
-		<template v-if="type == '<?php echo esc_attr($field_type_key) ?>'">
+	public function taxonomy_templates($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="cart_products_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'all_in_list', 'not_in_list')); ?>
 			</select>
 
 			<select2-dropdown
-				type="<?php echo esc_attr($settings['type']); ?>"
-				placeholder="<?php echo esc_attr($settings['label']); ?>"
-				:initial-value="cart_products_<?php echo esc_attr($settings['model']); ?>"
-				@update="(value) => set_value(value, 'cart_products_<?php echo esc_attr($settings['model']); ?>')">
+				type="<?php echo esc_attr($condition->get_data_type()); ?>"
+				placeholder="<?php echo esc_attr($condition->get_placeholder()); ?>"
+				:initial-value="<?php echo esc_attr($condition->get_model_key()); ?>"
+				@update="(value) => set_value(value, '<?php echo esc_attr($condition->get_model_key()); ?>')">
 			</select2-dropdown>
 		</template>
 <?php
 	}
 }
 
-new Cart_Products();
+Main::register_condition_group(Cart_Products::class);
