@@ -2,6 +2,8 @@
 
 namespace ShipQora;
 
+use ShipQora\Condition\Main;
+
 if (!defined('ABSPATH')) {
 	exit;
 }
@@ -145,8 +147,8 @@ final class Rule_Editor {
 			}
 		}
 
-		Condition\Main::output_component();
 		Component\Cart_Option::output_component();
+		Main::get_instance()->output_component();
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		do_action(Utils::get_hook_name('rule-editor', 'output-vue-component')) ?>

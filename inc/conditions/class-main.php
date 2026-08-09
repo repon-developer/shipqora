@@ -2,87 +2,14 @@
 
 namespace ShipQora\Condition;
 
-use ShipQora\Cart_Total;
 use ShipQora\Utils;
+use ShipQora\Cart_Total;
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Main Condition class
- */
 class Main {
-
-	/**
-	 * VueJS component of cart option
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public static function output_component() {
-		$main_condition = self::get_instance(); ?>
-		<template id="shipqora-condition">
-			<select class="condition-types" v-model="type" data-once-modal="advanced-condition-types">
-				<?php
-				foreach ($main_condition->get_groups() as $group_key => $group_label) {
-					$conditions = $main_condition->get_types_by_group($group_key);
-					if (count($conditions) == 0) {
-						continue;
-					}
-
-					echo '<optgroup label="' . esc_attr($group_label) . '">';
-					foreach ($conditions as $key => $condition) {
-						if (isset($condition['type']) && 'separator' == $condition['type']) {
-							echo '<option disabled>' . esc_html($condition['label']) . '</option>';
-							continue;
-						}
-
-						printf('<option value="%s">%s</option>', esc_attr($key), esc_html($condition['label']));
-					}
-					echo '</optgroup>';
-				} ?>
-			</select>
-
-			<?php
-			$rendered_templates = array();
-			foreach ($main_condition->get_types() as $type_key => $condition_type) {
-				if (!isset($condition_type['template'])) {
-					continue;
-				}
-
-				$model_key = !empty($condition_type['model_key']) ? $condition_type['model_key'] : '';
-				$template_id = md5($model_key . maybe_serialize($condition_type['template']));
-
-				if (!in_array($template_id, $rendered_templates)) {
-					$rendered_templates[] = $template_id;
-					call_user_func($condition_type['template'], $condition_type, $type_key);
-				}
-			} ?>
-
-			<div class="tools">
-				<span @click="delete_condition()" class="btn-delete-item dashicons dashicons-no-alt"></span>
-			</div>
-		</template>
-
-		<template id="shipqora-condition-group">
-			<span @click="delete_group()" class="btn-delete-item btn-delete-group dashicons dashicons-trash"></span>
-
-			<div class="shipqora-repeater" v-if="conditions?.length">
-				<template v-for="(condition, index) in conditions" :key="condition.id">
-					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipqora') ?>"></div>
-					<div class="repeater-item">
-						<condition :condition="condition" :number="index" :key="condition?.id"></condition>
-					</div>
-				</template>
-			</div>
-
-			<a class="button button-small" href="#" @click.prevent="add_condition()">
-				<?php esc_html_e('Add condition', 'shipqora') ?>
-			</a>
-		</template>
-<?php
-	}
 
 	/**
 	 * Hold the current instance of condition
@@ -107,12 +34,21 @@ class Main {
 	}
 
 	/**
+	 * Hold all registered condition groups
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+
+	private $registerd_groups = array();
+
+	/**
 	 * Hold all condition types
 	 * 
 	 * @since 1.0.0
 	 * @var array
 	 */
-	public $types = array();
+	private $condition_types = array();
 
 	/**
 	 * Hold results of conditions
@@ -123,14 +59,133 @@ class Main {
 	private $condition_results = array();
 
 	/**
+	 * Hold current group_id of register condition type
+	 * 
+	 * @since 1.0.0
+	 * @var string
+	 */
+	private $add_condition_group_id = null;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
+	}
+
+	/**
+	 * VueJS component of cart option
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function output_component() { ?>
+		<template id="shipqora-condition">
+			<select class="condition-types" v-model="type" data-once-modal="advanced-condition-types">
+				<?php
+				foreach ($this->get_group_options() as $group_id => $group_data) {
+					if (count($group_data['sub_options']) == 0) {
+						continue;
+					}
+
+					echo '<optgroup label="' . esc_attr($group_data['label']) . '">';
+					foreach ($group_data['sub_options'] as $condition_object) {
+						printf('<option value="%s">%s</option>', esc_attr($condition_object->get_id()), esc_html($condition_object->get_label()));
+					}
+					echo '</optgroup>';
+				} ?>
+			</select>
+
+			<?php
+			$rendered_templates = array();
+			foreach ($this->get_condition_types() as $object) {
+				$model_key = $object->get_model_key();
+				$template_id = md5($model_key . maybe_serialize($object->get_template()));
+
+				if (!in_array($template_id, $rendered_templates)) {
+					$rendered_templates[] = $template_id;
+					$object->render_template();
+				}
+			} ?>
+
+			<div class="tools">
+				<span @click="delete_condition()" class="btn-delete-item dashicons dashicons-no-alt"></span>
+			</div>
+		</template>
+
+		<template id="shipqora-condition-group">
+			<span @click="delete_group()" class="btn-delete-item btn-delete-group dashicons dashicons-trash"></span>
+
+			<div class="shipqora-repeater" v-if="conditions?.length">
+				<template v-for="(condition, index) in conditions" :key="condition.id">
+					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipqora') ?>"></div>
+					<div class="repeater-item">
+						<condition :condition="condition" :number="index" :key="condition?.id"></condition>
+					</div>
+				</template>
+			</div>
+
+			<a class="button button-small" href="#" @click.prevent="add_condition()"><?php esc_html_e('+ Add condition', 'shipqora') ?></a>
+		</template>
+<?php
+	}
+
+	/**
+	 * Load all registered condition files
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function load_files() {
+		require_once SHIPQORA_PATH . 'inc/conditions/class-condition.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
-		require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
-		require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
-		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
-		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
+		// require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
+		// require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
+		// require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
+		// require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
+	}
+
+	/**
+	 * Register condition group
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function register_condition($group_class) {
+		$group_instance = new $group_class();
+
+		if (!property_exists($group_instance, 'group_id')) {
+			throw new \Exception(sprintf(esc_html__('The %s class must have a public $group_id property.', 'shipqora'), $group_class));
+		}
+
+		$group_id = $group_instance->group_id;
+		if (empty($group_id)) {
+			throw new \Exception(sprintf(esc_html__('The %s class must have a value for the $group_id property.', 'shipqora'), $group_class));
+		}
+
+		if (!method_exists($group_instance, 'get_name')) {
+			throw new \Exception(sprintf(esc_html__('The %s class must have a public get_name() method.', 'shipqora'), $group_class));
+		}
+
+		$group_name = $group_instance->get_name();
+		if (empty($group_name)) {
+			throw new \Exception(sprintf(esc_html__('The get_name() method of the %s class should return a valid group name.', 'shipqora'), $group_class));
+		}
+
+		$this->registerd_groups[$group_id] = $group_instance;
+		if (method_exists($group_instance, 'register_conditions')) {
+			$this->add_condition_group_id = $group_id;
+
+			$group_instance->register_conditions($this);
+
+			do_action(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+				Utils::get_hook_name('condition', 'register-type'),
+				$group_id,
+				$group_instance
+			);
+
+			$this->add_condition_group_id = null;
+		}
 	}
 
 	/**
@@ -140,6 +195,8 @@ class Main {
 	 * @return array
 	 */
 	public function get_groups() {
+		return $this->registerd_groups;
+
 		return apply_filters('shipqora/condition/groups', array(
 			'cart' => esc_html__('Cart', 'shipqora'),
 			'cart_products' => esc_html__('Cart Products', 'shipqora'),
@@ -152,73 +209,74 @@ class Main {
 	}
 
 	/**
-	 * Get condition types
+	 * Add condition types
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_condition_types($condition_id, $condition_data) {
+		if (empty($this->add_condition_group_id)) {
+			throw new \Exception(sprintf(
+				esc_html__('You are trying to add a condition outside the register_condition() method or %s hook.', 'shipqora'),
+				Utils::get_hook_name('condition', 'register-type')
+			));
+		}
+
+		if (!isset($condition_data['template']) || isset($condition_data['template']) && !is_callable($condition_data['template'])) {
+			throw new \Exception(esc_html__('Please add the "template" array key with a validation callback for this condition type.', 'shipqora'));
+		}
+
+		$condition_id = sanitize_key($condition_id);
+		$this->condition_types[$condition_id] = new Condition($condition_id, array_merge($condition_data, array(
+			'group_id' => $this->add_condition_group_id
+		)));
+	}
+
+	/**
+	 * Get all added condition types
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_types() {
-		if (empty($this->types) || !is_array($this->types)) {
-			$this->types = apply_filters('shipqora/condition/types', array());
-		}
-
-		return $this->types;
+	public function get_condition_types() {
+		return $this->condition_types;
 	}
 
 	/**
-	 * Get condition models
+	 * Get models of all registered condition groups
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
 	public function get_models() {
-		$models = array();
-		foreach ($this->get_types() as $condition_type) {
-			if (!empty($condition_type['model_key'])) {
-				$default_value = isset($condition_type['default_value']) ? $condition_type['default_value'] : null;
-				$models[$condition_type['model_key']] = $default_value;
+		$model_keys = array();
+		foreach ($this->get_groups() as $group_object) {
+			if (method_exists($group_object, 'get_model_keys')) {
+				$model_keys = wp_parse_args($model_keys, $group_object->get_model_keys());
 			}
 		}
 
-		return apply_filters('shipqora/condition/models', $models);
+		return apply_filters(Utils::get_hook_name('condition', 'models'), $model_keys);
 	}
 
 	/**
-	 * Get condition types of group
+	 * Group of conditions
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_types_by_group($group) {
-		$condition_types = $this->get_types();
-
-		$group_condition_types = [];
-		foreach ($condition_types as $key => $condition) {
-			$field_type_info = explode(':', $key);
-			if (empty($field_type_info[0]) || $group !== $field_type_info[0]) {
-				continue;
-			}
-
-			$group_condition_types[$key] = $condition;
+	public function get_group_options() {
+		$groups = array();
+		foreach ($this->get_groups() as $group_id => $group_object) {
+			$groups[$group_id] = array(
+				'label' => $group_object->get_name(),
+				'sub_options' => array_filter($this->condition_types, function ($item) use ($group_id) {
+					return $item->get_group_id() == $group_id;
+				})
+			);
 		}
 
-		uasort($group_condition_types, fn($a, $b) => $a['priority'] > $b['priority'] ? 1 : -1);
-		return $group_condition_types;
-	}
-
-	/**
-	 * Get matched postal codes
-	 * 
-	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_matched_postal_codes($customer_postal_code, $postal_codes) {
-		$postal_codes = Utils::comma_separator_to_array($postal_codes);
-
-		return array_filter($postal_codes, function ($postal_code) use ($customer_postal_code) {
-			$regex = str_replace(['\*', '\?'], ['.*', '.'], preg_quote($postal_code, '/'));
-			return preg_match('/^' . $regex . '$/i', $customer_postal_code);
-		});
+		return $groups;
 	}
 
 	/**
@@ -237,26 +295,31 @@ class Main {
 			return $this->condition_results[$hash];
 		}
 
-		$condition_types = $this->get_types();
-		$condition_groups = array_filter($condition_groups, function ($group_data) use ($condition_types) {
+		$condition_groups = array_filter($condition_groups, function ($group_data) {
 			if (!isset($group_data['conditions']) || !is_array($group_data['conditions'])) {
 				return true;
 			}
 
-			$conditions = array_filter($group_data['conditions'], function ($condition) use ($condition_types) {
-				$condition = wp_parse_args($condition, array('type' => '', 'value' => '', 'value2' => ''));
-				$current_type = $condition['type'];
-
-				$validated_condition = false;
-				if (isset($condition_types[$current_type]['validate_callback']) && is_callable($condition_types[$current_type]['validate_callback'])) {
-					$validated_condition = call_user_func($condition_types[$current_type]['validate_callback'], false, $condition, $this);
+			$conditions = array_filter($group_data['conditions'], function ($condition_data) {
+				if (empty($condition_data['type'])) {
+					return true;
 				}
+
+				$condition_id = sanitize_key($condition_data['type']);
+				$condition_types = $this->get_condition_types();
+				if (!isset($condition_types[$condition_id])) {
+					return true;
+				}
+
+				$validated_condition = $condition_types[$condition_id]->validate_condition($condition_data);
+
+				error_log(print_r($validated_condition, true));
 
 				return apply_filters(
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					Utils::get_hook_name('condition', $current_type, 'matched'),
+					Utils::get_hook_name('condition', $condition_id, 'matched'),
 					$validated_condition,
-					$condition
+					$condition_data
 				);
 			});
 
@@ -274,4 +337,7 @@ class Main {
 	}
 }
 
-Main::get_instance();
+Main::get_instance()->load_files();
+// $data = Main::get_instance()->get_group_options();
+// var_dump($data);
+// exit;

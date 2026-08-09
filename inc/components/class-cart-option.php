@@ -143,6 +143,14 @@ final class Cart_Option {
 	public $has_operator = true;
 
 	/**
+	 * Hold compare values of all in list operator
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $all_in_list_compare_values = array();
+
+	/**
 	 * Extra data
 	 * 
 	 * @var array
@@ -250,6 +258,61 @@ final class Cart_Option {
 	}
 
 	/**
+	 * Get terms of product item
+	 * 
+	 * @since 1.0.0
+	 * @param integer $product_id
+	 * @param string $taxonomy
+	 * @return array
+	 */
+	public function get_terms_of_product($product_id, $taxonomy) {
+		$terms = get_the_terms($product_id, $taxonomy);
+		if (empty($terms) || is_wp_error($terms)) {
+			$terms = array();
+		}
+
+		return array_map(fn($term) => $term->term_id, $terms);
+	}
+
+	/**
+	 * Check if value matched with model values
+	 * 
+	 * @since 1.0.0
+	 * @return boolean
+	 */
+	public function is_matched_model_values() {
+		$all_cart_items_values = array();
+		foreach (Cart_Total::get_cart_items() as $cart_item_key => $cart_item) {
+			$cart_items_values = array();
+			if ('taxonomy' === $this->object_group && !empty($this->object_name)) {
+				$cart_items_values = $this->get_terms_of_product($cart_item['product_id'], $this->object_name);
+			}
+
+			$cart_items_values = apply_filters(Utils::get_hook_name('cart-option', 'cart-items-values'), $cart_items_values, $cart_item, $this);
+
+			$all_cart_items_values = array_merge($all_cart_items_values, $cart_items_values);
+		}
+
+		$all_cart_items_values = array_unique($all_cart_items_values);
+		$matched = array_intersect($all_cart_items_values, $this->model_values);
+
+		if ('any_in_list' === $this->operator) {
+			return count($matched) > 0;
+		}
+
+		if ('not_in_list' === $this->operator) {
+			return count($matched) === 0;
+		}
+
+		if ('all_in_list' === $this->operator) {
+			return count($matched) === count($this->model_values);
+		}
+
+		return false;
+	}
+
+
+	/**
 	 * Check if condition has provided product id
 	 * 
 	 * @since 1.0.0
@@ -285,22 +348,15 @@ final class Cart_Option {
 
 			$matched_values = array_intersect($this->model_values, $compare_values);
 
-			$current_option = false;
-			if (!empty($this->based_on)) {
-				$current_option = $configured_options[$this->based_on];
-			}
-
 			if ($this->has_operator) {
-				if ('any_in_list' === $this->operator) {
-					$eligible_product = count($matched_values) > 0;
+				$matched_model_values = $this->is_matched_model_values();
+
+				if ($matched_model_values && count($matched_values) > 0) {
+					$eligible_product = true;
 				}
 
-				if ('not_in_list' === $this->operator) {
+				if (!$matched_model_values && 'not_in_list' == $this->operator) {
 					$eligible_product = count($matched_values) === 0;
-				}
-
-				if ('all_in_list' === $this->operator) {
-					$eligible_product = count($matched_values) == count($this->model_values);
 				}
 			} else {
 				$eligible_product = count($matched_values) > 0;

@@ -3,6 +3,7 @@
 namespace ShipQora\Condition;
 
 use ShipQora\Utils;
+use ShipQora\Condition;
 use ShipQora\Cart_Total;
 use ShipQora\Component\Cart_Option;
 
@@ -10,18 +11,16 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Cart Condition class
- */
+
 final class Cart {
 
 	/**
-	 * Constructor.
+	 * Hold condtion group id
+	 * 
+	 * @since 1.0.0
+	 * @var string
 	 */
-	public function __construct() {
-		add_filter('shipqora/condition/models', array($this, 'condition_models'));
-		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
-	}
+	public $group_id = 'cart';
 
 	/**
 	 * Condition models
@@ -29,12 +28,57 @@ final class Cart {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function condition_models($values) {
-		return array_merge($values, array(
+	public function get_name() {
+		return esc_html__('Cart', 'shipqora');
+	}
+
+	/**
+	 * Get model keys of this group
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_model_keys() {
+		return array(
 			'value' => '',
 			'value2' => '',
 			'cart_operator' => 'greater_than',
 			'cart_cart_option' => array()
+		);
+	}
+
+
+	/**
+	 * Register condition types
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function register_conditions($main_object) {
+		$weight_option_text = sprintf(
+			/* translators: %s: weight unit of woocommerce */
+			esc_html__('Total weight (%s)', 'shipqora'),
+			get_option('woocommerce_weight_unit', 'kg')
+		);
+
+		$dimension_option_text = sprintf(
+			/* translators: %s: volume unit of woocommerce */
+			esc_html__('Total volume (%s)', 'shipqora'),
+			get_option('woocommerce_dimension_unit', 'cm')
+		);
+
+		$main_object->add_condition_types('cart_subtotal', array(
+			'priority' => 10,
+			'template' => array($this, 'cart_common_templates'),
+			'validate_callback' => array($this, 'validate_condition'),
+			'label' => esc_html__('Subtotal', 'shipqora'),
+		));
+
+		$main_object->add_condition_types('cart_total_quantity', array(
+			'priority' => 10,
+			'label' => esc_html__('Total quantity', 'shipqora'),
+			'template' => array($this, 'cart_common_templates'),
+			'validate_callback' => array($this, 'validate_condition'),
 		));
 	}
 
@@ -44,7 +88,7 @@ final class Cart {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function add_condition_types($condition_types) {
+	public function add_condition_tdypes($condition_types) {
 		$weight_option_text = sprintf(
 			/* translators: %s: weight unit of woocommerce */
 			esc_html__('Total weight (%s)', 'shipqora'),
@@ -61,14 +105,14 @@ final class Cart {
 			'cart:subtotal' => array(
 				'priority' => 10,
 				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_cart_condition'),
+				'validate_callback' => array($this, 'validate_condition'),
 				'label' => esc_html__('Subtotal', 'shipqora'),
 			),
 
 			'cart:total_quantity' => array(
 				'priority' => 15,
 				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_cart_condition'),
+				'validate_callback' => array($this, 'validate_condition'),
 				'label' => esc_html__('Total quantity', 'shipqora'),
 			),
 
@@ -76,14 +120,14 @@ final class Cart {
 				'priority' => 20,
 				'label' => $weight_option_text,
 				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_cart_condition'),
+				'validate_callback' => array($this, 'validate_condition'),
 			),
 
 			'cart:total_volume' => array(
 				'priority' => 25,
 				'label' => $dimension_option_text,
 				'template' => array($this, 'cart_common_templates'),
-				'validate_callback' => array($this, 'validate_cart_condition'),
+				'validate_callback' => array($this, 'validate_condition'),
 			),
 		));
 
@@ -96,30 +140,27 @@ final class Cart {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function validate_cart_condition($matched, $condition) {
-		if (!in_array($condition['type'], array('cart:subtotal', 'cart:total_quantity', 'cart:total_weight', 'cart:total_volume'))) {
-			return $matched;
-		}
-
-		$operator = $condition['cart_operator'];
-		$value_one = floatval($condition['value']);
-		$value_two = isset($condition['value2']) ? floatval($condition['value2']) : 0.00;
-		$cart_option_data = isset($condition['cart_cart_option']) ? $condition['cart_cart_option'] : null;
-
-		$cart_option = new Cart_Option($cart_option_data);
+	public function validate_condition($condition) {
+		$operator = $condition->get_value('cart_operator');
+		$value_one = floatval($condition->get_value('value'));
+		$value_two = floatval($condition->get_value('value2'));
+		$cart_option = new Cart_Option($condition->get_value('cart_cart_option'));
 
 		$type_total_keys = array(
-			'cart:subtotal' => null,
-			'cart:total_quantity' => 'quantity',
-			'cart:total_weight' => 'weight',
-			'cart:total_volume' => 'volume',
+			'cart_subtotal' => null,
+			'cart_total_quantity' => 'quantity',
+			'cart_total_weight' => 'weight',
+			'cart_total_volume' => 'volume',
 		);
 
 		$compare_value = 0.00;
-		if (array_key_exists($condition['type'], $type_total_keys)) {
+		if (array_key_exists($condition->get_id(), $type_total_keys)) {
 			$cart_total = new Cart_Total($cart_option->get_cart_items_keys());
-			$compare_value = $cart_total->get_total($type_total_keys[$condition['type']]);
+			$compare_value = $cart_total->get_total($type_total_keys[$condition->get_id()]);
 		}
+
+		error_log($operator);
+		error_log($compare_value);
 
 		if ($compare_value <= 0) {
 			return false;
@@ -149,7 +190,7 @@ final class Cart {
 			return $compare_value >= $value_one && $compare_value <= $value_two;
 		}
 
-		return $matched;
+		return false;
 	}
 
 	/**
@@ -159,7 +200,7 @@ final class Cart {
 	 * @return void
 	 */
 	public function cart_common_templates() { ?>
-		<template v-if="['cart:subtotal', 'cart:total_quantity', 'cart:total_weight', 'cart:total_volume'].includes(type)">
+		<template v-if="['cart_subtotal', 'cart_total_quantity', 'cart_total_weight', 'cart_total_volume'].includes(type)">
 			<select v-model="cart_operator">
 				<?php Utils::get_operators_options(array('equal_to', 'less_than', 'less_than_or_equal', 'greater_than', 'greater_than_or_equal', 'between')); ?>
 			</select>
@@ -180,4 +221,4 @@ final class Cart {
 }
 
 
-new Cart();
+Main::register_condition(Cart::class);
