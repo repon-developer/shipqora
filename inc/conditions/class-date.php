@@ -130,7 +130,7 @@ final class Date {
 				return $current_time > $time_one;
 			}
 
-			if ('not_between' === $operator || 'not_between' === $operator) {
+			if ('between' === $operator || 'not_between' === $operator) {
 				$time_two = strtotime($condition->get_value('time_two'));
 				if (false === $time_two) {
 					return false;
@@ -161,7 +161,7 @@ final class Date {
 				return $current_time > $date_one;
 			}
 
-			if ('not_between' === $operator || 'not_between' === $operator) {
+			if ('between' === $operator || 'not_between' === $operator) {
 				$date_two = strtotime($condition->get_value('date_two'));
 				if (false === $date_two) {
 					return false;
