@@ -145,24 +145,6 @@ final class Select2 {
 		}
 
 		wp_send_json_success(apply_filters('shipqora/select2/results', $results, $meta_data));
-
-
-
-
-		if ('user' == $meta_data['object_type'] && 'users' == $object_slug) {
-			if (!empty($search_term)) {
-				$search_args['search'] = $search_term;
-			}
-
-			if (count($values) > 0) {
-				$search_args['include'] = $values;
-			}
-
-			$get_users = get_users($search_args);
-			$results = array_map(function ($user) {
-				return array('id' => $user->ID, 'name' => $user->display_name);
-			}, $get_users);
-		}
 	}
 
 	/**
@@ -179,6 +161,7 @@ final class Select2 {
 		$search_args = array('hide_empty' => false, 'taxonomy' => $meta_data['object_slug']);
 		if (!empty($meta_data['search_term'])) {
 			$search_args['search'] = $meta_data['search_term'];
+			$search_args['search_columns'] = array('ID', 'user_login', 'user_email', 'display_name');
 		}
 
 		$search_args['include'] = $meta_data['values'];
@@ -228,6 +211,31 @@ final class Select2 {
 		}
 
 		return $shipping_instances;
+	}
+
+	/**
+	 * Get customers
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_customers($meta_data) {
+		$search_args = array();
+		if (!empty($meta_data['search_term'])) {
+			$search_args['search'] = $meta_data['search_term'];
+		}
+
+		if (count($meta_data['values']) > 0) {
+			$search_args['include'] = $meta_data['values'];
+		}
+
+		error_log(print_r($search_args, true));
+
+		$get_users = get_users($search_args);
+
+		return array_map(function ($user) {
+			return array('id' => $user->ID, 'name' => $user->display_name);
+		}, $get_users);
 	}
 }
 

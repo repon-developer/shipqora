@@ -78,7 +78,7 @@ final class Order_History {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function validate_condition($matched, $condition) {
+	public function validate_condition($condition) {
 		if (!is_user_logged_in()) {
 			return false;
 		}
@@ -90,15 +90,16 @@ final class Order_History {
 			'return'      => 'ids',
 		]);
 
-		if ('yes' === $condition['first_purchase']) {
+		$first_purchase = $condition->get_value();
+		if ('yes' === $first_purchase) {
 			return count($orders) === 0;
 		}
 
-		if ('no' === $condition['first_purchase']) {
+		if ('no' === $first_purchase) {
 			return count($orders) > 0;
 		}
 
-		return $matched;
+		return false;
 	}
 }
 

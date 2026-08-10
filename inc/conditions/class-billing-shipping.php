@@ -128,22 +128,18 @@ final class Billing_Shipping {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function validate_billing_shipping($matched, $condition) {
-		$operator = 'any_in_list';
-		if (!empty($condition['billing_shipping_operator'])) {
-			$operator = $condition['billing_shipping_operator'];
-		}
+	public function validate_billing_shipping($condition) {
+		$condition_type_id = $condition->get_id();
+		$current_value = $condition->get_value();
+		$operator = $condition->get_value('billing_shipping_operator');
 
-		if ('billing_shipping:billing_cities' === $condition['type'] || 'billing_shipping:shipping_cities' === $condition['type']) {
-			$cities = $condition['billing_cities'] ?? '';
+		if ('billing_cities' === $condition_type_id || 'shipping_cities' === $condition_type_id) {
 			$customer_city = strtolower(WC()->customer->get_billing_city());
-
-			if ('shipping:city' === $condition['type']) {
-				$cities = $condition['shipping_cities'] ?? '';
+			if ('shipping_cities' === $condition_type_id) {
 				$customer_city = strtolower(WC()->customer->get_shipping_city());
 			}
 
-			$cities = Utils::comma_separator_to_array($cities);
+			$cities = Utils::comma_separator_to_array($current_value);
 			if ('any_in_list' === $operator) {
 				return in_array($customer_city, $cities);
 			}
@@ -153,65 +149,58 @@ final class Billing_Shipping {
 			}
 		}
 
-		if ('billing_shipping:billing_states' === $condition['type'] || 'billing_shipping:shipping_states' === $condition['type']) {
-			$model_key = 'billing:billing_states' === $condition['type'] ? 'billing_states' : 'shipping_states';
-
-			$states = array();
-			if (isset($condition[$model_key]) && is_array($condition[$model_key])) {
-				$states = $condition[$model_key];
-			}
-
+		if ('billing_states' === $condition_type_id || 'shipping_states' === $condition_type_id) {
 			$customer_state = WC()->customer->get_billing_state();
-			if ('shipping:states' === $condition['type']) {
+			if ('shipping_states' === $condition_type_id) {
 				$customer_state = WC()->customer->get_shipping_state();
 			}
 
+			if (!is_array($current_value)) {
+				$current_value = array();
+			}
+
 			if ('any_in_list' === $operator) {
-				return in_array($customer_state, $states);
+				return in_array($customer_state, $current_value);
 			}
 
 			if ('not_in_list' === $operator) {
-				return !in_array($customer_state, $states);
+				return !in_array($customer_state, $current_value);
 			}
 		}
 
-		if ('billing_shipping:billing_zipcodes' === $condition['type']) {
-			$zipcodes = $condition['billing_zipcodes'] ?? '';
+		if ('billing_postal_codes' === $condition_type_id) {
 			$customer_postcode = strtolower(WC()->customer->get_billing_postcode());
 
-			$matched_zipcodes = Main::get_instance()->get_matched_postal_codes($customer_postcode, $zipcodes);
+			$matched_postal_codes = $condition->get_matched_postal_codes($customer_postcode, $current_value);
 			if ('any_in_list' === $operator) {
-				return count($matched_zipcodes) > 0;
+				return count($matched_postal_codes) > 0;
 			}
 
 			if ('not_in_list' === $operator) {
-				return count($matched_zipcodes) === 0;
+				return count($matched_postal_codes) === 0;
 			}
 		}
 
-		if ('billing_shipping:billing_countries' === $condition['type'] || 'billing_shipping:shipping_countries' === $condition['type']) {
-			$countries_model_key = 'billing_countries';
-			if ('billing_shipping:shipping_countries' === $condition['type']) {
-				$countries_model_key = 'shipping_countries';
+		if ('billing_countries' === $condition_type_id || 'shipping_countries' === $condition_type_id) {
+			if (!is_array($current_value)) {
+				$current_value = array();
 			}
 
-			$countries = isset($condition[$countries_model_key]) && is_array($condition[$countries_model_key]) ? $condition[$countries_model_key] : array();
-
 			$customer_country = WC()->customer->get_shipping_country();
-			if ('billing_shipping:billing_countries' === $condition['type']) {
+			if ('billing_countries' === $condition_type_id) {
 				$customer_country = WC()->customer->get_billing_country();
 			}
 
 			if ('any_in_list' === $operator) {
-				return in_array($customer_country, $countries);
+				return in_array($customer_country, $current_value);
 			}
 
 			if ('not_in_list' === $operator) {
-				return !in_array($customer_country, $countries);
+				return !in_array($customer_country, $current_value);
 			}
 		}
 
-		return $matched;
+		return false;
 	}
 
 	/**

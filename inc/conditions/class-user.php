@@ -61,7 +61,7 @@ final class User {
 			'priority' => 10,
 			'model_key' => 'user_users',
 			'default_value' => array(),
-			'label' => esc_html__('Users', 'shipqora'),
+			'label' => esc_html__('Customers', 'shipqora'),
 			'template' => array($this, 'users_condition_template'),
 			'validate_callback' => array($this, 'validate_condition'),
 		));
@@ -82,11 +82,15 @@ final class User {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function validate_condition($matched, $condition) {
-		$operator = $condition['user_operator'];
+	public function validate_condition($condition) {
+		$condition_type_id = $condition->get_id();
+		if ('user:users' === $condition_type_id) {
+			$users = $condition->get_value();
+			if (!is_array($users)) {
+				$users = array();
+			}
 
-		if ('user:users' === $condition['type']) {
-			$users = isset($condition['users']) && is_array($condition['users']) ? $condition['users'] : array();
+			$operator = $condition->get_value('user_operator');
 			if ('any_in_list' === $operator) {
 				return in_array(get_current_user_id(), $users);
 			}
@@ -96,15 +100,16 @@ final class User {
 			}
 		}
 
-		if ('user:logged_in' === $condition['type'] && 'yes' == $condition['user_logged_in']) {
+		$user_logged_in = $condition->get_value('user_logged_in');
+		if ('user_logged_in' === $condition_type_id && 'yes' == $user_logged_in) {
 			return is_user_logged_in();
 		}
 
-		if ('user:logged_in' === $condition['type'] && 'no' == $condition['user_logged_in']) {
+		if ('user_logged_in' === $condition_type_id && 'no' == $user_logged_in) {
 			return !is_user_logged_in();
 		}
 
-		return $matched;
+		return false;
 	}
 
 	/**
@@ -120,8 +125,8 @@ final class User {
 			</select>
 
 			<select2-dropdown
-				type="user:users"
-				placeholder="<?php esc_attr_e('Choose users', 'shipqora'); ?>"
+				type="customers"
+				placeholder="<?php esc_attr_e('Choose customers', 'shipqora'); ?>"
 				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
 				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
 			</select2-dropdown>

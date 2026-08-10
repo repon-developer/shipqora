@@ -2,6 +2,8 @@
 
 namespace ShipQora\Condition;
 
+use ShipQora\Utils;
+
 if (!defined('ABSPATH')) {
 	exit;
 }
