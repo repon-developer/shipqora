@@ -29,6 +29,16 @@ final class Billing_Shipping {
 	}
 
 	/**
+	 * Group Priority
+	 * 
+	 * @since 1.0.0
+	 * @return float
+	 */
+	public function get_priority() {
+		return 100;
+	}
+
+	/**
 	 * Get model keys of this group
 	 * 
 	 * @since 1.0.0
@@ -76,6 +86,7 @@ final class Billing_Shipping {
 
 		$main_object->add_condition_types('billing_countries', array(
 			'priority' => 40,
+			'use_separator' => true,
 			'default_value' => array(),
 			'model_key' => 'billing_countries',
 			'template' => array($this, 'billing_shipping_country'),
@@ -101,7 +112,7 @@ final class Billing_Shipping {
 			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
 
-		$main_object->add_condition_types('shipping_states', array(
+		$main_object->add_condition_types('shipping_countries', array(
 			'priority' => 230,
 			'default_value' => array(),
 			'model_key' => 'shipping_countries',

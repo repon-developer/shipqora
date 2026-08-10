@@ -8,44 +8,52 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-/**
- * Order history class
- */
+
 final class Order_History {
 
 	/**
-	 * Constructor.
+	 * Hold condtion group id
+	 * 
+	 * @since 1.0.0
+	 * @var string
 	 */
-	public function __construct() {
-		add_filter('shipqora/condition/models', array($this, 'condition_models'));
-		add_filter('shipqora/condition/types', array($this, 'add_condition_types'));
-	}
+	public $group_id = 'order_history';
 
 	/**
-	 * Condition values
+	 * Condition models
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function condition_models($values) {
-		return array_merge($values, array('first_purchase' => 'yes'));
+	public function get_name() {
+		return esc_html__('Order History', 'shipqora');
 	}
 
 	/**
-	 * Add condition types
+	 * Group Priority
+	 * 
+	 * @since 1.0.0
+	 * @return float
+	 */
+	public function get_priority() {
+		return 40;
+	}
+
+	/**
+	 * Register condition types
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function add_condition_types($condition_types) {
-		$condition_types['order_history:first_purchase'] = array(
-			'priority' => 5,
+	public function register_conditions($main_object) {
+		$main_object->add_condition_types('first_purchase', array(
+			'priority' => 10,
+			'default_value' => 'yes',
+			'model_key' => 'first_purchase',
 			'template' => array($this, 'first_purchase_template'),
 			'validate_callback' => array($this, 'validate_condition'),
 			'label' => esc_html__('First Purchase', 'shipqora'),
-		);
-
-		return $condition_types;
+		));
 	}
 
 	/**
@@ -54,9 +62,9 @@ final class Order_History {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function first_purchase_template() { ?>
-		<template v-if="type == 'order_history:first_purchase'">
-			<select v-model="first_purchase">
+	public function first_purchase_template($condition) { ?>
+		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
+			<select v-model="<?php echo esc_attr($condition->get_model_key()) ?>">
 				<option value="yes"><?php esc_html_e('Yes', 'shipqora'); ?></option>
 				<option value="no"><?php esc_html_e('No', 'shipqora'); ?></option>
 			</select>
@@ -94,4 +102,4 @@ final class Order_History {
 	}
 }
 
-new Order_History();
+Main::register_condition_group(Order_History::class);

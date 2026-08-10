@@ -91,6 +91,9 @@ class Main {
 					echo '<optgroup label="' . esc_attr($group_data['label']) . '">';
 					foreach ($group_data['sub_options'] as $condition_object) {
 						printf('<option value="%s">%s</option>', esc_attr($condition_object->get_id()), esc_html($condition_object->get_label()));
+						if (true == $condition_object->get_use_separator()) {
+							echo '<option disabled>---------------</option>';
+						}
 					}
 					echo '</optgroup>';
 				} ?>
@@ -140,9 +143,9 @@ class Main {
 		require_once SHIPQORA_PATH . 'inc/conditions/class-condition.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
-		// require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
 	}
 
 	/**
@@ -182,12 +185,12 @@ class Main {
 	 * @return array
 	 */
 	public function get_groups() {
-		return $this->registerd_groups;
+		$groups = $this->registerd_groups;
+		uasort($groups, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
+
+		return $groups;
 
 		return apply_filters('shipqora/condition/groups', array(
-
-			'date' => esc_html__('Date', 'shipqora'),
-			
 			'order_history' => esc_html__('Order History', 'shipqora'),
 		));
 	}
@@ -229,7 +232,7 @@ class Main {
 		}
 
 		if (!isset($condition_data['template']) || isset($condition_data['template']) && !is_callable($condition_data['template'])) {
-			throw new \Exception(esc_html__('Please add the "template" array key with a validation callback for this condition type.', 'shipqora'));
+			throw new \Exception(esc_html__('Please add the template array key with a validation callback for this condition type.', 'shipqora'));
 		}
 
 		$condition_id = sanitize_key($condition_id);

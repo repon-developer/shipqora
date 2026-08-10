@@ -30,6 +30,16 @@ final class Cart_Products {
 	}
 
 	/**
+	 * Group Priority
+	 * 
+	 * @since 1.0.0
+	 * @return float
+	 */
+	public function get_priority() {
+		return 20;
+	}
+
+	/**
 	 * Get model keys of this group
 	 * 
 	 * @since 1.0.0

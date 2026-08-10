@@ -29,6 +29,16 @@ final class User {
 	}
 
 	/**
+	 * Group Priority
+	 * 
+	 * @since 1.0.0
+	 * @return float
+	 */
+	public function get_priority() {
+		return 30;
+	}
+
+	/**
 	 * Get model keys of this group
 	 * 
 	 * @since 1.0.0

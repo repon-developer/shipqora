@@ -65,7 +65,39 @@ final class General {
 	public function __construct() {
 		add_action('init', array($this, 'add_settings_fields'), 1);
 		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 30, 2);
-		add_filter('woocommerce_package_rates', array($this, 'hide_other_shipping_methods'), 10000, 2);
+		add_filter('woocommerce_package_rates', array($this, 'hide_shipping_methods'), 10000, 2);
+	}
+
+	/**
+	 * Hide current shipping method
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function hide_current_shipping_method($rates) {
+		$features = Feature::get_features();
+
+		if (isset($features['hide-shipping-methods'])) {
+			$rates = array_filter($rates, function ($shipping_rate) {
+				$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
+
+				$hide_shipping_methos = array();
+				foreach ($shipqora_rules as $key => $rule) {
+					if ($rule->exists()) {
+						if ($rule->is_feature_enabled('hide-shipping-methods')) {
+							$feature_object = $rule->get_feature_object('hide-shipping-methods');
+							if ($feature_object) {
+								$hide_shipping_methos[] = $feature_object->hide_shipping_methods($shipping_rate, $rule);
+							}
+						}
+					}
+				}
+
+				return count(array_filter($hide_shipping_methos)) === 0;
+			});
+		}
+
+		return $rates;
 	}
 
 	/**
@@ -77,8 +109,9 @@ final class General {
 	public function modify_shipping_rates($rates, $package) {
 		$features = Feature::get_features();
 		unset($features['hide-shipping-methods'], $features['hide-other-shipping-methods']);
-
 		uasort($features, fn($a, $b) => $a->get_calculation_priority() <=> $b->get_calculation_priority());
+
+		$rates = $this->hide_current_shipping_method($rates);
 		array_walk($rates, function (&$shipping_rate) use ($features) {
 			$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
 
@@ -115,29 +148,10 @@ final class General {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function hide_other_shipping_methods($rates, $package) {
+	public function hide_shipping_methods($rates, $package) {
+		$rates = $this->hide_current_shipping_method($rates);
+
 		$features = Feature::get_features();
-
-		if (isset($features['hide-shipping-methods'])) {
-			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
-
-				$hide_shipping_methos = array();
-				foreach ($shipqora_rules as $key => $rule) {
-					if ($rule->exists()) {
-						if ($rule->is_feature_enabled('hide-shipping-methods')) {
-							$feature_object = $rule->get_feature_object('hide-shipping-methods');
-							if ($feature_object) {
-								$hide_shipping_methos[] = $feature_object->hide_shipping_methods($shipping_rate, $rule);
-							}
-						}
-					}
-				}
-
-				return count(array_filter($hide_shipping_methos)) === 0;
-			});
-		}
-
 		if (!isset($features['hide-other-shipping-methods'])) {
 			return $rates;
 		}
