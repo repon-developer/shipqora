@@ -19,7 +19,7 @@ const Condition = {
 		return {
 			value: '',
 			value2: '',
-			type: 'cart:subtotal',
+			type: 'cart_subtotal',
 			user_operator: 'any_in_list',
 			cart_operator: 'greater_than',
 			id: this.$utils.generate_uuid(),
@@ -41,10 +41,10 @@ const Condition = {
 
 		cart_products_prefix() {
 			const cart_prefixes = {
-				'cart:subtotal': __('Subtotal of', 'shipqora'),
-				'cart:total_quantity': __('Total quantity of', 'shipqora'),
-				'cart:total_weight': __('Total weight of', 'shipqora'),
-				'cart:total_volume': __('Total volume of', 'shipqora'),
+				'cart_subtotal': __('Subtotal of', 'shipqora'),
+				'cart_total_quantity': __('Total quantity of', 'shipqora'),
+				'cart_total_weight': __('Total weight of', 'shipqora'),
+				'cart_total_volume': __('Total volume of', 'shipqora'),
 			}
 
 			return cart_prefixes?.[this.type] ? cart_prefixes?.[this.type] : '';
@@ -53,10 +53,6 @@ const Condition = {
 
 	created() {
 		this.$parent.conditions[this.number] = JSON.parse(this.condition_data)
-	},
-
-	updated() {
-		console.log(this.$data);
 	},
 
 	watch: {

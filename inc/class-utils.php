@@ -222,6 +222,7 @@ class Utils {
 
 			'before' => __('Before', 'shipqora'),
 			'after' => __('After', 'shipqora'),
+			'not_between' => __('Not Between', 'shipqora'),
 		);
 
 		$return_operators = [];

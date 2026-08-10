@@ -103,6 +103,15 @@ final class Select2 {
 				'nonce' => wp_create_nonce(self::NONCE_VALUE),
 				'options' => array(
 					'user_roles' => $customer_roles,
+					'weekly_days' => array(
+						'sunday' => esc_html__('Sunday', 'shipqora'),
+						'monday' => esc_html__('Monday', 'shipqora'),
+						'tuesday' => esc_html__('Tuesday', 'shipqora'),
+						'wednesday' => esc_html__('Wednesday', 'shipqora'),
+						'thursday' => esc_html__('Thursday', 'shipqora'),
+						'friday' => esc_html__('Friday', 'shipqora'),
+						'saturday' => esc_html__('Saturday', 'shipqora'),
+					)
 				)
 			);
 		}
@@ -228,8 +237,6 @@ final class Select2 {
 		if (count($meta_data['values']) > 0) {
 			$search_args['include'] = $meta_data['values'];
 		}
-
-		error_log(print_r($search_args, true));
 
 		$get_users = get_users($search_args);
 

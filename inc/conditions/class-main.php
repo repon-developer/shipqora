@@ -143,6 +143,7 @@ class Main {
 		require_once SHIPQORA_PATH . 'inc/conditions/class-condition.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-date.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
