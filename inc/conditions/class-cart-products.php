@@ -97,6 +97,7 @@ final class Cart_Products {
 		}
 
 		$cart_object_ids = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			Utils::get_hook_name('condition', 'cart-products', 'validate', 'cart-object-ids'),
 			$cart_object_ids,
 			$condition,

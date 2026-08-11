@@ -178,6 +178,7 @@ class Condition {
 		}
 		
 		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			Utils::get_hook_name('condition', $hook_slug),
 			$current_value,
 			$this->id,

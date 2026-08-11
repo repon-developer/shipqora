@@ -292,10 +292,14 @@ final class Cart_Option {
 				$cart_items_values[] = $cart_item['product_id'];
 			}
 
-			$cart_items_values = apply_filters(Utils::get_hook_name('cart-option', 'is-matched-model-values', 'cart-items-values'), $cart_items_values, $cart_item, $this);
-
-			error_log(print_r($cart_items_values, true));
-
+			$cart_items_values = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+				Utils::get_hook_name('cart-option', 'is-matched-model-values', 'cart-items-values'),
+				$cart_items_values,
+				$cart_item,
+				$this
+			);
+			
 			$all_cart_items_values = array_merge($all_cart_items_values, $cart_items_values);
 		}
 

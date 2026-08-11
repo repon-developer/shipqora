@@ -159,21 +159,39 @@ class Main {
 		$group_object = new $group_class();
 
 		if (!property_exists($group_object, 'group_id')) {
-			throw new \Exception(sprintf(esc_html__('The %s class must have a public $group_id property.', 'shipqora'), $group_class));
+			throw new \Exception(
+				sprintf(
+					/* translators: %s: Name of group class */
+					esc_html__('The %s class must have a public $group_id property.', 'shipqora'),
+					esc_html($group_class)
+				)
+			);
 		}
 
 		$group_id = $group_object->group_id;
 		if (empty($group_id)) {
-			throw new \Exception(sprintf(esc_html__('The %s class must have a value for the $group_id property.', 'shipqora'), $group_class));
+			throw new \Exception(sprintf(
+				/* translators: %s: Name of group class */
+				esc_html__('The %s class must have a value for the $group_id property.', 'shipqora'),
+				esc_html($group_class)
+			));
 		}
 
 		if (!method_exists($group_object, 'get_name')) {
-			throw new \Exception(sprintf(esc_html__('The %s class must have a public get_name() method.', 'shipqora'), $group_class));
+			throw new \Exception(sprintf(
+				/* translators: %s: Name of group class */
+				esc_html__('The %s class must have a public get_name() method.', 'shipqora'),
+				esc_html($group_class)
+			));
 		}
 
 		$group_name = $group_object->get_name();
 		if (empty($group_name)) {
-			throw new \Exception(sprintf(esc_html__('The get_name() method of the %s class should return a valid group name.', 'shipqora'), $group_class));
+			throw new \Exception(sprintf(
+				/* translators: %s: Name of group class */
+				esc_html__('The get_name() method of the %s class should return a valid group name.', 'shipqora'),
+				esc_html($group_class)
+			));
 		}
 
 		$this->registerd_groups[$group_id] = $group_object;
@@ -223,8 +241,9 @@ class Main {
 	public function add_condition_types($condition_id, $condition_data) {
 		if (empty($this->add_condition_group_id)) {
 			throw new \Exception(sprintf(
+				/* translators: %s: hook name */
 				esc_html__('You are trying to add a condition outside the register_condition() method or %s hook.', 'shipqora'),
-				Utils::get_hook_name('condition', 'register-type')
+				esc_html(Utils::get_hook_name('condition', 'register-type'))
 			));
 		}
 
@@ -269,7 +288,11 @@ class Main {
 			}
 		}
 
-		return apply_filters(Utils::get_hook_name('condition', 'models'), $model_keys);
+		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			Utils::get_hook_name('condition', 'models'),
+			$model_keys
+		);
 	}
 
 	/**
@@ -350,9 +373,3 @@ class Main {
 }
 
 Main::get_instance()->load_files();
-
-add_action('wp_loadedd', function () {
-	$data = Main::get_instance()->get_group_options();
-	var_dump($data);
-	exit;
-}, 1000);
