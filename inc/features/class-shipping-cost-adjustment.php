@@ -52,7 +52,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 60,
-			'calculation_priority' => 10000,
+			'feature_priority' => 10000,
 			'base_model' => 'shipping_cost_adjustment',
 			'name' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
 			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipqora'),

@@ -109,7 +109,7 @@ final class General {
 	public function modify_shipping_rates($rates, $package) {
 		$features = Feature::get_features();
 		unset($features['hide-shipping-methods'], $features['hide-other-shipping-methods']);
-		uasort($features, fn($a, $b) => $a->get_calculation_priority() <=> $b->get_calculation_priority());
+		uasort($features, fn($a, $b) => $a->get_feature_priority() <=> $b->get_feature_priority());
 
 		$rates = $this->hide_current_shipping_method($rates);
 		array_walk($rates, function (&$shipping_rate) use ($features) {

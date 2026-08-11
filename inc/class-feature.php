@@ -147,8 +147,8 @@ class Feature {
 	 * @since 1.0.0
 	 * @return int
 	 */
-	public function get_calculation_priority() {
-		return absint($this->get_configuration_value('calculation_priority'));
+	public function get_feature_priority() {
+		return absint($this->get_configuration_value('feature_priority'));
 	}
 
 	/**
