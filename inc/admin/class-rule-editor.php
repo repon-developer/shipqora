@@ -42,9 +42,9 @@ final class Rule_Editor {
 			$values['condition_models'] = $main_condition->get_models();
 			$values['save_rule_nonce'] = wp_create_nonce('shipqora/save_rule_nonce');
 
-			$shipqora_rule = new SHIPQORA_Rule();
+			$shipqora_rule = new ShipQora_Rule();
 			if (!empty($_GET['id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$shipqora_rule = SHIPQORA_Rule::get(sanitize_text_field(wp_unslash($_GET['id']))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$shipqora_rule = ShipQora_Rule::get(sanitize_text_field(wp_unslash($_GET['id']))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 
 			$values['rule_data'] = $shipqora_rule->get_models();

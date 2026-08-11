@@ -53,7 +53,7 @@ class Rule_List_Table extends \WP_List_Table {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$rules = $wpdb->get_results(implode(' ', $prepared_sqls), ARRAY_A);
 
-		$this->items = array_map(fn($item) => new SHIPQORA_Rule($item), $rules);
+		$this->items = array_map(fn($item) => new ShipQora_Rule($item), $rules);
 
 		unset($prepared_sqls['limit']);
 

@@ -52,7 +52,7 @@ class Cart_Based_Shipping extends Feature {
 	 */
 	protected function get_configuration() {
 		return array(
-			'priority' => 40,
+			'priority' => 50,
 			'feature_priority' => 10,
 			'base_model' => 'cart_based_shipping',
 			'name' => esc_html__('Cart-Based Shipping Cost', 'shipqora'),

@@ -72,7 +72,7 @@ final class Shipping_Editor {
 			$shipping_method->get_instance_id()
 		);
 
-		$rule = new SHIPQORA_Rule(array(
+		$rule = new ShipQora_Rule(array(
 			'title' => $shipping_method_title,
 			'shipping_methods' => array($instance_slug)
 		));
@@ -107,7 +107,7 @@ final class Shipping_Editor {
 		}
 
 		$instance_id = sanitize_text_field(wp_unslash($_POST['instance_id']));
-		$rules = SHIPQORA_Rule::get_by_instance_id($instance_id);
+		$rules = ShipQora_Rule::get_by_instance_id($instance_id);
 
 		$attached_rules = array();
 		foreach ($rules as $rule) {

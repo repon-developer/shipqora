@@ -49,6 +49,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 20,
+			'standalone' => true,
 			'feature_priority' => 2,
 			'base_model' => 'hide_other_shipping_methods',
 			'name' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
@@ -66,7 +67,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	public function get_shipping_rates($shipping_rate) {
 		$tier_items = apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			Utils::get_hook_name('feature', $this->get_id(), 'hide-shipping-methods'),
+			Utils::get_hook_name('feature', $this->get_id(), 'layers'),
 			array($this->lite_tier),
 			$this
 		);
@@ -203,22 +204,6 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
 		), 'tier-item');
-	}
-
-	/**
-	 * Setting field for min/max shipping cost
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
-		$form_control->output_before_input_options(); ?>
-		<div class="field-row">
-			<input type="number" v-model="min_shipping_cost" placeholder="<?php esc_html_e('Min', 'shipqora') ?>">
-			<input type="number" v-model="max_shipping_cost" placeholder="<?php esc_html_e('Max', 'shipqora') ?>">
-		</div>
-<?php
-		$form_control->output_after_input_options();
 	}
 }
 

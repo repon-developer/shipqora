@@ -148,7 +148,7 @@ final class Admin {
 			wp_send_json_error(array('message' => esc_html__('Invalid data.', 'shipqora')));
 		}
 
-		$rule = SHIPQORA_Rule::get(sanitize_text_field(wp_unslash($_POST['id'])));
+		$rule = ShipQora_Rule::get(sanitize_text_field(wp_unslash($_POST['id'])));
 		$rule->set_data($rule_data);
 		$rule->save();
 

@@ -5,7 +5,7 @@ namespace ShipQora\Feature;
 use ShipQora\Feature;
 use ShipQora\Form_Control;
 use ShipQora\Settings_Fields;
-use ShipQora\SHIPQORA_Rule;
+use ShipQora\ShipQora_Rule;
 use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
@@ -66,6 +66,51 @@ final class General {
 		add_action('init', array($this, 'add_settings_fields'), 1);
 		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 30, 2);
 		add_filter('woocommerce_package_rates', array($this, 'hide_shipping_methods'), 10000, 2);
+		add_filter('woocommerce_available_payment_gateways', array($this, 'hide_payment_methods'));
+	}
+
+	/**
+	 * Hide payment methods
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function hide_payment_methods($gateways) {
+		if (WC()->session && method_exists(WC()->session, 'get')) {
+			$shipping_methods = WC()->session->get('chosen_shipping_methods');
+			if (is_array($shipping_methods) && count($shipping_methods) > 0) {
+				$rules = array();
+				foreach ($shipping_methods as $rate_id) {
+					list($method_id, $instance_id) = explode(':', $rate_id, 2);
+					if ($instance_id) {
+						$rules = array_merge($rules, ShipQora_Rule::get_by_instance_id($instance_id));
+					}
+				}
+
+				if (count($rules) == 0) {
+					return $gateways;
+				}
+
+				$hide_payment_methods = array();
+
+				foreach ($rules as $rule) {
+					if (!$rule->exists() || !$rule->is_feature_enabled('hide-payment-methods')) {
+						continue;
+					}
+
+					$feature_object = $rule->get_feature_object('hide-payment-methods');
+					if ($feature_object) {
+						$hide_payment_methods = array_merge($hide_payment_methods, $feature_object->payment_methods());
+					}
+				}
+
+				foreach ($hide_payment_methods as $gateway_id) {
+					unset($gateways[$gateway_id]);
+				}
+			}
+		}
+
+		return $gateways;
 	}
 
 	/**
@@ -79,7 +124,7 @@ final class General {
 
 		if (isset($features['hide-shipping-methods'])) {
 			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
+				$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 
 				$hide_shipping_methos = array();
 				foreach ($shipqora_rules as $key => $rule) {
@@ -107,13 +152,12 @@ final class General {
 	 * @return array
 	 */
 	public function modify_shipping_rates($rates, $package) {
-		$features = Feature::get_features();
-		unset($features['hide-shipping-methods'], $features['hide-other-shipping-methods']);
+		$features = array_filter(Feature::get_features(), fn($feature) => true !== $feature->get_configuration_value('standalone'));
 		uasort($features, fn($a, $b) => $a->get_feature_priority() <=> $b->get_feature_priority());
 
 		$rates = $this->hide_current_shipping_method($rates);
 		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 
 			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists()) {
@@ -158,7 +202,7 @@ final class General {
 
 		$hide_shipping_methods = array();
 		foreach ($rates as $shipping_rate) {
-			$shipqora_rules = SHIPQORA_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists() || !$rule->is_feature_enabled('hide-other-shipping-methods')) {
 					continue;

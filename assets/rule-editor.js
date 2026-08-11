@@ -6,6 +6,7 @@ import Table_Rates_Shipping from './component/table-rates-shipping.min.js?v=@@VE
 import Shipping_Methods_Group from './component/shipping-methods-group.min.js?v=@@VERSION';
 
 import Cart_Based_Shipping from './features/cart-based-shipping.min.js?v=@@VERSION';
+import Hide_Payment_Methods from './features/hide-payment-methods.min.js?v=@@VERSION';
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
 import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
 import Hide_Other_Shipping_Methods from './features/hide-other-shipping-methods.min.js?v=@@VERSION';
@@ -29,6 +30,7 @@ const helper_models = {
 const ShipQora_Rule_Editor = {
 	components: {
 		'feature-cart-based-shipping': Cart_Based_Shipping,
+		'feature-hide-payment-methods': Hide_Payment_Methods,
 		'feature-product-based-shipping': Product_Based_Shipping,
 		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
 		'feature-hide-other-shipping-methods': Hide_Other_Shipping_Methods,

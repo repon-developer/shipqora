@@ -51,6 +51,7 @@ final class Hide_Shipping_Methods extends Feature {
 	protected function get_configuration() {
 		return array(
 			'priority' => 10,
+			'standalone' => true,
 			'feature_priority' => 1,
 			'base_model' => 'hide_shipping_methods',
 			'name' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
