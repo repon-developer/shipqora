@@ -142,8 +142,8 @@ class Main {
 	public function load_files() {
 		require_once SHIPQORA_PATH . 'inc/conditions/class-condition.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
-		require_once SHIPQORA_PATH . 'inc/conditions/class-user.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-date.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-customer.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
@@ -188,12 +188,7 @@ class Main {
 	public function get_groups() {
 		$groups = $this->registerd_groups;
 		uasort($groups, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
-
 		return $groups;
-
-		return apply_filters('shipqora/condition/groups', array(
-			'order_history' => esc_html__('Order History', 'shipqora'),
-		));
 	}
 
 	/**
@@ -209,8 +204,9 @@ class Main {
 				do_action(
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 					Utils::get_hook_name('condition', 'register-type'),
+					$this,
+					$group_object,
 					$group_id,
-					$group_object
 				);
 
 				$this->add_condition_group_id = null;
@@ -285,11 +281,12 @@ class Main {
 	public function get_group_options() {
 		$groups = array();
 		foreach ($this->get_groups() as $group_id => $group_object) {
+			$sub_options = array_filter($this->condition_types, fn($item) => $item->get_group_id() == $group_id);
+			uasort($sub_options, fn($a, $b) => $a->get_priority() <=> $b->get_priority());
+
 			$groups[$group_id] = array(
 				'label' => $group_object->get_name(),
-				'sub_options' => array_filter($this->condition_types, function ($item) use ($group_id) {
-					return $item->get_group_id() == $group_id;
-				})
+				'sub_options' => $sub_options
 			);
 		}
 

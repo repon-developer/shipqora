@@ -97,8 +97,9 @@ final class Cart_Products {
 		}
 
 		$cart_object_ids = apply_filters(
-			Utils::get_hook_name('condition', 'cart-products', 'validate-condition', 'cart-object-ids'),
+			Utils::get_hook_name('condition', 'cart-products', 'validate', 'cart-object-ids'),
 			$cart_object_ids,
+			$condition,
 			$cart_total
 		);
 
@@ -118,50 +119,6 @@ final class Cart_Products {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Products template
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function products_template() { ?>
-		<template v-if="type == 'cart_products:products'">
-			<select v-model="cart_products_operator">
-				<?php Utils::get_operators_options(array('any_in_list', 'all_in_list', 'not_in_list')); ?>
-			</select>
-
-			<select2-dropdown
-				type="products"
-				:initial-value="cart_products_products"
-				@update="(value) => cart_products_products = value"
-				placeholder="<?php esc_html_e('Products', 'shipqora'); ?>">
-			</select2-dropdown>
-		</template>
-	<?php
-	}
-
-	/**
-	 * Variation products template
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function variation_product_template() { ?>
-		<template v-if="type == 'cart_products:variation_products'">
-			<select v-model="cart_products_operator">
-				<?php Utils::get_operators_options(array('any_in_list', 'all_in_list', 'not_in_list')); ?>
-			</select>
-
-			<select2-dropdown
-				type="variation_products"
-				:initial-value="cart_products_variation_products"
-				@update="(value) => cart_products_variation_products = value"
-				placeholder="<?php esc_html_e('Variation products', 'shipqora'); ?>">
-			</select2-dropdown>
-		</template>
-	<?php
 	}
 
 	/**

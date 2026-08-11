@@ -106,7 +106,7 @@ final class Cart {
 	}
 
 	/**
-	 * Cart related condition filters
+	 * Validate cart condition
 	 * 
 	 * @since 1.0.0
 	 * @return boolean
@@ -115,8 +115,8 @@ final class Cart {
 		$operator = $condition->get_value('cart_operator');
 		$value_one = floatval($condition->get_value('value'));
 		$value_two = floatval($condition->get_value('value2'));
-		$cart_option = new Cart_Option($condition->get_value('cart_cart_option'));
 
+		$cart_option = $condition->apply_filters(new Cart_Option($condition->get_value('cart_cart_option')), 'cart-option');
 		$type_total_keys = array(
 			'cart_subtotal' => null,
 			'cart_total_quantity' => 'quantity',

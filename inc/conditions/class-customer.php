@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class User {
+final class Customer {
 
 	/**
 	 * Hold condtion group id
@@ -16,7 +16,7 @@ final class User {
 	 * @since 1.0.0
 	 * @var string
 	 */
-	public $group_id = 'user';
+	public $group_id = 'customer';
 
 	/**
 	 * Condition models
@@ -151,4 +151,4 @@ final class User {
 	}
 }
 
-Main::register_condition_group(User::class);
+Main::register_condition_group(Customer::class);

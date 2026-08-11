@@ -288,7 +288,13 @@ final class Cart_Option {
 				$cart_items_values = $this->get_terms_of_product($cart_item['product_id'], $this->object_name);
 			}
 
+			if ('products' === $this->object_group) {
+				$cart_items_values[] = $cart_item['product_id'];
+			}
+
 			$cart_items_values = apply_filters(Utils::get_hook_name('cart-option', 'is-matched-model-values', 'cart-items-values'), $cart_items_values, $cart_item, $this);
+
+			error_log(print_r($cart_items_values, true));
 
 			$all_cart_items_values = array_merge($all_cart_items_values, $cart_items_values);
 		}
@@ -350,7 +356,6 @@ final class Cart_Option {
 
 			if ($this->has_operator) {
 				$matched_model_values = $this->is_matched_model_values();
-
 				if ($matched_model_values && count($matched_values) > 0) {
 					$eligible_product = true;
 				}

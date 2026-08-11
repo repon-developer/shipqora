@@ -41,7 +41,7 @@ class Condition {
 	 * @var string
 	 */
 	private $priority = 10;
-	
+
 	/**
 	 * Hold model key of this condition
 	 * 
@@ -164,6 +164,25 @@ class Condition {
 		}
 
 		return isset($this->condition_data[$key]) ? $this->condition_data[$key] : '';
+	}
+
+	/**
+	 * Get filters value
+	 * 
+	 * @since 1.0.0
+	 * @return mixed
+	 */
+	public function apply_filters($current_value, $hook_slug = null) {
+		if (!$hook_slug) {
+			$hook_slug = '';
+		}
+		
+		return apply_filters(
+			Utils::get_hook_name('condition', $hook_slug),
+			$current_value,
+			$this->id,
+			$this
+		);
 	}
 
 	/**
