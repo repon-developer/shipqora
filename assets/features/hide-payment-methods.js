@@ -37,7 +37,7 @@ const Hide_Other_Shipping_Methods = {
 				this.payment_methods = Array();
 			}
 
-			this.payment_methods.push('bacs');
+			this.payment_methods.push('');
 		},
 
 		delete_payment_method(index_no) {

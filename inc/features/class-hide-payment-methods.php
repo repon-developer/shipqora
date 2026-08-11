@@ -88,7 +88,7 @@ final class Hide_Payment_Methods extends Feature {
 			}
 		}
 
-		return $payment_gatways;
+		return array_filter($payment_gatways);
 	}
 
 	/**
@@ -182,7 +182,7 @@ final class Hide_Payment_Methods extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('payment_methods', array(
 			'priority' => 10,
-			'default_value' => array('bacs'),
+			'default_value' => array(),
 			'model_key' => 'payment_methods',
 			'callback' => array($this, 'hide_payment_methods'),
 			'label' => esc_html__('Payment Methods to Hide', 'shipqora'),
@@ -210,6 +210,7 @@ final class Hide_Payment_Methods extends Feature {
 			<li class="repeater-item" v-for="(payment_method, index) in <?php echo esc_attr($form_control->get_model_key()) ?>" :key="payment_method">
 				<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length > 1"></span>
 				<select v-model="payment_methods[index]">
+					<option value=""><?php esc_html_e('Choose a Payment Method', 'shipqora') ?></option>
 					<?php
 					$payment_gateways = WC()->payment_gateways()->payment_gateways();
 					foreach ($payment_gateways as $gateway_id => $payment_gateway) {
@@ -223,7 +224,7 @@ final class Hide_Payment_Methods extends Feature {
 			</li>
 		</ul>
 
-		<a href="#" class="button" :class="button_class" @click.prevent="add_payment_method()">
+		<a href="#" class="button" @click.prevent="add_payment_method()">
 			<?php esc_html_e('Add Payment Method', 'shipqora') ?>
 		</a>
 <?php
