@@ -221,7 +221,7 @@ final class Hide_Payment_Methods extends Feature {
 					<?php
 					$payment_gateways = WC()->payment_gateways()->payment_gateways();
 					foreach ($payment_gateways as $gateway_id => $payment_gateway) {
-						printf('<option value="%s">%s</option>', esc_attr($gateway_id), $payment_gateway->get_title());
+						printf('<option value="%s">%s</option>', esc_attr($gateway_id), esc_html($payment_gateway->get_title()));
 					} ?>
 				</select>
 

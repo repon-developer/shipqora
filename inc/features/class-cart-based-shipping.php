@@ -153,6 +153,7 @@ class Cart_Based_Shipping extends Feature {
 				}
 
 				$table_rates_layers = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 					$this->get_hook('table-rates-layers'),
 					$table_rates_layers,
 					$current_layer,
@@ -181,6 +182,7 @@ class Cart_Based_Shipping extends Feature {
 				});
 
 				$table_rate_layer = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 					$this->get_hook('applicable-table-rate-layer'),
 					end($table_rates_layers),
 					$table_rates_layers
