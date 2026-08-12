@@ -249,7 +249,7 @@ class Cart_Based_Shipping extends Feature {
 				$this
 			);
 
-			if (array_key_exists('calculated_shipping_cost', $current_layer) && $current_layer['calculated_shipping_cost'] >= 0) {
+			if ($current_layer['calculated_shipping_cost'] >= 0) {
 				$this->add_shipping_rate_data($shipping_rate, $current_layer);
 			}
 		});

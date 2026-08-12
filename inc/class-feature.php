@@ -179,7 +179,7 @@ class Feature {
 	 */
 	public function order_priority($items) {
 		$items = array_map(function ($item) {
-			$item = wp_parse_args($item, array('rule_id' => 0, 'priority' => 10));
+			$item = wp_parse_args($item, array('rule_id' => 0, 'priority' => 10, 'calculated_shipping_cost' => 0.00));
 			if (strlen($item['priority']) === 0) {
 				$item['priority'] = 10;
 			}
@@ -187,7 +187,7 @@ class Feature {
 			return $item;
 		}, $items);
 
-		usort($items, fn($a, $b) => [$a['priority'], $a['rule_id']] <=> [$b['priority'], $b['rule_id']]);
+		usort($items, fn($a, $b) => [$a['priority'], $a['rule_id'], $a['calculated_shipping_cost']] <=> [$b['priority'], $b['rule_id'], $b['calculated_shipping_cost']]);
 
 		return $items;
 	}

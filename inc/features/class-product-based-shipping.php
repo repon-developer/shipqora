@@ -68,35 +68,25 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 
 	/**
-	 * Set shipping cost
+	 * Modify Shipping Rate object
 	 * 
 	 * @since 1.0.0
 	 * @param WC_Shipping_Rate $shipping_rate
 	 */
-	public function set_shipping_cost($shipping_rate) {
-		$product_items = $shipping_rate->{$this->get_id()};
-		if (!is_array($product_items) || count($product_items) == 0) {
+	public function modify_shipping_rate($shipping_rate) {
+		$product_cost_items = $this->get_shipping_rate_data($shipping_rate);
+		if (count($product_cost_items) == 0) {
 			return;
 		}
 
-		$product_costs = array_map(function ($product_tiers) {
-			$product_item = end($this->order_priority($product_tiers));
-			if (array_key_exists('calculated_shipping_cost', $product_item) && $product_item['calculated_shipping_cost'] >= 0) {
-				return $product_item['calculated_shipping_cost'];
-			}
+		$product_based_layers = array();
+		foreach ($product_cost_items as $product_item) {
+			$product_based_layers[$product_item['product_slug']][] = $product_item;
+		}
 
-			return false;
-		}, $product_items);
+		$product_layers = array_map(fn($product_item) => end($this->order_priority($product_item)), $product_based_layers);
 
-		$shipping_cost = array_sum(array_filter($product_costs));
-		$shipping_cost = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('shipping-cost'),
-			$shipping_cost,
-			$product_items,
-			$this
-		);
-
+		$shipping_cost = array_sum(wp_list_pluck($product_layers, 'calculated_shipping_cost'));
 		if ($shipping_cost >= 0) {
 			$shipping_rate->set_cost($shipping_cost);
 		}
@@ -114,14 +104,8 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			return;
 		}
 
-		$product_items = $shipping_rate->{$this->get_id()};
-		if (!is_array($product_items)) {
-			$product_items = array();
-		}
-
 		$cart_total = new Cart_Total();
-
-		array_walk($this->groups, function (&$group) use (&$product_items, $rule_id, $cart_total) {
+		array_walk($this->groups, function (&$group) use ($shipping_rate, $rule_id, $cart_total) {
 			if (isset($group['condition_groups'])) {
 				$is_matched = Main::get_instance()->is_matched_conditions($group['condition_groups']);
 				if (!$is_matched) {
@@ -147,22 +131,13 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				}
 
 				$cart_total->set_cart_items_keys(array($cart_item_key));
-				$product_item = $this->calculate_tier_item_shipping_cost($group, $cart_total);
-
+				$product_item = $this->calculate_shipping_cost($group, $cart_total);
+				$product_item['product_slug'] = $cart_item['product_id'] . '-' . $cart_item['variation_id'];
 				if ($product_item['calculated_shipping_cost'] >= 0) {
-					$product_slug = $cart_item['product_id'] . '-' . $cart_item['variation_id'];
-					$product_items[$product_slug][] = apply_filters(
-						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-						$this->get_hook('product'),
-						$product_item,
-						$group,
-						$this
-					);
+					$this->add_shipping_rate_data($shipping_rate, $product_item);
 				}
 			}
 		});
-
-		$shipping_rate->{$this->get_id()} = $product_items;
 	}
 
 	/**
@@ -343,4 +318,4 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 }
 
-//Feature::add_feature(Product_Based_Shipping::class);
+Feature::add_feature(Product_Based_Shipping::class);
