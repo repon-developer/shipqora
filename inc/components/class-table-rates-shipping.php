@@ -76,6 +76,14 @@ final class Table_Rates_Shipping {
 	private $condition_groups = array();
 
 	/**
+	 * Hold total shipping cost of ranges
+	 * 
+	 * @since 1.0.0
+	 * @var float
+	 */
+	public $total_shipping_cost = 0.00;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct($table_rates_data = null) {

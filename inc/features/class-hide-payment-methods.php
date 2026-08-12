@@ -84,6 +84,13 @@ final class Hide_Payment_Methods extends Feature {
 		$payment_gatways = array();
 		foreach ($layer_items as $layer_item) {
 			if (isset($layer_item['payment_methods']) && is_array($layer_item['payment_methods'])) {
+				if (isset($layer_item['condition_groups'])) {
+					$condition_matched = Main::get_instance()->is_matched_conditions($layer_item['condition_groups']);
+					if (false == $condition_matched) {
+						continue;
+					}
+				}
+
 				$payment_gatways = array_merge($payment_gatways, $layer_item['payment_methods']);
 			}
 		}

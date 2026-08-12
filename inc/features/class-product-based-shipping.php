@@ -109,7 +109,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @param WC_Shipping_Rate $shipping_rate
 	 * @param int $rule_id
 	 */
-	public function add_shipping_rate_data($shipping_rate, $rule_id) {
+	public function set_shipping_rate_data($shipping_rate, $rule_id) {
 		if (!is_array($this->groups) || (is_array($this->groups) && count($this->groups) == 0)) {
 			return;
 		}
@@ -343,4 +343,4 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 }
 
-Feature::add_feature(Product_Based_Shipping::class);
+//Feature::add_feature(Product_Based_Shipping::class);

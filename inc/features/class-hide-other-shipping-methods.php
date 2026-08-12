@@ -68,7 +68,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		$tier_items = apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			Utils::get_hook_name('feature', $this->get_id(), 'layers'),
-			array($this->lite_tier),
+			array($this->lite_layer),
 			$this
 		);
 
@@ -127,11 +127,11 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_tier', array(
+		$settings_fields->add_setting('lite_layer', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_model_key('lite_tier'),
-			'callback' => array($this, 'lite_tier_setting_field'),
+			'model_key' => $this->get_model_key('lite_layer'),
+			'callback' => array($this, 'lite_layer_setting_field'),
 		), $this->get_id());
 
 		$settings_fields->add_setting('add_new_tier', array(
@@ -147,13 +147,13 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function lite_tier_setting_field() { ?>
+	public function lite_layer_setting_field() { ?>
 		<tbody>
 			<template
 				:draggable="false"
 				is="vue:feature-hide-other-shipping-methods"
-				:feature-data="hide_other_shipping_methods?.lite_tier"
-				@update="(value) => hide_other_shipping_methods.lite_tier = value"
+				:feature-data="hide_other_shipping_methods?.lite_layer"
+				@update="(value) => hide_other_shipping_methods.lite_layer = value"
 				<?php $this->output_component_attrs('hide-other-shipping-methods', array(':hide-heading' => 'true')) ?>>
 			</template>
 		</tbody>
