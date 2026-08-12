@@ -73,28 +73,13 @@ final class Shipping_Cost_Adjustment extends Feature {
 			return;
 		}
 
+		$layers = $this->order_priority($layers);
 		$applicable_layer = apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 			$this->get_hook('applicable-layer'),
 			end($layers),
 			$this
 		);
-
-		// $best_layer = array_reduce($layers, function ($carry, $item) {
-		// 	if (!$carry) {
-		// 		return $item;
-		// 	}
-
-		// 	if (
-		// 		array_key_exists('calculated_shipping_cost', $carry) &&
-		// 		array_key_exists('calculated_shipping_cost', $item) &&
-		// 		$carry['calculated_shipping_cost'] > $item['calculated_shipping_cost']
-		// 	) {
-		// 		return $carry;
-		// 	}
-
-		// 	return $item;
-		// });
 
 		if (!$applicable_layer || !array_key_exists('calculated_shipping_cost', $applicable_layer)) {
 			return;
@@ -214,7 +199,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('tier-item') ?>
+			<?php $settings_fields->output_fields('layer') ?>
 		</template>
 	<?php
 	}
@@ -300,7 +285,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'amount' => '',
 				'type' => 'increase_percentage',
 			)
-		), 'tier-item');
+		), 'layer');
 
 		$settings_fields->add_setting('shipping_cost_limit', array(
 			'priority' => 20,
@@ -313,23 +298,35 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'min_cost' => '',
 				'max_cost' => '',
 			)
-		), 'tier-item');
+		), 'layer');
+
+		$settings_fields->add_setting('priority', array(
+			'priority' => 30,
+			'default_value' => '',
+			'placeholder' => '10',
+			'model_key' => 'priority',
+			'type' => Form_Control::NUMBER,
+			'label' => esc_html__('Global Priority', 'shipqora'),
+			'attributes' => array('min' => '0', 'step' => '1'),
+			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipqora'),
+			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipqora'),
+		), 'layer');
 
 		$settings_fields->add_setting('overwrite_shipping_method_title', array(
-			'priority' => 30,
+			'priority' => 40,
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => 'shipping_method_title',
 			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora'),
 			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
 			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
-		), 'tier-item');
+		), 'layer');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
-		), 'tier-item');
+		), 'layer');
 	}
 
 	/**
