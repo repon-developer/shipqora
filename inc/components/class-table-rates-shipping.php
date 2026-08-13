@@ -214,7 +214,7 @@ final class Table_Rates_Shipping {
 		<template id="shipqora-table-rates-shipping-component">
 			<table class="table-shipqora-form table-shipqora-table-rates-layer">
 				<thead>
-					<?php $this->output_heading_row(esc_html__('Table Rates #{{tierNo}}', 'shipqora'), array('table-rates-shipping')) ?>
+					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora'), array('table-rates-shipping')) ?>
 				</thead>
 
 				<tbody v-if="!collapse">

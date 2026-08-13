@@ -74,12 +74,10 @@ final class Hide_Payment_Methods extends Feature {
 	 * @return array
 	 */
 	public function payment_methods() {
-		$layer_items = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			Utils::get_hook_name('feature', $this->get_id(), 'layers'),
-			array($this->lite_layer),
-			$this
-		);
+		$layers = $this->get_feature_layers($this->lite_layer);
+		if (count($layers) == 0) {
+			return;
+		}
 
 		$payment_gatways = array();
 		foreach ($layer_items as $layer_item) {
@@ -112,7 +110,7 @@ final class Hide_Payment_Methods extends Feature {
 			null
 		); ?>
 
-		<?php $this->output_heading_row(esc_html__('Hide Tier #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Hide Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('layer') ?>
 		</template>
@@ -136,7 +134,12 @@ final class Hide_Payment_Methods extends Feature {
 		$settings_fields->add_setting('layer_notice_callback', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array($this, 'layer_notice_callback'),
+			'callback' => array(General::class, 'notice_setting_field'),
+			'notice_content' => array(
+				'title' => '⚡ Need Multiple Hiding Tiers?',
+				'utm_source' => 'hide+payment+methos+layer',
+				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to add unlimited hiding tiers. Create advanced, multi-layered rules to hide different payment methods for different shipping methods, products, or customer roles simultaneously.',
+			)
 		), $this->get_id());
 	}
 
@@ -160,27 +163,6 @@ final class Hide_Payment_Methods extends Feature {
 	}
 
 	/**
-	 * Add new adjustment tier notice
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function layer_notice_callback(Form_Control $form_control) {
-		$line_button_data = array('utm_source' => 'hide+other+shipping+methos+tier');
-		$form_control->output_row(); ?>
-		<td colspan="2">
-			<div class="shipqora-notice-box">
-				<h3>⚡ Need Multiple Hiding Tiers?</h3>
-				<div class="description">Upgrade to <strong>ShipQora Pro</strong> to add unlimited hiding tiers. Create advanced, multi-layered rules to hide different payment methods for different shipping methods, products, or customer roles simultaneously.</div>
-				<div class="gap-10"></div>
-				<?php Utils::get_lite_button($line_button_data) ?>
-			</div>
-		</td>
-	<?php
-		$form_control->output_row('close');
-	}
-
-	/**
 	 * Add component settings field 
 	 * 
 	 * @since 1.0.0
@@ -189,7 +171,7 @@ final class Hide_Payment_Methods extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('payment_methods', array(
 			'priority' => 10,
-			'default_value' => array(),
+			'default_value' => array(''),
 			'model_key' => 'payment_methods',
 			'callback' => array($this, 'hide_payment_methods'),
 			'label' => esc_html__('Payment Methods to Hide', 'shipqora'),

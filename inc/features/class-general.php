@@ -18,6 +18,39 @@ if (!defined('ABSPATH')) {
 final class General {
 
 	/**
+	 * Global setting field for notice
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public static function notice_setting_field(Form_Control $form_control) {
+		$notice_content = $form_control->get_option('notice_content');
+
+		$line_button_data = array();
+		if (!empty($notice_content['utm_source'])) {
+			$line_button_data['utm_source'] = $notice_content['utm_source'];
+		}
+
+		$form_control->output_row(); ?>
+		<td colspan="2">
+			<div class="shipqora-notice-box">
+				<?php
+				if (!empty($notice_content['title'])) {
+					echo '<h3>' . esc_html($notice_content['title']) . '</h3>';
+				}
+
+				if (!empty($notice_content['description'])) {
+					echo '<div class="description">' . wp_kses_post($notice_content['description']) . '</div>';
+				} ?>
+				<div class="gap-10"></div>
+				<?php Utils::get_lite_button($line_button_data) ?>
+			</div>
+		</td>
+	<?php
+		$form_control->output_row('close');
+	}
+
+	/**
 	 * Global setting field for condition group
 	 * 
 	 * @since 1.0.0

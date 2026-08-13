@@ -226,7 +226,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<?php $this->output_heading_row(esc_html__('Product Group #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Product Group #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('product') ?>
 		</template>
@@ -242,7 +242,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$cart_based_component = Settings_Fields::get_instance('cart-based-shipping');
 
-		$target_products = $cart_based_component->get_setting('target_products', 'cart-tier');
+		$target_products = $cart_based_component->get_setting('target_products', 'layer');
 		$target_products = wp_parse_args(array(
 			'model_key' => 'target_products',
 			'label' => esc_html__('Target Products', 'shipqora'),
@@ -254,20 +254,25 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 
 		$settings_fields->add_setting('target_products', $target_products, 'product');
 
-		$exclude_products = $cart_based_component->get_setting('exclude_products', 'cart-tier');
-		$exclude_products['callback'] = array($this, 'exclude_products_notice');
+		$exclude_products = $cart_based_component->get_setting('exclude_products', 'layer');
+		$exclude_products['notice_content'] = array(
+			'utm_source' => 'exclude+products',
+			'title' => '🚀 Want to Exclude Specific Products?',
+			'description' => 'Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.',
+		);
+
 		$settings_fields->add_setting('exclude_products', $exclude_products, 'product');
 
-		$priority_setting_field = $cart_based_component->get_setting('priority', 'cart-tier');
+		$priority_setting_field = $cart_based_component->get_setting('priority', 'layer');
 		$settings_fields->add_setting('priority', $priority_setting_field, 'product');
 
-		$shipping_cost_calculation = $cart_based_component->get_setting('shipping_cost_calculation', 'cart-tier');
+		$shipping_cost_calculation = $cart_based_component->get_setting('shipping_cost_calculation', 'layer');
 		$settings_fields->add_setting('shipping_cost_calculation', $shipping_cost_calculation, 'product');
 
-		$table_rates_settings = $cart_based_component->get_setting('table_rates_settings', 'cart-tier');
+		$table_rates_settings = $cart_based_component->get_setting('table_rates_settings', 'layer');
 		$settings_fields->add_setting('table_rates_settings', $table_rates_settings, 'product');
 
-		$condition_groups = $cart_based_component->get_setting('condition_groups', 'cart-tier');
+		$condition_groups = $cart_based_component->get_setting('condition_groups', 'layer');
 		$settings_fields->add_setting('condition_groups', $condition_groups, 'product');
 	}
 
@@ -292,29 +297,8 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				</template>
 			</cart-option>
 		</div>
-	<?php
-		$form_control->output_after_input_options();
-	}
-
-	/**
-	 * Output adjust cost setting field
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function exclude_products_notice(Form_Control $form_control) {
-		$line_button_data = array('utm_source' => 'exclude+products');
-		$form_control->output_row(); ?>
-		<td colspan="2">
-			<div class="shipqora-notice-box">
-				<h3>🚀 Want to Exclude Specific Products?</h3>
-				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
-				<div class="gap-10"></div>
-				<?php Utils::get_lite_button($line_button_data) ?>
-			</div>
-		</td>
 <?php
-		$form_control->output_row('close');
+		$form_control->output_after_input_options();
 	}
 }
 

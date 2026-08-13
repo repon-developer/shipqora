@@ -207,12 +207,7 @@ class Cart_Based_Shipping extends Feature {
 	 * @param int $rule_id
 	 */
 	public function set_shipping_rate_data($shipping_rate, $rule_id) {
-		$layers = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('layers'),
-			array($this->lite_layer)
-		);
-
+		$layers = $this->get_feature_layers($this->lite_layer);
 		if (count($layers) == 0) {
 			return;
 		}
@@ -272,9 +267,14 @@ class Cart_Based_Shipping extends Feature {
 		), $this->get_id());
 
 		$settings_fields->add_setting('show_cart_tier_notice', array(
-			'priority' => 10000,
+			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array($this, 'show_cart_tier_notice'),
+			'callback' => array(General::class, 'notice_setting_field'),
+			'notice_content' => array(
+				'title' => '💡 Unlock Unlimited Cart-Based Shipping Tiers',
+				'utm_source' => 'cart+based+shipping+cost+layer',
+				'description' => 'Upgrade to the Pro version to create unlimited shipping tiers and build complex, tiered shipping rules based on cart conditions.',
+			)
 		), $this->get_id());
 	}
 
@@ -301,27 +301,6 @@ class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Output add new layer button
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function show_cart_tier_notice(Form_Control $form_control) {
-		$line_button_data = array('utm_source' => 'cart+based+shipping+cost');
-		$form_control->output_row(); ?>
-		<td colspan="2">
-			<div class="shipqora-notice-box">
-				<h3>💡 Unlock Unlimited Cart Tiers</h3>
-				<div class="description">Upgrade to the Pro version to create unlimited shipping tiers and build complex, tiered shipping rules based on cart conditions.</div>
-				<div class="gap-10"></div>
-				<?php Utils::get_lite_button($line_button_data) ?>
-			</div>
-		</td>
-	<?php
-		$form_control->output_row('close');
-	}
-
-	/**
 	 * Output component
 	 * 
 	 * @since 1.0.0
@@ -329,9 +308,9 @@ class Cart_Based_Shipping extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<?php $this->output_heading_row(esc_html__('Tier #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('cart-tier') ?>
+			<?php $settings_fields->output_fields('layer') ?>
 		</template>
 	<?php
 	}
@@ -351,14 +330,19 @@ class Cart_Based_Shipping extends Feature {
 			'callback' => array($this, 'target_products_setting_field'),
 			'label_note' => esc_html__('Select which cart items this rule applies to. You can target all items or filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
 			'option_note' => esc_html__('Shipping cost calculations will apply to the combined total (subtotal, quantity, weight, or volume) of all matching items found in the cart.', 'shipqora'),
-		), 'cart-tier');
+		), 'layer');
 
 		$settings_fields->add_setting('exclude_products', array(
 			'priority' => 10.10,
-			'conditions' => array('tierNo == 1'),
+			'conditions' => array('layerNo == 1'),
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array($this, 'exclude_products_setting_field'),
-		), 'cart-tier');
+			'callback' => array(General::class, 'notice_setting_field'),
+			'notice_content' => array(
+				'title' => '🚀 Want to Exclude Specific Products?',
+				'utm_source' => 'exclude+products',
+				'description' => 'Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Cart Items"</strong> and create more precise shipping cost with greater control over product eligibility.',
+			)
+		), 'layer');
 
 		$settings_fields->add_setting('priority', array(
 			'priority' => 30,
@@ -370,7 +354,7 @@ class Cart_Based_Shipping extends Feature {
 			'attributes' => array('min' => '0', 'step' => '1'),
 			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipqora'),
 			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipqora'),
-		), 'cart-tier');
+		), 'layer');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
 			'priority' => 40,
@@ -385,7 +369,7 @@ class Cart_Based_Shipping extends Feature {
 				'calculate_basis' => 'fixed_amount',
 				'calculation_type' => 'per_unit_or_percentage',
 			)
-		), 'cart-tier');
+		), 'layer');
 
 		$settings_fields->add_setting('table_rates_settings', array(
 			'priority' => 50,
@@ -406,14 +390,14 @@ class Cart_Based_Shipping extends Feature {
 					'callback' => array($this, 'new_table_rates_notice'),
 				)
 			)
-		), 'cart-tier');
+		), 'layer');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(General::class, 'condition_group_setting_field'),
-		), 'cart-tier');
+		), 'layer');
 	}
 
 	/**
@@ -439,27 +423,6 @@ class Cart_Based_Shipping extends Feature {
 		</div>
 	<?php
 		$form_control->output_after_input_options();
-	}
-
-	/**
-	 * Output adjust cost setting field
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function exclude_products_setting_field(Form_Control $form_control) {
-		$line_button_data = array('utm_source' => 'exclude+products');
-		$form_control->output_row(); ?>
-		<td colspan="2">
-			<div class="shipqora-notice-box">
-				<h3>🚀 Want to Exclude Specific Products?</h3>
-				<div class="description">Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Cart Items"</strong> and create more precise shipping cost with greater control over product eligibility.</div>
-				<div class="gap-10"></div>
-				<?php Utils::get_lite_button($line_button_data) ?>
-			</div>
-		</td>
-	<?php
-		$form_control->output_row('close');
 	}
 
 	/**
@@ -537,7 +500,7 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function new_table_rates_notice(Form_Control $form_control) {
-		$line_button_data = array('utm_source' => 'cart+based+shipping+cost'); ?>
+		$line_button_data = array('utm_source' => 'table+rates+layer'); ?>
 
 		<div class="shipqora-notice-box">
 			<h3>💡 Unlock Unlimited Table Rate Tiers</h3>

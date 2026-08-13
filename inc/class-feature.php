@@ -219,4 +219,58 @@ class Feature {
 			echo esc_attr($key) . '="' . esc_attr($value) . '" ';
 		}
 	}
+
+	/**
+	 * Get feature layers
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_feature_layers($primary_layer) {
+		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('layers'),
+			array($primary_layer),
+			$this
+		);
+	}
+
+	/**
+	 * Get shipping rate data
+	 * 
+	 * @since 1.0.0
+	 * @param $shipping_rate
+	 * @return array
+	 */
+	public function get_shipping_rate_data($shipping_rate) {
+		$existed_data = $shipping_rate->{$this->get_id()};
+		if (!is_array($existed_data)) {
+			$existed_data = array();
+		}
+
+		return $existed_data;
+	}
+
+	/**
+	 * Add data at provided shipping rate
+	 * 
+	 * @since 1.0.0
+	 * @param $shipping_rate
+	 * @param $data_items
+	 * @return void
+	 */
+	protected function add_shipping_rate_data($shipping_rate, $new_data, $data_id = null) {
+		$existed_data = $shipping_rate->{$this->get_id()};
+		if (!is_array($existed_data)) {
+			$existed_data = array();
+		}
+
+		if ($data_id) {
+			$existed_data[$data_id] = $new_data;
+		} else {
+			$existed_data[] = $new_data;
+		}
+
+		$shipping_rate->{$this->get_id()} = $existed_data;
+	}
 }

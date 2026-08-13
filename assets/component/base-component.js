@@ -7,7 +7,7 @@ const Base_Component = {
 			type: Boolean
 		},
 
-		tierNo: {
+		layerNo: {
 			default: 1,
 			type: Number
 		},

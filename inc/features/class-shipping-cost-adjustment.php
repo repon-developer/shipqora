@@ -108,12 +108,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function set_shipping_rate_data($shipping_rate) {
-		$layers = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('layers'),
-			array($this->lite_layer)
-		);
-
+		$layers = $this->get_feature_layers($this->lite_layer);
 		if (count($layers) == 0) {
 			return;
 		}
@@ -197,7 +192,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{tierNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('layer') ?>
 		</template>
@@ -218,10 +213,15 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'callback' => array($this, 'lite_layer_setting_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('layer_notice', array(
-			'priority' => 10000,
+		$settings_fields->add_setting('new_layer_notice', array(
+			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array($this, 'layer_notice_row'),
+			'callback' => array(General::class, 'notice_setting_field'),
+			'notice_content' => array(
+				'title' => '⚡ Need Multiple Adjustment Tiers?',
+				'utm_source' => 'add+shipping+cost+adjustment+layer',
+				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.',
+			)
 		), $this->get_id());
 	}
 
@@ -245,27 +245,6 @@ final class Shipping_Cost_Adjustment extends Feature {
 			</template>
 		</tbody>
 	<?php
-	}
-
-	/**
-	 * Add new adjustment tier notice
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function layer_notice_row(Form_Control $form_control) {
-		$line_button_data = array('utm_source' => 'add+shipping+cost+adjustment+tier');
-		$form_control->output_row(); ?>
-		<td colspan="2">
-			<div class="shipqora-notice-box">
-				<h3>⚡ Need Multiple Adjustment Tiers?</h3>
-				<div class="description">Upgrade to <strong>ShipQora Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.</div>
-				<div class="gap-10"></div>
-				<?php Utils::get_lite_button($line_button_data) ?>
-			</div>
-		</td>
-	<?php
-		$form_control->output_row('close');
 	}
 
 	/**
