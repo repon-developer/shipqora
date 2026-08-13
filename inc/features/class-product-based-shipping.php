@@ -183,16 +183,16 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 */
 	public function product_groups_settings_field() { ?>
 		<tbody
-			:key="product_group?.id"
 			class="sortable-item"
-			v-for="(product_group, index_no) in <?php echo esc_attr($this->get_model_key('groups')) ?>">
+			:key="product_group?.id"
+			v-for="(product_group, layer_no) in <?php echo esc_attr($this->get_model_key('groups')) ?>">
 			<template
 				:hide-heading="false"
-				:tier-no="index_no + 1"
+				:layer-no="layer_no + 1"
 				:feature-data="product_group"
 				is="vue:feature-product-based-shipping"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[index_no] = value"
-				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', index_no)"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[layer_no] = value"
+				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', layer_no)"
 				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipqora') ?>"
 				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', value, position)">
 			</template>
@@ -287,7 +287,6 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		<div class="field-row">
 			<cart-option
 				based-on=""
-				:hide-operator="true"
 				cart-option-type="products"
 				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"

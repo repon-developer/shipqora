@@ -8,6 +8,7 @@ use ShipQora\Form_Control;
 use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
+use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -135,7 +136,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		$settings_fields->add_setting('new_layer_notice_row', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array(General::class, 'notice_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Need Multiple Hiding Tiers?',
 				'utm_source' => 'hide+other+shipping+methos+layer',
@@ -185,7 +186,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'condition_group_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
 		), 'tier-item');
 	}
 }

@@ -8,6 +8,7 @@ use ShipQora\Form_Control;
 use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
+use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -216,7 +217,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$settings_fields->add_setting('new_layer_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array(General::class, 'notice_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Need Multiple Adjustment Tiers?',
 				'utm_source' => 'add+shipping+cost+adjustment+layer',
@@ -304,7 +305,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'condition_group_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
 		), 'layer');
 	}
 

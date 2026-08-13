@@ -8,6 +8,7 @@ use ShipQora\Feature\General;
 use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
+use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -263,7 +264,7 @@ final class Table_Rates_Shipping {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'condition_group_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
 		), 'general');
 	}
 

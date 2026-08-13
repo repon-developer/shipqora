@@ -2,15 +2,16 @@
 
 namespace ShipQora\Feature;
 
-use ShipQora\Cart_Total;
-use ShipQora\Component\Cart_Option;
 use ShipQora\Utils;
 use ShipQora\Feature;
+use ShipQora\Cart_Total;
 use ShipQora\Form_Control;
 use ShipQora\Shipping_Cost;
 use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
+use ShipQora\Component\Cart_Option;
+use ShipQora\Global_Settings_Fields;
 use ShipQora\Component\Table_Rates_Shipping;
 
 if (!defined('ABSPATH')) {
@@ -212,6 +213,7 @@ class Cart_Based_Shipping extends Feature {
 			return;
 		}
 
+
 		$cart_total = new Cart_Total();
 
 		array_walk($layers, function (&$current_layer) use ($shipping_rate, $cart_total, $rule_id) {
@@ -266,10 +268,10 @@ class Cart_Based_Shipping extends Feature {
 			'callback' => array($this, 'lite_layer_settings_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('show_cart_tier_notice', array(
+		$settings_fields->add_setting('cart_layer_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array(General::class, 'notice_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '💡 Unlock Unlimited Cart-Based Shipping Tiers',
 				'utm_source' => 'cart+based+shipping+cost+layer',
@@ -336,7 +338,7 @@ class Cart_Based_Shipping extends Feature {
 			'priority' => 10.10,
 			'conditions' => array('layerNo == 1'),
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array(General::class, 'notice_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '🚀 Want to Exclude Specific Products?',
 				'utm_source' => 'exclude+products',
@@ -396,7 +398,7 @@ class Cart_Based_Shipping extends Feature {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
-			'callback' => array(General::class, 'condition_group_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
 		), 'layer');
 	}
 
@@ -411,11 +413,10 @@ class Cart_Based_Shipping extends Feature {
 		<div class="field-row">
 			<cart-option
 				based-on=""
-				:hide-operator="true"
 				cart-option-type="cart-items"
 				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
-				option-label="<?php esc_html_e('All cart items of selected {{option_label_lower}}', 'shipqora') ?>">
+				option-label="<?php esc_html_e('Cart items of selected {{option_label_lower}}', 'shipqora') ?>">
 				<template v-slot:based-on-first-option>
 					<option value=""><?php esc_html_e('All cart items', 'shipqora') ?></option>
 				</template>

@@ -15,11 +15,6 @@ const Cart_Option = {
 		basedOn: {
 			default: '',
 			type: String,
-		},
-
-		hideOperator: {
-			default: false,
-			type: Boolean,
 		}
 	},
 
@@ -44,19 +39,6 @@ const Cart_Option = {
 			delete cart_option_data.loading;
 			return cart_option_data;
 		},
-
-		hide_operator() {
-			if (!this.based_on?.length || this.based_on == 'of_the_cart' || this.hideOperator) {
-				return true;
-			}
-
-			const option_settings = this.options?.[this.based_on];
-			if (true === option_settings?.hide_operator) {
-				return true;
-			}
-
-			return false;
-		}
 	},
 
 	watch: {

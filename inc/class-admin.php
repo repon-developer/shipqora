@@ -75,6 +75,7 @@ final class Admin {
 		require_once SHIPQORA_PATH . 'inc/admin/class-rule-list.php';
 		require_once SHIPQORA_PATH . 'inc/admin/class-rule-editor.php';
 		require_once SHIPQORA_PATH . 'inc/admin/class-shipping-editor.php';
+		require_once SHIPQORA_PATH . 'inc/admin/class-global-settings-fields.php';
 	}
 
 	/**

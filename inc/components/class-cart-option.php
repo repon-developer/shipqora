@@ -81,7 +81,7 @@ final class Cart_Option {
 					:value="option_value">{{get_option_label(option_value)}}</option>
 			</select>
 
-			<select v-model="operator" v-if="false === hide_operator">
+			<select v-model="operator">
 				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipqora') ?></option>
 				<option value="all_in_list"><?php esc_html_e('All in list', 'shipqora') ?></option>
 				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipqora') ?></option>
@@ -134,13 +134,6 @@ final class Cart_Option {
 	 * @var array
 	 */
 	public $model_values = [];
-
-	/**
-	 * Hold if current instance allow operator
-	 * 
-	 * @var boolean
-	 */
-	public $has_operator = true;
 
 	/**
 	 * Hold compare values of all in list operator
@@ -288,10 +281,6 @@ final class Cart_Option {
 				$cart_items_values = $this->get_terms_of_product($cart_item['product_id'], $this->object_name);
 			}
 
-			if ('products' === $this->object_group) {
-				$cart_items_values[] = $cart_item['product_id'];
-			}
-
 			$cart_items_values = apply_filters(
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 				Utils::get_hook_name('cart-option', 'is-matched-model-values', 'cart-items-values'),
@@ -299,13 +288,12 @@ final class Cart_Option {
 				$cart_item,
 				$this
 			);
-			
+
 			$all_cart_items_values = array_merge($all_cart_items_values, $cart_items_values);
 		}
 
 		$all_cart_items_values = array_unique($all_cart_items_values);
 		$matched = array_intersect($all_cart_items_values, $this->model_values);
-
 		if ('any_in_list' === $this->operator) {
 			return count($matched) > 0;
 		}
@@ -357,18 +345,14 @@ final class Cart_Option {
 			);
 
 			$matched_values = array_intersect($this->model_values, $compare_values);
+			$matched_model_values = $this->is_matched_model_values();
 
-			if ($this->has_operator) {
-				$matched_model_values = $this->is_matched_model_values();
-				if ($matched_model_values && count($matched_values) > 0) {
-					$eligible_product = true;
-				}
+			if ($matched_model_values && count($matched_values) > 0) {
+				$eligible_product = true;
+			}
 
-				if (!$matched_model_values && 'not_in_list' == $this->operator) {
-					$eligible_product = count($matched_values) === 0;
-				}
-			} else {
-				$eligible_product = count($matched_values) > 0;
+			if (!$matched_model_values && 'not_in_list' == $this->operator) {
+				$eligible_product = count($matched_values) === 0;
 			}
 		}
 

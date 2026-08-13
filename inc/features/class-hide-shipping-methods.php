@@ -7,6 +7,7 @@ use ShipQora\Debugging;
 use ShipQora\Form_Control;
 use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
+use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -71,7 +72,7 @@ final class Hide_Shipping_Methods extends Feature {
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'hide_shipping_methods.condition_groups',
-			'callback' => array(General::class, 'condition_group_setting_field'),
+			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
 			'extra_settings' => array(
 				'add_group_method' => "add_collection('hide_shipping_methods.condition_groups')",
 				'delete_group_method' => "delete_collection('hide_shipping_methods.condition_groups', index)",
