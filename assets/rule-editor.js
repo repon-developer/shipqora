@@ -116,10 +116,6 @@ const ShipQora_Rule_Editor = {
 		this.loading = false;
 	},
 
-	updated() {
-		//console.log(this.$data);
-	},
-
 	methods: {
 		...wp.hooks.applyFilters('shipqora.rule_editor.methods', {}),
 

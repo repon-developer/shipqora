@@ -36,10 +36,6 @@ const Select2_Dropdown = {
 			default: false,
 			type: Boolean
 		},
-		enableGroup: {
-			type: Boolean,
-			default: false,
-		}
 	},
 
 	emits: ['update', 'onloading'],
@@ -81,7 +77,10 @@ const Select2_Dropdown = {
 
 			if ('shipping_instances' == this.type && typeof this.options == 'object') {
 				return this.options.map((item) => {
-					item.sub_options = Object.entries(item.instances).map(([id, name]) => ({ id, name }))
+					if (item?.instances && typeof item?.instances === 'object') {
+						item.sub_options = Object.entries(item.instances).map(([id, name]) => ({ id, name }))
+					}
+
 					return item;
 				})
 			}
@@ -102,12 +101,12 @@ const Select2_Dropdown = {
 		},
 
 		has_option_group() {
-			if ('states' == this.type || 'shipping_instances' == this.type) {
+			if ('states' == this.type) {
 				return true;
 			}
 
 			const has_sub_option = this.select_option_items.find((item) => Array.isArray(item?.sub_options))
-			return typeof has_sub_option !== 'undefined' && this.enableGroup == true;
+			return typeof has_sub_option !== 'undefined';
 		},
 
 		is_ajax_based() {

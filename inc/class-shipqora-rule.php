@@ -47,34 +47,53 @@ final class ShipQora_Rule {
 	 * Get ShipQora Rules by instance ID of shipping method
 	 * 
 	 * @since 1.0.0
-	 * @param int $instance_id
+	 * @param int $rate_id - free_shipping:14
 	 * @return array
 	 */
-	public static function get_by_instance_id($instance_id) {
-		if (isset(self::$instances_ids[$instance_id])) {
-			return self::$instances_ids[$instance_id];
+	public static function get_by_rate_id($rate_id) {
+		if (isset(self::$instances_ids[$rate_id])) {
+			return self::$instances_ids[$rate_id];
 		}
 
-		$shipping_method = \WC_Shipping_Zones::get_shipping_method($instance_id);
-		if (!is_a($shipping_method, 'WC_Shipping_Method')) {
+		$rate_id_data = explode(':', $rate_id);
+		if (empty($rate_id_data[1])) {
+			$rate_id_data[1] = 0;
+		}
+
+		$method_id = $rate_id_data[0];
+		$instance_id = $rate_id_data[1];
+
+		$json_search_data = null;
+		if ('pickup_location' == $method_id) {
+			$json_search_data = array('pickup_location', $rate_id);
+		}
+
+		if ('pickup_location' !== $method_id && $instance_id > 0) {
+			$shipping_method = \WC_Shipping_Zones::get_shipping_method($instance_id);
+			if (!is_a($shipping_method, 'WC_Shipping_Method')) {
+				return array();
+			}
+
+			$zone_id = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id)->get_id();
+
+			$json_search_data = array(
+				$shipping_method->id,
+				$shipping_method->id . ':' . $zone_id . '-0',
+				$shipping_method->id . ':' . $zone_id . '-' . $instance_id,
+			);
+		}
+
+		if (empty($json_search_data)) {
 			return array();
 		}
-
-		$zone_id = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id)->get_id();
 
 		global $wpdb;
 		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipqora_rules_table);
 
-		$json_search = array(
-			$shipping_method->id,
-			$shipping_method->id . ':' . $zone_id . '-0',
-			$shipping_method->id . ':' . $zone_id . '-' . $instance_id,
-		);
-
 		$shipping_method_sql = array();
-		while ($shpping_method_id = current($json_search)) {
+		while ($shpping_method_id = current($json_search_data)) {
 			$shipping_method_sql[] = $wpdb->prepare('JSON_CONTAINS(shipping_methods, %s)', wp_json_encode($shpping_method_id));
-			next($json_search);
+			next($json_search_data);
 		}
 
 		$prepared_sql .= " AND (" . implode(' OR ', $shipping_method_sql) . ")";
@@ -86,11 +105,11 @@ final class ShipQora_Rule {
 
 		$results = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ($results as $rule_data) {
-			self::$instances_ids[$instance_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
+			self::$instances_ids[$rate_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
 		}
 
-		if (isset(self::$instances_ids[$instance_id])) {
-			return self::$instances_ids[$instance_id];
+		if (isset(self::$instances_ids[$rate_id])) {
+			return self::$instances_ids[$rate_id];
 		}
 
 		return array();
@@ -111,40 +130,7 @@ final class ShipQora_Rule {
 	 * @return ShipQora_Rule
 	 */
 	public static function get_by_shipping_rate($shipping_rate) {
-		$instance_id = $shipping_rate->get_instance_id();
-
-		$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id);
-		$zone_id = $zone->get_id();
-
-		if (!isset(self::$shipping_rate_ids[$instance_id])) {
-			global $wpdb;
-			$prepared_sql = $wpdb->prepare("SELECT id FROM %i WHERE 1 = 1", $wpdb->shipqora_rules_table);
-
-			$json_search = array(
-				$shipping_rate->method_id,
-				$shipping_rate->method_id . ':' . $zone_id . '-0',
-				$shipping_rate->method_id . ':' . $zone_id . '-' . $instance_id,
-			);
-
-			$shipping_method_sql = array();
-			while ($shpping_method = current($json_search)) {
-				$shipping_method_sql[] = $wpdb->prepare('JSON_CONTAINS(shipping_methods, %s)', wp_json_encode($shpping_method));
-				next($json_search);
-			}
-
-			$prepared_sql .= " AND (" . implode(' OR ', $shipping_method_sql) . ")";
-
-			if (current_user_can('manage_woocommerce')) {
-				$prepared_sql .= " AND status IN ('active', 'development')";
-			} else {
-				$prepared_sql .= " AND status = 'active'";
-			}
-
-			$rule_ids = $wpdb->get_col($prepared_sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			self::$shipping_rate_ids[$instance_id] = $rule_ids;
-		}
-
-		return array_map(fn($rule_id) => self::get($rule_id), self::$shipping_rate_ids[$instance_id]);
+		return self::get_by_rate_id($shipping_rate->get_id());
 	}
 
 	/**

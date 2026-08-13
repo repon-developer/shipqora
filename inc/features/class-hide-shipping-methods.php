@@ -86,7 +86,7 @@ final class Hide_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return boolean
 	 */
-	public function hide_shipping_methods($shipping_rate, $shipqora_rule) {
+	public function hide_shipping_methods() {
 		return Main::get_instance()->is_matched_conditions($this->condition_groups, $this);
 	}
 }

@@ -190,6 +190,18 @@ final class Select2 {
 			$allow_shipping_method = sanitize_text_field($meta_data['shipping_method']);
 		}
 
+		if ('pickup_location' == $meta_data['shipping_method']) {
+			$pickup_locations = get_option('pickup_location_pickup_locations');
+
+			if (is_array($pickup_locations)) {
+				$locations = array_map(function ($location, $location_index) {
+					return array('id' => $location_index, 'name' => $location['name']);
+				}, $pickup_locations, array_keys($pickup_locations));
+
+				return $locations;
+			}
+		}
+
 		$shipping_zones = Utils::get_shipping_zones();
 
 		$shipping_instances = array();

@@ -38,10 +38,7 @@ final class General {
 			if (is_array($shipping_methods) && count($shipping_methods) > 0) {
 				$rules = array();
 				foreach ($shipping_methods as $rate_id) {
-					list($method_id, $instance_id) = explode(':', $rate_id, 2);
-					if ($instance_id) {
-						$rules = array_merge($rules, ShipQora_Rule::get_by_instance_id($instance_id));
-					}
+					$rules = array_merge($rules, ShipQora_Rule::get_by_rate_id($rate_id));
 				}
 
 				if (count($rules) == 0) {
@@ -81,7 +78,7 @@ final class General {
 
 		if (isset($features['hide-shipping-methods'])) {
 			$rates = array_filter($rates, function ($shipping_rate) {
-				$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+				$shipqora_rules = ShipQora_Rule::get_by_rate_id($shipping_rate->get_id());
 
 				$hide_shipping_methos = array();
 				foreach ($shipqora_rules as $key => $rule) {
@@ -89,7 +86,7 @@ final class General {
 						if ($rule->is_feature_enabled('hide-shipping-methods')) {
 							$feature_object = $rule->get_feature_object('hide-shipping-methods');
 							if ($feature_object) {
-								$hide_shipping_methos[] = $feature_object->hide_shipping_methods($shipping_rate, $rule);
+								$hide_shipping_methos[] = $feature_object->hide_shipping_methods();
 							}
 						}
 					}
@@ -174,14 +171,23 @@ final class General {
 		}
 
 		return array_filter($rates, function ($current_rate) use ($hide_shipping_methods) {
-			$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $current_rate->get_instance_id());
-			$zone_id = $zone->get_id();
+			$search_data = array();
+			$method_id = $current_rate->get_method_id();
 
-			$search_methods = array(
-				$current_rate->get_method_id(),
-				$current_rate->get_method_id() . ':' . $zone_id . '-0',
-				$current_rate->get_method_id() . ':' . $zone_id . '-' . $current_rate->get_instance_id(),
-			);
+			if ('pickup_location' !== $method_id) {
+				$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $current_rate->get_instance_id());
+				$zone_id = $zone->get_id();
+
+				$search_methods = array(
+					$method_id,
+					$method_id . ':' . $zone_id . '-0',
+					$method_id . ':' . $zone_id . '-' . $current_rate->get_instance_id(),
+				);
+			}
+
+			if ('pickup_location' == $method_id) {
+				$search_methods = array($method_id, $current_rate->get_id());
+			}
 
 			return count(array_intersect($hide_shipping_methods, $search_methods)) == 0;
 		});

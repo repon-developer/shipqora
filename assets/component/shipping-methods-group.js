@@ -41,10 +41,6 @@ const Shipping_Method_Input = {
 			return 'shipping_method_chosen_instance_' + this.method_id + '_' + this.id;
 		},
 
-		registered_shipping_methods() {
-			return shipqora_admin?.shipping_methods;
-		},
-
 		shipping_method_data() {
 			return [this.method_id, this.instance_id].filter((item) => item?.length).join(':');
 		},
@@ -71,7 +67,11 @@ const Shipping_Method_Input = {
 		shipping_instances(shipping_instances) {
 			this.loading = false;
 
-			if (this.instance_id && this.instance_id?.length) {
+			if ('pickup_location' == this.method_id && typeof shipping_instances?.[this.instance_id] === 'undefined') {
+				this.shipping_instances[this.instance_id] = { id: this.instance_id, name: __('[Deleted Location]', 'shipqora') }
+			}
+
+			if ('pickup_location' !== this.method_id && this.instance_id && this.instance_id?.length) {
 				const [zone_id] = this.instance_id.split('-');
 				const current_instance = shipping_instances?.[zone_id]?.instances?.[this.instance_id];
 				if (!current_instance) {

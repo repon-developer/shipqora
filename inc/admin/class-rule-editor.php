@@ -55,14 +55,7 @@ final class Rule_Editor {
 				$values['features'][$feature_id] = $settings_fields->get_models();
 			}
 
-			$shipping_method_options = array();
-			$registered_shipping_methods = WC()->shipping()->get_shipping_methods();
-			foreach ($registered_shipping_methods as $shipping_id => $shipping_method) {
-				$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
-			}
 
-			unset($shipping_method_options['local_pickup'], $shipping_method_options['pickup_location']);
-			$values['shipping_methods'] = $shipping_method_options;
 
 			$weight_label = get_option('woocommerce_weight_unit');
 			if (empty($weight_label)) {
@@ -173,9 +166,19 @@ final class Rule_Editor {
 		<template id="shipqora-shipping-method-input-component">
 			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading && draggable"></span>
 
+			<?php
+			$shipping_method_options = array();
+			foreach (WC()->shipping()->get_shipping_methods() as $shipping_id => $shipping_method) {
+				$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
+			}
+
+			unset($shipping_method_options['local_pickup']); ?>
+
 			<select v-model="method_id">
 				<option value=""><?php esc_html_e('Choose a shipping method', 'shipqora') ?></option>
-				<option v-for="(method_label, method_id) in registered_shipping_methods" :value="method_id" :key="method_id">{{method_label}}</option>
+				<?php foreach ($shipping_method_options as $method_id => $method_title) {
+					printf('<option value="%s">%s</option>', esc_attr($method_id), esc_html($method_title));
+				} ?>
 			</select>
 
 			<select2-dropdown
@@ -186,7 +189,7 @@ final class Rule_Editor {
 				:options="shipping_instances"
 				v-if="loading || has_shipping_instance"
 				@update="(value) => instance_id = value"
-				placeholder="<?php esc_html_e('All shipping rates', 'shipqora') ?>">
+				:placeholder="'pickup_location' == method_id ? '<?php esc_html_e('All locations', 'shipqora') ?>' : '<?php esc_html_e('All shipping rates', 'shipqora') ?>'">
 			</select2-dropdown>
 
 			<div class="tools" v-if="!loading">
@@ -225,7 +228,8 @@ final class Rule_Editor {
 					<h1 class="wp-heading-inline">
 						<?php printf(
 							/* translators: %s: For ShipQora rule title */
-							esc_html__('Edit Rule%s', 'shipqora'), '<strong>{{rule_title}}</strong>'
+							esc_html__('Edit Rule%s', 'shipqora'),
+							'<strong>{{rule_title}}</strong>'
 						) ?>
 					</h1>
 					<a class="button" href="<?php menu_page_url('shipqora-edit') ?>"><?php esc_html_e('Add a Rule', 'shipqora') ?></a>
