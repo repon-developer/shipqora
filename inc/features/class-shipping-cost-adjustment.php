@@ -34,23 +34,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 	protected $feature_id = 'shipping-cost-adjustment';
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct($data = null) {
-		if (!is_array($data)) {
-			return;
-		}
-
-		parent::__construct($data);
-	}
-
-	/**
 	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array(
 			'priority' => 40,
 			'feature_priority' => 10000,
@@ -69,54 +58,15 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$layers = $this->get_shipping_rate_data($shipping_rate);
-		if (count($layers) == 0) {
+		$line_items = $this->line_items;
+		if (count($line_items) == 0) {
 			return;
 		}
 
-		$layers = $this->order_priority($layers);
-		$applicable_layer = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('applicable-layer'),
-			end($layers),
-			$this
-		);
+		$shipping_cost = $shipping_rate->get_cost();
 
-		if (!$applicable_layer || !array_key_exists('calculated_shipping_cost', $applicable_layer)) {
-			return;
-		}
-
-		if (!empty($applicable_layer['shipping_method_title'])) {
-			$shipping_rate->set_label($applicable_layer['shipping_method_title']);
-		}
-
-		$shipping_cost = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('shipping-cost'),
-			$applicable_layer['calculated_shipping_cost'],
-			$layers,
-			$this
-		);
-
-		$shipping_rate->set_cost($shipping_cost);
-	}
-
-	/**
-	 * Manage shipping rate object
-	 * 
-	 * @since 1.0.0
-	 * @param WC_Shipping_Rate $shipping_rate
-	 * @return void
-	 */
-	public function set_shipping_rate_data($shipping_rate) {
-		$layers = $this->get_feature_layers($this->lite_layer);
-		if (count($layers) == 0) {
-			return;
-		}
-
-		$current_shipping_cost = $shipping_rate->get_cost();
-		array_walk($layers, function (&$current_layer) use ($current_shipping_cost, $shipping_rate) {
-			$current_layer = wp_parse_args($current_layer, array(
+		$line_items = array_map(function ($current_item) use ($shipping_cost) {
+			$current_item = wp_parse_args($current_item, array(
 				'type' => '',
 				'amount' => '',
 				'min_cost' => '',
@@ -124,52 +74,48 @@ final class Shipping_Cost_Adjustment extends Feature {
 				'condition_groups' => array(),
 			));
 
-			if (!isset($current_layer['id'])) {
-				$current_layer['id'] = md5(wp_json_encode($current_layer));
+			if (empty($current_item['type'])) {
+				return false;
 			}
 
-			if (empty($current_layer['type'])) {
-				return;
+			$amount = trim($current_item['amount']);
+			if (strlen($amount) == 0 && 'free_shipping' != $current_item['type']) {
+				return false;
 			}
 
-			$amount = trim($current_layer['amount']);
-			if (strlen($amount) == 0 && 'free_shipping' != $current_layer['type']) {
-				return;
-			}
-
-			$matched = Main::get_instance()->is_matched_conditions($current_layer['condition_groups'], $this);
+			$matched = Main::get_instance()->is_matched_conditions($current_item['condition_groups'], $this);
 			if (false === $matched) {
-				return;
+				return false;
 			}
 
-			$amount = floatval($current_layer['amount']);
-			if ('free_shipping' == $current_layer['type']) {
+			$amount = floatval($current_item['amount']);
+			if ('free_shipping' == $current_item['type']) {
 				$amount = 0.00;
 			}
 
-			if ('increase_percentage' == $current_layer['type']) {
-				$amount = $current_shipping_cost + ($current_shipping_cost * $amount / 100);
+			if ('increase_percentage' == $current_item['type']) {
+				$amount = $shipping_cost + ($shipping_cost * $amount / 100);
 			}
 
-			if ('decrease_percentage' == $current_layer['type']) {
-				$amount = $current_shipping_cost - ($current_shipping_cost * $amount / 100);
+			if ('decrease_percentage' == $current_item['type']) {
+				$amount = $shipping_cost - ($shipping_cost * $amount / 100);
 			}
 
-			if ('increase_amount' == $current_layer['type']) {
-				$amount = $current_shipping_cost + $amount;
+			if ('increase_amount' == $current_item['type']) {
+				$amount = $shipping_cost + $amount;
 			}
 
-			if ('decrease_amount' == $current_layer['type']) {
-				$amount = $current_shipping_cost - $amount;
+			if ('decrease_amount' == $current_item['type']) {
+				$amount = $shipping_cost - $amount;
 			}
 
-			if ('free_shipping' !== $current_layer['type']) {
-				$min_cost = trim($current_layer['min_cost']);
+			if ('free_shipping' !== $current_item['type']) {
+				$min_cost = trim($current_item['min_cost']);
 				if (strlen($min_cost) > 0) {
 					$amount = max(floatval($min_cost), $amount);
 				}
 
-				$max_cost = trim($current_layer['max_cost']);
+				$max_cost = trim($current_item['max_cost']);
 				if (strlen($max_cost) > 0) {
 					$amount = min(floatval($max_cost), $amount);
 				}
@@ -179,10 +125,33 @@ final class Shipping_Cost_Adjustment extends Feature {
 				$amount = 0.00;
 			}
 
-			$current_layer['calculated_shipping_cost'] = $amount;
+			$current_item['calculated_shipping_cost'] = $amount;
 
-			$this->add_shipping_rate_data($shipping_rate, $current_layer);
-		});
+			return $current_item;
+		}, $line_items);
+
+		$line_items = array_filter($line_items, fn($line_item) => false !== $line_item);
+		if (count($line_items) == 0) {
+			return;
+		}
+
+		$line_items = $this->order_priority($line_items);
+		$applicable_layer = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('applicable-layer'),
+			end($line_items),
+			$this
+		);
+
+		if (!is_array($applicable_layer) || !array_key_exists('calculated_shipping_cost', $applicable_layer)) {
+			return;
+		}
+
+		if (!empty($applicable_layer['shipping_method_title'])) {
+			$shipping_rate->set_label($applicable_layer['shipping_method_title']);
+		}
+
+		$shipping_rate->set_cost($applicable_layer['calculated_shipping_cost']);
 	}
 
 	/**
@@ -207,11 +176,11 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_layer', array(
+		$settings_fields->add_setting('cost_configuration', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_model_key('lite_layer'),
-			'callback' => array($this, 'lite_layer_setting_field'),
+			'model_key' => $this->get_model_key('cost_configuration'),
+			'callback' => array($this, 'cost_configuration_setting_field'),
 		), $this->get_id());
 
 		$settings_fields->add_setting('new_layer_notice', array(
@@ -232,13 +201,13 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function lite_layer_setting_field() { ?>
+	public function cost_configuration_setting_field(Form_Control $form_control) { ?>
 		<tbody>
 			<template
 				:draggable="false"
 				is="vue:feature-shipping-cost-adjustment"
-				:feature-data="<?php echo esc_attr($this->get_model_key('lite_layer')) ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_layer')) ?> = value"
+				:feature-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
+				@update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
 				<?php $this->output_component_attrs('shipping-cost-adjustment', array(
 					':hide-heading' => 'true',
 					':hide-actions' => array('delete')

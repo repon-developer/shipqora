@@ -181,7 +181,7 @@ class Rule_List_Table extends \WP_List_Table {
 		$activated_features = array();
 		foreach (Feature::get_features() as $feature_id => $feature_object) {
 			if ($shipqora_rule->is_feature_enabled($feature_id)) {
-				$activated_features[] = sprintf('<li>%s</li>', $feature_object->get_configuration_value('name'));
+				$activated_features[] = sprintf('<li>%s</li>', $feature_object->get_configuration('name'));
 			}
 		}
 

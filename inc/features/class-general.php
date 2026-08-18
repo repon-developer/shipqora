@@ -21,7 +21,8 @@ final class General {
 	 */
 	public function __construct() {
 		add_action('init', array($this, 'add_settings_fields'), 1);
-		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 30, 2);
+		add_filter('woocommerce_package_rates', array($this, 'set_feature_lines'), 30, 2);
+		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 9999, 2);
 		add_filter('woocommerce_package_rates', array($this, 'hide_shipping_methods'), 10000, 2);
 		add_filter('woocommerce_available_payment_gateways', array($this, 'hide_payment_methods'));
 	}
@@ -100,42 +101,68 @@ final class General {
 	}
 
 	/**
+	 * Set feature line before modify shipping rate
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function set_feature_lines($rates, $package) {
+		$features = array_filter(Feature::get_features(), fn($feature) => true !== $feature->get_configuration('standalone'));
+
+		$rates = $this->hide_current_shipping_method($rates);
+		array_walk($rates, function (&$shipping_rate) use ($features) {
+			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+
+			foreach ($features as $feature_id => $feature_object) {
+				$rate_feature_object = clone $feature_object;
+
+				foreach ($shipqora_rules as $rule) {
+					if (!$rule->exists() || !$rule->is_feature_enabled($feature_id)) {
+						continue;
+					}
+
+					$cost_configuration = $rule->get_feature_value($rate_feature_object->get_model_key('cost_configuration'));
+					if (method_exists($rate_feature_object, 'set_line_item')) {
+						$rate_feature_object->set_line_item($cost_configuration, $rule);
+					}
+				}
+
+				$shipping_rate->{$feature_id} = $rate_feature_object;
+			}
+		});
+
+		return $rates;
+	}
+
+
+	/**
 	 * Modify shipping rates
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
 	public function modify_shipping_rates($rates, $package) {
-		$features = array_filter(Feature::get_features(), fn($feature) => true !== $feature->get_configuration_value('standalone'));
+		$features = array_filter(Feature::get_features(), fn($feature) => true !== $feature->get_configuration('standalone'));
 		uasort($features, fn($a, $b) => $a->get_feature_priority() <=> $b->get_feature_priority());
 
-		$rates = $this->hide_current_shipping_method($rates);
-		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+		$feature_ids = array_keys($features);
 
-			foreach ($shipqora_rules as $rule) {
-				if (!$rule->exists()) {
+		$rates = array_map(function ($shipping_rate) use ($feature_ids) {
+			foreach ($feature_ids as $feature_id) {
+				$feature_object = $shipping_rate->{$feature_id};
+				if (!is_a($feature_object, Feature::class)) {
 					continue;
 				}
 
-				foreach ($features as $feature_id => $feature_object) {
-					if (!$rule->is_feature_enabled($feature_id)) {
-						continue;
-					}
-
-					$rule_feature_object = $rule->get_feature_object($feature_id);
-					if ($rule_feature_object && method_exists($rule_feature_object, 'set_shipping_rate_data')) {
-						$rule_feature_object->set_shipping_rate_data($shipping_rate, $rule->get_id());
-					}
-				}
+				$feature_object->modify_shipping_rate($shipping_rate);
 			}
 
-			foreach ($features as $feature_id => $feature_object) {
-				if (method_exists($feature_object, 'modify_shipping_rate')) {
-					$feature_object->modify_shipping_rate($shipping_rate);
-				}
-			}
-		});
+			return $shipping_rate;
+		}, $rates);
+
+
+
+		error_log(print_r($rates, true));
 
 		return $rates;
 	}
@@ -147,12 +174,15 @@ final class General {
 	 * @return array
 	 */
 	public function hide_shipping_methods($rates, $package) {
-		$rates = $this->hide_current_shipping_method($rates);
-
 		$features = Feature::get_features();
 		if (!isset($features['hide-other-shipping-methods'])) {
 			return $rates;
 		}
+
+		$rates = $this->hide_current_shipping_method($rates);
+
+
+
 
 		$hide_shipping_methods = array();
 		foreach ($rates as $shipping_rate) {
@@ -164,11 +194,19 @@ final class General {
 
 				$feature_object = $rule->get_feature_object('hide-other-shipping-methods');
 				if ($feature_object) {
+
+
+
+
+
+
 					$feature_object->get_shipping_rates($shipping_rate);
 					$hide_shipping_methods = array_merge($hide_shipping_methods, $feature_object->get_shipping_rate_data($shipping_rate));
 				}
 			}
 		}
+
+		return $rates;
 
 		return array_filter($rates, function ($current_rate) use ($hide_shipping_methods) {
 			$search_data = array();
@@ -220,8 +258,8 @@ final class General {
 		$registered_feature_options = array();
 		foreach ($registered_features as $feature_id => $feature_instance) {
 			$registered_feature_options[$feature_id] = array(
-				'label' => $feature_instance->get_configuration_value('name'),
-				'description' => $feature_instance->get_configuration_value('description'),
+				'label' => $feature_instance->get_configuration('name'),
+				'description' => $feature_instance->get_configuration('description'),
 			);
 		}
 

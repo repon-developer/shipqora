@@ -236,13 +236,17 @@ final class ShipQora_Rule {
 			next($array_properties);
 		}
 
-		$features_base_models = array_map(fn($feature) => $feature->get_configuration_value('base_model'), Feature::get_features());
+		$features_base_models = array_map(fn($feature) => $feature->get_configuration('base_model'), Feature::get_features());
 		foreach ($data as $key => $value) {
 			if (in_array($key, $features_base_models)) {
 				$this->feature_settings[$key] = $value;
 			} else {
 				$this->{$key} = $value;
 			}
+		}
+
+		if (!is_array($this->active_features)) {
+			$this->active_features = array();
 		}
 	}
 
@@ -378,6 +382,16 @@ final class ShipQora_Rule {
 	}
 
 	/**
+	 * Get active features of current rule
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_active_features() {
+		return $this->active_features;
+	}
+
+	/**
 	 * Get added shipping methods
 	 * 
 	 * @since 1.0.0
@@ -441,25 +455,54 @@ final class ShipQora_Rule {
 	}
 
 	/**
-	 * Get feature object of provided feature id
+	 * Get feature value from model key
 	 * 
 	 * @since 1.0.0
-	 * @return object
+	 * @return mixed
 	 */
-	public function get_feature_object($feature_id) {
-		$registered_features = Feature::get_features();
-		if (!isset($registered_features[$feature_id])) {
-			return false;
+	public function get_feature_value($chain_models, $default = null) {
+		if (empty($chain_models)) {
+			return null;
 		}
 
-		$feature_instance = $registered_features[$feature_id];
-		$base_model = $feature_instance->get_configuration_value('base_model');
-
-		if (!isset($this->feature_settings[$base_model]) || !is_array($this->feature_settings[$base_model])) {
-			return false;
+		$deep_keys = explode('.', $chain_models);
+		$last_key = array_pop($deep_keys);
+		if (empty($last_key)) {
+			return null;
 		}
 
-		$class_name = get_class($feature_instance);
-		return new $class_name($this->feature_settings[$base_model]);
+		$feature_settings = $this->feature_settings;
+		while ($current_key = current($deep_keys)) {
+			if (isset($feature_settings[$current_key])) {
+				$feature_settings = $feature_settings[$current_key];
+			}
+
+			next($deep_keys);
+		}
+
+		return isset($feature_settings[$last_key]) ? $feature_settings[$last_key] : $default;
 	}
+
+	// /**
+	//  * Get feature object of provided feature id
+	//  * 
+	//  * @since 1.0.0
+	//  * @return object
+	//  */
+	// public function get_feature_object($feature_id) {
+	// 	$registered_features = Feature::get_features();
+	// 	if (!isset($registered_features[$feature_id])) {
+	// 		return false;
+	// 	}
+
+	// 	$feature_instance = $registered_features[$feature_id];
+	// 	$base_model = $feature_instance->get_configuration('base_model');
+
+	// 	if (!isset($this->feature_settings[$base_model]) || !is_array($this->feature_settings[$base_model])) {
+	// 		return false;
+	// 	}
+
+	// 	$class_name = get_class($feature_instance);
+	// 	return new $class_name($this->feature_settings[$base_model]);
+	// }
 }

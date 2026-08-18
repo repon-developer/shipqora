@@ -256,7 +256,7 @@ final class Rule_Editor {
 							<thead>
 								<tr>
 									<td colspan="2">
-										<?php echo esc_html($feature_instance->get_configuration_value('section_title')) ?>
+										<?php echo esc_html($feature_instance->get_configuration('section_title')) ?>
 									</td>
 								</tr>
 							</thead>

@@ -66,12 +66,12 @@ final class Main {
 
 		// Load Features
 		require_once SHIPQORA_PATH . 'inc/features/class-general.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-hide-payment-methods.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
+		// require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
+		// require_once SHIPQORA_PATH . 'inc/features/class-hide-payment-methods.php';
+		// require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
+		// require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
 		require_once SHIPQORA_PATH . 'inc/features/class-shipping-cost-adjustment.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
+		// require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 
 
 		if (is_admin()) {

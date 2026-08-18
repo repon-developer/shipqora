@@ -142,9 +142,11 @@ final class Select2 {
 			$meta_data['values'] = array_map('sanitize_text_field', wp_unslash($_POST['values']));
 		}
 
+		$post_data = map_deep(wp_unslash($_POST), 'sanitize_text_field');
+		$meta_data = wp_parse_args($meta_data, $post_data);
+
 		$results = array();
 
-		$meta_data = wp_parse_args($meta_data, $_POST);
 		$method_name = 'get_' . str_replace('-', '_', $meta_data['object_type']);
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound

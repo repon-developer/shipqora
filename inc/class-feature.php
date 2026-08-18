@@ -37,7 +37,7 @@ class Feature {
 	 */
 	public static function get_features() {
 		uasort(self::$features, function ($a, $b) {
-			return $a->get_configuration_value('priority') > $b->get_configuration_value('priority') ? 1 : -1;
+			return $a->get_configuration('priority') > $b->get_configuration('priority') ? 1 : -1;
 		});
 
 		return self::$features;
@@ -51,13 +51,6 @@ class Feature {
 	protected $feature_id = '';
 
 	/**
-	 * Hold settings of lite layer 
-	 * 
-	 * @var array
-	 */
-	protected $lite_layer = [];
-
-	/**
 	 * Hold all extra value
 	 * 
 	 * @var array
@@ -65,17 +58,11 @@ class Feature {
 	protected $meta_data = [];
 
 	/**
-	 * Constructor.
+	 * Hold all feature lines item of rules
+	 * 
+	 * @var array
 	 */
-	public function __construct($data = null) {
-		if (!is_array($data)) {
-			return;
-		}
-
-		foreach ($data as $key => $value) {
-			$this->{$key} = $value;
-		}
-	}
+	protected $line_items = [];
 
 	/**
 	 * isset magic method
@@ -126,7 +113,7 @@ class Feature {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array();
 	}
 
@@ -136,8 +123,8 @@ class Feature {
 	 * @since 1.0.0
 	 * @return mixed
 	 */
-	public function get_configuration_value($key) {
-		$configuration = $this->get_configuration();
+	public function get_configuration($key) {
+		$configuration = $this->get_configuration_settings();
 		return isset($configuration[$key]) ? $configuration[$key] : null;
 	}
 
@@ -148,7 +135,7 @@ class Feature {
 	 * @return int
 	 */
 	public function get_feature_priority() {
-		return absint($this->get_configuration_value('feature_priority'));
+		return absint($this->get_configuration('feature_priority'));
 	}
 
 	/**
@@ -158,7 +145,7 @@ class Feature {
 	 * @return string
 	 */
 	public function get_model_key($model_key) {
-		return $this->get_configuration_value('base_model') . '.' . $model_key;
+		return $this->get_configuration('base_model') . '.' . $model_key;
 	}
 
 	/**
@@ -221,56 +208,14 @@ class Feature {
 	}
 
 	/**
-	 * Get feature layers
+	 * Set feature line item
 	 * 
 	 * @since 1.0.0
-	 * @return array
-	 */
-	public function get_feature_layers($primary_layer) {
-		return apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('layers'),
-			array($primary_layer),
-			$this
-		);
-	}
-
-	/**
-	 * Get shipping rate data
-	 * 
-	 * @since 1.0.0
-	 * @param $shipping_rate
-	 * @return array
-	 */
-	public function get_shipping_rate_data($shipping_rate) {
-		$existed_data = $shipping_rate->{$this->get_id()};
-		if (!is_array($existed_data)) {
-			$existed_data = array();
-		}
-
-		return $existed_data;
-	}
-
-	/**
-	 * Add data at provided shipping rate
-	 * 
-	 * @since 1.0.0
-	 * @param $shipping_rate
-	 * @param $data_items
 	 * @return void
 	 */
-	protected function add_shipping_rate_data($shipping_rate, $new_data, $data_id = null) {
-		$existed_data = $shipping_rate->{$this->get_id()};
-		if (!is_array($existed_data)) {
-			$existed_data = array();
-		}
-
-		if ($data_id) {
-			$existed_data[$data_id] = $new_data;
-		} else {
-			$existed_data[] = $new_data;
-		}
-
-		$shipping_rate->{$this->get_id()} = $existed_data;
+	public function set_line_item($line_data, $rule) {
+		//$line_data['shipqora_rule'] = $rule;
+		$line_data['rule_id'] = $rule->get_id();
+		$this->line_items[] = $line_data;
 	}
 }

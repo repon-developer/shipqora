@@ -1,4 +1,4 @@
-=== ShipQora – All-in-One Shipping ===
+=== ShipQora – All-in-One Shipping Solution ===
 Contributors: ShipQora
 Tags: shipping, woocommerce shipping, conditional shipping, shipping rates, shipping rules
 Requires at least: 6.8
