@@ -245,7 +245,7 @@ final class Table_Rate {
 	public function enqueue_scripts($values, $source) {
 		if (Utils::is_plugin_screen('rule-editor') && 'localize' == $source) {
 			$settings_fields = Settings_Fields::get_instance('table-rate');
-			$values['table_rate_shipping_model'] = $settings_fields->get_models();
+			$values['table_rate_models'] = $settings_fields->get_models();
 		}
 
 		return $values;

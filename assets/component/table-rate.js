@@ -27,7 +27,7 @@ const Table_Rate = {
 			collapse: false,
 			shipping_rates: [[]],
 			shipping_rates_errors: [],
-			...shipqora_admin.table_rates_shipping_model,
+			...shipqora_admin.table_rate_models,
 			...this.tableRateData
 		}
 	},
