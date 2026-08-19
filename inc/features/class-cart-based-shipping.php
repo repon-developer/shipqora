@@ -11,8 +11,8 @@ use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
 use ShipQora\Component\Cart_Option;
+use ShipQora\Component\Table_Rates;
 use ShipQora\Global_Settings_Fields;
-use ShipQora\Component\Table_Rates_Shipping;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -51,7 +51,7 @@ class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array(
 			'priority' => 50,
 			'feature_priority' => 10,
@@ -69,76 +69,67 @@ class Cart_Based_Shipping extends Feature {
 	 * @param WC_Shipping_Rate $shipping_rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$layers = $this->get_shipping_rate_data($shipping_rate);
-		if (count($layers) == 0) {
+		$line_items = $this->line_items;
+		if (count($line_items) == 0) {
 			return;
 		}
 
-		$layers = $this->order_priority($layers);
+		$cart_total = new Cart_Total();
 
-		$best_layer = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('applicable-layer'),
-			end($layers),
-			$layers,
-			$this
-		);
-
-		if (array_key_exists('calculated_shipping_cost', $best_layer)) {
-			$shipping_rate->set_cost($best_layer['calculated_shipping_cost']);
-		}
-	}
-
-	/**
-	 * Calculate shipping cost of tier item
-	 * 
-	 * @since 1.0.0
-	 * @param array $tier_item
-	 */
-	public function calculate_shipping_cost($current_layer, $cart_total) {
-		$current_layer = wp_parse_args($current_layer, array(
-			'calculate_basis' => '',
-			'calculation_type' => '',
-			'calculation_value' => '',
-			'target_products' => array(),
-			'condition_groups' => array(),
-			'table_rates_layers' => array(),
-		));
-
-		$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
-
-		$calculate_basis = isset($current_layer['calculate_basis']) ? $current_layer['calculate_basis'] : null;
-		if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
-			return;
-		}
-
-		$calculation_value = isset($current_layer['calculation_value']) ? trim($current_layer['calculation_value']) : '';
-		$calculation_value = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('layer', 'calculation-value'),
-			$calculation_value,
-			$current_layer,
-			$this
-		);
-
-		if (strlen($calculation_value) == 0 && 'table_rates' !== $current_layer['calculation_type']) {
-			return;
-		}
-
-		try {
-			$calculation_value = floatval($calculation_value);
-			if ('fixed_amount' == $calculate_basis) {
-				throw new Shipping_Cost($calculation_value);
+		$line_items = array_map(function ($current_item) use ($cart_total) {
+			if (isset($current_item['condition_groups'])) {
+				$is_matched = Main::get_instance()->is_matched_conditions($current_item['condition_groups']);
+				if (!$is_matched) {
+					return false;
+				}
 			}
 
-			if (in_array($calculate_basis, $calculate_metrics)) {
-				$calculation_type = isset($current_layer['calculation_type']) ? $current_layer['calculation_type'] : null;
+			$current_item = wp_parse_args($current_item, array(
+				'calculate_basis' => '',
+				'calculation_type' => '',
+				'calculation_value' => '',
+				'target_products' => array(),
+				'primary_table_rate' => array(),
+			));
+
+			try {
+				$calculate_basis = $current_item['calculate_basis'];
+
+				$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
+				if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
+					throw new Shipping_Cost(-1);
+				}
+
+				$calculation_value = trim($current_item['calculation_value']);
+				if (strlen($calculation_value) == 0 && 'table_rates' !== $current_item['calculation_type']) {
+					throw new Shipping_Cost(-1);
+				}
+
+				$calculation_value = floatval($calculation_value);
+				if ('fixed_amount' == $calculate_basis) {
+					throw new Shipping_Cost($calculation_value);
+				}
+
+				if (!in_array($calculate_basis, $calculate_metrics)) {
+					throw new Shipping_Cost(-1);
+				}
+
+				$cart_option = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+					$this->get_hook('cart-option-object'),
+					new Cart_Option($current_item['target_products']),
+					$current_item,
+					$this
+				);
+
+				$cart_total->set_cart_items_keys($cart_option->get_cart_items_keys());
 
 				$metrics_total = $cart_total->get_total($calculate_basis);
 				if ($metrics_total <= 0) {
 					throw new Shipping_Cost(-1);
 				}
 
+				$calculation_type = $current_item['calculation_type'];
 				if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
 					$shipping_cost = $metrics_total * $calculation_value;
 					if ('subtotal' == $calculate_basis) {
@@ -148,110 +139,46 @@ class Cart_Based_Shipping extends Feature {
 					throw new Shipping_Cost($shipping_cost);
 				}
 
-				$table_rates_layers = array();
-				if ('table_rates' == $calculation_type && isset($current_layer['table_rates_lite']) && is_array($current_layer['table_rates_lite'])) {
-					$table_rates_layers[] = $current_layer['table_rates_lite'];
-				}
+				if ('table_rates' == $calculation_type && isset($current_item['primary_table_rate']) && is_array($current_item['primary_table_rate'])) {
+					$table_rate = apply_filters(
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+						$this->get_hook('table-rate'),
+						new Table_Rates($current_item['primary_table_rate']),
+						$current_item,
+						$this
+					);
 
-				$table_rates_layers = apply_filters(
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					$this->get_hook('table-rates-layers'),
-					$table_rates_layers,
-					$current_layer,
-					$this
-				);
-
-				if (count($table_rates_layers) == 0) {
-					throw new Shipping_Cost(-1);
-				}
-
-				$table_rates_layers = array_map(fn($range_layer) => new Table_Rates_Shipping($range_layer), $table_rates_layers);
-				$table_rates_layers = array_filter($table_rates_layers, function ($item) {
-					if (!$item->has_validate_ranges()) {
-						return false;
+					if (!$table_rate->has_validate_ranges() || !$table_rate->is_condition_matched()) {
+						throw new Shipping_Cost(-1);
 					}
 
-					return $item->is_condition_matched();
-				});
-
-				if (count($table_rates_layers) == 0) {
-					throw new Shipping_Cost(-1);
+					$shipping_cost = $table_rate->calculate_shipping_cost($metrics_total, $current_item['calculate_basis']);
+					if ($shipping_cost > 0) {
+						throw new Shipping_Cost($shipping_cost);
+					}
 				}
 
-				array_walk($table_rates_layers, function (&$table_rate_layer) use ($metrics_total, $current_layer) {
-					$table_rate_layer->total_shipping_cost = $table_rate_layer->calculate_shipping_cost($metrics_total, $current_layer['calculate_basis']);
-				});
-
-				$table_rate_layer = apply_filters(
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					$this->get_hook('applicable-table-rate-layer'),
-					end($table_rates_layers),
-					$table_rates_layers
-				);
-
-				throw new Shipping_Cost($table_rate_layer->total_shipping_cost);
+				throw new Shipping_Cost(-1);
+			} catch (Shipping_Cost $e) {
+				$current_item['calculated_shipping_cost'] = $e->getAmount();
 			}
 
-			throw new Shipping_Cost(-1);
-		} catch (Shipping_Cost $e) {
-			$current_layer['calculated_shipping_cost'] = $e->getAmount();
+			return $current_item;
+		}, $line_items);
+
+		$line_items = array_filter($line_items, fn($item) => is_array($item) && $item['calculated_shipping_cost'] >= 0);
+
+		$line_items = $this->order_priority($line_items);
+		$applicable_layer = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('applicable-layer'),
+			end($line_items),
+			$this
+		);
+
+		if (array_key_exists('calculated_shipping_cost', $applicable_layer)) {
+			$shipping_rate->set_cost($applicable_layer['calculated_shipping_cost']);
 		}
-
-		return $current_layer;
-	}
-
-	/**
-	 * Add shipping rate data
-	 * 
-	 * @since 1.0.0
-	 * @param WC_Shipping_Rate $shipping_rate
-	 * @param int $rule_id
-	 */
-	public function set_shipping_rate_data($shipping_rate, $rule_id) {
-		$layers = $this->get_feature_layers($this->lite_layer);
-		if (count($layers) == 0) {
-			return;
-		}
-
-
-		$cart_total = new Cart_Total();
-
-		array_walk($layers, function (&$current_layer) use ($shipping_rate, $cart_total, $rule_id) {
-			if (isset($group['condition_groups'])) {
-				$is_matched = Main::get_instance()->is_matched_conditions($group['condition_groups']);
-				if (!$is_matched) {
-					return;
-				}
-			}
-
-			$current_layer['rule_id'] = $rule_id;
-
-			if (!isset($current_layer['target_products'])) {
-				$current_layer['target_products'] = array();
-			}
-
-			$cart_option = apply_filters(
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-				$this->get_hook('cart-option-object'),
-				new Cart_Option($current_layer['target_products']),
-				$current_layer,
-				$this
-			);
-
-			$cart_total->set_cart_items_keys($cart_option->get_cart_items_keys());
-
-			$current_layer = $this->calculate_shipping_cost($current_layer, $cart_total);
-			$current_layer = apply_filters(
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-				$this->get_hook('layer'),
-				$current_layer,
-				$this
-			);
-
-			if ($current_layer['calculated_shipping_cost'] >= 0) {
-				$this->add_shipping_rate_data($shipping_rate, $current_layer);
-			}
-		});
 	}
 
 	/**
@@ -261,21 +188,21 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_layer_settings', array(
+		$settings_fields->add_setting('cost_settings_settings', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_model_key('lite_layer'),
-			'callback' => array($this, 'lite_layer_settings_field'),
+			'callback' => array($this, 'cost_settings_field'),
+			'model_key' => $this->get_model_key('cost_settings'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('cart_layer_notice', array(
+		$settings_fields->add_setting('multiple_configuration_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
-				'title' => '💡 Unlock Unlimited Cart-Based Shipping Tiers',
-				'utm_source' => 'cart+based+shipping+cost+layer',
-				'description' => 'Upgrade to the Pro version to create unlimited shipping tiers and build complex, tiered shipping rules based on cart conditions.',
+				'title' => '💡 Unlock Unlimited Cart-Based Shipping Costs',
+				'utm_source' => 'cart+based+multiple+shipping+cost',
+				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to set up multiple shipping cost calculations simultaneously without creating separate rules.',
 			)
 		), $this->get_id());
 	}
@@ -286,17 +213,14 @@ class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function lite_layer_settings_field() { ?>
+	public function cost_settings_field(Form_Control $form_control) { ?>
 		<tbody>
 			<template
 				:draggable="false"
 				is="vue:feature-cart-based-shipping"
-				:feature-data="<?php echo esc_attr($this->get_model_key('lite_layer')) ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_layer')) ?> = value"
-				<?php $this->output_component_attrs('cart-based-shipping', array(
-					':hide-heading' => 'true',
-					':hide-actions' => '["delete"]'
-				)) ?>>
+				:feature-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
+				@update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
+				<?php $this->output_component_attrs('cart-based-shipping', array(':hide-heading' => 'true')) ?>>
 			</template>
 		</tbody>
 	<?php
@@ -373,18 +297,18 @@ class Cart_Based_Shipping extends Feature {
 			)
 		), 'layer');
 
-		$settings_fields->add_setting('table_rates_settings', array(
+		$settings_fields->add_setting('primary_table_rate_settings', array(
 			'priority' => 50,
 			'label' => esc_html__('Table Rates', 'shipqora'),
 			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use condition groups to control which rates apply.', 'shipqora'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "table_rates"'),
 			'sub_settings_wrap_table' => false,
 			'sub_settings_fields' => array(
-				'table_rates_lite_setting_field' => array(
+				'primary_table_rate_field' => array(
 					'priority' => 5,
-					'model_key' => 'table_rates_lite',
+					'model_key' => 'primary_table_rate',
 					'default_value' => (object) array(),
-					'callback' => array($this, 'table_rates_lite_setting_field'),
+					'callback' => array($this, 'primary_table_rate_field'),
 				),
 
 				'new_table_rates_notice' => array(
@@ -483,14 +407,14 @@ class Cart_Based_Shipping extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function table_rates_lite_setting_field(Form_Control $form_control) { ?>
-		<table-rates-shipping
+	public function primary_table_rate_field(Form_Control $form_control) { ?>
+		<table-rates
 			:draggable="false"
 			:calculate-basis="calculate_basis"
 			:table-rate-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 			@update="(table_rate_data) => <?php echo esc_attr($form_control->get_model_key()) ?> = table_rate_data"
-			<?php $this->output_component_attrs('table-rates-lite', array(':hide-heading' => 'false', ':hide-actions' => array('duplicate', 'delete'))) ?>>
-		</table-rates-shipping>
+			<?php $this->output_component_attrs('primary-table-rate', array(':hide-heading' => 'false', ':hide-actions' => array('duplicate', 'delete'))) ?>>
+		</table-rates>
 	<?php
 	}
 
@@ -504,8 +428,8 @@ class Cart_Based_Shipping extends Feature {
 		$line_button_data = array('utm_source' => 'table+rates+layer'); ?>
 
 		<div class="shipqora-notice-box">
-			<h3>💡 Unlock Unlimited Table Rate Tiers</h3>
-			<div class="description">Upgrade to the Pro version to create unlimited table rate tiers and build complex, multi-layered shipping rules with advanced conditions.</div>
+			<h3>💡 Unlock Unlimited Table Rates</h3>
+			<div class="description">Upgrade to <strong>ShipQora Pro</strong> to create unlimited table rate calculations and build complex shipping rules with advanced conditions.</div>
 			<div class="gap-10"></div>
 			<?php Utils::get_lite_button($line_button_data) ?>
 		</div>

@@ -1076,7 +1076,7 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	margin-bottom: 3px;
 }
 
-#shipqora table.table-rates-shipping-rates {
+#shipqora table.table-rates {
 	width: 100%;
 	text-align: center;
 	margin-block: 5px 10px;
@@ -1084,12 +1084,12 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	border-collapse: collapse;
 }
 
-#shipqora table.table-rates-shipping-rates,
-#shipqora table.table-rates-shipping-rates :is(th, td) {
+#shipqora table.table-rates,
+#shipqora table.table-rates :is(th, td) {
 	border: 1px solid #ccc !important
 }
 
-#shipqora table.table-rates-shipping-rates thead th {
+#shipqora table.table-rates thead th {
 	min-width: 0;
 	text-align: center;
 	padding-inline: 16px;
@@ -1098,12 +1098,12 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	white-space: nowrap
 }
 
-#shipqora table.table-rates-shipping-rates tbody td {
+#shipqora table.table-rates tbody td {
 	padding: 0 !important
 }
 
-#shipqora table.table-rates-shipping-rates tbody td input,
-#shipqora table.table-rates-shipping-rates tbody td select {
+#shipqora table.table-rates tbody td input,
+#shipqora table.table-rates tbody td select {
 	border: none !important;
 	width: 100% !important;
 	max-width: none !important;
@@ -1112,18 +1112,18 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	box-shadow: none !important;
 }
 
-#shipqora table.table-rates-shipping-rates .column-delete {
+#shipqora table.table-rates .column-delete {
 	width: 1%;
 	vertical-align: middle;
 }
 
-#shipqora table.table-rates-shipping-rates .btn-delete {
+#shipqora table.table-rates .btn-delete {
 	color: #3c434a;
 }
 
-#shipqora table.table-rates-shipping-rates tr.range-has-error.range-error-max-empty .range-input-max,
-#shipqora table.table-rates-shipping-rates tr.range-has-error.range-error-less-value .range-input-max,
-#shipqora table.table-rates-shipping-rates tr.range-has-error.range-error-value-empty .range-input-value {
+#shipqora table.table-rates tr.range-has-error.range-error-max-empty .range-input-max,
+#shipqora table.table-rates tr.range-has-error.range-error-less-value .range-input-max,
+#shipqora table.table-rates tr.range-has-error.range-error-value-empty .range-input-value {
 	background-color: #ffe7e7;
 }
 
@@ -1177,6 +1177,6 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	margin-bottom: 10px;
 }
 
-#shipqora table.table-shipqora-table-rates-layer {
+#shipqora table.table-shipqora-table-rates {
 	margin-bottom: 5px;
 }

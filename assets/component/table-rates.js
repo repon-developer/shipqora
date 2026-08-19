@@ -2,9 +2,9 @@ import Base_Component from './base-component.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
-const Table_Rates_Shipping = {
+const Table_Rates = {
 	extends: Base_Component,
-	template: '#shipqora-table-rates-shipping-component',
+	template: '#shipqora-table-rates-component',
 	props: {
 		tableRateData: {
 			default: null,
@@ -166,4 +166,4 @@ const Table_Rates_Shipping = {
 	}
 }
 
-export default Table_Rates_Shipping;
+export default Table_Rates;

@@ -4,8 +4,8 @@ namespace ShipQora\Component;
 
 use ShipQora\Utils;
 use ShipQora\Form_Control;
-use ShipQora\Feature\General;
 use ShipQora\Condition\Main;
+use ShipQora\Feature\General;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
 use ShipQora\Global_Settings_Fields;
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Table_Rates_Shipping {
+final class Table_Rates {
 	/**
 	 * Provides common helper methods of component
 	 *
@@ -26,7 +26,7 @@ final class Table_Rates_Shipping {
 	 * Hold the current instance
 	 * 
 	 * @since 1.0.0
-	 * @var Table_Rates_Shipping
+	 * @var Table_Rates
 	 */
 	private static $instance = null;
 
@@ -34,7 +34,7 @@ final class Table_Rates_Shipping {
 	 * Get instance of current class
 	 * 
 	 * @since 1.0.0
-	 * @return Table_Rates_Shipping
+	 * @return Table_Rates
 	 */
 	public static function get_instance() {
 		if (is_null(self::$instance)) {
@@ -43,14 +43,6 @@ final class Table_Rates_Shipping {
 
 		return self::$instance;
 	}
-
-	/**
-	 * Hold priority of current shipping cost range
-	 * 
-	 * @since 1.0.0
-	 * @var int
-	 */
-	private $priority = 10;
 
 	/**
 	 * Hold all ranges of shipping cost
@@ -77,12 +69,11 @@ final class Table_Rates_Shipping {
 	private $condition_groups = array();
 
 	/**
-	 * Hold total shipping cost of ranges
+	 * Hold all extra data of table rate
 	 * 
-	 * @since 1.0.0
-	 * @var float
+	 * @var array
 	 */
-	public $total_shipping_cost = 0.00;
+	private $meta_data = [];
 
 	/**
 	 * Constructor.
@@ -92,11 +83,7 @@ final class Table_Rates_Shipping {
 			return;
 		}
 
-		$table_rates_data = wp_parse_args($table_rates_data, array('priority' => '10', 'condition_groups' => array(), 'shipping_rates' => array()));
-		if (absint($table_rates_data['priority']) > 0) {
-			$this->priority = absint($table_rates_data['priority']);
-		}
-
+		$table_rates_data = wp_parse_args($table_rates_data, array('condition_groups' => array(), 'shipping_rates' => array()));
 		if (is_array($table_rates_data['condition_groups'])) {
 			$this->condition_groups = $table_rates_data['condition_groups'];
 		}
@@ -123,13 +110,36 @@ final class Table_Rates_Shipping {
 	}
 
 	/**
-	 * Get priority of this shipping cost range
+	 * isset magic method
 	 * 
 	 * @since 1.0.0
-	 * @return int
+	 * @param string $key
+	 * @param boolean
 	 */
-	public function get_priority() {
-		return $this->priority;
+	public function __isset($key) {
+		return isset($this->meta_data[$key]);
+	}
+
+	/**
+	 * Set magic method
+	 * 
+	 * @since 1.0.0
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function __set($key, $value) {
+		$this->meta_data[$key] = $value;
+	}
+
+	/**
+	 * Get magic method
+	 * 
+	 * @since 1.0.0
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function __get($key) {
+		return isset($this->meta_data[$key]) ? $this->meta_data[$key] : null;
 	}
 
 	/**
@@ -211,11 +221,11 @@ final class Table_Rates_Shipping {
 	 * @return void
 	 */
 	public function output_vue_component() {
-		$settings_fields = Settings_Fields::get_instance('table-rates-shipping'); ?>
-		<template id="shipqora-table-rates-shipping-component">
-			<table class="table-shipqora-form table-shipqora-table-rates-layer">
+		$settings_fields = Settings_Fields::get_instance('table-rates'); ?>
+		<template id="shipqora-table-rates-component">
+			<table class="table-shipqora-form table-shipqora-table-rates">
 				<thead>
-					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora'), array('table-rates-shipping')) ?>
+					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora'), array('table-rates')) ?>
 				</thead>
 
 				<tbody v-if="!collapse">
@@ -234,7 +244,7 @@ final class Table_Rates_Shipping {
 	 */
 	public function enqueue_scripts($values, $source) {
 		if (Utils::is_plugin_screen('rule-editor') && 'localize' == $source) {
-			$settings_fields = Settings_Fields::get_instance('table-rates-shipping');
+			$settings_fields = Settings_Fields::get_instance('table-rates');
 			$values['table_rates_shipping_model'] = $settings_fields->get_models();
 		}
 
@@ -248,7 +258,7 @@ final class Table_Rates_Shipping {
 	 * @return void
 	 */
 	public function add_settings_fields() {
-		$settings_fields = Settings_Fields::get_instance('table-rates-shipping');
+		$settings_fields = Settings_Fields::get_instance('table-rates');
 
 		$settings_fields->add_setting('shipping_rates', array(
 			'priority' => 10,
@@ -276,7 +286,7 @@ final class Table_Rates_Shipping {
 	 */
 	public function shipping_rates_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
-		<table class="table-rates-shipping-rates" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length">
+		<table class="table-rates" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length">
 			<thead>
 				<tr>
 					<th><?php esc_html_e('From ( > )', 'shipqora') ?></th>
@@ -328,4 +338,4 @@ final class Table_Rates_Shipping {
 	}
 }
 
-Table_Rates_Shipping::get_instance()->init_hook();
+Table_Rates::get_instance()->init_hook();

@@ -121,14 +121,23 @@ final class General {
 						continue;
 					}
 
-					$cost_configuration = $rule->get_feature_value($rate_feature_object->get_model_key('cost_configuration'));
+					$cost_settings = $rule->get_feature_value($rate_feature_object->get_model_key('cost_settings'));
 					if (method_exists($rate_feature_object, 'set_line_item')) {
-						$rate_feature_object->set_line_item($cost_configuration, $rule);
+						$rate_feature_object->set_line_item($cost_settings, $rule);
+						
+						do_action(
+							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+							Utils::get_hook_name('feature', $feature_id, 'set-line-item'),
+							$rule,
+							$rate_feature_object
+						);
 					}
 				}
 
 				$shipping_rate->{$feature_id} = $rate_feature_object;
 			}
+
+			//error_log(print_r($shipping_rate->{$feature_id}, true));
 		});
 
 		return $rates;
@@ -159,10 +168,6 @@ final class General {
 
 			return $shipping_rate;
 		}, $rates);
-
-
-
-		error_log(print_r($rates, true));
 
 		return $rates;
 	}

@@ -15,7 +15,6 @@ const Cart_Based_Shipping = {
 		return {
 			calculation_value: '',
 			calculate_basis: 'fixed_amount',
-			table_rates_lite: {},
 			calculation_type: 'per_unit_or_percentage',
 			...shipqora_admin?.features?.['cart-based-shipping'],
 			...this.featureData
@@ -41,25 +40,7 @@ const Cart_Based_Shipping = {
 	},
 
 	methods: {
-		add_new_table_rates() {
-			if (!Array.isArray(this.table_rates_layers)) {
-				this.table_rates_layers = []
-			}
-
-			this.table_rates_layers.push({ id: this.$utils.generate_uuid() })
-		},
-
-		duplicate_table_rates_layer(data, position) {
-			this.table_rates_layers.splice(position, 0, data)
-		},
-
-		delete_table_rates_layer(index) {
-			if (!Array.isArray(this.table_rates_layers)) {
-				this.table_rates_layers = []
-			}
-
-			this.table_rates_layers.splice(index, 1)
-		}
+		...wp.hooks.applyFilters('shipqora.cart_based_shipping.methods', {}),
 	}
 }
 

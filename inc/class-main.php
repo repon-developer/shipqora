@@ -62,11 +62,11 @@ final class Main {
 		/* Load components */
 		require_once SHIPQORA_PATH . 'inc/components/class-select2.php';
 		require_once SHIPQORA_PATH . 'inc/components/class-cart-option.php';
-		require_once SHIPQORA_PATH . 'inc/components/class-table-rates-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/components/class-table-rates.php';
 
 		// Load Features
 		require_once SHIPQORA_PATH . 'inc/features/class-general.php';
-		// require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
 		// require_once SHIPQORA_PATH . 'inc/features/class-hide-payment-methods.php';
 		// require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
 		// require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';

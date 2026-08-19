@@ -176,21 +176,21 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('cost_configuration', array(
+		$settings_fields->add_setting('cost_settings', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_model_key('cost_configuration'),
-			'callback' => array($this, 'cost_configuration_setting_field'),
+			'model_key' => $this->get_model_key('cost_settings'),
+			'callback' => array($this, 'cost_settings_setting_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('new_layer_notice', array(
+		$settings_fields->add_setting('shipping_cost_adjustment_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
-				'title' => '⚡ Need Multiple Adjustment Tiers?',
+				'title' => '⚡ Need Multiple Shipping Cost Adjustments?',
 				'utm_source' => 'add+shipping+cost+adjustment+layer',
-				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to unlock matrix pricing, weight-based tiers, and conditional rate overrides.',
+				'description' => 'Need more flexibility? Free users can create additional rules, or you can upgrade to <strong>ShipQora Pro</strong> to add multiple shipping cost configurations directly inside a single rule..',
 			)
 		), $this->get_id());
 	}
@@ -201,7 +201,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function cost_configuration_setting_field(Form_Control $form_control) { ?>
+	public function cost_settings_setting_field(Form_Control $form_control) { ?>
 		<tbody>
 			<template
 				:draggable="false"

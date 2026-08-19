@@ -1,8 +1,8 @@
 import Utils from './utils.min.js?v=@@VERSION';
+import Table_Rates from './component/table-rates.min.js?v=@@VERSION';
 import Cart_Option from './component/cart-option.min.js?v=@@VERSION';
 import Condition_Group from './component/condition.min.js?v=@@VERSION';
 import Select2_Dropdown from './component/select2-dropdown.min.js?v=@@VERSION';
-import Table_Rates_Shipping from './component/table-rates-shipping.min.js?v=@@VERSION';
 import Shipping_Methods_Group from './component/shipping-methods-group.min.js?v=@@VERSION';
 
 import Cart_Based_Shipping from './features/cart-based-shipping.min.js?v=@@VERSION';
@@ -274,9 +274,9 @@ if ($('.shipqora-rule-editor').length) {
 
 	const components = wp.hooks.applyFilters('shipqora.rule_editor_components', {
 		'cart-option': Cart_Option,
+		'table-rates': Table_Rates,
 		'condition-group': Condition_Group,
 		'select2-dropdown': Select2_Dropdown,
-		'table-rates-shipping': Table_Rates_Shipping,
 		'shipping-methods-group': Shipping_Methods_Group,
 	});
 
