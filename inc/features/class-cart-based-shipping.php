@@ -63,6 +63,28 @@ class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
+	 * Get model key of primary settings
+	 * 
+	 * @since 1.0.0
+	 * @return 1.0.0
+	 */
+	public function get_primary_settings_model() {
+		return $this->get_model_key('primary_shipping_cost');
+	}
+
+	/**
+	 * Set feature line item
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_line_item($line_data, $rule) {
+		//$line_data['shipqora_rule'] = $rule;
+		$line_data['rule_id'] = $rule->get_id();
+		$this->line_items[] = $line_data;
+	}
+
+	/**
 	 * Set shipping cost
 	 * 
 	 * @since 1.0.0
@@ -192,10 +214,10 @@ class Cart_Based_Shipping extends Feature {
 			'priority' => 10,
 			'default_value' => (object) array(),
 			'callback' => array($this, 'cost_settings_field'),
-			'model_key' => $this->get_model_key('cost_settings'),
+			'model_key' => $this->get_primary_settings_model(),
 		), $this->get_id());
 
-		$settings_fields->add_setting('multiple_configuration_notice', array(
+		$settings_fields->add_setting('additional_configuration_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),

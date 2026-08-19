@@ -31,6 +31,14 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	protected $feature_id = 'hide-other-shipping-methods';
 
 	/**
+	 * Hold all hideale shipping rates
+	 * 
+	 * @since 1.0.0
+	 * @var array
+	 */
+	private $hideable_rates = array();
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct($data = null) {
@@ -47,7 +55,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array(
 			'priority' => 20,
 			'standalone' => true,
@@ -60,41 +68,50 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	}
 
 	/**
-	 * Get all hideable shipping rates
+	 * Check if current one need to hide
 	 * 
 	 * @since 1.0.0
-	 * @return WC_Shipping_Rate
+	 * @return boolean
 	 */
-	public function get_shipping_rates($shipping_rate) {
-		$layers = $this->get_feature_layers($this->lite_layer);
-		if (count($layers) == 0) {
+	public function hide_shipping_rate($current_rate) {
+		$search_data = array();
+		$method_id = $current_rate->get_method_id();
+		if ('pickup_location' !== $method_id) {
+			$zone = \WC_Shipping_Zones::get_zone_by('instance_id', $current_rate->get_instance_id());
+			$zone_id = $zone->get_id();
+
+			$search_methods = array(
+				$method_id,
+				$method_id . ':' . $zone_id . '-0',
+				$method_id . ':' . $zone_id . '-' . $current_rate->get_instance_id(),
+			);
+		} else {
+			$search_methods = array($method_id, $current_rate->get_id());
+		}
+
+		return count(array_intersect($search_methods, $this->hideable_rates)) > 0;
+	}
+
+	/**
+	 * Set feature line item
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_line_item($line_item) {
+		if (!isset($line_item['shipping_methods']) || !is_array($line_item['shipping_methods'])) {
 			return;
 		}
 
-		$hideable_rates = array();
-		foreach ($layers as $current_layer) {
-			$shipping_methods = array();
-			if (isset($current_layer['shipping_methods']) && is_array($current_layer['shipping_methods'])) {
-				$shipping_methods = $current_layer['shipping_methods'];
-			}
-
-			if (count($shipping_methods) == 0) {
-				continue;
-			}
-
-			$condition_groups = array();
-			if (isset($current_layer['condition_groups']) && is_array($current_layer['condition_groups'])) {
-				$condition_groups = $current_layer['condition_groups'];
-			}
-
-			$matched = Main::get_instance()->is_matched_conditions($condition_groups);
+		if (isset($line_item['condition_groups'])) {
+			$matched = Main::get_instance()->is_matched_conditions($line_item['condition_groups']);
 			if (!$matched) {
-				continue;
+				return;
 			}
+		}
 
-			foreach ($shipping_methods as $shipping_method_id) {
-				$this->add_shipping_rate_data($shipping_rate, $shipping_method_id);
-			}
+		foreach ($line_item['shipping_methods'] as $rate_id) {
+			$this->hideable_rates[] = $rate_id;
 		}
 	}
 
@@ -114,7 +131,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 
 		<?php $this->output_heading_row(esc_html__('Hide Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('tier-item') ?>
+			<?php $settings_fields->output_fields('general') ?>
 		</template>
 	<?php
 	}
@@ -126,20 +143,20 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_layer', array(
+		$settings_fields->add_setting('primary_shipping_methods', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_model_key('lite_layer'),
-			'callback' => array($this, 'lite_layer_setting_field'),
+			'model_key' => $this->get_model_key('primary_hideable_shipping'),
+			'callback' => array($this, 'primary_shipping_methods_row'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('new_layer_notice_row', array(
+		$settings_fields->add_setting('additional_configuration_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Need Multiple Hiding Tiers?',
-				'utm_source' => 'hide+other+shipping+methos+layer',
+				'utm_source' => 'hide+unlimited+shipping+methos',
 				'description' => 'Create complex combinations of conditions and stack multiple hiding tiers seamlessly with <strong>ShipQora Pro</strong>.',
 			)
 		), $this->get_id());
@@ -151,17 +168,17 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function lite_layer_setting_field() { ?>
+	public function primary_shipping_methods_row(Form_Control $form_control) { ?>
 		<tbody>
 			<template
 				:draggable="false"
 				is="vue:feature-hide-other-shipping-methods"
-				:feature-data="hide_other_shipping_methods?.lite_layer"
-				@update="(value) => hide_other_shipping_methods.lite_layer = value"
+				:feature-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
+				@update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
 				<?php $this->output_component_attrs('hide-other-shipping-methods', array(':hide-heading' => 'true')) ?>>
 			</template>
 		</tbody>
-	<?php
+<?php
 	}
 
 
@@ -180,14 +197,14 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'label' => esc_html__('Shipping Methods to Hide', 'shipqora'),
 			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipqora'),
 			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipqora'),
-		), 'tier-item');
+		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
-		), 'tier-item');
+		), 'general');
 	}
 }
 

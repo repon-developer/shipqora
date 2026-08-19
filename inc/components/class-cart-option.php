@@ -81,7 +81,7 @@ final class Cart_Option {
 					:value="option_value">{{get_option_label(option_value)}}</option>
 			</select>
 
-			<select v-model="operator">
+			<select v-model="operator" v-if="based_on?.length">
 				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipqora') ?></option>
 				<option value="all_in_list"><?php esc_html_e('All in list', 'shipqora') ?></option>
 				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipqora') ?></option>

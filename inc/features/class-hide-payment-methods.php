@@ -56,7 +56,7 @@ final class Hide_Payment_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array(
 			'priority' => 30,
 			'standalone' => true,

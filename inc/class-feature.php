@@ -134,8 +134,16 @@ class Feature {
 	 * @since 1.0.0
 	 * @return int
 	 */
-	public function get_feature_priority() {
-		return absint($this->get_configuration('feature_priority'));
+	public function get_feature_priority($shipqora_rule = null) {
+		$feature_priority = $this->get_configuration('feature_priority');
+		if (is_a($shipqora_rule, ShipQora_Rule::class)) {
+			$priority = $shipqora_rule->get_feature_value($this->get_model_key('feature_priority'));
+			if (strlen($priority)) {
+				$feature_priority = $priority;
+			}
+		}
+
+		return $feature_priority;
 	}
 
 	/**
@@ -205,17 +213,5 @@ class Feature {
 		foreach ($wrapper_attributes as $key => $value) {
 			echo esc_attr($key) . '="' . esc_attr($value) . '" ';
 		}
-	}
-
-	/**
-	 * Set feature line item
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function set_line_item($line_data, $rule) {
-		//$line_data['shipqora_rule'] = $rule;
-		$line_data['rule_id'] = $rule->get_id();
-		$this->line_items[] = $line_data;
 	}
 }

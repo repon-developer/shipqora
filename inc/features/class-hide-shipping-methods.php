@@ -26,13 +26,6 @@ final class Hide_Shipping_Methods extends Feature {
 	protected $feature_id = 'hide-shipping-methods';
 
 	/**
-	 * Hold available condition groups
-	 * 
-	 * @var array
-	 */
-	protected $condition_groups = [];
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct($data = null) {
@@ -49,7 +42,7 @@ final class Hide_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array(
 			'priority' => 10,
 			'standalone' => true,
