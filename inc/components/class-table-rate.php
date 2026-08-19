@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-final class Table_Rates {
+final class Table_Rate {
 	/**
 	 * Provides common helper methods of component
 	 *
@@ -26,7 +26,7 @@ final class Table_Rates {
 	 * Hold the current instance
 	 * 
 	 * @since 1.0.0
-	 * @var Table_Rates
+	 * @var Table_Rate
 	 */
 	private static $instance = null;
 
@@ -34,7 +34,7 @@ final class Table_Rates {
 	 * Get instance of current class
 	 * 
 	 * @since 1.0.0
-	 * @return Table_Rates
+	 * @return Table_Rate
 	 */
 	public static function get_instance() {
 		if (is_null(self::$instance)) {
@@ -221,11 +221,11 @@ final class Table_Rates {
 	 * @return void
 	 */
 	public function output_vue_component() {
-		$settings_fields = Settings_Fields::get_instance('table-rates'); ?>
-		<template id="shipqora-table-rates-component">
-			<table class="table-shipqora-form table-shipqora-table-rates">
+		$settings_fields = Settings_Fields::get_instance('table-rate'); ?>
+		<template id="shipqora-table-rate-component">
+			<table class="table-shipqora-form table-shipqora-table-rate">
 				<thead>
-					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora'), array('table-rates')) ?>
+					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora'), array('table-rate')) ?>
 				</thead>
 
 				<tbody v-if="!collapse">
@@ -244,8 +244,8 @@ final class Table_Rates {
 	 */
 	public function enqueue_scripts($values, $source) {
 		if (Utils::is_plugin_screen('rule-editor') && 'localize' == $source) {
-			$settings_fields = Settings_Fields::get_instance('table-rates');
-			$values['table_rates_shipping_model'] = $settings_fields->get_models();
+			$settings_fields = Settings_Fields::get_instance('table-rate');
+			$values['table_rate_shipping_model'] = $settings_fields->get_models();
 		}
 
 		return $values;
@@ -258,12 +258,12 @@ final class Table_Rates {
 	 * @return void
 	 */
 	public function add_settings_fields() {
-		$settings_fields = Settings_Fields::get_instance('table-rates');
+		$settings_fields = Settings_Fields::get_instance('table-rate');
 
 		$settings_fields->add_setting('shipping_rates', array(
 			'priority' => 10,
 			'model_key' => 'shipping_rates',
-			'default_value' => array(array()),
+			'default_value' => array([]),
 			'label' => esc_html__('Shipping Rates', 'shipqora'),
 			'callback' => array($this, 'shipping_rates_setting_field'),
 			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this shipping rates.', 'shipqora'),
@@ -286,7 +286,7 @@ final class Table_Rates {
 	 */
 	public function shipping_rates_setting_field($form_control) {
 		$form_control->output_before_input_options(); ?>
-		<table class="table-rates" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length">
+		<table class="table-rate" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length">
 			<thead>
 				<tr>
 					<th><?php esc_html_e('From ( > )', 'shipqora') ?></th>
@@ -338,4 +338,4 @@ final class Table_Rates {
 	}
 }
 
-Table_Rates::get_instance()->init_hook();
+Table_Rate::get_instance()->init_hook();

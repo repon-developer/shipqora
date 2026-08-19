@@ -61,8 +61,8 @@ final class Main {
 
 		/* Load components */
 		require_once SHIPQORA_PATH . 'inc/components/class-select2.php';
+		require_once SHIPQORA_PATH . 'inc/components/class-table-rate.php';
 		require_once SHIPQORA_PATH . 'inc/components/class-cart-option.php';
-		require_once SHIPQORA_PATH . 'inc/components/class-table-rates.php';
 
 		// Load Features
 		require_once SHIPQORA_PATH . 'inc/features/class-general.php';

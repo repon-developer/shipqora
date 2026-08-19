@@ -2,9 +2,9 @@ import Base_Component from './base-component.min.js?v=@@VERSION';
 
 const { __ } = wp.i18n;
 
-const Table_Rates = {
+const Table_Rate = {
 	extends: Base_Component,
-	template: '#shipqora-table-rates-component',
+	template: '#shipqora-table-rate-component',
 	props: {
 		tableRateData: {
 			default: null,
@@ -25,7 +25,7 @@ const Table_Rates = {
 	data() {
 		return {
 			collapse: false,
-			shipping_rates: [],
+			shipping_rates: [[]],
 			shipping_rates_errors: [],
 			...shipqora_admin.table_rates_shipping_model,
 			...this.tableRateData
@@ -50,7 +50,7 @@ const Table_Rates = {
 		},
 
 		drag_button_classes() {
-			return { 'button-drag': true, 'button-drag-table-rates-layer': true }
+			return { 'button-drag': true, 'button-drag-table-rate-layer': true }
 		}
 	},
 
@@ -166,4 +166,4 @@ const Table_Rates = {
 	}
 }
 
-export default Table_Rates;
+export default Table_Rate;

@@ -11,7 +11,7 @@ use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 use ShipQora\Component_Methods;
 use ShipQora\Component\Cart_Option;
-use ShipQora\Component\Table_Rates;
+use ShipQora\Component\Table_Rate;
 use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
@@ -143,7 +143,7 @@ class Cart_Based_Shipping extends Feature {
 					$table_rate = apply_filters(
 						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 						$this->get_hook('table-rate'),
-						new Table_Rates($current_item['primary_table_rate']),
+						new Table_Rate($current_item['primary_table_rate']),
 						$current_item,
 						$this
 					);
@@ -408,13 +408,13 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function primary_table_rate_field(Form_Control $form_control) { ?>
-		<table-rates
+		<table-rate
 			:draggable="false"
 			:calculate-basis="calculate_basis"
 			:table-rate-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 			@update="(table_rate_data) => <?php echo esc_attr($form_control->get_model_key()) ?> = table_rate_data"
 			<?php $this->output_component_attrs('primary-table-rate', array(':hide-heading' => 'false', ':hide-actions' => array('duplicate', 'delete'))) ?>>
-		</table-rates>
+		</table-rate>
 	<?php
 	}
 
