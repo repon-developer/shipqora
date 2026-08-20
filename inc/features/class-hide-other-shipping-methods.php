@@ -129,7 +129,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			null
 		); ?>
 
-		<?php $this->output_heading_row(esc_html__('Hide Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Method Hide Configuration #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('general') ?>
 		</template>

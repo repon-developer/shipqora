@@ -13,7 +13,6 @@ const Hide_Other_Shipping_Methods = {
 
 	data() {
 		return {
-			shipping_methods: [],
 			...shipqora_admin?.features?.['hide-payment-methods'],
 			...this.featureData
 		}

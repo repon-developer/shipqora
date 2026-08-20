@@ -34,35 +34,40 @@ final class General {
 	 * @return array
 	 */
 	public function hide_payment_methods($gateways) {
+		$feature_object = Feature::get_feature('hide-payment-methods');
+		if (false === $feature_object) {
+			return $rates;
+		}
+
 		if (WC()->session && method_exists(WC()->session, 'get')) {
 			$shipping_methods = WC()->session->get('chosen_shipping_methods');
-			if (is_array($shipping_methods) && count($shipping_methods) > 0) {
-				$rules = array();
-				foreach ($shipping_methods as $rate_id) {
-					$rules = array_merge($rules, ShipQora_Rule::get_by_rate_id($rate_id));
-				}
-
-				if (count($rules) == 0) {
-					return $gateways;
-				}
-
-				$hide_payment_methods = array();
-
-				foreach ($rules as $rule) {
-					if (!$rule->exists() || !$rule->is_feature_enabled('hide-payment-methods')) {
-						continue;
-					}
-
-					$feature_object = $rule->get_feature_object('hide-payment-methods');
-					if ($feature_object) {
-						$hide_payment_methods = array_merge($hide_payment_methods, $feature_object->payment_methods());
-					}
-				}
-
-				foreach ($hide_payment_methods as $gateway_id) {
-					unset($gateways[$gateway_id]);
-				}
+			if (!is_array($shipping_methods) || (is_array($shipping_methods) && count($shipping_methods) == 0)) {
+				return $gateways;
 			}
+
+			$chosen_shipping_method = end($shipping_methods);
+
+			$rules = ShipQora_Rule::get_by_rate_id($chosen_shipping_method);
+			if (count($rules) == 0) {
+				return $gateways;
+			}
+
+			foreach ($rules as $rule) {
+				$primary_settings = $rule->get_feature_value($feature_object->get_model_key('primary_settings'));
+				$feature_object->set_hideable_methods($primary_settings);
+
+				do_action(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+					$feature_object->get_hook('set-hideable-methods'),
+					$rule,
+					$feature_object
+				);
+			}
+		}
+
+		$hideable_payment_methods = $feature_object->get_hideable_payment_methods();
+		foreach ($hideable_payment_methods as $gateway_id) {
+			unset($gateways[$gateway_id]);
 		}
 
 		return $gateways;

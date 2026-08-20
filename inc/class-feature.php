@@ -145,16 +145,8 @@ class Feature {
 	 * @since 1.0.0
 	 * @return int
 	 */
-	public function get_feature_priority($shipqora_rule = null) {
-		$feature_priority = $this->get_configuration('feature_priority');
-		if (is_a($shipqora_rule, ShipQora_Rule::class)) {
-			$priority = $shipqora_rule->get_feature_value($this->get_model_key('feature_priority'));
-			if (strlen($priority)) {
-				$feature_priority = $priority;
-			}
-		}
-
-		return $feature_priority;
+	public function get_feature_priority() {
+		return $this->get_configuration('feature_priority');
 	}
 
 	/**

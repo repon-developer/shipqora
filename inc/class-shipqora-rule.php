@@ -36,12 +36,12 @@ final class ShipQora_Rule {
 	}
 
 	/**
-	 * Hold ShipQora Rules of instance id of shipping method
+	 * Hold ShipQora Rules of instance id of shipping rate id
 	 * 
 	 * @since 1.0.0
 	 * @var array
 	 */
-	private static $instances_ids = array();
+	private static $shipping_rates = array();
 
 	/**
 	 * Get ShipQora Rules by instance ID of shipping method
@@ -51,8 +51,8 @@ final class ShipQora_Rule {
 	 * @return array
 	 */
 	public static function get_by_rate_id($rate_id) {
-		if (isset(self::$instances_ids[$rate_id])) {
-			return self::$instances_ids[$rate_id];
+		if (isset(self::$shipping_rates[$rate_id])) {
+			return self::$shipping_rates[$rate_id];
 		}
 
 		$rate_id_data = explode(':', $rate_id);
@@ -105,23 +105,15 @@ final class ShipQora_Rule {
 
 		$results = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ($results as $rule_data) {
-			self::$instances_ids[$rate_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
+			self::$shipping_rates[$rate_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
 		}
 
-		if (isset(self::$instances_ids[$rate_id])) {
-			return self::$instances_ids[$rate_id];
+		if (isset(self::$shipping_rates[$rate_id])) {
+			return self::$shipping_rates[$rate_id];
 		}
 
 		return array();
 	}
-
-	/**
-	 * Hold ShipQora rule id of shipping rate
-	 * 
-	 * @since 1.0.0
-	 * @var array
-	 */
-	private static $shipping_rate_ids = [];
 
 	/**
 	 * Get rule by shipping rate

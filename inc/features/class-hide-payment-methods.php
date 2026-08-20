@@ -32,12 +32,12 @@ final class Hide_Payment_Methods extends Feature {
 	protected $feature_id = 'hide-payment-methods';
 
 	/**
-	 * Hold settings of lite layer
+	 * Hold all hideable payment methods
 	 * 
 	 * @since 1.0.0
 	 * @var array
 	 */
-	protected $lite_layer = null;
+	private $hideable_payments = array();
 
 	/**
 	 * Constructor.
@@ -69,32 +69,34 @@ final class Hide_Payment_Methods extends Feature {
 	}
 
 	/**
-	 * Get all hideable shipping rates
+	 * Set hideable payment methods
 	 * 
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function payment_methods() {
-		$layers = $this->get_feature_layers($this->lite_layer);
-		if (count($layers) == 0) {
-			return;
-		}
+	public function set_hideable_methods($line_item) {
+		$payment_methods = $line_item['payment_methods'] ?? null;
+		if (is_array($payment_methods) && count($payment_methods) > 0) {
+			$condition_groups = $line_item['condition_groups'] ?? array();
+			$condition_matched = Main::get_instance()->is_matched_conditions($condition_groups);
+			if (false === $condition_matched) {
+				return;
+			}
 
-		$payment_gatways = array();
-		foreach ($layer_items as $layer_item) {
-			if (isset($layer_item['payment_methods']) && is_array($layer_item['payment_methods'])) {
-				if (isset($layer_item['condition_groups'])) {
-					$condition_matched = Main::get_instance()->is_matched_conditions($layer_item['condition_groups']);
-					if (false == $condition_matched) {
-						continue;
-					}
-				}
-
-				$payment_gatways = array_merge($payment_gatways, $layer_item['payment_methods']);
+			foreach ($payment_methods as $gateway_id) {
+				$this->hideable_payments[] = $gateway_id;
 			}
 		}
+	}
 
-		return array_filter($payment_gatways);
+	/**
+	 * Get all hideable payment methods
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	public function get_hideable_payment_methods() {
+		return $this->hideable_payments;
 	}
 
 	/**
@@ -111,9 +113,9 @@ final class Hide_Payment_Methods extends Feature {
 			null
 		); ?>
 
-		<?php $this->output_heading_row(esc_html__('Hide Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Payment Method Hide Configuration #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('layer') ?>
+			<?php $settings_fields->output_fields('general') ?>
 		</template>
 	<?php
 	}
@@ -125,21 +127,21 @@ final class Hide_Payment_Methods extends Feature {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('lite_layer', array(
+		$settings_fields->add_setting('primary_settings_row', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_model_key('lite_layer'),
-			'callback' => array($this, 'lite_layer_setting_field'),
+			'model_key' => $this->get_model_key('primary_settings'),
+			'callback' => array($this, 'primary_settings_row'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('layer_notice_callback', array(
+		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
-				'title' => '⚡ Need Multiple Hiding Tiers?',
-				'utm_source' => 'hide+payment+methos+layer',
-				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to add unlimited hiding tiers. Create advanced, multi-layered rules to hide different payment methods for different shipping methods, products, or customer roles simultaneously.',
+				'title' => '⚡ Need Multiple Payment Hiding Configurations?',
+				'utm_source' => 'hide+payment+methos+unlimited',
+				'description' => 'Get <strong>ShipQora Pro</strong> to set up and run multiple payment hiding configurations directly inside a single rule.',
 			)
 		), $this->get_id());
 	}
@@ -150,13 +152,13 @@ final class Hide_Payment_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function lite_layer_setting_field() { ?>
+	public function primary_settings_row() { ?>
 		<tbody>
 			<template
 				:draggable="false"
 				is="vue:feature-hide-payment-methods"
-				:feature-data="<?php echo esc_attr($this->get_model_key('lite_layer')) ?>"
-				@update="(value) => <?php echo esc_attr($this->get_model_key('lite_layer')) ?> = value"
+				:feature-data="<?php echo esc_attr($this->get_model_key('primary_settings')) ?>"
+				@update="(value) => <?php echo esc_attr($this->get_model_key('primary_settings')) ?> = value"
 				<?php $this->output_component_attrs('hide-payment-methods', array(':hide-heading' => 'true')) ?>>
 			</template>
 		</tbody>
@@ -178,14 +180,14 @@ final class Hide_Payment_Methods extends Feature {
 			'label' => esc_html__('Payment Methods to Hide', 'shipqora'),
 			'label_note' => esc_html__('Select the payment methods (e.g., Cash on Delivery, Stripe) to hide when a customer chooses any of the selected shipping methods above.', 'shipqora'),
 			'option_note' => esc_html__('Select the payment methods to hide when a customer chooses any of the selected shipping methods above.', 'shipqora'),
-		), 'layer');
+		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
-		), 'layer');
+		), 'general');
 	}
 
 	/**
