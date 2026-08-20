@@ -44,6 +44,17 @@ class Feature {
 	}
 
 	/**
+	 * Get feature object
+	 * 
+	 * @since 1.0.0
+	 * @return Feature
+	 */
+	public static function get_feature($feature_id) {
+		$features = self::get_features();
+		return isset($features[$feature_id]) ? $features[$feature_id] : false;
+	}
+
+	/**
 	 * Hold the feature key of current feature
 	 * 
 	 * @var string

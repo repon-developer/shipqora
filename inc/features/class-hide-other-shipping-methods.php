@@ -155,9 +155,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
-				'title' => '⚡ Need Multiple Hiding Tiers?',
-				'utm_source' => 'hide+unlimited+shipping+methos',
-				'description' => 'Create complex combinations of conditions and stack multiple hiding tiers seamlessly with <strong>ShipQora Pro</strong>.',
+				'title' => '⚡ Unlock Multiple Hiding Configurations',
+				'utm_source' => 'hide+unlimited+shipping+methods',
+				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to create multiple hiding configurations and control shipping method visibility without creating separate rules.',
 			)
 		), $this->get_id());
 	}

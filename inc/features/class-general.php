@@ -2,11 +2,11 @@
 
 namespace ShipQora\Feature;
 
-use ShipQora\Condition\Main;
 use ShipQora\Utils;
 use ShipQora\Feature;
 use ShipQora\Form_Control;
 use ShipQora\ShipQora_Rule;
+use ShipQora\Condition\Main;
 use ShipQora\Settings_Fields;
 
 if (!defined('ABSPATH')) {
@@ -75,29 +75,26 @@ final class General {
 	 * @return array
 	 */
 	public function hide_current_shipping_method($rates) {
-		$features = Feature::get_features();
-
-		if (isset($features['hide-shipping-methods'])) {
-			$feature_object = $features['hide-shipping-methods'];
-
-			$rates = array_filter($rates, function ($shipping_rate) use ($feature_object) {
-				$shipqora_rules = ShipQora_Rule::get_by_rate_id($shipping_rate->get_id());
-
-				$hide_shipping_methos = array();
-				foreach ($shipqora_rules as $key => $rule) {
-					if (!$rule->exists() || !$rule->is_feature_enabled('hide-shipping-methods')) {
-						continue;
-					}
-
-					$condition_groups = $rule->get_feature_value($feature_object->get_model_key('condition_groups'));
-					$hide_shipping_methos[] = Main::get_instance()->is_matched_conditions($condition_groups);
-				}
-
-				return count(array_filter($hide_shipping_methos)) === 0;
-			});
+		$feature_object = Feature::get_feature('hide-shipping-methods');
+		if (!$feature_object) {
+			return $rates;
 		}
 
-		return $rates;
+		return array_filter($rates, function ($shipping_rate) use ($feature_object) {
+			$shipqora_rules = ShipQora_Rule::get_by_rate_id($shipping_rate->get_id());
+
+			$hide_shipping_methos = array();
+			foreach ($shipqora_rules as $key => $rule) {
+				if (!$rule->exists() || !$rule->is_feature_enabled('hide-shipping-methods')) {
+					continue;
+				}
+
+				$condition_groups = $rule->get_feature_value($feature_object->get_model_key('condition_groups'));
+				$hide_shipping_methos[] = Main::get_instance()->is_matched_conditions($condition_groups);
+			}
+
+			return count(array_filter($hide_shipping_methos)) === 0;
+		});
 	}
 
 	/**
@@ -124,15 +121,25 @@ final class General {
 					}
 
 					$primary_item_settings = $rule->get_feature_value($rate_feature_object->get_primary_settings_model());
-					if (method_exists($rate_feature_object, 'set_line_item')) {
-						$rate_feature_object->set_line_item($primary_item_settings, $rule);
+					if (method_exists($rate_feature_object, 'arrange_feature_data')) {
+						$rate_feature_object->arrange_feature_data($primary_item_settings, $rule);
 
-						do_action(
-							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-							$feature_object->get_hook('set-line-item'),
-							$rule,
-							$rate_feature_object
-						);
+						// 						/**
+						//  * Arrange data of current feature
+						//  * 
+						//  * @since 1.0.0
+						//  * @return void
+						//  */
+						// public function arrange_feature_data($rule) {
+
+						// 	do_action(
+						// 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+						// 		$this->get_hook('set-line-item'),
+						// 		$rule,
+						// 		$rate_feature_object
+						// 	);
+						// }
+
 					}
 				}
 
@@ -152,14 +159,12 @@ final class General {
 	 * @return array
 	 */
 	public function hide_shipping_methods($rates, $package) {
-		$features = Feature::get_features();
-		if (!isset($features['hide-other-shipping-methods'])) {
+		$feature_object = Feature::get_feature('hide-other-shipping-methods');
+		if (false === $feature_object) {
 			return $rates;
 		}
 
-		$feature_object = $features['hide-other-shipping-methods'];
 		$model_key = $feature_object->get_model_key('primary_hideable_shipping');
-
 		foreach ($rates as $shipping_rate) {
 			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 			foreach ($shipqora_rules as $rule) {
