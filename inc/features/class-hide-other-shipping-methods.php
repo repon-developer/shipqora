@@ -150,7 +150,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'callback' => array($this, 'primary_shipping_methods_row'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('additional_configuration_notice', array(
+		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),

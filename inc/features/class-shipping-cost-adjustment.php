@@ -51,25 +51,32 @@ final class Shipping_Cost_Adjustment extends Feature {
 	}
 
 	/**
-	 * Get model key of primary settings
-	 * 
-	 * @since 1.0.0
-	 * @return 1.0.0
-	 */
-	public function get_primary_settings_model() {
-		return $this->get_model_key('primary_shipping_cost');
-	}
-
-	/**
 	 * Set feature line item
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
 	public function set_line_item($line_data, $rule) {
-		//$line_data['shipqora_rule'] = $rule;
 		$line_data['rule_id'] = $rule->get_id();
 		$this->line_items[] = $line_data;
+	}
+
+	/**
+	 * Arrange feature data of current rule item
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function arrange_feature_data($shipqora_rule) {
+		$primary_settings = $shipqora_rule->get_feature_value($this->get_model_key('primary_shipping_cost'));
+		$this->set_line_item($primary_settings, $shipqora_rule);
+
+		do_action(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('arrange-feature-data'),
+			$shipqora_rule,
+			$this
+		);
 	}
 
 	/**
@@ -131,7 +138,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 				$amount = $shipping_cost - $amount;
 			}
 
-			if ('free_shipping' !== $current_item['type']) {
+			if (!in_array($current_item['type'], array('free_shipping', 'fixed_amount'))) {
 				$min_cost = trim($current_item['min_cost']);
 				if (strlen($min_cost) > 0) {
 					$amount = max(floatval($min_cost), $amount);
@@ -184,7 +191,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('layer') ?>
 		</template>
@@ -201,17 +208,17 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$settings_fields->add_setting('cost_settings', array(
 			'priority' => 10,
 			'default_value' => (object) array(),
-			'model_key' => $this->get_primary_settings_model(),
+			'model_key' => $this->get_model_key('primary_shipping_cost'),
 			'callback' => array($this, 'cost_settings_setting_field'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('additional_configuration_notice', array(
+		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Need Multiple Shipping Cost Adjustments?',
-				'utm_source' => 'add+shipping+cost+adjustment+layer',
+				'utm_source' => 'add+shipping+cost+adjustment',
 				'description' => 'Need more flexibility? Free users can create additional rules, or you can upgrade to <strong>ShipQora Pro</strong> to add multiple shipping cost configurations directly inside a single rule..',
 			)
 		), $this->get_id());
@@ -230,10 +237,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 				is="vue:feature-shipping-cost-adjustment"
 				:feature-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
-				<?php $this->output_component_attrs('shipping-cost-adjustment', array(
-					':hide-heading' => 'true',
-					':hide-actions' => array('delete')
-				)) ?>>
+				<?php $this->output_component_attrs('shipping-cost-adjustment', array(':hide-heading' => 'true', ':hide-actions' => array('delete'))) ?>>
 			</template>
 		</tbody>
 	<?php
@@ -261,8 +265,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$settings_fields->add_setting('shipping_cost_limit', array(
 			'priority' => 20,
 			'label' => esc_html__('Cost Limits', 'shipqora'),
-			'conditions' => array('type != "free_shipping"'),
 			'callback' => array($this, 'shipping_cost_limit_setting_field'),
+			'conditions' => array('!["free_shipping", "fixed_amount"].includes(type)'),
 			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipqora'),
 			'option_note' => esc_html__('Leave blank for no limit.', 'shipqora'),
 			'related_models' => array(

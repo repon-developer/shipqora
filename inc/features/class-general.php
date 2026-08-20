@@ -125,26 +125,8 @@ final class General {
 						continue;
 					}
 
-					$primary_item_settings = $rule->get_feature_value($rate_feature_object->get_primary_settings_model());
 					if (method_exists($rate_feature_object, 'arrange_feature_data')) {
-						$rate_feature_object->arrange_feature_data($primary_item_settings, $rule);
-
-						// 						/**
-						//  * Arrange data of current feature
-						//  * 
-						//  * @since 1.0.0
-						//  * @return void
-						//  */
-						// public function arrange_feature_data($rule) {
-
-						// 	do_action(
-						// 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-						// 		$this->get_hook('set-line-item'),
-						// 		$rule,
-						// 		$rate_feature_object
-						// 	);
-						// }
-
+						$rate_feature_object->arrange_feature_data($rule);
 					}
 				}
 
