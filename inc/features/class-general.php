@@ -125,8 +125,8 @@ final class General {
 						continue;
 					}
 
-					if (method_exists($rate_feature_object, 'arrange_feature_data')) {
-						$rate_feature_object->arrange_feature_data($rule);
+					if (method_exists($rate_feature_object, 'manage_feature')) {
+						$rate_feature_object->manage_feature($rule);
 					}
 				}
 

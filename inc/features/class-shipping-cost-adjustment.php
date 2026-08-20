@@ -67,13 +67,13 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function arrange_feature_data($shipqora_rule) {
+	public function manage_feature($shipqora_rule) {
 		$primary_settings = $shipqora_rule->get_feature_value($this->get_model_key('primary_shipping_cost'));
 		$this->set_line_item($primary_settings, $shipqora_rule);
 
 		do_action(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-			$this->get_hook('arrange-feature-data'),
+			$this->get_hook('manage-feature'),
 			$shipqora_rule,
 			$this
 		);
