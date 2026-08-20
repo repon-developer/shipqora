@@ -62,7 +62,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	}
 
 	/**
-	 * Arrange feature data of current rule item
+	 * Manage feature data
 	 * 
 	 * @since 1.0.0
 	 * @return void

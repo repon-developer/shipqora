@@ -121,7 +121,7 @@ const Select2_Dropdown = {
 
 		value() {
 			const selected_option = ajax_response_data?.find(option => option.id == this.value);
-			this.$emit('update', this.value, selected_option?.sub_options);
+			this.$emit('update', this.value, selected_option?.child_items);
 		},
 
 		loading() {
@@ -135,7 +135,7 @@ const Select2_Dropdown = {
 		select_option_items(values) {
 			this.$utils.set_cache_data(this.cache_key, values);
 			const selected_option = ajax_response_data?.find(option => option.id == this.value);
-			this.$emit('update', this.value, selected_option?.sub_options);
+			this.$emit('update', this.value, selected_option?.child_items);
 		}
 	},
 

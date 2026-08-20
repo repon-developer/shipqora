@@ -185,7 +185,7 @@ class Feature {
 			return $item;
 		}, $items);
 
-		usort($items, fn($a, $b) => [$a['priority'], $a['rule_id'], $a['calculated_shipping_cost']] <=> [$b['priority'], $b['rule_id'], $b['calculated_shipping_cost']]);
+		usort($items, fn($a, $b) => [$a['priority'], $a['rule_id']] <=> [$b['priority'], $b['rule_id']]);
 
 		return $items;
 	}

@@ -63,25 +63,32 @@ class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
-	 * Get model key of primary settings
-	 * 
-	 * @since 1.0.0
-	 * @return 1.0.0
-	 */
-	public function get_primary_settings_model() {
-		return $this->get_model_key('primary_shipping_cost');
-	}
-
-	/**
 	 * Set feature line item
 	 * 
 	 * @since 1.0.0
 	 * @return void
 	 */
 	public function set_line_item($line_data, $rule) {
-		//$line_data['shipqora_rule'] = $rule;
 		$line_data['rule_id'] = $rule->get_id();
 		$this->line_items[] = $line_data;
+	}
+
+	/**
+	 * Manage feature data
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function manage_feature($shipqora_rule) {
+		$primary_settings = $shipqora_rule->get_feature_value($this->get_model_key('primary_shipping_cost'));
+		$this->set_line_item($primary_settings, $shipqora_rule);
+
+		do_action(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+			$this->get_hook('manage-feature'),
+			$shipqora_rule,
+			$this
+		);
 	}
 
 	/**
@@ -189,6 +196,9 @@ class Cart_Based_Shipping extends Feature {
 		}, $line_items);
 
 		$line_items = array_filter($line_items, fn($item) => is_array($item) && $item['calculated_shipping_cost'] >= 0);
+		if (count($line_items) == 0) {
+			return;
+		}
 
 		$line_items = $this->order_priority($line_items);
 		$applicable_layer = apply_filters(
@@ -198,7 +208,11 @@ class Cart_Based_Shipping extends Feature {
 			$this
 		);
 
-		if (array_key_exists('calculated_shipping_cost', $applicable_layer)) {
+		if ($applicable_layer && array_key_exists('calculated_shipping_cost', $applicable_layer)) {
+			if (!empty($applicable_layer['shipping_method_title'])) {
+				$shipping_rate->set_label($applicable_layer['shipping_method_title']);
+			}
+
 			$shipping_rate->set_cost($applicable_layer['calculated_shipping_cost']);
 		}
 	}
@@ -214,10 +228,10 @@ class Cart_Based_Shipping extends Feature {
 			'priority' => 10,
 			'default_value' => (object) array(),
 			'callback' => array($this, 'cost_settings_field'),
-			'model_key' => $this->get_primary_settings_model(),
+			'model_key' => $this->get_model_key('primary_shipping_cost'),
 		), $this->get_id());
 
-		$settings_fields->add_setting('additional_configuration_notice', array(
+		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
 			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
@@ -256,9 +270,9 @@ class Cart_Based_Shipping extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<?php $this->output_heading_row(esc_html__('Tier #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Cost Configuration #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('layer') ?>
+			<?php $settings_fields->output_fields('general') ?>
 		</template>
 	<?php
 	}
@@ -278,7 +292,7 @@ class Cart_Based_Shipping extends Feature {
 			'callback' => array($this, 'target_products_setting_field'),
 			'label_note' => esc_html__('Select which cart items this rule applies to. You can target all items or filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
 			'option_note' => esc_html__('Shipping cost calculations will apply to the combined total (subtotal, quantity, weight, or volume) of all matching items found in the cart.', 'shipqora'),
-		), 'layer');
+		), 'general');
 
 		$settings_fields->add_setting('exclude_products', array(
 			'priority' => 10.10,
@@ -290,7 +304,7 @@ class Cart_Based_Shipping extends Feature {
 				'utm_source' => 'exclude+products',
 				'description' => 'Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Cart Items"</strong> and create more precise shipping cost with greater control over product eligibility.',
 			)
-		), 'layer');
+		), 'general');
 
 		$settings_fields->add_setting('priority', array(
 			'priority' => 30,
@@ -302,10 +316,19 @@ class Cart_Based_Shipping extends Feature {
 			'attributes' => array('min' => '0', 'step' => '1'),
 			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipqora'),
 			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipqora'),
-		), 'layer');
+		), 'general');
+
+		$settings_fields->add_setting('shipping_method_title', array(
+			'priority' => 40,
+			'type' => Form_Control::TEXTBOX,
+			'model_key' => 'shipping_method_title',
+			'label' => esc_html__('Shipping Method Title', 'shipqora'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
+			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
+		), 'general');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
-			'priority' => 40,
+			'priority' => 50,
 			'label' => esc_html__('Calculate Cost By', 'shipqora'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__('Choose how the shipping cost is determined based on cart subtotal, item quantity, total weight, or total volume.', 'shipqora'),
@@ -317,7 +340,7 @@ class Cart_Based_Shipping extends Feature {
 				'calculate_basis' => 'fixed_amount',
 				'calculation_type' => 'per_unit_or_percentage',
 			)
-		), 'layer');
+		), 'general');
 
 		$settings_fields->add_setting('primary_table_rate_settings', array(
 			'priority' => 50,
@@ -338,14 +361,14 @@ class Cart_Based_Shipping extends Feature {
 					'callback' => array($this, 'new_table_rates_notice'),
 				)
 			)
-		), 'layer');
+		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
-		), 'layer');
+		), 'general');
 	}
 
 	/**

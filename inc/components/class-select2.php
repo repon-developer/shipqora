@@ -59,7 +59,6 @@ final class Select2 {
 	 */
 	public function output_component() { ?>
 		<template id="shipqora-select2-dropdown">
-
 			<span class="select2-safety-span"><!-- dont-remove-this-line-otherwise-show-error --></span>
 
 			<div class="shipqora-loading-spinner" v-if="loading"></div>
