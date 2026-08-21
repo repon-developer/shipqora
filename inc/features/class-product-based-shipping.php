@@ -66,7 +66,6 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @param WC_Shipping_Rate $shipping_rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-
 		$product_items = array_map(function ($line_items) {
 			$line_items = array_map(fn($item) => $this->calculate_line_item($item), $line_items);
 			$line_items = array_filter($line_items, fn($item) => $item['calculated_shipping_cost'] >= 0);
@@ -84,9 +83,27 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		}
 
 		$shipping_cost = array_sum(wp_list_pluck($product_items, 'calculated_shipping_cost'));
-		if ($shipping_cost >= 0) {
-			$shipping_rate->set_cost($shipping_cost);
+		if ($shipping_cost < 0) {
+			return;
 		}
+
+		$best_item = array_reduce($product_items, function ($carry, $current_item) {
+			if (!$carry) {
+				return $current_item;
+			}
+
+			if ($carry['calculated_shipping_cost'] > $current_item['calculated_shipping_cost']) {
+				return $carry;
+			}
+
+			return $current_item;
+		});
+
+		if (!empty($best_item['shipping_method_title'])) {
+			$shipping_rate->set_label($best_item['shipping_method_title']);
+		}
+
+		$shipping_rate->set_cost($shipping_cost);
 	}
 
 	/**
@@ -101,14 +118,19 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			return;
 		}
 
+		$shipping_method_title = $rule->get_feature_value($this->get_model_key('shipping_method_title'));
+
 		$cart_total = new Cart_Total();
-		array_walk($groups, function (&$group) use ($rule, $cart_total) {
+		array_walk($groups, function (&$group) use ($rule, $cart_total, $shipping_method_title) {
 			if (isset($group['condition_groups'])) {
 				$is_matched = Main::get_instance()->is_matched_conditions($group['condition_groups']);
 				if (!$is_matched) {
 					return;
 				}
 			}
+
+			$group['rule_id'] = $rule->get_id();
+			$group['shipping_method_title'] = $shipping_method_title;
 
 			$cart_option = apply_filters(
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
@@ -147,7 +169,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 */
 	public function get_wrapper_attributes() {
 		return array(
-			'data-skip-order' => 1,
+			'data-skip-order' => 2,
 			'data-group' => 'feature',
 			'@end' => 'on_order_change',
 			'data-model-key' => $this->get_model_key('groups'),
@@ -162,8 +184,17 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @return void
 	 */
 	public function add_editor_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('product_groups_settings_field', array(
+		$settings_fields->add_setting('shipping_method_title', array(
 			'priority' => 10,
+			'type' => Form_Control::TEXTBOX,
+			'model_key' => $this->get_model_key('shipping_method_title'),
+			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
+			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
+		), $this->get_id());
+
+		$settings_fields->add_setting('product_groups_settings_field', array(
+			'priority' => 100,
 			'default_value' => array((object) array()),
 			'model_key' => $this->get_model_key('groups'),
 			'callback' => array($this, 'product_groups_settings_field'),
