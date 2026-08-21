@@ -36,7 +36,7 @@ final class General {
 	public function hide_payment_methods($gateways) {
 		$feature_object = Feature::get_feature('hide-payment-methods');
 		if (false === $feature_object) {
-			return $rates;
+			return $gateways;
 		}
 
 		if (WC()->session && method_exists(WC()->session, 'get')) {

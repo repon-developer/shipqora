@@ -74,13 +74,15 @@ final class ShipQora_Rule {
 				return array();
 			}
 
-			$zone_id = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id)->get_id();
-
-			$json_search_data = array(
-				$shipping_method->id,
-				$shipping_method->id . ':' . $zone_id . '-0',
-				$shipping_method->id . ':' . $zone_id . '-' . $instance_id,
-			);
+			$current_zone = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id);
+			if ($current_zone) {
+				$zone_id = $current_zone->get_id();
+				$json_search_data = array(
+					$shipping_method->id,
+					$shipping_method->id . ':' . $zone_id . '-0',
+					$shipping_method->id . ':' . $zone_id . '-' . $instance_id,
+				);
+			}
 		}
 
 		if (empty($json_search_data)) {

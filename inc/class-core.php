@@ -21,7 +21,7 @@ class Core {
 		$wpdb->shipqora_rules_table = $wpdb->prefix . 'shipqora_rules';
 
 		if (is_multisite()) {
-			add_action('admin_init', array($this, 'activation'));
+			add_action('admin_init', array($this, 'activation_callback'));
 		}
 
 		register_activation_hook(SHIPQORA_FILE, array($this, 'activation_callback'));
