@@ -92,6 +92,82 @@ class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
+	 * Calculate shipping cost of line item
+	 * 
+	 * @since 1.0.0
+	 * @param array $current_item
+	 */
+	public function calculate_line_item($current_item) {
+		$current_item = wp_parse_args($current_item, array(
+			'metrics_total' => 0,
+			'calculate_basis' => '',
+			'calculation_type' => '',
+			'calculation_value' => '',
+			'primary_table_rate' => array(),
+			'calculated_shipping_cost' => -1,
+		));
+
+		try {
+			$metrics_total = $current_item['metrics_total'];
+			$calculate_basis = $current_item['calculate_basis'];
+
+			$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
+			if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
+				throw new Shipping_Cost(-1);
+			}
+
+			$calculation_value = trim($current_item['calculation_value']);
+			if (strlen($calculation_value) == 0 && 'table_rates' !== $current_item['calculation_type']) {
+				throw new Shipping_Cost(-1);
+			}
+
+			$calculation_value = floatval($calculation_value);
+			if ('fixed_amount' == $calculate_basis) {
+				throw new Shipping_Cost($calculation_value);
+			}
+
+			if (!in_array($calculate_basis, $calculate_metrics) || $metrics_total == 0) {
+				throw new Shipping_Cost(-1);
+			}
+
+			$calculation_type = $current_item['calculation_type'];
+			if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
+				$shipping_cost = $metrics_total * $calculation_value;
+				if ('subtotal' == $calculate_basis) {
+					$shipping_cost = $shipping_cost / 100;
+				}
+
+				throw new Shipping_Cost($shipping_cost);
+			}
+
+			if ('table_rates' == $calculation_type && isset($current_item['primary_table_rate']) && is_array($current_item['primary_table_rate'])) {
+				$table_rate = apply_filters(
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+					$this->get_hook('table-rate'),
+					new Table_Rate($current_item['primary_table_rate']),
+					$current_item,
+					$this
+				);
+
+				if (!$table_rate->has_validate_ranges() || !$table_rate->is_condition_matched()) {
+					throw new Shipping_Cost(-1);
+				}
+
+				$shipping_cost = $table_rate->calculate_shipping_cost($metrics_total, $calculate_basis);
+				if ($shipping_cost > 0) {
+					throw new Shipping_Cost($shipping_cost);
+				}
+			}
+
+			throw new Shipping_Cost(-1);
+		} catch (Shipping_Cost $e) {
+			$current_item['calculated_shipping_cost'] = $e->getAmount();
+		}
+
+		return $current_item;
+	}
+
+	/**
 	 * Set shipping cost
 	 * 
 	 * @since 1.0.0
@@ -104,7 +180,6 @@ class Cart_Based_Shipping extends Feature {
 		}
 
 		$cart_total = new Cart_Total();
-
 		$line_items = array_map(function ($current_item) use ($cart_total) {
 			if (isset($current_item['condition_groups'])) {
 				$is_matched = Main::get_instance()->is_matched_conditions($current_item['condition_groups']);
@@ -113,86 +188,31 @@ class Cart_Based_Shipping extends Feature {
 				}
 			}
 
-			$current_item = wp_parse_args($current_item, array(
-				'calculate_basis' => '',
-				'calculation_type' => '',
-				'calculation_value' => '',
-				'target_products' => array(),
-				'primary_table_rate' => array(),
-			));
-
-			try {
-				$calculate_basis = $current_item['calculate_basis'];
-
-				$calculate_metrics = array('subtotal', 'quantity', 'weight', 'volume');
-				if (!in_array($calculate_basis, array('fixed_amount', ...$calculate_metrics))) {
-					throw new Shipping_Cost(-1);
-				}
-
-				$calculation_value = trim($current_item['calculation_value']);
-				if (strlen($calculation_value) == 0 && 'table_rates' !== $current_item['calculation_type']) {
-					throw new Shipping_Cost(-1);
-				}
-
-				$calculation_value = floatval($calculation_value);
-				if ('fixed_amount' == $calculate_basis) {
-					throw new Shipping_Cost($calculation_value);
-				}
-
-				if (!in_array($calculate_basis, $calculate_metrics)) {
-					throw new Shipping_Cost(-1);
-				}
-
-				$cart_option = apply_filters(
-					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					$this->get_hook('cart-option-object'),
-					new Cart_Option($current_item['target_products']),
-					$current_item,
-					$this
-				);
-
-				$cart_total->set_cart_items_keys($cart_option->get_cart_items_keys());
-
-				$metrics_total = $cart_total->get_total($calculate_basis);
-				if ($metrics_total <= 0) {
-					throw new Shipping_Cost(-1);
-				}
-
-				$calculation_type = $current_item['calculation_type'];
-				if ('per_unit_or_percentage' == $calculation_type && $calculation_value > 0) {
-					$shipping_cost = $metrics_total * $calculation_value;
-					if ('subtotal' == $calculate_basis) {
-						$shipping_cost = $shipping_cost / 100;
-					}
-
-					throw new Shipping_Cost($shipping_cost);
-				}
-
-				if ('table_rates' == $calculation_type && isset($current_item['primary_table_rate']) && is_array($current_item['primary_table_rate'])) {
-					$table_rate = apply_filters(
-						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-						$this->get_hook('table-rate'),
-						new Table_Rate($current_item['primary_table_rate']),
-						$current_item,
-						$this
-					);
-
-					if (!$table_rate->has_validate_ranges() || !$table_rate->is_condition_matched()) {
-						throw new Shipping_Cost(-1);
-					}
-
-					$shipping_cost = $table_rate->calculate_shipping_cost($metrics_total, $current_item['calculate_basis']);
-					if ($shipping_cost > 0) {
-						throw new Shipping_Cost($shipping_cost);
-					}
-				}
-
-				throw new Shipping_Cost(-1);
-			} catch (Shipping_Cost $e) {
-				$current_item['calculated_shipping_cost'] = $e->getAmount();
+			if (empty($current_item['calculate_basis'])) {
+				return false;
 			}
 
-			return $current_item;
+			if (!isset($current_item['target_products'])) {
+				$current_item['target_products'] = array();
+			}
+
+			$cart_option = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+				$this->get_hook('cart-option-object'),
+				new Cart_Option($current_item['target_products']),
+				$current_item,
+				$this
+			);
+
+			$cart_item_keys = $cart_option->get_cart_items_keys();
+			if (count($cart_item_keys) == 0) {
+				return false;
+			}
+
+			$cart_total->set_cart_items_keys($cart_item_keys);
+			$current_item['metrics_total'] = $cart_total->get_total($current_item['calculate_basis']);
+
+			return $this->calculate_line_item($current_item);
 		}, $line_items);
 
 		$line_items = array_filter($line_items, fn($item) => is_array($item) && $item['calculated_shipping_cost'] >= 0);
@@ -343,7 +363,7 @@ class Cart_Based_Shipping extends Feature {
 		), 'general');
 
 		$settings_fields->add_setting('primary_table_rate_settings', array(
-			'priority' => 50,
+			'priority' => 60,
 			'label' => esc_html__('Table Rates', 'shipqora'),
 			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use condition groups to control which rates apply.', 'shipqora'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "table_rates"'),

@@ -32,14 +32,6 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	protected $feature_id = 'product-based-shipping';
 
 	/**
-	 * Hold product groups
-	 * 
-	 * @since 1.0.0
-	 * @var array
-	 */
-	protected $groups = array();
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct($data = null) {
@@ -56,7 +48,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	protected function get_configuration() {
+	protected function get_configuration_settings() {
 		return array(
 			'priority' => 60,
 			'feature_priority' => 20,
@@ -74,38 +66,43 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @param WC_Shipping_Rate $shipping_rate
 	 */
 	public function modify_shipping_rate($shipping_rate) {
-		$product_cost_items = $this->get_shipping_rate_data($shipping_rate);
-		if (count($product_cost_items) == 0) {
+
+		$product_items = array_map(function ($line_items) {
+			$line_items = array_map(fn($item) => $this->calculate_line_item($item), $line_items);
+			$line_items = array_filter($line_items, fn($item) => $item['calculated_shipping_cost'] >= 0);
+			$line_items = $this->order_priority($line_items);
+			if (count($line_items) == 0) {
+				return false;
+			}
+
+			return end($line_items);
+		}, $this->line_items);
+
+		$product_items = array_filter($product_items, fn($product) => is_array($product) && $product['calculated_shipping_cost'] >= 0);
+		if (count($product_items) == 0) {
 			return;
 		}
 
-		$product_based_layers = array();
-		foreach ($product_cost_items as $product_item) {
-			$product_based_layers[$product_item['product_slug']][] = $product_item;
-		}
-
-		$product_layers = array_map(fn($product_item) => end($this->order_priority($product_item)), $product_based_layers);
-
-		$shipping_cost = array_sum(wp_list_pluck($product_layers, 'calculated_shipping_cost'));
+		$shipping_cost = array_sum(wp_list_pluck($product_items, 'calculated_shipping_cost'));
 		if ($shipping_cost >= 0) {
 			$shipping_rate->set_cost($shipping_cost);
 		}
 	}
 
 	/**
-	 * Add shipping rate data
+	 * Manage feature
 	 * 
 	 * @since 1.0.0
-	 * @param WC_Shipping_Rate $shipping_rate
-	 * @param int $rule_id
+	 * @param ShipQora_Rule $rule
 	 */
-	public function set_shipping_rate_data($shipping_rate, $rule_id) {
-		if (!is_array($this->groups) || (is_array($this->groups) && count($this->groups) == 0)) {
+	public function manage_feature($rule) {
+		$groups = $rule->get_feature_value($this->get_model_key('groups'));
+		if (!is_array($groups) || (is_array($groups) && count($groups) == 0)) {
 			return;
 		}
 
 		$cart_total = new Cart_Total();
-		array_walk($this->groups, function (&$group) use ($shipping_rate, $rule_id, $cart_total) {
+		array_walk($groups, function (&$group) use ($rule, $cart_total) {
 			if (isset($group['condition_groups'])) {
 				$is_matched = Main::get_instance()->is_matched_conditions($group['condition_groups']);
 				if (!$is_matched) {
@@ -113,9 +110,6 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				}
 			}
 
-			$group['rule_id'] = $rule_id;
-
-			$cart_items = $cart_total->get_cart_items();
 			$cart_option = apply_filters(
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 				$this->get_hook('cart-option-object'),
@@ -124,6 +118,12 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				$this
 			);
 
+			$calculate_basis = '';
+			if (!empty($group['calculate_basis'])) {
+				$calculate_basis = $group['calculate_basis'];
+			}
+
+			$cart_items = $cart_total->get_cart_items();
 			foreach ($cart_items as $cart_item_key => $cart_item) {
 				$is_eligible_product = $cart_option->is_eligible_product($cart_item['product_id'], $cart_item['variation_id']);
 				if (!$is_eligible_product) {
@@ -131,11 +131,10 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				}
 
 				$cart_total->set_cart_items_keys(array($cart_item_key));
-				$product_item = $this->calculate_shipping_cost($group, $cart_total);
-				$product_item['product_slug'] = $cart_item['product_id'] . '-' . $cart_item['variation_id'];
-				if ($product_item['calculated_shipping_cost'] >= 0) {
-					$this->add_shipping_rate_data($shipping_rate, $product_item);
-				}
+				$group['metrics_total'] = $cart_total->get_total($calculate_basis);
+
+				$product_key = $cart_item['product_id'] . '-' . $cart_item['variation_id'];
+				$this->line_items[$product_key][] = $group;
 			}
 		});
 	}
@@ -149,9 +148,10 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function get_wrapper_attributes() {
 		return array(
 			'data-skip-order' => 1,
+			'data-group' => 'feature',
 			'@end' => 'on_order_change',
 			'data-model-key' => $this->get_model_key('groups'),
-			'v-sortable' => '{options: {handle: \'tr.row-group-heading .button-drag\', draggable: \'>tbody.sortable-item\'}}',
+			'v-sortable' => '{options: {handle: \'.button-drag\', draggable: \'>tbody.sortable-item\'}}',
 		);
 	}
 
@@ -240,40 +240,25 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$cart_based_component = Settings_Fields::get_instance('cart-based-shipping');
+		$cart_based_settings_fields = Settings_Fields::get_instance('cart-based-shipping')->get_settings_fields('general');
+		unset($cart_based_settings_fields['shipping_method_title']);
 
-		$target_products = $cart_based_component->get_setting('target_products', 'layer');
-		$target_products = wp_parse_args(array(
-			'model_key' => 'target_products',
+		$cart_based_settings_fields['target_products'] = wp_parse_args(array(
 			'label' => esc_html__('Target Products', 'shipqora'),
 			'callback' => array($this, 'target_products_setting_field'),
 			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
 			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipqora'),
-		), $target_products);
+		), $cart_based_settings_fields['target_products']);
 
-
-		$settings_fields->add_setting('target_products', $target_products, 'product');
-
-		$exclude_products = $cart_based_component->get_setting('exclude_products', 'layer');
-		$exclude_products['notice_content'] = array(
+		$cart_based_settings_fields['exclude_products']['notice_content'] = array(
 			'utm_source' => 'exclude+products',
 			'title' => '🚀 Want to Exclude Specific Products?',
 			'description' => 'Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Products"</strong> and create more precise shipping cost with greater control over product eligibility.',
 		);
 
-		$settings_fields->add_setting('exclude_products', $exclude_products, 'product');
-
-		$priority_setting_field = $cart_based_component->get_setting('priority', 'layer');
-		$settings_fields->add_setting('priority', $priority_setting_field, 'product');
-
-		$shipping_cost_calculation = $cart_based_component->get_setting('shipping_cost_calculation', 'layer');
-		$settings_fields->add_setting('shipping_cost_calculation', $shipping_cost_calculation, 'product');
-
-		$primary_table_rate = $cart_based_component->get_setting('primary_table_rate', 'layer');
-		$settings_fields->add_setting('primary_table_rate', $primary_table_rate, 'product');
-
-		$condition_groups = $cart_based_component->get_setting('condition_groups', 'layer');
-		$settings_fields->add_setting('condition_groups', $condition_groups, 'product');
+		foreach ($cart_based_settings_fields as $setting_key => $setting_field_data) {
+			$settings_fields->add_setting($setting_key, $setting_field_data, 'product');
+		}
 	}
 
 	/**
