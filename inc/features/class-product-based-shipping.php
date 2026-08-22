@@ -134,7 +134,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 
 			$cart_option = apply_filters(
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-				$this->get_hook('cart-option-object'),
+				Utils::get_hook_name('feature', 'cart-option-object'),
 				new Cart_Option($group['target_products']),
 				$group,
 				$this

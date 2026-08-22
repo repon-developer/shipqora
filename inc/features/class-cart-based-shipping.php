@@ -143,7 +143,7 @@ class Cart_Based_Shipping extends Feature {
 			if ('table_rates' == $calculation_type && isset($current_item['primary_table_rate']) && is_array($current_item['primary_table_rate'])) {
 				$table_rate = apply_filters(
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					$this->get_hook('table-rate'),
+					Utils::get_hook_name('table-rate'),
 					new Table_Rate($current_item['primary_table_rate']),
 					$current_item,
 					$this
@@ -198,7 +198,7 @@ class Cart_Based_Shipping extends Feature {
 
 			$cart_option = apply_filters(
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-				$this->get_hook('cart-option-object'),
+				Utils::get_hook_name('feature', 'cart-option-object'),
 				new Cart_Option($current_item['target_products']),
 				$current_item,
 				$this
