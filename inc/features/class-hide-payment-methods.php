@@ -1,14 +1,14 @@
 <?php
 
-namespace ShipQora_WooCommerce\Feature;
+namespace ShipQora\Feature;
 
-use ShipQora_WooCommerce\Utils;
-use ShipQora_WooCommerce\Feature;
-use ShipQora_WooCommerce\Form_Control;
-use ShipQora_WooCommerce\Condition\Main;
-use ShipQora_WooCommerce\Settings_Fields;
-use ShipQora_WooCommerce\Component_Methods;
-use ShipQora_WooCommerce\Global_Settings_Fields;
+use ShipQora\Utils;
+use ShipQora\Feature;
+use ShipQora\Form_Control;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
+use ShipQora\Component_Methods;
+use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -62,9 +62,9 @@ final class Hide_Payment_Methods extends Feature {
 			'standalone' => true,
 			'feature_priority' => 3,
 			'base_model' => 'hide_payment_methods',
-			'name' => esc_html__('Hide Payment Methods', 'shipqora-woocommerce'),
-			'section_title' => esc_html__('Hide Payment Methods', 'shipqora-woocommerce'),
-			'description' => esc_html__('If the selected shipping method(s) are chosen on the checkout page, hide the selected payment methods.', 'shipqora-woocommerce'),
+			'name' => esc_html__('Hide Payment Methods', 'shipqora'),
+			'section_title' => esc_html__('Hide Payment Methods', 'shipqora'),
+			'description' => esc_html__('If the selected shipping method(s) are chosen on the checkout page, hide the selected payment methods.', 'shipqora'),
 		);
 	}
 
@@ -113,7 +113,7 @@ final class Hide_Payment_Methods extends Feature {
 			null
 		); ?>
 
-		<?php $this->output_heading_row(esc_html__('Payment Method Hide Configuration #{{layerNo}}', 'shipqora-woocommerce'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Payment Method Hide Configuration #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('general') ?>
 		</template>
@@ -136,12 +136,12 @@ final class Hide_Payment_Methods extends Feature {
 
 		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
-			'row_attributes' => array('class' => 'shipqora-woocommerce-notice-row'),
+			'row_attributes' => array('class' => 'shipqora-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Need Multiple Payment Hiding Configurations?',
 				'utm_source' => 'hide+payment+methos+unlimited',
-				'description' => 'Get <strong>ShipQora for WooCommerce Pro</strong> to set up and run multiple payment hiding configurations directly inside a single rule.',
+				'description' => 'Get <strong>ShipQora Pro</strong> to set up and run multiple payment hiding configurations directly inside a single rule.',
 			)
 		), $this->get_id());
 	}
@@ -177,9 +177,9 @@ final class Hide_Payment_Methods extends Feature {
 			'default_value' => array(''),
 			'model_key' => 'payment_methods',
 			'callback' => array($this, 'hide_payment_methods'),
-			'label' => esc_html__('Payment Methods to Hide', 'shipqora-woocommerce'),
-			'label_note' => esc_html__('Select the payment methods (e.g., Cash on Delivery, Stripe) to hide when a customer chooses any of the selected shipping methods above.', 'shipqora-woocommerce'),
-			'option_note' => esc_html__('Select the payment methods to hide when a customer chooses any of the selected shipping methods above.', 'shipqora-woocommerce'),
+			'label' => esc_html__('Payment Methods to Hide', 'shipqora'),
+			'label_note' => esc_html__('Select the payment methods (e.g., Cash on Delivery, Stripe) to hide when a customer chooses any of the selected shipping methods above.', 'shipqora'),
+			'option_note' => esc_html__('Select the payment methods to hide when a customer chooses any of the selected shipping methods above.', 'shipqora'),
 		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -198,11 +198,11 @@ final class Hide_Payment_Methods extends Feature {
 	 */
 	public function hide_payment_methods(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
-		<ul class="shipqora-woocommerce-repeater" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length" style="margin-bottom: 8px;" v-sortable="{options: {handle: '.button-drag-item'}}" @end="order_change">
+		<ul class="shipqora-repeater" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length" style="margin-bottom: 8px;" v-sortable="{options: {handle: '.button-drag-item'}}" @end="order_change">
 			<li class="repeater-item" v-for="(payment_method, index) in <?php echo esc_attr($form_control->get_model_key()) ?>" :key="payment_method">
 				<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length > 1"></span>
 				<select v-model="payment_methods[index]">
-					<option value=""><?php esc_html_e('Choose a Payment Method', 'shipqora-woocommerce') ?></option>
+					<option value=""><?php esc_html_e('Choose a Payment Method', 'shipqora') ?></option>
 					<?php
 					$payment_gateways = WC()->payment_gateways()->payment_gateways();
 					foreach ($payment_gateways as $gateway_id => $payment_gateway) {
@@ -217,7 +217,7 @@ final class Hide_Payment_Methods extends Feature {
 		</ul>
 
 		<a href="#" class="button" @click.prevent="add_payment_method()">
-			<?php esc_html_e('Add Payment Method', 'shipqora-woocommerce') ?>
+			<?php esc_html_e('Add Payment Method', 'shipqora') ?>
 		</a>
 <?php
 		$form_control->output_after_input_options();

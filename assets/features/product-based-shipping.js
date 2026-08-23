@@ -2,7 +2,7 @@ import Cart_Based_Shipping from './cart-based-shipping.min.js?v=@@VERSION';
 
 const Product_Based_Shipping = {
 	extends: Cart_Based_Shipping,
-	template: '#shipqora-woocommerce-product-based-shipping-feature-component',
+	template: '#shipqora-product-based-shipping-feature-component',
 
 	props: {
 		featureData: {

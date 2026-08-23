@@ -1,14 +1,14 @@
 <?php
 
-namespace ShipQora_WooCommerce\Component;
+namespace ShipQora\Component;
 
-use ShipQora_WooCommerce\Utils;
-use ShipQora_WooCommerce\Form_Control;
-use ShipQora_WooCommerce\Condition\Main;
-use ShipQora_WooCommerce\Feature\General;
-use ShipQora_WooCommerce\Settings_Fields;
-use ShipQora_WooCommerce\Component_Methods;
-use ShipQora_WooCommerce\Global_Settings_Fields;
+use ShipQora\Utils;
+use ShipQora\Form_Control;
+use ShipQora\Condition\Main;
+use ShipQora\Feature\General;
+use ShipQora\Settings_Fields;
+use ShipQora\Component_Methods;
+use ShipQora\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -222,10 +222,10 @@ final class Table_Rate {
 	 */
 	public function output_vue_component() {
 		$settings_fields = Settings_Fields::get_instance('table-rate'); ?>
-		<template id="shipqora-woocommerce-table-rate-component">
-			<table class="table-shipqora-woocommerce-form table-shipqora-woocommerce-table-rate">
+		<template id="shipqora-table-rate-component">
+			<table class="table-shipqora-form table-shipqora-table-rate">
 				<thead>
-					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora-woocommerce'), array('table-rate')) ?>
+					<?php $this->output_heading_row(esc_html__('Table Rates #{{layerNo}}', 'shipqora'), array('table-rate')) ?>
 				</thead>
 
 				<tbody v-if="!collapse">
@@ -264,10 +264,10 @@ final class Table_Rate {
 			'priority' => 10,
 			'model_key' => 'shipping_rates',
 			'default_value' => array([]),
-			'label' => esc_html__('Shipping Rates', 'shipqora-woocommerce'),
+			'label' => esc_html__('Shipping Rates', 'shipqora'),
 			'callback' => array($this, 'shipping_rates_setting_field'),
-			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this shipping rates.', 'shipqora-woocommerce'),
-			'option_note' => esc_html__("Define item {{metric_label_short_lower}} brackets and their corresponding calculation types. The system will match the exact bracket for the cart's item count to compute the final shipping cost.", 'shipqora-woocommerce'),
+			'label_note' => esc_html__('Define the {{metric_label_short_lower}} thresholds and fee calculations for this shipping rates.', 'shipqora'),
+			'option_note' => esc_html__("Define item {{metric_label_short_lower}} brackets and their corresponding calculation types. The system will match the exact bracket for the cart's item count to compute the final shipping cost.", 'shipqora'),
 		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -289,14 +289,14 @@ final class Table_Rate {
 		<table class="table-rate" v-if="<?php echo esc_attr($form_control->get_model_key()) ?>?.length">
 			<thead>
 				<tr>
-					<th><?php esc_html_e('From ( > )', 'shipqora-woocommerce') ?></th>
-					<th><?php esc_html_e('To ( <= )', 'shipqora-woocommerce') ?></th>
-					<th><?php esc_html_e('Cost Type', 'shipqora-woocommerce') ?></th>
+					<th><?php esc_html_e('From ( > )', 'shipqora') ?></th>
+					<th><?php esc_html_e('To ( <= )', 'shipqora') ?></th>
+					<th><?php esc_html_e('Cost Type', 'shipqora') ?></th>
 					<th>
 						<?php
 						printf(
 							/* translators: %s for currency symbol */
-							esc_html__('Cost (%s) or Percentage', 'shipqora-woocommerce'),
+							esc_html__('Cost (%s) or Percentage', 'shipqora'),
 							esc_html(get_woocommerce_currency_symbol())
 						) ?>
 					</th>
@@ -313,12 +313,12 @@ final class Table_Rate {
 							type="number"
 							class="range-input-max"
 							v-model="shipping_rate.max"
-							placeholder="<?php esc_html_e('max', 'shipqora-woocommerce') ?>"
-							title="<?php esc_attr_e('Leave empty or enter "max" to apply to any value above the lower bound', 'shipqora-woocommerce') ?>" />
+							placeholder="<?php esc_html_e('max', 'shipqora') ?>"
+							title="<?php esc_attr_e('Leave empty or enter "max" to apply to any value above the lower bound', 'shipqora') ?>" />
 					</td>
 					<td>
 						<select v-model="shipping_rate.type">
-							<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipqora-woocommerce') ?></option>
+							<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipqora') ?></option>
 							<option value="per_unit_or_percentage">{{calculation_type_label}}</option>
 						</select>
 					</td>
@@ -332,7 +332,7 @@ final class Table_Rate {
 
 		</table>
 
-		<a class="button button-small" @click.prevent="add_shipping_rate()" href="#"><?php esc_html_e('+ Add Shipping Rate', 'shipqora-woocommerce') ?></a>
+		<a class="button button-small" @click.prevent="add_shipping_rate()" href="#"><?php esc_html_e('+ Add Shipping Rate', 'shipqora') ?></a>
 <?php
 		$form_control->output_after_input_options();
 	}

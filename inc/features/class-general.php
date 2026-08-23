@@ -1,13 +1,13 @@
 <?php
 
-namespace ShipQora_WooCommerce\Feature;
+namespace ShipQora\Feature;
 
-use ShipQora_WooCommerce\Utils;
-use ShipQora_WooCommerce\Feature;
-use ShipQora_WooCommerce\Form_Control;
-use ShipQora_WooCommerce\ShipQora_Rule;
-use ShipQora_WooCommerce\Condition\Main;
-use ShipQora_WooCommerce\Settings_Fields;
+use ShipQora\Utils;
+use ShipQora\Feature;
+use ShipQora\Form_Control;
+use ShipQora\ShipQora_Rule;
+use ShipQora\Condition\Main;
+use ShipQora\Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -184,15 +184,15 @@ final class General {
 			'default_value' => array(''),
 			'model_key' => 'shipping_methods',
 			'type' => Form_Control::SHIPPING_METHODS,
-			'label' => esc_html__('Apply to Shipping Methods', 'shipqora-woocommerce'),
-			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipqora-woocommerce'),
-			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipqora-woocommerce'),
+			'label' => esc_html__('Apply to Shipping Methods', 'shipqora'),
+			'label_note' => esc_html__('Select the shipping methods this rule should apply to.', 'shipqora'),
+			'option_note' => esc_html__('Add one or more shipping methods. This rule will only affect the selected methods.', 'shipqora'),
 			'row_attributes' => array(
 				'data-highlight-section' => 'general-shipping-methods'
 			)
 		), 'general');
 
-		$registered_features = \ShipQora_WooCommerce\Feature::get_features();
+		$registered_features = \ShipQora\Feature::get_features();
 
 		$registered_feature_options = array();
 		foreach ($registered_features as $feature_id => $feature_instance) {
@@ -209,9 +209,9 @@ final class General {
 			'option_type' => 'checkbox',
 			'type' => Form_Control::MULTIPLE_OPTIONS,
 			'options' => $registered_feature_options,
-			'label' => esc_html__('Active Features', 'shipqora-woocommerce'),
+			'label' => esc_html__('Active Features', 'shipqora'),
 			'callback' => array($this, 'active_features_setting_field'),
-			'label_note' => esc_html__('Select the ShipQora features that should be applied to the selected shipping methods.', 'shipqora-woocommerce'),
+			'label_note' => esc_html__('Select the ShipQora features that should be applied to the selected shipping methods.', 'shipqora'),
 		), 'general');
 
 		foreach ($registered_features as $feature_id => $feature_object) {
@@ -232,9 +232,9 @@ final class General {
 			'default_value' => 'development',
 			'options' => Utils::get_statuses(),
 			'type' => Form_Control::MULTIPLE_OPTIONS,
-			'label' => esc_html__('Rule Status', 'shipqora-woocommerce'),
+			'label' => esc_html__('Rule Status', 'shipqora'),
 			'callback' => array($this, 'status_setting_field'),
-			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipqora-woocommerce'),
+			'label_note' => esc_html__('Control the visibility and execution mode of this rule on your store.', 'shipqora'),
 		), 'general');
 	}
 
@@ -248,11 +248,11 @@ final class General {
 		$form_control->output_before_input_options();
 		$form_control->output_control(); ?>
 
-		<div class="shipqora-woocommerce-notice-box shipqora-woocommerce-notice-box-left">
+		<div class="shipqora-notice-box shipqora-notice-box-left">
 			<h3>💡 Looking for Additional Features?</h3>
-			<div class="description">Missing a key feature for your workflow or any improvements? Reach out directly to <a href="mailto:support@shipqora.com?subject=ShipQora%20for%20WooCommerce%20Feature%20Request">support@shipqora.com</a> and our team will help build it for you.</div>
+			<div class="description">Missing a key feature for your workflow or any improvements? Reach out directly to <a href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">support@shipqora.com</a> and our team will help build it for you.</div>
 			<div class="gap-10"></div>
-			<a class="button" href="mailto:support@shipqora.com?subject=ShipQora%20for%20WooCommerce%20Feature%20Request">Request a Feature</a>
+			<a class="button" href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">Request a Feature</a>
 		</div>
 <?php
 		$form_control->output_after_input_options();

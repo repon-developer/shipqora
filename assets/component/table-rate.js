@@ -4,7 +4,7 @@ const { __ } = wp.i18n;
 
 const Table_Rate = {
 	extends: Base_Component,
-	template: '#shipqora-woocommerce-table-rate-component',
+	template: '#shipqora-table-rate-component',
 	props: {
 		tableRateData: {
 			default: null,
@@ -18,7 +18,7 @@ const Table_Rate = {
 
 		deleteWarning: {
 			type: String,
-			default: __('Do you want to delete this table rates?', 'shipqora-woocommerce'),
+			default: __('Do you want to delete this table rates?', 'shipqora'),
 		},
 	},
 
@@ -146,19 +146,19 @@ const Table_Rate = {
 
 			const prev_item = this.get_prev_rate(this.shipping_rates?.length - 1);
 			if (prev_item && !prev_item?.max) {
-				return alert(__('Please enter "Max" value of the previous shipping rate.', 'shipqora-woocommerce'))
+				return alert(__('Please enter "Max" value of the previous shipping rate.', 'shipqora'))
 			}
 
 			const last_item = this.get_prev_rate(this.shipping_rates?.length);
 			if (last_item && !last_item?.value) {
-				return alert(__('Please enter "Cost" of the previous shipping rate.', 'shipqora-woocommerce'))
+				return alert(__('Please enter "Cost" of the previous shipping rate.', 'shipqora'))
 			}
 
 			this.shipping_rates.push({ id: this.$utils.generate_uuid(), ...this.shipping_rate_default_data })
 		},
 
 		delete_shipping_rate(index) {
-			const response = confirm(__('Do you want to delete this shipping rate?', 'shipqora-woocommerce'));
+			const response = confirm(__('Do you want to delete this shipping rate?', 'shipqora'));
 			if (response) {
 				this.shipping_rates.splice(index, 1)
 			}

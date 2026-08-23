@@ -1,9 +1,9 @@
 <?php
 
-namespace ShipQora_WooCommerce\Component;
+namespace ShipQora\Component;
 
-use ShipQora_WooCommerce\Utils;
-use ShipQora_WooCommerce\Cart_Total;
+use ShipQora\Utils;
+use ShipQora\Cart_Total;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -72,7 +72,7 @@ final class Cart_Option {
 	 * @return void
 	 */
 	public static function output_component() { ?>
-		<template id="shipqora-woocommerce-cart-option-component">
+		<template id="shipqora-cart-option-component">
 			<select ref="cart_option_dropdown" v-model="based_on" data-once-modal="cart-option-advanced">
 				<slot name="based-on-first-option"></slot>
 				<option
@@ -82,9 +82,9 @@ final class Cart_Option {
 			</select>
 
 			<select v-model="operator" v-if="based_on?.length">
-				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipqora-woocommerce') ?></option>
-				<option value="all_in_list"><?php esc_html_e('All in list', 'shipqora-woocommerce') ?></option>
-				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipqora-woocommerce') ?></option>
+				<option value="any_in_list"><?php esc_html_e('Any in list', 'shipqora') ?></option>
+				<option value="all_in_list"><?php esc_html_e('All in list', 'shipqora') ?></option>
+				<option value="not_in_list"><?php esc_html_e('Not in the list', 'shipqora') ?></option>
 			</select>
 
 			<template v-for="(option, option_value) in options" :key="'dropdown_' + option_value">

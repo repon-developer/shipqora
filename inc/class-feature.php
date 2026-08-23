@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora_WooCommerce;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;

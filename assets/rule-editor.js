@@ -72,7 +72,7 @@ const ShipQora_Rule_Editor = {
 		},
 
 		get_current_status_info() {
-			return `<span class="shipqora-woocommerce-status shipqora-woocommerce-status-${this.original_status}"></span>` + shipqora_admin.statuses?.[this.original_status].currently_text
+			return `<span class="shipqora-status shipqora-status-${this.original_status}"></span>` + shipqora_admin.statuses?.[this.original_status].currently_text
 		}
 	},
 
@@ -89,7 +89,7 @@ const ShipQora_Rule_Editor = {
 			}
 		});
 
-		$('body').on('click', '#shipqora .shipqora-woocommerce-modal', function (e) {
+		$('body').on('click', '#shipqora .shipqora-modal', function (e) {
 			if ($(e.target).closest('.modal-content').length) {
 				return;
 			}
@@ -114,6 +114,10 @@ const ShipQora_Rule_Editor = {
 		})
 
 		this.loading = false;
+	},
+
+	updated() {
+		console.log(this.$data)
 	},
 
 	methods: {
@@ -175,19 +179,19 @@ const ShipQora_Rule_Editor = {
 
 		save_rule() {
 			if (!this.title?.length) {
-				this.$utils.highlight_section('shipqora-woocommerce-rule-title')
-				return this.$utils.set_toast_message(__('Please provide a rule title to save your ShipQora rule.', 'shipqora-woocommerce'));
+				this.$utils.highlight_section('shipqora-rule-title')
+				return this.$utils.set_toast_message(__('Please provide a rule title to save your ShipQora rule.', 'shipqora'));
 			}
 
 			if (this.title?.length > 200) {
-				this.$utils.highlight_section('shipqora-woocommerce-rule-title')
-				return this.$utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipqora-woocommerce'));
+				this.$utils.highlight_section('shipqora-rule-title')
+				return this.$utils.set_toast_message(__('The rule title must be within 200 characters.', 'shipqora'));
 			}
 
 			const shipping_methods = this.shipping_methods?.filter((item) => item.length > 0)
 			if (!shipping_methods?.length) {
 				this.$utils.highlight_section('general-shipping-methods');
-				return this.$utils.set_toast_message(__('At least one shipping method is required to apply this rule.', 'shipqora-woocommerce'));
+				return this.$utils.set_toast_message(__('At least one shipping method is required to apply this rule.', 'shipqora'));
 			}
 
 			this.saving = true;
@@ -210,7 +214,7 @@ const ShipQora_Rule_Editor = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while saving the rule data.', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while saving the rule data.', 'shipqora'));
 				}
 
 				if (false === result.success) {
@@ -224,7 +228,7 @@ const ShipQora_Rule_Editor = {
 				this.original_status = this.status;
 
 				this.id = result.data.id;
-				Utils.set_toast_message(__('Successfully saved rule.', 'shipqora-woocommerce'), 'success');
+				Utils.set_toast_message(__('Successfully saved rule.', 'shipqora'), 'success');
 
 				if (true === result.data.is_new) {
 					window.location = result.data.edit_url
@@ -250,11 +254,11 @@ const ShipQora_Rule_Editor = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				if (false === result.success) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				this.is_debugging_enabled = !this.is_debugging_enabled;
@@ -267,7 +271,7 @@ const ShipQora_Rule_Editor = {
 	}
 }
 
-if ($('.shipqora-woocommerce-rule-editor').length) {
+if ($('.shipqora-rule-editor').length) {
 	const ShipQora_Rule_Editor_App = Vue.createApp(ShipQora_Rule_Editor).use(sortablejs)
 
 	ShipQora_Rule_Editor_App.config.globalProperties.$utils = Utils;
@@ -284,5 +288,5 @@ if ($('.shipqora-woocommerce-rule-editor').length) {
 		ShipQora_Rule_Editor_App.component(key, components[key]);
 	}
 
-	ShipQora_Rule_Editor_App.mount('.shipqora-woocommerce-rule-editor');
+	ShipQora_Rule_Editor_App.mount('.shipqora-rule-editor');
 }

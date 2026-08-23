@@ -1,9 +1,9 @@
 <?php
 
-namespace ShipQora_WooCommerce\Condition;
+namespace ShipQora\Condition;
 
-use ShipQora_WooCommerce\Utils;
-use ShipQora_WooCommerce\Cart_Total;
+use ShipQora\Utils;
+use ShipQora\Cart_Total;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -26,7 +26,7 @@ final class Cart_Products {
 	 * @return array
 	 */
 	public function get_name() {
-		return esc_html__('Cart Products', 'shipqora-woocommerce');
+		return esc_html__('Cart Products', 'shipqora');
 	}
 
 	/**

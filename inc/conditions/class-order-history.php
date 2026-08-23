@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora_WooCommerce\Condition;
+namespace ShipQora\Condition;
 
-use ShipQora_WooCommerce\Utils;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -26,7 +26,7 @@ final class Order_History {
 	 * @return array
 	 */
 	public function get_name() {
-		return esc_html__('Order History', 'shipqora-woocommerce');
+		return esc_html__('Order History', 'shipqora');
 	}
 
 	/**
@@ -52,7 +52,7 @@ final class Order_History {
 			'model_key' => 'first_purchase',
 			'template' => array($this, 'first_purchase_template'),
 			'validate_callback' => array($this, 'validate_condition'),
-			'label' => esc_html__('First Purchase', 'shipqora-woocommerce'),
+			'label' => esc_html__('First Purchase', 'shipqora'),
 		));
 	}
 
@@ -65,8 +65,8 @@ final class Order_History {
 	public function first_purchase_template($condition) { ?>
 		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="<?php echo esc_attr($condition->get_model_key()) ?>">
-				<option value="yes"><?php esc_html_e('Yes', 'shipqora-woocommerce'); ?></option>
-				<option value="no"><?php esc_html_e('No', 'shipqora-woocommerce'); ?></option>
+				<option value="yes"><?php esc_html_e('Yes', 'shipqora'); ?></option>
+				<option value="no"><?php esc_html_e('No', 'shipqora'); ?></option>
 			</select>
 		</template>
 <?php

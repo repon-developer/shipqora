@@ -23,23 +23,23 @@
 		}).catch((e) => { })
 	}
 
-	$('#shipqora-woocommerce-debugging-box').on('click', '.title-bar', function () {
-		$(this).closest('#shipqora-woocommerce-debugging-box').toggleClass('collapse');
-		update_debugging_mode_settings('collapse', $('#shipqora-woocommerce-debugging-box').hasClass('collapse'));
+	$('#shipqora-debugging-box').on('click', '.title-bar', function () {
+		$(this).closest('#shipqora-debugging-box').toggleClass('collapse');
+		update_debugging_mode_settings('collapse', $('#shipqora-debugging-box').hasClass('collapse'));
 	})
 
-	$('#shipqora-woocommerce-debugging-box').on('click', '.shipqora-woocommerce-position-button', function (event) {
+	$('#shipqora-debugging-box').on('click', '.shipqora-position-button', function (event) {
 		event.preventDefault();
 
-		$(this).closest('#shipqora-woocommerce-debugging-box').toggleClass('left');
-		const new_position = $(this).closest('#shipqora-woocommerce-debugging-box').hasClass('left') ? 'left' : 'right';
+		$(this).closest('#shipqora-debugging-box').toggleClass('left');
+		const new_position = $(this).closest('#shipqora-debugging-box').hasClass('left') ? 'left' : 'right';
 
 		update_debugging_mode_settings('position', new_position);
 	})
 
-	$('#shipqora-woocommerce-debugging-box').on('click', '.shipqora-woocommerce-disable-button', function (event) {
+	$('#shipqora-debugging-box').on('click', '.shipqora-disable-button', function (event) {
 		event.preventDefault();
-		$('#shipqora-woocommerce-debugging-box').remove();
+		$('#shipqora-debugging-box').remove();
 		update_debugging_mode_settings('enable_debugging', false);
 	})
 

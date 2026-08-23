@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora_WooCommerce;
+namespace ShipQora;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -94,7 +94,7 @@ final class Rule_List {
 	 */
 	public function screen_option() {
 		add_screen_option('per_page', [
-			'label' => __('Rules Per Page', 'shipqora-woocommerce'),
+			'label' => __('Rules Per Page', 'shipqora'),
 			'default' => 15,
 			'option' => 'shipqora_rules_per_page'
 		]);

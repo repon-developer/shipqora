@@ -28,11 +28,11 @@ const Shipping_Editor = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				if (false === result.success) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				if (Array.isArray(result?.data)) {
@@ -77,11 +77,11 @@ const Shipping_Editor = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				if (false === result.success) {
-					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora-woocommerce'));
+					throw new Error(__('Something went wrong while enable debugging mode', 'shipqora'));
 				}
 
 				this.created_rule = result.data;
@@ -95,13 +95,13 @@ const Shipping_Editor = {
 
 
 function initialize_shipping_editor(instance_id) {
-	if (!jQuery('#shipqora.shipqora-woocommerce-shipping-editor').length) {
+	if (!jQuery('#shipqora.shipqora-shipping-editor').length) {
 		return;
 	}
 
 	const Shipping_Editor_App = Vue.createApp(Shipping_Editor)
 
-	const Shipping_Editor_App_Holder = Shipping_Editor_App.mount('#shipqora.shipqora-woocommerce-shipping-editor')
+	const Shipping_Editor_App_Holder = Shipping_Editor_App.mount('#shipqora.shipqora-shipping-editor')
 	Shipping_Editor_App_Holder.instance_id = instance_id;
 }
 
@@ -112,6 +112,6 @@ jQuery(document.body).on('wc_backbone_modal_loaded', function (event, modal_name
 		return;
 	}
 
-	const instance_id = $('#shipqora.shipqora-woocommerce-shipping-editor').closest('.wc-modal-shipping-method-settings').data('id');
+	const instance_id = $('#shipqora.shipqora-shipping-editor').closest('.wc-modal-shipping-method-settings').data('id');
 	initialize_shipping_editor(instance_id)
 });

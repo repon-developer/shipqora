@@ -49,11 +49,11 @@
 	position: relative;
 }
 
-#shipqora.wrap.shipqora-woocommerce-rule-editor {
+#shipqora.wrap.shipqora-rule-editor {
 	padding-bottom: 30px;
 }
 
-#shipqora.shipqora-woocommerce-rule-editor * {
+#shipqora.shipqora-rule-editor * {
 	box-sizing: border-box;
 }
 
@@ -61,7 +61,7 @@
 	box-shadow: none !important;
 }
 
-.shipqora-woocommerce-loading-spinner {
+.shipqora-loading-spinner {
 	--size: 22px;
 	position: relative;
 	width: var(--size);
@@ -71,7 +71,7 @@
 	display: inline-block;
 }
 
-.shipqora-woocommerce-loading-spinner:after {
+.shipqora-loading-spinner:after {
 	content: "";
 	width: 100%;
 	top: 50%;
@@ -91,7 +91,7 @@
 	animation-name: shipqora_rotate;
 }
 
-.shipqora-woocommerce-toast-box {
+.shipqora-toast-box {
 	padding: 0;
 	position: fixed;
 	left: 50%;
@@ -112,7 +112,7 @@
 	box-shadow: 0 0 10px 5px rgba(0, 0, 0, .15)
 }
 
-.shipqora-woocommerce-toast-box.shown {
+.shipqora-toast-box.shown {
 	opacity: 1;
 	padding: 15px 20px;
 	visibility: visible;
@@ -120,7 +120,7 @@
 	padding-inline-start: 35px !important;
 }
 
-.shipqora-woocommerce-toast-box:before {
+.shipqora-toast-box:before {
 	color: #009300;
 	content: "\f12a";
 	font-family: dashicons;
@@ -131,7 +131,7 @@
 	transform: translateY(-50%);
 }
 
-.shipqora-woocommerce-toast-box[data-type="error"]:before {
+.shipqora-toast-box[data-type="error"]:before {
 	content: "\f153";
 	color: #dd0000;
 }
@@ -145,74 +145,74 @@
 	font-weight: 500;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) select,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) textarea,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) button,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .button,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="radio"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="checkbox"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="date"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="text"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="time"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="url"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="number"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="datetime-local"],
-.select2-dropdown.shipqora-woocommerce-select2-dropdown {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) select,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) textarea,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) button,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .button,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="radio"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="checkbox"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="date"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="text"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="time"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="url"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="number"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="datetime-local"],
+.select2-dropdown.shipqora-select2-dropdown {
 	margin: 0;
 	min-height: 0;
 	border-radius: var(--borderRadius);
 	border-color: var(--borderColor)
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) select,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) textarea,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) button,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .button,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="date"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="text"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="time"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="url"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="number"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="datetime-local"] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) select,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) textarea,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) button,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .button,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="date"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="text"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="time"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="url"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="number"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="datetime-local"] {
 	height: var(--inputHeight);
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="radio"],
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="checkbox"] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="radio"],
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="checkbox"] {
 	--inputHeight: 1rem;
 	--borderColor: #8f8d8d;
 	margin-inline-end: 6px;
 	vertical-align: text-bottom;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="radio"] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="radio"] {
 	border-radius: 100px !important;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) [type="number"] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) [type="number"] {
 	width: 80px;
 	text-align: center;
 	padding-inline-end: 0;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) select {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) select {
 	padding-inline-end: 25px !important;
 	line-height: calc(var(--inputHeight) - 2px);
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) select[multiple] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) select[multiple] {
 	height: auto;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) input.regular-text-box {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) input.regular-text-box {
 	width: 600px;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) textarea {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) textarea {
 	height: unset;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .button {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .button {
 	position: relative;
 	text-align: center;
 	color: var(--primaryColor);
@@ -222,21 +222,21 @@
 	border-color: color-mix(in srgb, #fff 10%, var(--primaryColor))
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .button-primary {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .button-primary {
 	color: #fff;
 	background-color: var(--primaryColor);
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .range-slider-input {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .range-slider-input {
 	column-gap: 5px;
 	display: inline-flex;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .range-slider-input [type="range"] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .range-slider-input [type="range"] {
 	flex: 1;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .range-slider-input [type="number"] {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .range-slider-input [type="number"] {
 	--inputHeight: 30px;
 	font-size: 12px;
 	width: 40px;
@@ -247,18 +247,18 @@
 	/* Firefox */
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .range-slider-input [type="number"]::-webkit-outer-spin-button,
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .range-slider-input [type="number"]::-webkit-inner-spin-button {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .range-slider-input [type="number"]::-webkit-outer-spin-button,
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .range-slider-input [type="number"]::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 	margin: 0;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) input.textbox-number {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) input.textbox-number {
 	width: 80px;
 	text-align: center;
 }
 
-:is(#shipqora.shipqora-woocommerce-rule-editor, #shipqora.shipqora-woocommerce-shipping-editor) .shipqora-woocommerce-toggle-input {
+:is(#shipqora.shipqora-rule-editor, #shipqora.shipqora-shipping-editor) .shipqora-toggle-input {
 	display: inline-flex;
 	overflow: hidden;
 	background-color: #f1f1f1;
@@ -266,18 +266,18 @@
 	border: 2px solid var(--primaryColor);
 }
 
-#shipqora.shipqora-woocommerce-rule-editor .shipqora-woocommerce-toggle-input input {
+#shipqora.shipqora-rule-editor .shipqora-toggle-input input {
 	display: none;
 }
 
-#shipqora .shipqora-woocommerce-toggle-input label {
+#shipqora .shipqora-toggle-input label {
 	font-weight: 500;
 	color: #3c434a;
 	padding: 4px 10px;
 	cursor: pointer;
 }
 
-#shipqora .shipqora-woocommerce-toggle-input label:has(input:checked) {
+#shipqora .shipqora-toggle-input label:has(input:checked) {
 	color: #fff;
 	background-color: var(--primaryColor);
 }
@@ -340,11 +340,11 @@
 	background-color: var(--primaryColor);
 }
 
-.select2-dropdown.shipqora-woocommerce-select2-dropdown {
+.select2-dropdown.shipqora-select2-dropdown {
 	border-radius: var(--borderRadius)
 }
 
-.select2-dropdown.shipqora-woocommerce-select2-dropdown .select2-search__field {
+.select2-dropdown.shipqora-select2-dropdown .select2-search__field {
 	margin: 0;
 	box-shadow: none !important;
 }
@@ -382,17 +382,17 @@
 	background-color: red;
 }
 
-.select2-dropdown.shipqora-woocommerce-select2-dropdown,
+.select2-dropdown.shipqora-select2-dropdown,
 #shipqora .select2-container.select2-container--open .select2-selection {
 	border-color: var(--primaryColor) !important;
 }
 
-.select2-dropdown.shipqora-woocommerce-select2-dropdown .select2-results__option {
+.select2-dropdown.shipqora-select2-dropdown .select2-results__option {
 	margin: 0;
 	cursor: pointer;
 }
 
-.select2-dropdown.shipqora-woocommerce-select2-dropdown .select2-results__option--highlighted {
+.select2-dropdown.shipqora-select2-dropdown .select2-results__option--highlighted {
 	color: #fff;
 	background-color: var(--primaryColor) !important
 }
@@ -402,7 +402,7 @@
 	border-bottom-right-radius: 0;
 }
 
-.select2-container.select2-container--open .select2-dropdown.shipqora-woocommerce-select2-dropdown {
+.select2-container.select2-container--open .select2-dropdown.shipqora-select2-dropdown {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 }
@@ -413,7 +413,7 @@
 	background-color: #fff;
 }
 
-#shipqora .shipqora-woocommerce-wp-heading {
+#shipqora .shipqora-wp-heading {
 	display: flex;
 	align-items: center;
 }
@@ -424,7 +424,7 @@
 	margin: 0 10px 0 0;
 }
 
-#shipqora .shipqora-woocommerce-wp-heading .page-title-action {
+#shipqora .shipqora-wp-heading .page-title-action {
 	top: 0;
 }
 
@@ -432,7 +432,7 @@
 	margin-block: 10px;
 }
 
-#shipqora.wrap .shipqora-woocommerce-loading-app {
+#shipqora.wrap .shipqora-loading-app {
 	display: flex;
 	row-gap: 15px;
 	font-size: 25px;
@@ -442,12 +442,12 @@
 	margin-inline-start: -160px;
 }
 
-#shipqora.wrap .shipqora-woocommerce-loading-app .shipqora-woocommerce-loading-spinner {
+#shipqora.wrap .shipqora-loading-app .shipqora-loading-spinner {
 	--size: 40px;
 	margin-inline-start: -15px;
 }
 
-#shipqora.wrap .shipqora-woocommerce-loading-app .loading-instruction {
+#shipqora.wrap .shipqora-loading-app .loading-instruction {
 	font-size: 15px;
 	font-style: italic;
 	max-width: 500px;
@@ -456,7 +456,7 @@
 	margin-top: -6px;
 }
 
-#shipqora.wrap:has(.shipqora-woocommerce-loading-app) {
+#shipqora.wrap:has(.shipqora-loading-app) {
 	min-height: 85vh;
 	display: flex;
 	align-items: center;
@@ -472,7 +472,7 @@
 }
 
 
-#shipqora .shipqora-woocommerce-editor-container {
+#shipqora .shipqora-editor-container {
 	max-width: 1200px;
 }
 
@@ -481,7 +481,7 @@
 	margin-bottom: 15px;
 }
 
-#shipqora.shipqora-woocommerce-rule-editor .rule-title input {
+#shipqora.shipqora-rule-editor .rule-title input {
 	padding: 10px 8px;
 	font-size: 18px;
 	line-height: 1.4;
@@ -492,7 +492,7 @@
 	background-color: #fff;
 }
 
-table.table-shipqora-woocommerce-form {
+table.table-shipqora-form {
 	--paddingblock: 10px;
 	width: 100%;
 	margin-bottom: 20px;
@@ -501,28 +501,28 @@ table.table-shipqora-woocommerce-form {
 	background-color: #fff;
 }
 
-table.table-shipqora-woocommerce-form>tbody>tr>:is(td, th) {
+table.table-shipqora-form>tbody>tr>:is(td, th) {
 	border-block: 1px solid #eee;
 }
 
-table.table-shipqora-woocommerce-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
+table.table-shipqora-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
 	border-bottom-color: #cfcfcf;
 }
 
-table.table-shipqora-woocommerce-form>tbody>tr:first-child>:is(td, th) {
+table.table-shipqora-form>tbody>tr:first-child>:is(td, th) {
 	border-top-color: #dbd5d5;
 }
 
-table.table-shipqora-woocommerce-form>tbody>tr:last-child>:is(td, th) {
+table.table-shipqora-form>tbody>tr:last-child>:is(td, th) {
 	padding-bottom: 15px;
 	border-bottom-color: #dbd5d5;
 }
 
-table.table-shipqora-woocommerce-form>tbody:last-child>tr:last-child>:is(td, th) {
+table.table-shipqora-form>tbody:last-child>tr:last-child>:is(td, th) {
 	border-bottom-color: #dbd5d5;
 }
 
-table.table-shipqora-woocommerce-form th {
+table.table-shipqora-form th {
 	width: 20%;
 	font-size: 13px;
 	min-width: 230px;
@@ -534,15 +534,15 @@ table.table-shipqora-woocommerce-form th {
 	border-right: 1px solid #e3e3e3;
 }
 
-table.table-shipqora-woocommerce-form td {
+table.table-shipqora-form td {
 	vertical-align: top;
 }
 
-table.table-shipqora-woocommerce-form td.no-padding {
+table.table-shipqora-form td.no-padding {
 	padding: 5px !important;
 }
 
-table.table-shipqora-woocommerce-form .field-note {
+table.table-shipqora-form .field-note {
 	color: #4e4e4e;
 	font-size: 13px;
 	margin-top: 2px;
@@ -553,45 +553,45 @@ table.table-shipqora-woocommerce-form .field-note {
 	max-width: 800px;
 }
 
-table.table-shipqora-woocommerce-form td .field-note {
+table.table-shipqora-form td .field-note {
 	margin-top: 6px;
 }
 
-table.table-shipqora-woocommerce-form .field-note p {
+table.table-shipqora-form .field-note p {
 	margin-block: 0;
 }
 
-table.table-shipqora-woocommerce-form .field-note code {
+table.table-shipqora-form .field-note code {
 	user-select: all;
 }
 
-table.table-shipqora-woocommerce-form .field-note.field-note-warning {
+table.table-shipqora-form .field-note.field-note-warning {
 	color: #ab0000;
 }
 
-table.table-shipqora-woocommerce-form.sortable-chosen,
-table.table-shipqora-woocommerce-form tbody.sortable-chosen {
+table.table-shipqora-form.sortable-chosen,
+table.table-shipqora-form tbody.sortable-chosen {
 	z-index: 100;
 	box-shadow: 0 0 20px rgba(0, 0, 0, .16)
 }
 
-table.table-shipqora-woocommerce-form.sortable-chosen tr.row-group-heading,
-table.table-shipqora-woocommerce-form tbody.sortable-chosen tr.row-group-heading,
-table.table-shipqora-woocommerce-form.sortable-chosen tr.row-group-heading .button-drag,
-table.table-shipqora-woocommerce-form tbody.sortable-chosen tr.row-group-heading .button-drag {
+table.table-shipqora-form.sortable-chosen tr.row-group-heading,
+table.table-shipqora-form tbody.sortable-chosen tr.row-group-heading,
+table.table-shipqora-form.sortable-chosen tr.row-group-heading .button-drag,
+table.table-shipqora-form tbody.sortable-chosen tr.row-group-heading .button-drag {
 	cursor: grabbing;
 }
 
-table.table-shipqora-woocommerce-form.sortable-chosen tr.row-group-heading td,
-table.table-shipqora-woocommerce-form tbody.sortable-chosen tr.row-group-heading td {
+table.table-shipqora-form.sortable-chosen tr.row-group-heading td,
+table.table-shipqora-form tbody.sortable-chosen tr.row-group-heading td {
 	background-color: #f5f2ff !important;
 }
 
-table.table-shipqora-woocommerce-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
+table.table-shipqora-form>tbody>tr:has(+tr.row-group-heading)>:is(td, th) {
 	border-bottom-color: #cfcfcf;
 }
 
-table.table-shipqora-woocommerce-form :is(th, td):has(>.heading-line) {
+table.table-shipqora-form :is(th, td):has(>.heading-line) {
 	padding: 0px !important;
 	font-size: 15px;
 	font-weight: 500;
@@ -600,12 +600,12 @@ table.table-shipqora-woocommerce-form :is(th, td):has(>.heading-line) {
 	border-bottom-color: #dbdbdb;
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading td:has(>.button-drag) {
+table.table-shipqora-form tr.row-group-heading td:has(>.button-drag) {
 	position: relative;
 	padding-inline-start: 40px !important;
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading .button-drag {
+table.table-shipqora-form tr.row-group-heading .button-drag {
 	width: 40px;
 	height: auto;
 	inset-block: 0;
@@ -617,19 +617,19 @@ table.table-shipqora-woocommerce-form tr.row-group-heading .button-drag {
 	cursor: grab;
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading .button-drag+.heading-line {
+table.table-shipqora-form tr.row-group-heading .button-drag+.heading-line {
 	margin-inline-start: -3px;
 	padding-inline-start: 0 !important;
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading .heading-line {
+table.table-shipqora-form tr.row-group-heading .heading-line {
 	display: flex;
 	min-height: 40px;
 	align-items: center;
 	padding: 7px 14px;
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading .component-heading-actions {
+table.table-shipqora-form tr.row-group-heading .component-heading-actions {
 	display: flex;
 	column-gap: 4px;
 	align-items: center;
@@ -637,41 +637,41 @@ table.table-shipqora-woocommerce-form tr.row-group-heading .component-heading-ac
 	margin-inline-end: -4px;
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading .component-heading-actions .button {
+table.table-shipqora-form tr.row-group-heading .component-heading-actions .button {
 	--inputHeight: 28px
 }
 
-table.table-shipqora-woocommerce-form tr.row-group-heading .component-heading-actions .button .dashicons {
+table.table-shipqora-form tr.row-group-heading .component-heading-actions .button .dashicons {
 	--size: 18px !important;
 	margin-inline-start: -3px
 }
 
-#shipqora table.table-shipqora-woocommerce-form tr.row-group-heading .component-heading-actions .button {
+#shipqora table.table-shipqora-form tr.row-group-heading .component-heading-actions .button {
 	--inputHeight: 28px;
 	display: flex;
 	justify-content: center;
 }
 
-#shipqora table.table-shipqora-woocommerce-form tr.row-group-heading .component-heading-actions .btn-collapse {
+#shipqora table.table-shipqora-form tr.row-group-heading .component-heading-actions .btn-collapse {
 	padding: 0;
 	font-size: 16px;
 	width: var(--inputHeight);
 }
 
-table.table-shipqora-woocommerce-form td>table.table-shipqora-woocommerce-form {
+table.table-shipqora-form td>table.table-shipqora-form {
 	margin-bottom: 10px;
 }
 
-table.table-shipqora-woocommerce-form td>table.table-shipqora-woocommerce-form thead {
+table.table-shipqora-form td>table.table-shipqora-form thead {
 	font-size: 115%;
 	background-color: #f9f9f9;
 }
 
-table.table-shipqora-woocommerce-form tr.shipqora-woocommerce-notice-row td {
+table.table-shipqora-form tr.shipqora-notice-row td {
 	padding: 0 !important;
 }
 
-#shipqora table.table-shipqora-woocommerce-form tr.shipqora-woocommerce-notice-row .shipqora-woocommerce-notice-box {
+#shipqora table.table-shipqora-form tr.shipqora-notice-row .shipqora-notice-box {
 	margin: 3px;
 	border: none;
 }
@@ -714,20 +714,20 @@ table.table-shipqora-woocommerce-form tr.shipqora-woocommerce-notice-row td {
 	color: #8c8f94;
 }
 
-.shipqora-woocommerce-repeater {
+.shipqora-repeater {
 	display: flex;
 	row-gap: 7px;
 	margin-bottom: 7px;
 	flex-direction: column;
 }
 
-ul.shipqora-woocommerce-repeater {
+ul.shipqora-repeater {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.shipqora-woocommerce-repeater .repeater-item {
+.shipqora-repeater .repeater-item {
 	margin: 0;
 	row-gap: 5px;
 	column-gap: 3px;
@@ -739,11 +739,11 @@ ul.shipqora-woocommerce-repeater {
 	padding-inline-end: 30px !important;
 }
 
-.shipqora-woocommerce-repeater .repeater-item:has(.shipqora-woocommerce-content-loader) {
+.shipqora-repeater .repeater-item:has(.shipqora-content-loader) {
 	width: 100% !important;
 }
 
-.shipqora-woocommerce-repeater .repeater-item.repeater-item-separator {
+.shipqora-repeater .repeater-item.repeater-item-separator {
 	margin-block: 7px;
 	position: relative;
 	padding: 0 !important;
@@ -751,7 +751,7 @@ ul.shipqora-woocommerce-repeater {
 	flex: 0 0 100% !important;
 }
 
-.shipqora-woocommerce-repeater .repeater-item.repeater-item-separator:before {
+.shipqora-repeater .repeater-item.repeater-item-separator:before {
 	top: 50%;
 	content: "";
 	position: absolute;
@@ -760,7 +760,7 @@ ul.shipqora-woocommerce-repeater {
 	background-color: #eeeff1;
 }
 
-.shipqora-woocommerce-repeater .repeater-item.repeater-item-separator:after {
+.shipqora-repeater .repeater-item.repeater-item-separator:after {
 	content: attr(data-text);
 	left: 50%;
 	top: 50%;
@@ -771,7 +771,7 @@ ul.shipqora-woocommerce-repeater {
 	background-color: #fbfbfb;
 }
 
-.shipqora-woocommerce-repeater .button-drag-item {
+.shipqora-repeater .button-drag-item {
 	left: 4px;
 	opacity: 0;
 	width: 34px;
@@ -790,16 +790,16 @@ ul.shipqora-woocommerce-repeater {
 	border-radius: var(--borderRadius);
 }
 
-.shipqora-woocommerce-repeater .repeater-item.sortable-chosen .button-drag-item {
+.shipqora-repeater .repeater-item.sortable-chosen .button-drag-item {
 	cursor: grabbing;
 }
 
-.shipqora-woocommerce-repeater .repeater-item:hover .button-drag-item {
+.shipqora-repeater .repeater-item:hover .button-drag-item {
 	opacity: 1;
 	visibility: visible;
 }
 
-.shipqora-woocommerce-repeater .repeater-item .tools {
+.shipqora-repeater .repeater-item .tools {
 	position: absolute;
 	top: 11px;
 	right: 2px;
@@ -811,12 +811,12 @@ ul.shipqora-woocommerce-repeater {
 	transition: all 200ms;
 }
 
-.shipqora-woocommerce-repeater .repeater-item:hover .tools {
+.shipqora-repeater .repeater-item:hover .tools {
 	opacity: 1;
 	visibility: visible;
 }
 
-.shipqora-woocommerce-repeater .repeater-item .btn-delete-item {
+.shipqora-repeater .repeater-item .btn-delete-item {
 	width: 16px;
 	height: 16px;
 	color: #fff;
@@ -829,19 +829,19 @@ ul.shipqora-woocommerce-repeater {
 	transition: all 200ms;
 }
 
-.shipqora-woocommerce-repeater .repeater-item .btn-delete-item:hover {
+.shipqora-repeater .repeater-item .btn-delete-item:hover {
 	background-color: #bb0303;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups {
+.shipqora-repeater.shipqora-repeater-condition-groups {
 	margin-bottom: 10px;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups>.repeater-item {
+.shipqora-repeater.shipqora-repeater-condition-groups>.repeater-item {
 	width: 100% !important;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups>.repeater-item:not(.repeater-item-separator) {
+.shipqora-repeater.shipqora-repeater-condition-groups>.repeater-item:not(.repeater-item-separator) {
 	padding: 9px;
 	display: block;
 	position: relative;
@@ -849,11 +849,11 @@ ul.shipqora-woocommerce-repeater {
 	background-color: #fbfbfb;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups>.repeater-item.repeater-item-separator:after {
+.shipqora-repeater.shipqora-repeater-condition-groups>.repeater-item.repeater-item-separator:after {
 	background-color: #fff !important;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups .repeater-item .btn-delete-item.btn-delete-group {
+.shipqora-repeater.shipqora-repeater-condition-groups .repeater-item .btn-delete-item.btn-delete-group {
 	top: 15px;
 	cursor: pointer;
 	color: #c11010;
@@ -866,15 +866,15 @@ ul.shipqora-woocommerce-repeater {
 	background-color: #fff;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups>.repeater-item .btn-delete-item.btn-delete-group:hover {
+.shipqora-repeater.shipqora-repeater-condition-groups>.repeater-item .btn-delete-item.btn-delete-group:hover {
 	color: #c50202 !important;
 }
 
-.shipqora-woocommerce-repeater.shipqora-woocommerce-repeater-condition-groups select.condition-types optgroup:empty {
+.shipqora-repeater.shipqora-repeater-condition-groups select.condition-types optgroup:empty {
 	display: none;
 }
 
-.shipqora-woocommerce-modal {
+.shipqora-modal {
 	position: fixed;
 	inset: 0;
 	display: flex;
@@ -889,13 +889,13 @@ ul.shipqora-woocommerce-repeater {
 	backdrop-filter: blur(3px);
 }
 
-.shipqora-woocommerce-modal.shown {
+.shipqora-modal.shown {
 	opacity: 1;
 	pointer-events: all;
 	visibility: visible;
 }
 
-.shipqora-woocommerce-modal .modal-header .btn-modal-close {
+.shipqora-modal .modal-header .btn-modal-close {
 	position: absolute;
 	top: 4px;
 	right: 4px;
@@ -903,7 +903,7 @@ ul.shipqora-woocommerce-repeater {
 	z-index: 9999;
 }
 
-.shipqora-woocommerce-modal .modal-content {
+.shipqora-modal .modal-content {
 	width: 90%;
 	max-width: 550px;
 	border-radius: 5px;
@@ -916,114 +916,114 @@ ul.shipqora-woocommerce-repeater {
 	box-shadow: 0 0 40px 15px rgba(0, 0, 0, .3)
 }
 
-.shipqora-woocommerce-modal .modal-header,
-.shipqora-woocommerce-modal .modal-footer {
+.shipqora-modal .modal-header,
+.shipqora-modal .modal-footer {
 	display: flex;
 	column-gap: 5px;
 	align-items: center;
 	padding: 15px 20px;
 }
 
-.shipqora-woocommerce-modal .modal-header {
+.shipqora-modal .modal-header {
 	background-color: #fbfbfb;
 	border-bottom: 1px solid #eeeff1
 }
 
-.shipqora-woocommerce-modal .modal-footer {
+.shipqora-modal .modal-footer {
 	z-index: 3;
 	margin-top: -1px;
 	padding-block: 15px;
 	border-top: 1px solid #dbd5d5;
 }
 
-.shipqora-woocommerce-modal .modal-header h2 {
+.shipqora-modal .modal-header h2 {
 	margin: 0;
 	font-size: 20px;
 }
 
-.shipqora-woocommerce-modal .modal-body {
+.shipqora-modal .modal-body {
 	padding: 20px;
 	font-size: 14px;
 	line-height: 1.5;
 	overflow-y: auto;
 }
 
-.shipqora-woocommerce-modal .modal-body h3 {
+.shipqora-modal .modal-body h3 {
 	margin-block: 0 10px;
 }
 
-.shipqora-woocommerce-modal .modal-body h4 {
+.shipqora-modal .modal-body h4 {
 	margin-block: 0 5px;
 	font-size: 16px;
 }
 
-.shipqora-woocommerce-modal .modal-body p {
+.shipqora-modal .modal-body p {
 	font-size: inherit;
 	line-height: inherit;
 	margin-top: 0;
 }
 
-.shipqora-woocommerce-modal .modal-body:has(>.table-shipqora-woocommerce-form) {
+.shipqora-modal .modal-body:has(>.table-shipqora-form) {
 	padding: 0 !important;
 }
 
-.shipqora-woocommerce-modal .modal-body>.table-shipqora-woocommerce-form {
+.shipqora-modal .modal-body>.table-shipqora-form {
 	border: none !important;
 }
 
-.shipqora-woocommerce-modal .modal-body ul {
+.shipqora-modal .modal-body ul {
 	list-style: disc;
 	padding-inline-start: 15px;
 }
 
-.shipqora-woocommerce-modal .modal-body ul li {
+.shipqora-modal .modal-body ul li {
 	margin: 0;
 }
 
-.shipqora-woocommerce-modal .modal-body ul li+li {
+.shipqora-modal .modal-body ul li+li {
 	margin-top: 5px;
 }
 
-.shipqora-woocommerce-modal .modal-footer .button {
+.shipqora-modal .modal-footer .button {
 	font-weight: 500;
 	min-width: 120px;
 }
 
-#shipqora .shipqora-woocommerce-box {
+#shipqora .shipqora-box {
 	max-width: 1200px;
 	margin-bottom: 40px;
 	background-color: #fff;
 	border: 1px solid #dbd5d5;
 }
 
-#shipqora .shipqora-woocommerce-box .box-header,
-table.table-shipqora-woocommerce-form>:is(thead, tbody, tfoot)>tr>:is(td, th) {
+#shipqora .shipqora-box .box-header,
+table.table-shipqora-form>:is(thead, tbody, tfoot)>tr>:is(td, th) {
 	padding: 10px 14px;
 }
 
-#shipqora .shipqora-woocommerce-box .box-header {
+#shipqora .shipqora-box .box-header {
 	display: flex;
 	align-items: center;
 	border-bottom: 1px solid #dbd5d5;
 }
 
-table.table-shipqora-woocommerce-form thead,
-#shipqora .shipqora-woocommerce-box .box-header h3 {
+table.table-shipqora-form thead,
+#shipqora .shipqora-box .box-header h3 {
 	margin: 0;
 	font-size: 140%;
 	font-weight: 500;
 }
 
-#shipqora .shipqora-woocommerce-box .box-content {
+#shipqora .shipqora-box .box-content {
 	padding: 14px;
 }
 
-#shipqora .shipqora-woocommerce-box>table.table-shipqora-woocommerce-form {
+#shipqora .shipqora-box>table.table-shipqora-form {
 	border: none;
 	margin: -1px 0;
 }
 
-#shipqora .shipqora-woocommerce-notice-box {
+#shipqora .shipqora-notice-box {
 	text-align: center;
 	margin-top: 15px;
 	padding: 10px 15px;
@@ -1033,42 +1033,42 @@ table.table-shipqora-woocommerce-form thead,
 	background-color: #f9f9f9;
 }
 
-#shipqora .shipqora-woocommerce-notice-box.shipqora-woocommerce-notice-box-left {
+#shipqora .shipqora-notice-box.shipqora-notice-box-left {
 	text-align: left;
 }
 
-#shipqora .shipqora-woocommerce-notice-box h3 {
+#shipqora .shipqora-notice-box h3 {
 	font-size: 15px;
 	margin-block: 0 7px;
 }
 
-#shipqora .shipqora-woocommerce-notice-box .description {
+#shipqora .shipqora-notice-box .description {
 	line-height: 1.5;
 	max-width: 1000px;
 	margin-inline: auto;
 }
 
-#shipqora .shipqora-woocommerce-notice-box .description a {
+#shipqora .shipqora-notice-box .description a {
 	color: #333;
 	font-weight: bold;
 }
 
-#shipqora .shipqora-woocommerce-notice-box ul {
+#shipqora .shipqora-notice-box ul {
 	list-style: disc;
 	margin-block: 5px 0;
 	padding-inline-start: 17px;
 }
 
-#shipqora .shipqora-woocommerce-notice-box ul li {
+#shipqora .shipqora-notice-box ul li {
 	margin: 0;
 	margin-bottom: 3px;
 }
 
-#shipqora .shipqora-woocommerce-notice-box .button {
+#shipqora .shipqora-notice-box .button {
 	min-width: 130px
 }
 
-table.table-shipqora-woocommerce-form td:has(>.table-shipping-cost-range-tier) {
+table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	padding: 3px !important
 }
 
@@ -1177,6 +1177,6 @@ table.table-shipqora-woocommerce-form td:has(>.table-shipping-cost-range-tier) {
 	margin-bottom: 10px;
 }
 
-#shipqora table.table-shipqora-woocommerce-table-rate {
+#shipqora table.table-shipqora-table-rate {
 	margin-bottom: 5px;
 }

@@ -24,7 +24,7 @@ const Base_Component = {
 
 		deleteWarning: {
 			type: String,
-			default: __('Are you sure you want to delete this item?', 'shipqora-woocommerce'),
+			default: __('Are you sure you want to delete this item?', 'shipqora'),
 		},
 	},
 

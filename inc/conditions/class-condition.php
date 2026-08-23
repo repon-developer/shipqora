@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora_WooCommerce\Condition;
+namespace ShipQora\Condition;
 
-use ShipQora_WooCommerce\Utils;
+use ShipQora\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;

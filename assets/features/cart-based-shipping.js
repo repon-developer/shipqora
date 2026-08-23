@@ -2,7 +2,7 @@ import Base_Component from '../component/base-component.min.js?v=@@VERSION';
 
 const Cart_Based_Shipping = {
 	extends: Base_Component,
-	template: '#shipqora-woocommerce-cart-based-shipping-feature-component',
+	template: '#shipqora-cart-based-shipping-feature-component',
 
 	props: {
 		featureData: {

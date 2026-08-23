@@ -1,9 +1,9 @@
 <?php
 
-namespace ShipQora_WooCommerce\Condition;
+namespace ShipQora\Condition;
 
-use ShipQora_WooCommerce\Utils;
-use ShipQora_WooCommerce\Cart_Total;
+use ShipQora\Utils;
+use ShipQora\Cart_Total;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -80,7 +80,7 @@ class Main {
 	 * @return void
 	 */
 	public function output_component() { ?>
-		<template id="shipqora-woocommerce-condition">
+		<template id="shipqora-condition">
 			<select class="condition-types" v-model="type" data-once-modal="advanced-condition-types">
 				<?php
 				foreach ($this->get_group_options() as $group_id => $group_data) {
@@ -116,19 +116,19 @@ class Main {
 			</div>
 		</template>
 
-		<template id="shipqora-woocommerce-condition-group">
+		<template id="shipqora-condition-group">
 			<span @click="delete_group()" class="btn-delete-item btn-delete-group dashicons dashicons-trash"></span>
 
-			<div class="shipqora-woocommerce-repeater" v-if="conditions?.length">
+			<div class="shipqora-repeater" v-if="conditions?.length">
 				<template v-for="(condition, index) in conditions" :key="condition.id">
-					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipqora-woocommerce') ?>"></div>
+					<div class="repeater-item repeater-item-separator" v-if="index > 0" data-text="<?php esc_attr_e('and', 'shipqora') ?>"></div>
 					<div class="repeater-item">
 						<condition :condition="condition" :number="index" :key="condition?.id"></condition>
 					</div>
 				</template>
 			</div>
 
-			<a class="button button-small" href="#" @click.prevent="add_condition()"><?php esc_html_e('+ Add condition', 'shipqora-woocommerce') ?></a>
+			<a class="button button-small" href="#" @click.prevent="add_condition()"><?php esc_html_e('+ Add condition', 'shipqora') ?></a>
 		</template>
 <?php
 	}
@@ -140,13 +140,13 @@ class Main {
 	 * @return void
 	 */
 	public function load_files() {
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-condition.php';
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-cart.php';
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-date.php';
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-customer.php';
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-order-history.php';
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-cart-products.php';
-		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/conditions/class-billing-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-condition.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-cart.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-date.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-customer.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-order-history.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-cart-products.php';
+		require_once SHIPQORA_PATH . 'inc/conditions/class-billing-shipping.php';
 	}
 
 	/**
@@ -162,7 +162,7 @@ class Main {
 			throw new \Exception(
 				sprintf(
 					/* translators: %s: Name of group class */
-					esc_html__('The %s class must have a public $group_id property.', 'shipqora-woocommerce'),
+					esc_html__('The %s class must have a public $group_id property.', 'shipqora'),
 					esc_html($group_class)
 				)
 			);
@@ -172,7 +172,7 @@ class Main {
 		if (empty($group_id)) {
 			throw new \Exception(sprintf(
 				/* translators: %s: Name of group class */
-				esc_html__('The %s class must have a value for the $group_id property.', 'shipqora-woocommerce'),
+				esc_html__('The %s class must have a value for the $group_id property.', 'shipqora'),
 				esc_html($group_class)
 			));
 		}
@@ -180,7 +180,7 @@ class Main {
 		if (!method_exists($group_object, 'get_name')) {
 			throw new \Exception(sprintf(
 				/* translators: %s: Name of group class */
-				esc_html__('The %s class must have a public get_name() method.', 'shipqora-woocommerce'),
+				esc_html__('The %s class must have a public get_name() method.', 'shipqora'),
 				esc_html($group_class)
 			));
 		}
@@ -189,7 +189,7 @@ class Main {
 		if (empty($group_name)) {
 			throw new \Exception(sprintf(
 				/* translators: %s: Name of group class */
-				esc_html__('The get_name() method of the %s class should return a valid group name.', 'shipqora-woocommerce'),
+				esc_html__('The get_name() method of the %s class should return a valid group name.', 'shipqora'),
 				esc_html($group_class)
 			));
 		}
@@ -242,13 +242,13 @@ class Main {
 		if (empty($this->add_condition_group_id)) {
 			throw new \Exception(sprintf(
 				/* translators: %s: hook name */
-				esc_html__('You are trying to add a condition outside the register_condition() method or %s hook.', 'shipqora-woocommerce'),
+				esc_html__('You are trying to add a condition outside the register_condition() method or %s hook.', 'shipqora'),
 				esc_html(Utils::get_hook_name('condition', 'register-type'))
 			));
 		}
 
 		if (!isset($condition_data['template']) || isset($condition_data['template']) && !is_callable($condition_data['template'])) {
-			throw new \Exception(esc_html__('Please add the template array key with a validation callback for this condition type.', 'shipqora-woocommerce'));
+			throw new \Exception(esc_html__('Please add the template array key with a validation callback for this condition type.', 'shipqora'));
 		}
 
 		$condition_id = sanitize_key($condition_id);
