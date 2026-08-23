@@ -1,14 +1,14 @@
 <?php
 
-namespace ShipQora\Feature;
+namespace ShipQora_WooCommerce\Feature;
 
-use ShipQora\Utils;
-use ShipQora\Feature;
-use ShipQora\Form_Control;
-use ShipQora\Condition\Main;
-use ShipQora\Settings_Fields;
-use ShipQora\Component_Methods;
-use ShipQora\Global_Settings_Fields;
+use ShipQora_WooCommerce\Utils;
+use ShipQora_WooCommerce\Feature;
+use ShipQora_WooCommerce\Form_Control;
+use ShipQora_WooCommerce\Condition\Main;
+use ShipQora_WooCommerce\Settings_Fields;
+use ShipQora_WooCommerce\Component_Methods;
+use ShipQora_WooCommerce\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -44,9 +44,9 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 40,
 			'feature_priority' => 10000,
 			'base_model' => 'shipping_cost_adjustment',
-			'name' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
-			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
-			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipqora'),
+			'name' => esc_html__('Shipping Cost Adjustment', 'shipqora-woocommerce'),
+			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipqora-woocommerce'),
+			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipqora-woocommerce'),
 		);
 	}
 
@@ -191,7 +191,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
-		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Cost Adjustment #{{layerNo}}', 'shipqora-woocommerce'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('layer') ?>
 		</template>
@@ -214,12 +214,12 @@ final class Shipping_Cost_Adjustment extends Feature {
 
 		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
-			'row_attributes' => array('class' => 'shipqora-notice-row'),
+			'row_attributes' => array('class' => 'shipqora-woocommerce-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Need Multiple Shipping Cost Adjustments?',
 				'utm_source' => 'add+shipping+cost+adjustment',
-				'description' => 'Need more flexibility? Free users can create additional rules, or you can upgrade to <strong>ShipQora Pro</strong> to add multiple shipping cost configurations directly inside a single rule..',
+				'description' => 'Need more flexibility? Free users can create additional rules, or you can upgrade to <strong>ShipQora for WooCommerce Pro</strong> to add multiple shipping cost configurations directly inside a single rule..',
 			)
 		), $this->get_id());
 	}
@@ -252,10 +252,10 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
 		$settings_fields->add_setting('shipping_cost_adjustment', array(
 			'priority' => 10,
-			'label' => esc_html__('Adjustment Method & Value', 'shipqora'),
+			'label' => esc_html__('Adjustment Method & Value', 'shipqora-woocommerce'),
 			'callback' => array($this, 'shipping_cost_adjustment_setting_field'),
-			'label_note' => esc_html__('Select how to modify the shipping rate (increase, decrease, or set a fixed price) and enter the value to apply.', 'shipqora'),
-			'option_note' => esc_html__('Enter a numerical value (e.g., 10 for 10% or $10.00 depending on the selected method).', 'shipqora'),
+			'label_note' => esc_html__('Select how to modify the shipping rate (increase, decrease, or set a fixed price) and enter the value to apply.', 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Enter a numerical value (e.g., 10 for 10% or $10.00 depending on the selected method).', 'shipqora-woocommerce'),
 			'related_models' => array(
 				'amount' => '',
 				'type' => 'increase_percentage',
@@ -264,11 +264,11 @@ final class Shipping_Cost_Adjustment extends Feature {
 
 		$settings_fields->add_setting('shipping_cost_limit', array(
 			'priority' => 20,
-			'label' => esc_html__('Cost Limits', 'shipqora'),
+			'label' => esc_html__('Cost Limits', 'shipqora-woocommerce'),
 			'callback' => array($this, 'shipping_cost_limit_setting_field'),
 			'conditions' => array('!["free_shipping", "fixed_amount"].includes(type)'),
-			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipqora'),
-			'option_note' => esc_html__('Leave blank for no limit.', 'shipqora'),
+			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after the adjustment is applied.', 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Leave blank for no limit.', 'shipqora-woocommerce'),
 			'related_models' => array(
 				'min_cost' => '',
 				'max_cost' => '',
@@ -281,19 +281,19 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'placeholder' => '10',
 			'model_key' => 'priority',
 			'type' => Form_Control::NUMBER,
-			'label' => esc_html__('Global Priority', 'shipqora'),
+			'label' => esc_html__('Global Priority', 'shipqora-woocommerce'),
 			'attributes' => array('min' => '0', 'step' => '1'),
-			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipqora'),
-			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipqora'),
+			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipqora-woocommerce'),
 		), 'layer');
 
 		$settings_fields->add_setting('overwrite_shipping_method_title', array(
 			'priority' => 40,
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => 'shipping_method_title',
-			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora'),
-			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
-			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
+			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora-woocommerce'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora-woocommerce'),
 		), 'layer');
 
 		$settings_fields->add_setting('condition_groups', array(
@@ -314,17 +314,17 @@ final class Shipping_Cost_Adjustment extends Feature {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
 			<select v-model="type">
-				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipqora') ?></option>
-				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipqora') ?></option>
+				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipqora-woocommerce') ?></option>
+				<option value="fixed_amount"><?php esc_html_e('Set Fixed Cost', 'shipqora-woocommerce') ?></option>
 				<option value="-" disabled>-------------------------</option>
-				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipqora') ?></option>
-				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipqora') ?></option>
-				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipqora') ?></option>
-				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipqora') ?></option>
+				<option value="increase_amount"><?php esc_html_e('Increase by Amount', 'shipqora-woocommerce') ?></option>
+				<option value="decrease_amount"><?php esc_html_e('Decrease by Amount', 'shipqora-woocommerce') ?></option>
+				<option value="increase_percentage"><?php esc_html_e('Increase by Percentage', 'shipqora-woocommerce') ?></option>
+				<option value="decrease_percentage"><?php esc_html_e('Decrease by Percentage', 'shipqora-woocommerce') ?></option>
 			</select>
 
 			<template v-if="'free_shipping' !== type">
-				<input type="number" v-model="amount" min="0" placeholder="<?php esc_html_e('Amount', 'shipqora') ?>">
+				<input type="number" v-model="amount" min="0" placeholder="<?php esc_html_e('Amount', 'shipqora-woocommerce') ?>">
 				<span v-if="'increase_percentage' == type || 'decrease_percentage' == type">%</span>
 			</template>
 		</div>
@@ -341,8 +341,8 @@ final class Shipping_Cost_Adjustment extends Feature {
 	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
 		$form_control->output_before_input_options(); ?>
 		<div class="field-row">
-			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipqora') ?>">
-			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipqora') ?>">
+			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipqora-woocommerce') ?>">
+			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipqora-woocommerce') ?>">
 		</div>
 <?php
 		$form_control->output_after_input_options();

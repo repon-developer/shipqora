@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
-use ShipQora\Condition\Main;
+use ShipQora_WooCommerce\Condition\Main;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -33,7 +33,7 @@ final class Rule_Editor {
 		}
 
 		if ('scripts' == $source) {
-			$values[] = 'shipqora-rule-editor';
+			$values[] = 'shipqora-woocommerce-rule-editor';
 		}
 
 		if ('localize' == $source) {
@@ -68,46 +68,46 @@ final class Rule_Editor {
 			}
 
 			$values['calculation_types'] = array(
-				'subtotal' => esc_html__('Percentage', 'shipqora'),
-				'quantity' => esc_html__('Cost per Item', 'shipqora'),
+				'subtotal' => esc_html__('Percentage', 'shipqora-woocommerce'),
+				'quantity' => esc_html__('Cost per Item', 'shipqora-woocommerce'),
 				'weight' => sprintf(
 					/* translators: %s: weight unit */
-					esc_html__('Cost per %s', 'shipqora'),
+					esc_html__('Cost per %s', 'shipqora-woocommerce'),
 					$weight_label
 				),
 
 				'volume' => sprintf(
 					/* translators: %s: weight unit */
-					esc_html__('Cost per %s', 'shipqora'),
+					esc_html__('Cost per %s', 'shipqora-woocommerce'),
 					$dimension_label
 				)
 			);
 
 			$values['calculation_metrics'] = array(
 				'subtotal' => array(
-					'short_lower' => esc_html__('subtotal', 'shipqora'),
-					'long_title' => esc_html__('Product Subtotal', 'shipqora'),
+					'short_lower' => esc_html__('subtotal', 'shipqora-woocommerce'),
+					'long_title' => esc_html__('Product Subtotal', 'shipqora-woocommerce'),
 				),
 
 				'quantity' => array(
-					'short_lower' => esc_html__('quantity', 'shipqora'),
-					'long_title' => esc_html__('Product Quantity', 'shipqora'),
+					'short_lower' => esc_html__('quantity', 'shipqora-woocommerce'),
+					'long_title' => esc_html__('Product Quantity', 'shipqora-woocommerce'),
 				),
 
 				'weight' => array(
-					'short_lower' => esc_html__('weight', 'shipqora'),
+					'short_lower' => esc_html__('weight', 'shipqora-woocommerce'),
 					'long_title' => sprintf(
 						/* translators: %s: weight unit */
-						esc_html__('Product Weight (%s)', 'shipqora'),
+						esc_html__('Product Weight (%s)', 'shipqora-woocommerce'),
 						$weight_label
 					)
 				),
 
 				'volume' => array(
-					'short_lower' => esc_html__('volume', 'shipqora'),
+					'short_lower' => esc_html__('volume', 'shipqora-woocommerce'),
 					'long_title' => sprintf(
 						/* translators: %s: dimension unit */
-						esc_html__('Product Volume (%s)', 'shipqora'),
+						esc_html__('Product Volume (%s)', 'shipqora-woocommerce'),
 						$dimension_label
 					),
 				),
@@ -134,7 +134,7 @@ final class Rule_Editor {
 		$registered_features = Feature::get_features();
 		foreach ($registered_features as $feature_id => $feature_instance) {
 			if (method_exists($feature_instance, 'output_component')) {
-				echo '<template id="shipqora-' . esc_attr($feature_id) . '-feature-component">';
+				echo '<template id="shipqora-woocommerce-' . esc_attr($feature_id) . '-feature-component">';
 				$feature_instance->output_component();
 				echo '</template>';
 			}
@@ -146,8 +146,8 @@ final class Rule_Editor {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
 		do_action(Utils::get_hook_name('rule-editor', 'output-vue-component')) ?>
 
-		<template id="shipqora-shipping-methods-group-component">
-			<ul class="shipqora-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;" v-sortable="{options: {handle: '.button-drag-item'}}" @end="order_change">
+		<template id="shipqora-woocommerce-shipping-methods-group-component">
+			<ul class="shipqora-woocommerce-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;" v-sortable="{options: {handle: '.button-drag-item'}}" @end="order_change">
 				<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
 					<shipping-method-input
 						:shipping-method="shipping_method"
@@ -159,11 +159,11 @@ final class Rule_Editor {
 			</ul>
 
 			<a href="#" class="button" :class="button_class" @click.prevent="add_shipping_method()">
-				<?php esc_html_e('Add Shipping Method', 'shipqora') ?>
+				<?php esc_html_e('Add Shipping Method', 'shipqora-woocommerce') ?>
 			</a>
 		</template>
 
-		<template id="shipqora-shipping-method-input-component">
+		<template id="shipqora-woocommerce-shipping-method-input-component">
 			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading && draggable"></span>
 
 			<?php
@@ -175,7 +175,7 @@ final class Rule_Editor {
 			unset($shipping_method_options['local_pickup']); ?>
 
 			<select v-model="method_id">
-				<option value=""><?php esc_html_e('Choose a shipping method', 'shipqora') ?></option>
+				<option value=""><?php esc_html_e('Choose a shipping method', 'shipqora-woocommerce') ?></option>
 				<?php foreach ($shipping_method_options as $method_id => $method_title) {
 					printf('<option value="%s">%s</option>', esc_attr($method_id), esc_html($method_title));
 				} ?>
@@ -189,7 +189,7 @@ final class Rule_Editor {
 				:options="shipping_instances"
 				v-if="loading || has_shipping_instance"
 				@update="(value) => instance_id = value"
-				:placeholder="'pickup_location' == method_id ? '<?php esc_html_e('All locations', 'shipqora') ?>' : '<?php esc_html_e('All shipping rates', 'shipqora') ?>'">
+				:placeholder="'pickup_location' == method_id ? '<?php esc_html_e('All locations', 'shipqora-woocommerce') ?>' : '<?php esc_html_e('All shipping rates', 'shipqora-woocommerce') ?>'">
 			</select2-dropdown>
 
 			<div class="tools" v-if="!loading">
@@ -208,15 +208,15 @@ final class Rule_Editor {
 	public function screen_editor() {
 		$registered_features = Feature::get_features();
 		$settings_fields = Settings_Fields::get_instance('rule-editor') ?>
-		<div id="shipqora" class="wrap shipqora-rule-editor">
-			<div class="shipqora-loading-app" v-if="loading">
-				<div class="shipqora-loading-spinner"></div>
-				<div><?php esc_html_e('Loading...', 'shipqora') ?></div>
+		<div id="shipqora" class="wrap shipqora-woocommerce-rule-editor">
+			<div class="shipqora-woocommerce-loading-app" v-if="loading">
+				<div class="shipqora-woocommerce-loading-spinner"></div>
+				<div><?php esc_html_e('Loading...', 'shipqora-woocommerce') ?></div>
 				<div class="loading-instruction">
 					<?php
 					printf(
 						/* translators: %1$s: Mail link open, %2$s: Mail link close */
-						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %1$ssend email%2$s us.', 'shipqora'),
+						esc_html__('If it takes more than 30 seconds, please reload the page. If the issue persists, check the browser console for errors and %1$ssend email%2$s us.', 'shipqora-woocommerce'),
 						'<a href="mailto:support@shipqora.com">',
 						'</a>',
 					) ?>
@@ -224,27 +224,27 @@ final class Rule_Editor {
 			</div>
 
 			<template v-if="!loading">
-				<div class="shipqora-wp-heading">
+				<div class="shipqora-woocommerce-wp-heading">
 					<h1 class="wp-heading-inline">
 						<?php printf(
 							/* translators: %s: For ShipQora rule title */
-							esc_html__('Edit Rule%s', 'shipqora'),
+							esc_html__('Edit Rule%s', 'shipqora-woocommerce'),
 							'<strong>{{rule_title}}</strong>'
 						) ?>
 					</h1>
-					<a class="button" href="<?php menu_page_url('shipqora-edit') ?>"><?php esc_html_e('Add a Rule', 'shipqora') ?></a>
+					<a class="button" href="<?php menu_page_url('shipqora-woocommerce-edit') ?>"><?php esc_html_e('Add a Rule', 'shipqora-woocommerce') ?></a>
 				</div>
 				<hr class="wp-header-end">
 
-				<div class="shipqora-editor-container">
-					<div class="rule-title" data-highlight-section="shipqora-rule-title">
-						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Enter rule title (e.g., Free Shipping Over $50)', 'shipqora') ?>">
+				<div class="shipqora-woocommerce-editor-container">
+					<div class="rule-title" data-highlight-section="shipqora-woocommerce-rule-title">
+						<input v-model="title" type="text" placeholder="<?php esc_attr_e('Enter rule title (e.g., Free Shipping Over $50)', 'shipqora-woocommerce') ?>">
 					</div>
 
-					<table class="table-shipqora-form">
+					<table class="table-shipqora-woocommerce-form">
 						<thead>
 							<tr>
-								<td colspan="2"><?php esc_html_e('General Settings', 'shipqora') ?></td>
+								<td colspan="2"><?php esc_html_e('General Settings', 'shipqora-woocommerce') ?></td>
 							</tr>
 						</thead>
 
@@ -252,7 +252,7 @@ final class Rule_Editor {
 					</table>
 
 					<?php foreach ($registered_features as $feature_id => $feature_instance) : ?>
-						<table class="table-shipqora-form" v-if="active_features?.includes('<?php echo esc_attr($feature_id) ?>')" <?php $feature_instance->output_wrapper_attributes() ?>>
+						<table class="table-shipqora-woocommerce-form" v-if="active_features?.includes('<?php echo esc_attr($feature_id) ?>')" <?php $feature_instance->output_wrapper_attributes() ?>>
 							<thead>
 								<tr>
 									<td colspan="2">
@@ -267,7 +267,7 @@ final class Rule_Editor {
 
 					<footer class="form-footer">
 						<button class="button button-primary button-large" :class="{'in-progress': saving}" @click.prevent="save_rule()">
-							<?php esc_html_e('Save ShipQora Rule', 'shipqora') ?>
+							<?php esc_html_e('Save ShipQora Rule', 'shipqora-woocommerce') ?>
 						</button>
 
 						<div class="current-status-info" v-if="id > 0" v-html="get_current_status_info"></div>
@@ -280,9 +280,9 @@ final class Rule_Editor {
 					</footer>
 				</div>
 
-				<div :class="{'shipqora-toast-box': true, shown: show_toast_message}" :data-type="toast_message_type" v-html="toast_message"></div>
+				<div :class="{'shipqora-woocommerce-toast-box': true, shown: show_toast_message}" :data-type="toast_message_type" v-html="toast_message"></div>
 
-				<div class="shipqora-modal" :class="{shown: current_modal !== null}">
+				<div class="shipqora-woocommerce-modal" :class="{shown: current_modal !== null}">
 					<div class="modal-content">
 						<header class="modal-header">
 							<h2 v-if="current_modal == 'cart-option-advanced'">🚀 Unlock Advanced Product Targeting</h2>
@@ -315,7 +315,7 @@ final class Rule_Editor {
 							</template>
 						</div>
 						<footer class="modal-footer">
-							<a href="#" class="button btn-modal-close" @click.prevent="current_modal = null"><?php echo esc_html_e('Back', 'shipqora') ?></a>
+							<a href="#" class="button btn-modal-close" @click.prevent="current_modal = null"><?php echo esc_html_e('Back', 'shipqora-woocommerce') ?></a>
 							<?php Utils::get_lite_button() ?>
 						</footer>
 					</div>

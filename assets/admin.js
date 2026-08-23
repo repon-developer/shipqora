@@ -2,7 +2,7 @@
 	const { __ } = wp.i18n;
 
 	$('#shipqora').on('click', 'table.shipqora_rules_table a.delete-rule', function (e) {
-		const response = confirm(__('Do you want to delete this rule?', 'shipqora'));
+		const response = confirm(__('Do you want to delete this rule?', 'shipqora-woocommerce'));
 		if (!response) {
 			e.preventDefault();
 		}

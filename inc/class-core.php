@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -24,7 +24,7 @@ class Core {
 			add_action('admin_init', array($this, 'activation_callback'));
 		}
 
-		register_activation_hook(SHIPQORA_FILE, array($this, 'activation_callback'));
+		register_activation_hook(SHIPQORA_WOOCOMMERCE_FILE, array($this, 'activation_callback'));
 	}
 
 	/**

@@ -1,7 +1,7 @@
 const { __ } = wp.i18n;
 
 const Cart_Option = {
-	template: '#shipqora-cart-option-component',
+	template: '#shipqora-woocommerce-cart-option-component',
 	props: {
 		cartOptionData: {
 			required: true
@@ -9,7 +9,7 @@ const Cart_Option = {
 
 		optionLabel: {
 			type: String,
-			default: __('of the cart items in the selected {{option_label_lower}}', 'shipqora')
+			default: __('of the cart items in the selected {{option_label_lower}}', 'shipqora-woocommerce')
 		},
 
 		basedOn: {

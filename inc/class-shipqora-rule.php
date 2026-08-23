@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -345,7 +345,7 @@ final class ShipQora_Rule {
 
 		if (false === $result) {
 			wp_send_json_error(array(
-				'message' => esc_html__('Unable to save your data. Please contact support if the issue persists.', 'shipqora')
+				'message' => esc_html__('Unable to save your data. Please contact support if the issue persists.', 'shipqora-woocommerce')
 			));
 		}
 
@@ -413,13 +413,13 @@ final class ShipQora_Rule {
 
 					$method_title = sprintf(
 						/* translators: %s: Zone name */
-						esc_html__('%s - All rates', 'shipqora'),
+						esc_html__('%s - All rates', 'shipqora-woocommerce'),
 						$zone->get_zone_name()
 					);
 
 					if (!in_array($method_slug, $this->shipping_methods)) {
 						$method_slug = $shipping_method->id;
-						$method_title = esc_html__('All rates', 'shipqora');
+						$method_title = esc_html__('All rates', 'shipqora-woocommerce');
 					}
 				}
 

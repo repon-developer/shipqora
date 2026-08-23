@@ -1,15 +1,15 @@
 <?php
 
-namespace ShipQora\Feature;
+namespace ShipQora_WooCommerce\Feature;
 
-use ShipQora\Utils;
-use ShipQora\Feature;
-use ShipQora\Cart_Total;
-use ShipQora\Form_Control;
-use ShipQora\Condition\Main;
-use ShipQora\Settings_Fields;
-use ShipQora\Component_Methods;
-use ShipQora\Component\Cart_Option;
+use ShipQora_WooCommerce\Utils;
+use ShipQora_WooCommerce\Feature;
+use ShipQora_WooCommerce\Cart_Total;
+use ShipQora_WooCommerce\Form_Control;
+use ShipQora_WooCommerce\Condition\Main;
+use ShipQora_WooCommerce\Settings_Fields;
+use ShipQora_WooCommerce\Component_Methods;
+use ShipQora_WooCommerce\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -53,9 +53,9 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			'priority' => 60,
 			'feature_priority' => 20,
 			'base_model' => 'product_based_shipping',
-			'name' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
-			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
-			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipqora'),
+			'name' => esc_html__('Product-Based Shipping Cost', 'shipqora-woocommerce'),
+			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipqora-woocommerce'),
+			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipqora-woocommerce'),
 		);
 	}
 
@@ -188,9 +188,9 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			'priority' => 10,
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => $this->get_model_key('shipping_method_title'),
-			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora'),
-			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
-			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
+			'label' => esc_html__('Overwrite Shipping Method Title', 'shipqora-woocommerce'),
+			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora-woocommerce'),
 		), $this->get_id());
 
 		$settings_fields->add_setting('product_groups_settings_field', array(
@@ -224,7 +224,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				is="vue:feature-product-based-shipping"
 				@update="(value) => <?php echo esc_attr($this->get_model_key('groups')) ?>[layer_no] = value"
 				@delete="delete_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', layer_no)"
-				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipqora') ?>"
+				delete-warning="<?php esc_html_e('Are you sure you want to delete this Product Group?', 'shipqora-woocommerce') ?>"
 				@duplicate="(value, position) => duplicate_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>', value, position)">
 			</template>
 		</tbody>
@@ -241,7 +241,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		$form_control->output_row(); ?>
 		<td class="no-padding" colspan="2">
 			<a style="--inputHeight: 46px;font-size: 16px" @click.prevent="add_collection('<?php echo esc_attr($this->get_model_key('groups')) ?>')" class="button button-primary button-full-width" href="#">
-				<?php esc_html_e('+ Add Product Group', 'shipqora'); ?>
+				<?php esc_html_e('+ Add Product Group', 'shipqora-woocommerce'); ?>
 			</a>
 		</td>
 	<?php
@@ -257,7 +257,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	public function output_component() {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 
-		<?php $this->output_heading_row(esc_html__('Product Group #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Product Group #{{layerNo}}', 'shipqora-woocommerce'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('product') ?>
 		</template>
@@ -275,10 +275,10 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 		unset($cart_based_settings_fields['shipping_method_title']);
 
 		$cart_based_settings_fields['target_products'] = wp_parse_args(array(
-			'label' => esc_html__('Target Products', 'shipqora'),
+			'label' => esc_html__('Target Products', 'shipqora-woocommerce'),
 			'callback' => array($this, 'target_products_setting_field'),
-			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
-			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipqora'),
+			'label_note' => esc_html__('Select which products this tier applies to. Filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Shipping cost will be calculated individually for each matching product item in the cart, and the total will be the sum of those costs.', 'shipqora-woocommerce'),
 		), $cart_based_settings_fields['target_products']);
 
 		$cart_based_settings_fields['exclude_products']['notice_content'] = array(
@@ -306,9 +306,9 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 				cart-option-type="products"
 				:cart-option-data="<?php echo esc_attr($form_control->get_model_key()) ?>"
 				@on-update="(value) => <?php echo esc_attr($form_control->get_model_key()) ?> = value"
-				option-label="<?php esc_html_e('Products in selected {{option_label_lower}}', 'shipqora') ?>">
+				option-label="<?php esc_html_e('Products in selected {{option_label_lower}}', 'shipqora-woocommerce') ?>">
 				<template v-slot:based-on-first-option>
-					<option value=""><?php esc_html_e('All products in cart', 'shipqora') ?></option>
+					<option value=""><?php esc_html_e('All products in cart', 'shipqora-woocommerce') ?></option>
 				</template>
 			</cart-option>
 		</div>

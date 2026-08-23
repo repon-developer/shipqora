@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -324,7 +324,7 @@ final class Form_Control {
 
 		$sub_settings_wrap_table = $this->get_option('sub_settings_wrap_table') !== false;
 		if ($sub_settings_wrap_table) {
-			echo '<table class="table-shipqora-form">';
+			echo '<table class="table-shipqora-woocommerce-form">';
 		}
 
 		$settings_fields = Utils::priority_rearrange($this->options['sub_settings_fields']);

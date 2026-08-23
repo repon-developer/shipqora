@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -72,7 +72,7 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @since 1.0.0
 	 */
 	public function get_bulk_actions() {
-		return array('bulk-delete' => __('Delete', 'shipqora'));
+		return array('bulk-delete' => __('Delete', 'shipqora-woocommerce'));
 	}
 
 	/**
@@ -84,12 +84,12 @@ class Rule_List_Table extends \WP_List_Table {
 	public function get_columns() {
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
-			'title' => esc_html__('Title', 'shipqora'),
-			'shipping_methods' => esc_html__('Shipping Methods', 'shipqora'),
-			'features' => esc_html__('Active Features', 'shipqora'),
-			'status' => esc_html__('Status', 'shipqora'),
-			'updated_at' => esc_html__('Updated', 'shipqora'),
-			'created_at' => esc_html__('Created', 'shipqora'),
+			'title' => esc_html__('Title', 'shipqora-woocommerce'),
+			'shipping_methods' => esc_html__('Shipping Methods', 'shipqora-woocommerce'),
+			'features' => esc_html__('Active Features', 'shipqora-woocommerce'),
+			'status' => esc_html__('Status', 'shipqora-woocommerce'),
+			'updated_at' => esc_html__('Updated', 'shipqora-woocommerce'),
+			'created_at' => esc_html__('Created', 'shipqora-woocommerce'),
 		);
 
 		return $columns;
@@ -123,16 +123,16 @@ class Rule_List_Table extends \WP_List_Table {
 	public function column_title($shipqora_rule) {
 		$edit_url = add_query_arg(array(
 			'id' => $shipqora_rule->get_id(),
-		), menu_page_url('shipqora-edit', false));
+		), menu_page_url('shipqora-woocommerce-edit', false));
 
 		printf('<strong><a class="row-title" href="%s">%s</a></strong>', esc_url($edit_url), esc_html($shipqora_rule->title));
 
-		$menu_page = menu_page_url('shipqora', false);
+		$menu_page = menu_page_url('shipqora-woocommerce', false);
 
-		$row_actions[] = sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit', 'shipqora'));
+		$row_actions[] = sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit', 'shipqora-woocommerce'));
 
 		$delete_url = add_query_arg(array('id' => $shipqora_rule->get_id(), 'delete' => wp_create_nonce('shipqora/rule_delete_nonce')), $menu_page);
-		$row_actions[] = sprintf('<a href="%s" class="delete-rule">%s</a>', esc_url($delete_url), __('Delete', 'shipqora'));
+		$row_actions[] = sprintf('<a href="%s" class="delete-rule">%s</a>', esc_url($delete_url), __('Delete', 'shipqora-woocommerce'));
 
 		echo '<div class="row-actions">' . wp_kses_post(implode(' | ', $row_actions)) . '</div>';
 	}
@@ -237,8 +237,8 @@ class Rule_List_Table extends \WP_List_Table {
 		$all_statuses = Utils::get_statuses();
 
 		$status = !empty($all_statuses[$shipqora_rule->status]['label']) ? $all_statuses[$shipqora_rule->status]['label'] : $shipqora_rule->status; ?>
-		<div class="shipqora-status-wrapper">
-			<span class="shipqora-status shipqora-status-<?php echo esc_attr($shipqora_rule->status) ?>"></span>
+		<div class="shipqora-woocommerce-status-wrapper">
+			<span class="shipqora-woocommerce-status shipqora-woocommerce-status-<?php echo esc_attr($shipqora_rule->status) ?>"></span>
 			<?php echo esc_html($status); ?>
 		</div>
 <?php

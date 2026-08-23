@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora\Condition;
+namespace ShipQora_WooCommerce\Condition;
 
-use ShipQora\Utils;
+use ShipQora_WooCommerce\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -25,7 +25,7 @@ final class Billing_Shipping {
 	 * @return array
 	 */
 	public function get_name() {
-		return esc_html__('Billing & Shipping', 'shipqora');
+		return esc_html__('Billing & Shipping', 'shipqora-woocommerce');
 	}
 
 	/**
@@ -62,7 +62,7 @@ final class Billing_Shipping {
 			'default_value' => array(),
 			'model_key' => 'billing_cities',
 			'template' => array($this, 'billing_shipping_cities'),
-			'label' => esc_html__('Billing Cities', 'shipqora'),
+			'label' => esc_html__('Billing Cities', 'shipqora-woocommerce'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
 
@@ -71,8 +71,8 @@ final class Billing_Shipping {
 			'default_value' => array(),
 			'model_key' => 'billing_states',
 			'template' => array($this, 'billing_shipping_states'),
-			'label' => esc_html__('Billing States', 'shipqora'),
-			'placeholder' => esc_html__('Billing States', 'shipqora'),
+			'label' => esc_html__('Billing States', 'shipqora-woocommerce'),
+			'placeholder' => esc_html__('Billing States', 'shipqora-woocommerce'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
 
@@ -81,7 +81,7 @@ final class Billing_Shipping {
 			'model_key' => 'billing_postal_codes',
 			'template' => array($this, 'postal_code_template'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
-			'label' => esc_html__('Billing Postal Codes', 'shipqora'),
+			'label' => esc_html__('Billing Postal Codes', 'shipqora-woocommerce'),
 		));
 
 		$main_object->add_condition_types('billing_countries', array(
@@ -90,14 +90,14 @@ final class Billing_Shipping {
 			'default_value' => array(),
 			'model_key' => 'billing_countries',
 			'template' => array($this, 'billing_shipping_country'),
-			'label' => esc_html__('Billing Countries', 'shipqora'),
+			'label' => esc_html__('Billing Countries', 'shipqora-woocommerce'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
 
 		$main_object->add_condition_types('shipping_cities', array(
 			'priority' => 200,
 			'model_key' => 'shipping_cities',
-			'label' => esc_html__('Shipping Cities', 'shipqora'),
+			'label' => esc_html__('Shipping Cities', 'shipqora-woocommerce'),
 			'template' => array($this, 'billing_shipping_cities'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
@@ -106,9 +106,9 @@ final class Billing_Shipping {
 			'priority' => 210,
 			'default_value' => array(),
 			'model_key' => 'shipping_states',
-			'label' => esc_html__('Shipping States', 'shipqora'),
+			'label' => esc_html__('Shipping States', 'shipqora-woocommerce'),
 			'template' => array($this, 'billing_shipping_states'),
-			'placeholder' => esc_html__('Shipping States', 'shipqora'),
+			'placeholder' => esc_html__('Shipping States', 'shipqora-woocommerce'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
 		));
 
@@ -118,7 +118,7 @@ final class Billing_Shipping {
 			'model_key' => 'shipping_countries',
 			'template' => array($this, 'billing_shipping_country'),
 			'validate_callback' => array($this, 'validate_billing_shipping'),
-			'label' => esc_html__('Shipping Countries', 'shipqora'),
+			'label' => esc_html__('Shipping Countries', 'shipqora-woocommerce'),
 		));
 	}
 
@@ -214,7 +214,7 @@ final class Billing_Shipping {
 			<select v-model="billing_shipping_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
-			<input v-model="<?php echo esc_attr($condition->get_model_key()) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: Chicago, New York', 'shipqora'); ?>">
+			<input v-model="<?php echo esc_attr($condition->get_model_key()) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: Chicago, New York', 'shipqora-woocommerce'); ?>">
 		</template>
 	<?php
 	}
@@ -253,13 +253,13 @@ final class Billing_Shipping {
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 
-			<input v-model="<?php echo esc_attr($condition->get_model_key()) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipqora'); ?>">
+			<input v-model="<?php echo esc_attr($condition->get_model_key()) ?>" style="width: 400px;" type="text" placeholder="<?php esc_attr_e('Example: 38632, 38???, 38*, T3B 0N3, T3B ???, T3B*', 'shipqora-woocommerce'); ?>">
 			<div class="field-note" style="margin-top: 0;">
 				<?php
 				printf(
 					/* translators: %s: Postal Code guideline */
-					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipqora'),
-					'<strong>' .  esc_html__('Example: T3B 0N3, T3B ???, T3B*', 'shipqora') . '</strong>'
+					esc_html__('Enter one or more ZIP/postal codes separated by commas. Wildcards (* and ?) are supported. %s.', 'shipqora-woocommerce'),
+					'<strong>' .  esc_html__('Example: T3B 0N3, T3B ???, T3B*', 'shipqora-woocommerce') . '</strong>'
 				) ?>
 			</div>
 		</template>
@@ -280,7 +280,7 @@ final class Billing_Shipping {
 
 			<select2-dropdown
 				type="countries"
-				placeholder="<?php esc_html_e('Choose countries', 'shipqora'); ?>"
+				placeholder="<?php esc_html_e('Choose countries', 'shipqora-woocommerce'); ?>"
 				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
 				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
 			</select2-dropdown>

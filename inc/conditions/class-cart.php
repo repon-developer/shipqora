@@ -1,11 +1,11 @@
 <?php
 
-namespace ShipQora\Condition;
+namespace ShipQora_WooCommerce\Condition;
 
-use ShipQora\Utils;
-use ShipQora\Condition;
-use ShipQora\Cart_Total;
-use ShipQora\Component\Cart_Option;
+use ShipQora_WooCommerce\Utils;
+use ShipQora_WooCommerce\Condition;
+use ShipQora_WooCommerce\Cart_Total;
+use ShipQora_WooCommerce\Component\Cart_Option;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -29,7 +29,7 @@ final class Cart {
 	 * @return array
 	 */
 	public function get_name() {
-		return esc_html__('Cart', 'shipqora');
+		return esc_html__('Cart', 'shipqora-woocommerce');
 	}
 
 	/**
@@ -66,13 +66,13 @@ final class Cart {
 	public function register_conditions($main_object) {
 		$weight_option_text = sprintf(
 			/* translators: %s: weight unit of woocommerce */
-			esc_html__('Total weight (%s)', 'shipqora'),
+			esc_html__('Total weight (%s)', 'shipqora-woocommerce'),
 			get_option('woocommerce_weight_unit', 'kg')
 		);
 
 		$dimension_option_text = sprintf(
 			/* translators: %s: volume unit of woocommerce */
-			esc_html__('Total volume (%s)', 'shipqora'),
+			esc_html__('Total volume (%s)', 'shipqora-woocommerce'),
 			get_option('woocommerce_dimension_unit', 'cm')
 		);
 
@@ -80,12 +80,12 @@ final class Cart {
 			'priority' => 10,
 			'template' => array($this, 'cart_common_templates'),
 			'validate_callback' => array($this, 'validate_condition'),
-			'label' => esc_html__('Subtotal', 'shipqora'),
+			'label' => esc_html__('Subtotal', 'shipqora-woocommerce'),
 		));
 
 		$main_object->add_condition_types('cart_total_quantity', array(
 			'priority' => 20,
-			'label' => esc_html__('Total quantity', 'shipqora'),
+			'label' => esc_html__('Total quantity', 'shipqora-woocommerce'),
 			'template' => array($this, 'cart_common_templates'),
 			'validate_callback' => array($this, 'validate_condition'),
 		));
@@ -180,7 +180,7 @@ final class Cart {
 				:cart-option-data="cart_cart_option"
 				@on-update="(value) => cart_cart_option = value">
 				<template v-slot:based-on-first-option>
-					<option value=""><?php esc_html_e('of the cart items', 'shipqora') ?></option>
+					<option value=""><?php esc_html_e('of the cart items', 'shipqora-woocommerce') ?></option>
 				</template>
 			</cart-option>
 		</template>

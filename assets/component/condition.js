@@ -1,7 +1,7 @@
 const { __ } = wp.i18n;
 
 const Condition = {
-	template: '#shipqora-condition',
+	template: '#shipqora-woocommerce-condition',
 
 	props: {
 		condition: {
@@ -41,10 +41,10 @@ const Condition = {
 
 		cart_products_prefix() {
 			const cart_prefixes = {
-				'cart_subtotal': __('Subtotal of', 'shipqora'),
-				'cart_total_quantity': __('Total quantity of', 'shipqora'),
-				'cart_total_weight': __('Total weight of', 'shipqora'),
-				'cart_total_volume': __('Total volume of', 'shipqora'),
+				'cart_subtotal': __('Subtotal of', 'shipqora-woocommerce'),
+				'cart_total_quantity': __('Total quantity of', 'shipqora-woocommerce'),
+				'cart_total_weight': __('Total weight of', 'shipqora-woocommerce'),
+				'cart_total_volume': __('Total volume of', 'shipqora-woocommerce'),
 			}
 
 			return cart_prefixes?.[this.type] ? cart_prefixes?.[this.type] : '';
@@ -69,7 +69,7 @@ const Condition = {
 		},
 
 		delete_condition() {
-			const response = confirm(__('Do you want to delete this condition?', 'shipqora'))
+			const response = confirm(__('Do you want to delete this condition?', 'shipqora-woocommerce'))
 			if (response) {
 				this.$parent.conditions.splice(this.number, 1);
 			}
@@ -78,7 +78,7 @@ const Condition = {
 }
 
 const Condition_Group = {
-	template: '#shipqora-condition-group',
+	template: '#shipqora-woocommerce-condition-group',
 
 	components: {
 		'condition': Condition
@@ -124,7 +124,7 @@ const Condition_Group = {
 		},
 
 		delete_group() {
-			const response = confirm(__('Do you want to delete this condition group?', 'shipqora'))
+			const response = confirm(__('Do you want to delete this condition group?', 'shipqora-woocommerce'))
 			if (response) {
 				this.$emit('delete');
 			}

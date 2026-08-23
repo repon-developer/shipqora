@@ -1,6 +1,9 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
+
+
+
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -18,7 +21,7 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_plugin_version() {
-		return get_plugin_data(SHIPQORA_FILE)['Version'];
+		return get_plugin_data(SHIPQORA_WOOCOMMERCE_FILE)['Version'];
 	}
 
 	/**
@@ -30,21 +33,21 @@ class Utils {
 	public static function get_statuses() {
 		return array(
 			'active' => array(
-				'label' => esc_html__('Active', 'shipqora'),
-				'currently_text' => esc_html__('Currently Live', 'shipqora'),
-				'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipqora'),
+				'label' => esc_html__('Active', 'shipqora-woocommerce'),
+				'currently_text' => esc_html__('Currently Live', 'shipqora-woocommerce'),
+				'description' => esc_html__('Live on checkout for all store customers and visitors.', 'shipqora-woocommerce'),
 			),
 
 			'development' => array(
-				'label' => esc_html__('Test Mode', 'shipqora'),
-				'currently_text' => esc_html__('Currently in Test Mode', 'shipqora'),
-				'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipqora')
+				'label' => esc_html__('Test Mode', 'shipqora-woocommerce'),
+				'currently_text' => esc_html__('Currently in Test Mode', 'shipqora-woocommerce'),
+				'description' => esc_html__('Only active for logged-in administrators (ideal for testing rules safely on live sites).', 'shipqora-woocommerce')
 			),
 
 			'disabled' => array(
-				'label' => esc_html__('Disabled', 'shipqora'),
-				'currently_text' => esc_html__('Currently Disabled', 'shipqora'),
-				'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipqora')
+				'label' => esc_html__('Disabled', 'shipqora-woocommerce'),
+				'currently_text' => esc_html__('Currently Disabled', 'shipqora-woocommerce'),
+				'description' => esc_html__('Deactivated and hidden from checkout for all users.', 'shipqora-woocommerce')
 			),
 		);
 	}
@@ -90,11 +93,11 @@ class Utils {
 	 */
 	public static function is_plugin_screen($screen_name = 'plugin-screen') {
 		if ('rule-editor' === $screen_name) {
-			return strpos(get_current_screen()->id, 'shipqora-edit') !== false;
+			return strpos(get_current_screen()->id, 'shipqora-woocommerce-edit') !== false;
 		}
 
 		if ('rule-list-table' === $screen_name) {
-			return strpos(get_current_screen()->id, 'shipqora') !== false;
+			return strpos(get_current_screen()->id, 'shipqora-woocommerce') !== false;
 		}
 
 		return false;
@@ -108,7 +111,7 @@ class Utils {
 	 */
 	public static function get_hook_name(...$hook_slugs) {
 		$hook_slugs = array_filter($hook_slugs);
-		array_unshift($hook_slugs, 'shipqora');
+		array_unshift($hook_slugs, 'shipqora-woocommerce');
 		return join('/', $hook_slugs);
 	}
 
@@ -210,19 +213,19 @@ class Utils {
 	 */
 	public static function get_operators($operators = array()) {
 		$supported_operators = array(
-			'equal_to' => __('Equal To', 'shipqora'),
-			'less_than' => __('Less than ( < )', 'shipqora'),
-			'less_than_or_equal' => __('Less than or equal to ( <= )', 'shipqora'),
-			'greater_than_or_equal' => __('Greater than or equal to ( >= )', 'shipqora'),
-			'greater_than' => __('Greater than ( > )', 'shipqora'),
-			'between' => __('Between', 'shipqora'),
-			'any_in_list' => __('Any in list', 'shipqora'),
-			'all_in_list' => __('All in list', 'shipqora'),
-			'not_in_list' => __('Not in list', 'shipqora'),
+			'equal_to' => __('Equal To', 'shipqora-woocommerce'),
+			'less_than' => __('Less than ( < )', 'shipqora-woocommerce'),
+			'less_than_or_equal' => __('Less than or equal to ( <= )', 'shipqora-woocommerce'),
+			'greater_than_or_equal' => __('Greater than or equal to ( >= )', 'shipqora-woocommerce'),
+			'greater_than' => __('Greater than ( > )', 'shipqora-woocommerce'),
+			'between' => __('Between', 'shipqora-woocommerce'),
+			'any_in_list' => __('Any in list', 'shipqora-woocommerce'),
+			'all_in_list' => __('All in list', 'shipqora-woocommerce'),
+			'not_in_list' => __('Not in list', 'shipqora-woocommerce'),
 
-			'before' => __('Before', 'shipqora'),
-			'after' => __('After', 'shipqora'),
-			'not_between' => __('Not Between', 'shipqora'),
+			'before' => __('Before', 'shipqora-woocommerce'),
+			'after' => __('After', 'shipqora-woocommerce'),
+			'not_between' => __('Not Between', 'shipqora-woocommerce'),
 		);
 
 		$return_operators = [];
@@ -287,7 +290,7 @@ class Utils {
 				'label_lower' => str_replace('product ', '', $taxonomy_lower_label),
 				'placeholder' => sprintf(
 					/* translators: %s for taxonomy label */
-					esc_html__('Choose one or more %s', 'shipqora'),
+					esc_html__('Choose one or more %s', 'shipqora-woocommerce'),
 					$taxonomy_lower_label
 				)
 			);
@@ -313,7 +316,7 @@ class Utils {
 		$shipping_zones = \WC_Shipping_Zones::get_shipping_zones();
 
 		$global_zone = new \WC_Shipping_Zone(0);
-		$global_zone->set_zone_name(esc_html__('Rest of the world', 'shipqora'));
+		$global_zone->set_zone_name(esc_html__('Rest of the world', 'shipqora-woocommerce'));
 
 		$shipping_zones[] = $global_zone;
 		return $shipping_zones;
@@ -326,10 +329,10 @@ class Utils {
 	 * @return array
 	 */
 	public static function get_lite_button($button_data = null) {
-		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipqora', 'utm_medium' => 'shipqora+rule'));
+		$button_data = wp_parse_args($button_data, array('utm_campaign' => 'shipqora-woocommerce', 'utm_medium' => 'shipqora+rule'));
 		$button_attributes = array_map(fn($value, $attribute) => sprintf('%s="%s"', $attribute, $value), $button_data, array_keys($button_data));
 		$button_link = 'https://shipqora.com/?' . implode('&', $button_attributes);
-		$button = apply_filters('shipqora/lite_button', '<a class="button button-primary" target="_blank" href="' . esc_url($button_link) . '">' . esc_html__('Get Pro', 'shipqora') . '</a>');
+		$button = apply_filters('shipqora/lite_button', '<a class="button button-primary" target="_blank" href="' . esc_url($button_link) . '">' . esc_html__('Get Pro', 'shipqora-woocommerce') . '</a>');
 		if (!empty($button)) {
 			echo wp_kses_post($button);
 		}

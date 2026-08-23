@@ -2,7 +2,7 @@ const $ = jQuery;
 const { __ } = wp.i18n;
 
 const Shipping_Method_Input = {
-	template: '#shipqora-shipping-method-input-component',
+	template: '#shipqora-woocommerce-shipping-method-input-component',
 	props: {
 		shippingMethod: {
 			type: [String, null],
@@ -68,14 +68,14 @@ const Shipping_Method_Input = {
 			this.loading = false;
 
 			if ('pickup_location' == this.method_id && typeof shipping_instances?.[this.instance_id] === 'undefined') {
-				this.shipping_instances[this.instance_id] = { id: this.instance_id, name: __('[Deleted Location]', 'shipqora') }
+				this.shipping_instances[this.instance_id] = { id: this.instance_id, name: __('[Deleted Location]', 'shipqora-woocommerce') }
 			}
 
 			if ('pickup_location' !== this.method_id && this.instance_id && this.instance_id?.length) {
 				const [zone_id] = this.instance_id.split('-');
 				const current_instance = shipping_instances?.[zone_id]?.instances?.[this.instance_id];
 				if (!current_instance) {
-					this.shipping_instances[zone_id].instances[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipqora');
+					this.shipping_instances[zone_id].instances[this.instance_id] = __('[Deleted Method] — Recommended to remove', 'shipqora-woocommerce');
 				}
 			}
 
@@ -85,7 +85,7 @@ const Shipping_Method_Input = {
 
 	methods: {
 		delete_item() {
-			const response = confirm(__('Do you want to delete this shipping method?', 'shipqora'))
+			const response = confirm(__('Do you want to delete this shipping method?', 'shipqora-woocommerce'))
 			if (response) {
 				this.$emit('delete')
 			}
@@ -115,7 +115,7 @@ const Shipping_Method_Input = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong.', 'shipqora'));
+					throw new Error(__('Something went wrong.', 'shipqora-woocommerce'));
 				}
 
 				if (false === result.success) {
@@ -132,7 +132,7 @@ const Shipping_Method_Input = {
 }
 
 const Shipping_Methods_Group = {
-	template: '#shipqora-shipping-methods-group-component',
+	template: '#shipqora-woocommerce-shipping-methods-group-component',
 
 	components: {
 		'shipping-method-input': Shipping_Method_Input

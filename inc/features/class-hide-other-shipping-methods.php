@@ -1,14 +1,14 @@
 <?php
 
-namespace ShipQora\Feature;
+namespace ShipQora_WooCommerce\Feature;
 
-use ShipQora\Utils;
-use ShipQora\Feature;
-use ShipQora\Form_Control;
-use ShipQora\Condition\Main;
-use ShipQora\Settings_Fields;
-use ShipQora\Component_Methods;
-use ShipQora\Global_Settings_Fields;
+use ShipQora_WooCommerce\Utils;
+use ShipQora_WooCommerce\Feature;
+use ShipQora_WooCommerce\Form_Control;
+use ShipQora_WooCommerce\Condition\Main;
+use ShipQora_WooCommerce\Settings_Fields;
+use ShipQora_WooCommerce\Component_Methods;
+use ShipQora_WooCommerce\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -61,9 +61,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'standalone' => true,
 			'feature_priority' => 2,
 			'base_model' => 'hide_other_shipping_methods',
-			'name' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
-			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
-			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipqora'),
+			'name' => esc_html__('Hide Other Shipping Methods', 'shipqora-woocommerce'),
+			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipqora-woocommerce'),
+			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipqora-woocommerce'),
 		);
 	}
 
@@ -129,7 +129,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			null
 		); ?>
 
-		<?php $this->output_heading_row(esc_html__('Shipping Method Hide Configuration #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
+		<?php $this->output_heading_row(esc_html__('Shipping Method Hide Configuration #{{layerNo}}', 'shipqora-woocommerce'), array($this->get_id())) ?>
 		<template v-if="!collapse">
 			<?php $settings_fields->output_fields('general') ?>
 		</template>
@@ -152,12 +152,12 @@ final class Hide_Other_Shipping_Methods extends Feature {
 
 		$settings_fields->add_setting('additional_item_notice', array(
 			'priority' => 100000,
-			'row_attributes' => array('class' => 'shipqora-notice-row'),
+			'row_attributes' => array('class' => 'shipqora-woocommerce-notice-row'),
 			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
 			'notice_content' => array(
 				'title' => '⚡ Unlock Multiple Hiding Configurations',
 				'utm_source' => 'hide+unlimited+shipping+methods',
-				'description' => 'Upgrade to <strong>ShipQora Pro</strong> to create multiple hiding configurations and control shipping method visibility without creating separate rules.',
+				'description' => 'Upgrade to <strong>ShipQora for WooCommerce Pro</strong> to create multiple hiding configurations and control shipping method visibility without creating separate rules.',
 			)
 		), $this->get_id());
 	}
@@ -194,9 +194,9 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'default_value' => array(''),
 			'model_key' => 'shipping_methods',
 			'type' => Form_Control::SHIPPING_METHODS,
-			'label' => esc_html__('Shipping Methods to Hide', 'shipqora'),
-			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipqora'),
-			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipqora'),
+			'label' => esc_html__('Shipping Methods to Hide', 'shipqora-woocommerce'),
+			'label_note' => esc_html__("Select the shipping methods that should be hidden when this rule's conditions are met.", 'shipqora-woocommerce'),
+			'option_note' => esc_html__('Add one or more shipping methods. The selected shipping methods will be hidden.', 'shipqora-woocommerce'),
 		), 'general');
 
 		$settings_fields->add_setting('condition_groups', array(

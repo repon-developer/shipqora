@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora\Condition;
+namespace ShipQora_WooCommerce\Condition;
 
-use ShipQora\Utils;
+use ShipQora_WooCommerce\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -25,7 +25,7 @@ final class Customer {
 	 * @return array
 	 */
 	public function get_name() {
-		return esc_html__('Customer', 'shipqora');
+		return esc_html__('Customer', 'shipqora-woocommerce');
 	}
 
 	/**
@@ -61,7 +61,7 @@ final class Customer {
 			'priority' => 10,
 			'model_key' => 'user_users',
 			'default_value' => array(),
-			'label' => esc_html__('Customers', 'shipqora'),
+			'label' => esc_html__('Customers', 'shipqora-woocommerce'),
 			'template' => array($this, 'users_condition_template'),
 			'validate_callback' => array($this, 'validate_condition'),
 		));
@@ -72,7 +72,7 @@ final class Customer {
 			'model_key' => 'user_logged_in',
 			'template' => array($this, 'logged_in_template'),
 			'validate_callback' => array($this, 'validate_condition'),
-			'label' => esc_html__('Logged In', 'shipqora'),
+			'label' => esc_html__('Logged In', 'shipqora-woocommerce'),
 		));
 	}
 
@@ -126,7 +126,7 @@ final class Customer {
 
 			<select2-dropdown
 				type="customers"
-				placeholder="<?php esc_attr_e('Choose customers', 'shipqora'); ?>"
+				placeholder="<?php esc_attr_e('Choose customers', 'shipqora-woocommerce'); ?>"
 				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
 				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
 			</select2-dropdown>
@@ -143,8 +143,8 @@ final class Customer {
 	public function logged_in_template($condition) { ?>
 		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
 			<select v-model="<?php echo esc_attr($condition->get_model_key()) ?>">
-				<option value="yes"><?php esc_html_e('Yes', 'shipqora'); ?></option>
-				<option value="no"><?php esc_html_e('No', 'shipqora'); ?></option>
+				<option value="yes"><?php esc_html_e('Yes', 'shipqora-woocommerce'); ?></option>
+				<option value="no"><?php esc_html_e('No', 'shipqora-woocommerce'); ?></option>
 			</select>
 		</template>
 <?php

@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora\Condition;
+namespace ShipQora_WooCommerce\Condition;
 
-use ShipQora\Utils;
+use ShipQora_WooCommerce\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -25,7 +25,7 @@ final class Date {
 	 * @return array
 	 */
 	public function get_name() {
-		return esc_html__('Date & Time', 'shipqora');
+		return esc_html__('Date & Time', 'shipqora-woocommerce');
 	}
 
 	/**
@@ -65,14 +65,14 @@ final class Date {
 	public function register_conditions($main_object) {
 		$main_object->add_condition_types('datetime_time', array(
 			'priority' => 10,
-			'label' => esc_html__('Time', 'shipqora'),
+			'label' => esc_html__('Time', 'shipqora-woocommerce'),
 			'template' => array($this, 'time_template'),
 			'validate_callback' => array($this, 'validate_datetime'),
 		));
 
 		$main_object->add_condition_types('datetime_date', array(
 			'priority' => 20,
-			'label' => esc_html__('Date', 'shipqora'),
+			'label' => esc_html__('Date', 'shipqora-woocommerce'),
 			'template' => array($this, 'date_template'),
 			'validate_callback' => array($this, 'validate_datetime'),
 		));
@@ -80,7 +80,7 @@ final class Date {
 		$main_object->add_condition_types('weekly_days', array(
 			'priority' => 30,
 			'model_key' => 'weekly_days',
-			'label' => esc_html__('Weekly Days', 'shipqora'),
+			'label' => esc_html__('Weekly Days', 'shipqora-woocommerce'),
 			'template' => array($this, 'weekly_days_template'),
 			'validate_callback' => array($this, 'validate_datetime'),
 		));
@@ -230,7 +230,7 @@ final class Date {
 
 			<select2-dropdown
 				type="weekly_days"
-				placeholder="<?php esc_attr_e('Select weekly days', 'shipqora'); ?>"
+				placeholder="<?php esc_attr_e('Select weekly days', 'shipqora-woocommerce'); ?>"
 				:initial-value="<?php echo esc_attr($condition->get_model_key()) ?>"
 				@update="(value) => <?php echo esc_attr($condition->get_model_key()) ?> = value">
 			</select2-dropdown>

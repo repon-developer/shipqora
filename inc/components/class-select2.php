@@ -1,8 +1,8 @@
 <?php
 
-namespace ShipQora\Component;
+namespace ShipQora_WooCommerce\Component;
 
-use ShipQora\Utils;
+use ShipQora_WooCommerce\Utils;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -58,10 +58,10 @@ final class Select2 {
 	 * @return void
 	 */
 	public function output_component() { ?>
-		<template id="shipqora-select2-dropdown">
+		<template id="shipqora-woocommerce-select2-dropdown">
 			<span class="select2-safety-span"><!-- dont-remove-this-line-otherwise-show-error --></span>
 
-			<div class="shipqora-loading-spinner" v-if="loading"></div>
+			<div class="shipqora-woocommerce-loading-spinner" v-if="loading"></div>
 			<select
 				v-else
 				v-model="value"
@@ -86,7 +86,7 @@ final class Select2 {
 	 */
 	public function enqueue_scripts($values, $source) {
 		if ('styles' === $source) {
-			$values[] = 'shipqora-select2';
+			$values[] = 'shipqora-woocommerce-select2';
 		}
 
 		if ('scripts' === $source) {
@@ -95,7 +95,7 @@ final class Select2 {
 
 		if ('localize' === $source) {
 			$customer_roles = wp_roles()->role_names;
-			$customer_roles['guest'] = esc_html__('Guest', 'shipqora');
+			$customer_roles['guest'] = esc_html__('Guest', 'shipqora-woocommerce');
 			unset($customer_roles['administrator'], $customer_roles['author']);
 
 			$values['select2'] = array(
@@ -103,13 +103,13 @@ final class Select2 {
 				'options' => array(
 					'user_roles' => $customer_roles,
 					'weekly_days' => array(
-						'sunday' => esc_html__('Sunday', 'shipqora'),
-						'monday' => esc_html__('Monday', 'shipqora'),
-						'tuesday' => esc_html__('Tuesday', 'shipqora'),
-						'wednesday' => esc_html__('Wednesday', 'shipqora'),
-						'thursday' => esc_html__('Thursday', 'shipqora'),
-						'friday' => esc_html__('Friday', 'shipqora'),
-						'saturday' => esc_html__('Saturday', 'shipqora'),
+						'sunday' => esc_html__('Sunday', 'shipqora-woocommerce'),
+						'monday' => esc_html__('Monday', 'shipqora-woocommerce'),
+						'tuesday' => esc_html__('Tuesday', 'shipqora-woocommerce'),
+						'wednesday' => esc_html__('Wednesday', 'shipqora-woocommerce'),
+						'thursday' => esc_html__('Thursday', 'shipqora-woocommerce'),
+						'friday' => esc_html__('Friday', 'shipqora-woocommerce'),
+						'saturday' => esc_html__('Saturday', 'shipqora-woocommerce'),
 					)
 				)
 			);
@@ -210,7 +210,7 @@ final class Select2 {
 			$zone_id = $zone->get_id();
 
 			$zone_instances = array(
-				$zone_id . '-0' => esc_html__('All rates', 'shipqora')
+				$zone_id . '-0' => esc_html__('All rates', 'shipqora-woocommerce')
 			);
 
 			$shipping_methods = $zone->get_shipping_methods();

@@ -4,7 +4,7 @@ const { __ } = wp.i18n;
 let ajax_response_data = null;
 
 const Select2_Dropdown = {
-	template: '#shipqora-select2-dropdown',
+	template: '#shipqora-woocommerce-select2-dropdown',
 
 	props: {
 		type: {
@@ -194,7 +194,7 @@ const Select2_Dropdown = {
 			}).then(async (response) => {
 				const result = await response.json();
 				if (typeof result !== 'object' || !response.ok) {
-					throw new Error(__('Something went wrong.', 'shipqora'));
+					throw new Error(__('Something went wrong.', 'shipqora-woocommerce'));
 				}
 
 				if (false === result.success) {
@@ -223,7 +223,7 @@ const Select2_Dropdown = {
 				$(this.$refs.select2_dropdown).select2({
 					allowClear: true,
 					placeholder: self.placeholder,
-					dropdownCssClass: 'shipqora-select2-dropdown',
+					dropdownCssClass: 'shipqora-woocommerce-select2-dropdown',
 					matchefffffffffffr: function (params, data) {
 						const search_terms = params?.term?.toLowerCase();
 						if (search_terms?.length) {
@@ -267,7 +267,7 @@ const Select2_Dropdown = {
 			$(this.$refs.select2_dropdown).select2({
 				allowClear: true,
 				placeholder: self.placeholder,
-				dropdownCssClass: 'shipqora-select2-dropdown',
+				dropdownCssClass: 'shipqora-woocommerce-select2-dropdown',
 				ajax: {
 					url: shipqora_admin.ajax_url,
 					dataType: "json",

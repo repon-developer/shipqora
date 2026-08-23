@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -72,10 +72,10 @@ final class Admin {
 	 * @return void
 	 */
 	public function load_files() {
-		require_once SHIPQORA_PATH . 'inc/admin/class-rule-list.php';
-		require_once SHIPQORA_PATH . 'inc/admin/class-rule-editor.php';
-		require_once SHIPQORA_PATH . 'inc/admin/class-shipping-editor.php';
-		require_once SHIPQORA_PATH . 'inc/admin/class-global-settings-fields.php';
+		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/admin/class-rule-list.php';
+		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/admin/class-rule-editor.php';
+		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/admin/class-shipping-editor.php';
+		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/admin/class-global-settings-fields.php';
 	}
 
 	/**
@@ -86,22 +86,22 @@ final class Admin {
 	 */
 	public function admin_menu() {
 		add_menu_page(
-			esc_html__('ShipQora Rules', 'shipqora'),
-			esc_html__('ShipQora', 'shipqora'),
+			esc_html__('ShipQora for WooCommerce', 'shipqora-woocommerce'),
+			esc_html__('ShipQora', 'shipqora-woocommerce'),
 			'manage_woocommerce',
-			'shipqora',
+			'shipqora-woocommerce',
 			array($this, 'rule_list_screen'),
 			//'data:image/svg+xml;base64,PHN2ZyBpZD0iR3JvdXBfMSIgZGF0YS1uYW1lPSJHcm91cCAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4Ny40OTciIGhlaWdodD0iNjIuNDk5IiB2aWV3Qm94PSIwIDAgODcuNDk3IDYyLjQ5OSI+CiAgPHBhdGggaWQ9IlBhdGhfMSIgZGF0YS1uYW1lPSJQYXRoIDEiIGQ9Ik02Mi41LDc0LjkwNlY3NWg1LjE0MWExMC45MzgsMTAuOTM4LDAsMSwxLDIwLjk3LDBoLjQyNmE0LjY5LDQuNjksMCwwLDAsNC42ODgtNC42OGwuMDIzLTEzLjUwOGE0LjY4Myw0LjY4MywwLDAsMC0xLjg4Ny0zLjc3bC00LjMzNi0zLjIzSDg3LjUybC0xNC4wMjcuMTQ4YTQuNjgyLDQuNjgyLDAsMCwxLTQuNzM4LTQuNjg3VjI4LjEyMUg2Mi41VjU5LjI3N2wtNTQuNjg4LjA5NC0uOTQxLS4wOTQtLjYyMS0uMlY3MC4zMDlBNC42OTEsNC42OTEsMCwwLDAsMTAuOTQxLDc1aC40NTNhMTAuOTM4LDEwLjkzOCwwLDEsMSwyMC45NywwTDYyLjUwNSw3NC45Wm03LjgxMy0xOC4xSDY3LjE5MWExLjU2MywxLjU2MywwLDAsMSwwLTMuMTI1aDMuMTI1YTEuNTYzLDEuNTYzLDAsMCwxLDAsMy4xMjVaTTIxLjg3OCw2Mi41YTkuMzc1LDkuMzc1LDAsMSwwLDkuMzc1LDkuMzc1QTkuMzc3LDkuMzc3LDAsMCwwLDIxLjg3OCw2Mi41Wm0wLDYuMjVhMy4xMjUsMy4xMjUsMCwxLDEtMy4xMjUsMy4xMjVBMy4xMjQsMy4xMjQsMCwwLDEsMjEuODc4LDY4Ljc1Wm01Ni4yNS02LjI1QTkuMzc1LDkuMzc1LDAsMSwwLDg3LjUsNzEuODc1LDkuMzc3LDkuMzc3LDAsMCwwLDc4LjEyOCw2Mi41Wm0wLDYuMjVBMy4xMjUsMy4xMjUsMCwxLDEsNzUsNzEuODc1LDMuMTI0LDMuMTI0LDAsMCwxLDc4LjEyOCw2OC43NVptNS44Mi0yMi4wMjNMNzguNzYsMzEuMzEzYTQuNjg4LDQuNjg4LDAsMCwwLTQuNDQ1LTMuMTkxSDcxLjg3NFY0NS4yNzRhMS41NTQsMS41NTQsMCwwLDAsMS41NzgsMS41NjNsMTAuNDkyLS4xMTNabS0yNC41Nyw5LjUyM1YyMy40MzlhNC42OTEsNC42OTEsMCwwLDAtNC42ODctNC42ODdIMTAuOTRhNC42OTEsNC42OTEsMCwwLDAtNC42ODgsNC42ODh2MzEuMjVhMS41NjIsMS41NjIsMCwwLDAsMS41NjMsMS41NjNaTTMyLjgxNiwyMy40MzlBMTQuMDYyLDE0LjA2MiwwLDEsMSwxOC43NTQsMzcuNSwxNC4wNjgsMTQuMDY4LDAsMCwxLDMyLjgxNiwyMy40MzlaTTQxLjUsNDQuMTU0QTEwLjkzNiwxMC45MzYsMCwwLDAsMjYuMTYzLDI4LjgyMUwyOC41NDYsMzEuMmExLjU1OSwxLjU1OSwwLDAsMSwxLjE0OC0uNWgxLjU2M3YtMS45M2ExLjU2MywxLjU2MywwLDAsMSwzLjEyNSwwdjEuOThhMy43NSwzLjc1LDAsMCwxLDMuMTI1LDMuN3YuODY3YTMuNzUyLDMuNzUyLDAsMCwxLTEuNywzLjE0NWw1LjcsNS43Wk0yMy45OCwzMS4wNTZBMTAuOTM3LDEwLjkzNywwLDAsMCwzOS4yNjEsNDYuMzM3TDM2LjksNDMuOTc4YTEuNTYzLDEuNTYzLDAsMCwxLS45NTcuMzI0SDM0LjM3OHYxLjkzYTEuNTYzLDEuNTYzLDAsMCwxLTMuMTI1LDB2LTEuOThhMy43NSwzLjc1LDAsMCwxLTMuMTI1LTMuN3YtLjg2N0EzLjc0LDMuNzQsMCwwLDEsMjkuNjIxLDM2LjdabTkuMyw0Ljg4M2guNDczYS42MjcuNjI3LDAsMCwwLC42MjUtLjYyNVYzNC40NWEuNjI0LjYyNCwwLDAsMC0uNjI1LS42MjVIMzEuMTY3Wm0tMS4yOTMsMy4xMjVoLS4xMDlhLjYyNy42MjcsMCwwLDAtLjYyNS42MjV2Ljg2M2EuNjI0LjYyNCwwLDAsMCwuNjI1LjYyNUgzNC4xWiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTYuMjUzIC0xOC43NTEpIiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==',
-			SHIPQORA_URI . 'assets/menu-icon.svg',
+			SHIPQORA_WOOCOMMERCE_URI . 'assets/menu-icon.svg',
 			56
 		);
 
 		$shipqora_menu = add_submenu_page(
-			'shipqora',
-			esc_html__('All ShipQora Rules', 'shipqora'),
-			esc_html__('All Rules', 'shipqora'),
+			'shipqora-woocommerce',
+			esc_html__('All ShipQora Rules', 'shipqora-woocommerce'),
+			esc_html__('All Rules', 'shipqora-woocommerce'),
 			'manage_woocommerce',
-			'shipqora',
+			'shipqora-woocommerce',
 			array($this, 'rule_list_screen'),
 		);
 
@@ -109,17 +109,17 @@ final class Admin {
 			add_action("load-$shipqora_menu", array($this->rule_list, 'screen_option'));
 		}
 
-		$add_rule_label = esc_html__('Add Rule', 'shipqora');
+		$add_rule_label = esc_html__('Add Rule', 'shipqora-woocommerce');
 		if (!empty($_GET['id'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$add_rule_label = esc_html__('Edit Rule', 'shipqora');
+			$add_rule_label = esc_html__('Edit Rule', 'shipqora-woocommerce');
 		}
 
 		add_submenu_page(
-			'shipqora',
-			esc_html__('Edit Rule', 'shipqora'),
+			'shipqora-woocommerce',
+			esc_html__('Edit Rule', 'shipqora-woocommerce'),
 			$add_rule_label,
 			'manage_woocommerce',
-			'shipqora-edit',
+			'shipqora-woocommerce-edit',
 			array(new Rule_Editor(), 'screen_editor')
 		);
 	}
@@ -132,28 +132,28 @@ final class Admin {
 	 */
 	public function save_rule() {
 		if (!isset($_POST['id'])  || !isset($_POST['nonce']) || !isset($_POST['data'])) {
-			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora-woocommerce')));
 		}
 
 		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipqora/save_rule_nonce')) {
-			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora-woocommerce')));
 		}
 
 		if (!current_user_can('manage_woocommerce')) {
-			wp_send_json_error(array('message' => esc_html__('You do not have permission to save data.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('You do not have permission to save data.', 'shipqora-woocommerce')));
 		}
 
 		$rule_data = json_decode(sanitize_text_field(wp_unslash($_POST['data'])), true);
 
 		if (!is_array($rule_data) || empty($rule_data)) {
-			wp_send_json_error(array('message' => esc_html__('Invalid data.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Invalid data.', 'shipqora-woocommerce')));
 		}
 
 		$rule = ShipQora_Rule::get(sanitize_text_field(wp_unslash($_POST['id'])));
 		$rule->set_data($rule_data);
 		$rule->save();
 
-		$new_edit_url = add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipqora-edit'));
+		$new_edit_url = add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipqora-woocommerce-edit'));
 		wp_send_json_success(array(
 			'id' => $rule->get_id(),
 			'edit_url' => $new_edit_url,
@@ -168,19 +168,19 @@ final class Admin {
 	 * @return void
 	 */
 	public function register_scripts() {
-		wp_register_style('shipqora-select2', SHIPQORA_URI . 'assets/select2.min.css', array(), '4.1.0');
-		wp_register_style('shipqora-global', SHIPQORA_URI . 'assets/global.min.css', array(), Utils::get_plugin_version());
+		wp_register_style('shipqora-woocommerce-select2', SHIPQORA_WOOCOMMERCE_URI . 'assets/select2.min.css', array(), '4.1.0');
+		wp_register_style('shipqora-woocommerce-global', SHIPQORA_WOOCOMMERCE_URI . 'assets/global.min.css', array(), Utils::get_plugin_version());
 
 		$style_dependencies = apply_filters('shipqora/admin_enqueue_scripts', array(), 'styles');
-		wp_register_style('shipqora-admin', SHIPQORA_URI . 'assets/admin.min.css', $style_dependencies, Utils::get_plugin_version());
+		wp_register_style('shipqora-woocommerce-admin', SHIPQORA_WOOCOMMERCE_URI . 'assets/admin.min.css', $style_dependencies, Utils::get_plugin_version());
 
-		wp_register_script('shipqora-vue', SHIPQORA_URI . 'assets/vue.min.js', [], '3.5.22', true);
-		wp_register_script('shipqora-sortable', SHIPQORA_URI . 'assets/sortable.min.js', array(), '1.15.6', true);
-		wp_register_script('shipqora-vue-sortable', SHIPQORA_URI . 'assets/vue-sortable.min.js', array('shipqora-vue', 'shipqora-sortable'), '1.0.7', true);
-		wp_register_script('shipqora-rule-editor', SHIPQORA_URI . 'assets/rule-editor.min.js', array('jquery', 'wp-hooks', 'select2', 'wp-i18n', 'shipqora-vue-sortable'), Utils::get_plugin_version(), true);
+		wp_register_script('shipqora-woocommerce-vue', SHIPQORA_WOOCOMMERCE_URI . 'assets/vue.min.js', [], '3.5.22', true);
+		wp_register_script('shipqora-woocommerce-sortable', SHIPQORA_WOOCOMMERCE_URI . 'assets/sortable.min.js', array(), '1.15.6', true);
+		wp_register_script('shipqora-woocommerce-vue-sortable', SHIPQORA_WOOCOMMERCE_URI . 'assets/vue-sortable.min.js', array('shipqora-woocommerce-vue', 'shipqora-woocommerce-sortable'), '1.0.7', true);
+		wp_register_script('shipqora-woocommerce-rule-editor', SHIPQORA_WOOCOMMERCE_URI . 'assets/rule-editor.min.js', array('jquery', 'wp-hooks', 'select2', 'wp-i18n', 'shipqora-woocommerce-vue-sortable'), Utils::get_plugin_version(), true);
 
 		$scripts_dependencies = apply_filters('shipqora/admin_enqueue_scripts', array('jquery'), 'scripts');
-		wp_register_script('shipqora-admin', SHIPQORA_URI . 'assets/admin.min.js', $scripts_dependencies, Utils::get_plugin_version(), true);
+		wp_register_script('shipqora-woocommerce-admin', SHIPQORA_WOOCOMMERCE_URI . 'assets/admin.min.js', $scripts_dependencies, Utils::get_plugin_version(), true);
 	}
 
 	/**
@@ -190,16 +190,16 @@ final class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts() {
-		wp_enqueue_style('shipqora-admin');
-		wp_enqueue_script('shipqora-admin');
-		wp_enqueue_style('shipqora-global');
+		wp_enqueue_style('shipqora-woocommerce-admin');
+		wp_enqueue_script('shipqora-woocommerce-admin');
+		wp_enqueue_style('shipqora-woocommerce-global');
 
 		$localize_script_values = apply_filters('shipqora/admin_enqueue_scripts', array(
 			'ajax_url' => admin_url('admin-ajax.php'),
 			'statuses' => Utils::get_statuses()
 		), 'localize');
 
-		wp_localize_script('shipqora-admin', 'shipqora_admin', $localize_script_values);
+		wp_localize_script('shipqora-woocommerce-admin', 'shipqora_admin', $localize_script_values);
 	}
 
 	/**
@@ -209,7 +209,7 @@ final class Admin {
 	 * @return void
 	 */
 	public function handle_script_loader_tag($tag, $handle, $src) {
-		if ('shipqora-rule-editor' === $handle) {
+		if ('shipqora-woocommerce-rule-editor' === $handle) {
 			$tag = str_replace('<script ', '<script type="module" ', $tag);
 		}
 
@@ -223,15 +223,15 @@ final class Admin {
 	 * @return void
 	 */
 	public function rule_list_screen() {
-		require_once SHIPQORA_PATH . 'inc/admin/class-rules-table.php';
+		require_once SHIPQORA_WOOCOMMERCE_PATH . 'inc/admin/class-rules-table.php';
 
 		$rule_list_table = new Rule_List_Table();
 		$rule_list_table->prepare_items();
 
 		echo '<div id="shipqora" class="wrap">';
-		echo '<div class="shipqora-wp-heading">';
-		echo '<h1 class="wp-heading-inline">' . esc_html__('ShipQora Rules', 'shipqora') . '</h1>';
-		echo '<a href="' . esc_url(menu_page_url('shipqora-edit', false)) . '" class="page-title-action">' . esc_html__('Add new rule', 'shipqora') . '</a>';
+		echo '<div class="shipqora-woocommerce-wp-heading">';
+		echo '<h1 class="wp-heading-inline">' . esc_html__('ShipQora Rules', 'shipqora-woocommerce') . '</h1>';
+		echo '<a href="' . esc_url(menu_page_url('shipqora-woocommerce-edit', false)) . '" class="page-title-action">' . esc_html__('Add new rule', 'shipqora-woocommerce') . '</a>';
 		echo '</div>';
 		echo '<hr class="wp-header-end">';
 

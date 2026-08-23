@@ -1,13 +1,13 @@
 <?php
 
-namespace ShipQora\Feature;
+namespace ShipQora_WooCommerce\Feature;
 
-use ShipQora\Feature;
-use ShipQora\Debugging;
-use ShipQora\Form_Control;
-use ShipQora\Condition\Main;
-use ShipQora\Settings_Fields;
-use ShipQora\Global_Settings_Fields;
+use ShipQora_WooCommerce\Feature;
+use ShipQora_WooCommerce\Debugging;
+use ShipQora_WooCommerce\Form_Control;
+use ShipQora_WooCommerce\Condition\Main;
+use ShipQora_WooCommerce\Settings_Fields;
+use ShipQora_WooCommerce\Global_Settings_Fields;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -48,9 +48,9 @@ final class Hide_Shipping_Methods extends Feature {
 			'standalone' => true,
 			'feature_priority' => 1,
 			'base_model' => 'hide_shipping_methods',
-			'name' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
-			'section_title' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
-			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipqora'),
+			'name' => esc_html__('Hide Selected Shipping Methods', 'shipqora-woocommerce'),
+			'section_title' => esc_html__('Hide Selected Shipping Methods', 'shipqora-woocommerce'),
+			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipqora-woocommerce'),
 		);
 	}
 

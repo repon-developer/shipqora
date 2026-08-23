@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -41,15 +41,15 @@ final class Shipping_Editor {
 	 */
 	public function create_and_attach_rule() {
 		if (!isset($_POST['instance_id'])  || !isset($_POST['nonce'])) {
-			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora-woocommerce')));
 		}
 
 		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipqora/shipping-editor-nonce')) {
-			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora-woocommerce')));
 		}
 
 		if (!current_user_can('manage_woocommerce')) {
-			wp_send_json_error(array('message' => esc_html__('You do not have permission to create and attach ShipQora rule.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('You do not have permission to create and attach ShipQora rule.', 'shipqora-woocommerce')));
 		}
 
 		$instance_id = sanitize_text_field(wp_unslash($_POST['instance_id']));
@@ -79,7 +79,7 @@ final class Shipping_Editor {
 
 		$rule->save();
 
-		$edit_url = add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipqora-edit'));
+		$edit_url = add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipqora-woocommerce-edit'));
 		wp_send_json_success(array(
 			'id' => $rule->get_id(),
 			'url' => $edit_url,
@@ -95,15 +95,15 @@ final class Shipping_Editor {
 	 */
 	public function get_attached_rule() {
 		if (!isset($_POST['instance_id'])  || !isset($_POST['nonce'])) {
-			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Required data missing.', 'shipqora-woocommerce')));
 		}
 
 		if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'shipqora/shipping-editor-nonce')) {
-			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('Security missing.', 'shipqora-woocommerce')));
 		}
 
 		if (!current_user_can('manage_woocommerce')) {
-			wp_send_json_error(array('message' => esc_html__('You do not have permission to create and attach ShipQora rule.', 'shipqora')));
+			wp_send_json_error(array('message' => esc_html__('You do not have permission to create and attach ShipQora rule.', 'shipqora-woocommerce')));
 		}
 
 		$instance_id = sanitize_text_field(wp_unslash($_POST['instance_id']));
@@ -114,7 +114,7 @@ final class Shipping_Editor {
 			$attached_rules[] = array(
 				'title' => $rule->title,
 				'status' => $rule->status,
-				'url' => add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipqora-edit'))
+				'url' => add_query_arg('id', $rule->get_id(), admin_url('admin.php?page=shipqora-woocommerce-edit'))
 			);
 		}
 
@@ -133,8 +133,8 @@ final class Shipping_Editor {
 		}
 
 		$instance_id = isset($_GET['instance_id']) ? sanitize_text_field(wp_unslash($_GET['instance_id'])) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		wp_enqueue_script('shipqora-shipping-editor', SHIPQORA_URI . 'assets/shipping-editor.min.js', array('jquery', 'wp-i18n', 'shipqora-vue'), Utils::get_plugin_version(), true);
-		wp_localize_script('shipqora-shipping-editor', 'shipqora_shipping_editor', array(
+		wp_enqueue_script('shipqora-woocommerce-shipping-editor', SHIPQORA_WOOCOMMERCE_URI . 'assets/shipping-editor.min.js', array('jquery', 'wp-i18n', 'shipqora-woocommerce-vue'), Utils::get_plugin_version(), true);
+		wp_localize_script('shipqora-woocommerce-shipping-editor', 'shipqora_shipping_editor', array(
 			'instance_id' => $instance_id,
 			'nonce' => wp_create_nonce('shipqora/shipping-editor-nonce')
 		));
@@ -161,7 +161,7 @@ final class Shipping_Editor {
 	 */
 	public function add_setting_field($settings) {
 		$settings['shipqora_notice'] = array(
-			'title' => esc_html__('ShipQora', 'shipqora'),
+			'title' => esc_html__('ShipQora', 'shipqora-woocommerce'),
 			'default' => '', //Don't remove this one. Otherwise system will show error
 			'type' => 'shipqora_notice',
 		);
@@ -178,13 +178,13 @@ final class Shipping_Editor {
 	public function output_setting_field() {
 		ob_start(); ?>
 
-		<tr class="shipqora-shipping-editor-notice-row" valign="top">
+		<tr class="shipqora-woocommerce-shipping-editor-notice-row" valign="top">
 			<th scope="row">
-				<label><?php esc_html_e('ShipQora', 'shipqora') ?></label>
+				<label><?php esc_html_e('ShipQora', 'shipqora-woocommerce') ?></label>
 			</th>
 			<td class="forminp">
-				<div id="shipqora" class="shipqora-shipping-editor">
-					<div class="shipqora-content-loader" v-if="loading">
+				<div id="shipqora" class="shipqora-woocommerce-shipping-editor">
+					<div class="shipqora-woocommerce-content-loader" v-if="loading">
 						<div class="loader-item loader-title"></div>
 						<div class="loader-item loader-text"></div>
 						<div class="loader-item loader-text short"></div>
@@ -196,36 +196,36 @@ final class Shipping_Editor {
 								<?php
 								printf(
 									/* translators: %s: for ShipQora Rule */
-									esc_html__('Create a %s to automatically attach this method and unlock custom rate logic and dynamic conditions. Active rules will take precedence over default settings.', 'shipqora'),
+									esc_html__('Create a %s to automatically attach this method and unlock custom rate logic and dynamic conditions. Active rules will take precedence over default settings.', 'shipqora-woocommerce'),
 									'<strong>ShipQora Rule</strong>',
 								) ?>
 							</div>
 							<div class="gap-5"></div>
-							<a @click.prevent="create_rule()" class="button button-primary" :class="{'in-progress': creating_rule}" href="#"><?php esc_html_e('+ Create & Attach ShipQora Rule', 'shipqora') ?></a>
+							<a @click.prevent="create_rule()" class="button button-primary" :class="{'in-progress': creating_rule}" href="#"><?php esc_html_e('+ Create & Attach ShipQora Rule', 'shipqora-woocommerce') ?></a>
 						</template>
 
 						<template v-if="created_rule !== null">
-							<h3><?php esc_html_e('Successfully Created!', 'shipqora') ?></h3>
+							<h3><?php esc_html_e('Successfully Created!', 'shipqora-woocommerce') ?></h3>
 							<div class="description">
 								<?php
 								printf(
 									/* translators: %1$s: ShipQora Rule text, %2$s: URL of created rule */
-									esc_html__('A new %1$s %2$s has been created and linked to this shipping method. Configure your custom conditions and pricing logic to activate it.', 'shipqora'),
+									esc_html__('A new %1$s %2$s has been created and linked to this shipping method. Configure your custom conditions and pricing logic to activate it.', 'shipqora-woocommerce'),
 									'<strong>ShipQora Rule</strong>',
 									'<a :href="created_rule.url" target="_blank" v-html="created_rule?.title"></a>'
 								) ?>
 							</div>
 							<div class="gap-5"></div>
-							<a class="button button-primary" :href="created_rule?.url" target="_blank"><?php esc_html_e('Configure Rule', 'shipqora') ?></a>
+							<a class="button button-primary" :href="created_rule?.url" target="_blank"><?php esc_html_e('Configure Rule', 'shipqora-woocommerce') ?></a>
 						</template>
 
 						<template v-if="attached_rules && attached_rules?.length > 0">
-							<h3><?php esc_html_e('Connected ShipQora Rules', 'shipqora') ?></h3>
+							<h3><?php esc_html_e('Connected ShipQora Rules', 'shipqora-woocommerce') ?></h3>
 							<div class="description">
 								<?php
 								printf(
 									/* translators: %s: for ShipQora Rule, %s: URL of created rule */
-									esc_html__('Below are the custom rules configured for this shipping method. You can enable, disable, or adjust rule priorities from your %s settings.', 'shipqora'),
+									esc_html__('Below are the custom rules configured for this shipping method. You can enable, disable, or adjust rule priorities from your %s settings.', 'shipqora-woocommerce'),
 									'<strong>ShipQora Rule</strong>',
 								) ?>
 								<ul class="attached-rules" v-if="attached_rules?.length">

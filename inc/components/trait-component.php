@@ -1,6 +1,6 @@
 <?php
 
-namespace ShipQora;
+namespace ShipQora_WooCommerce;
 
 if (!defined('ABSPATH')) {
 	exit;
@@ -42,12 +42,12 @@ trait Component_Methods {
 		return array(
 			'duplicate' => array(
 				'priority' => 5,
-				'content' => '<a v-if="!hide_action(\'duplicate\')" @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipqora') . '</a>'
+				'content' => '<a v-if="!hide_action(\'duplicate\')" @click.prevent="duplicate_tier()" class="button button-small" href="#"><span class="dashicons dashicons-admin-page"></span>' . esc_html__('Duplicate', 'shipqora-woocommerce') . '</a>'
 			),
 
 			'delete' => array(
 				'priority' => 10,
-				'content' => '<a v-if="!hide_action(\'delete\')" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipqora') . '</a>'
+				'content' => '<a v-if="!hide_action(\'delete\')" @click.prevent="delete_tier()" class="button button-small" href="#"><span class="dashicons dashicons-trash"></span>' . esc_html__('Delete', 'shipqora-woocommerce') . '</a>'
 			),
 
 			'collapse' => array(

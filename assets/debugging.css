@@ -1,4 +1,4 @@
-#shipqora-debugging-box {
+#shipqora-woocommerce-debugging-box {
 	--round: 8px;
 	--primaryColor: #4C2DC1;
 	--borderColor: #b5b5b5;
@@ -20,27 +20,27 @@
 	box-shadow: 0 0 15px rgba(0, 0, 0, .20);
 }
 
-#shipqora-debugging-box:not(.left) {
+#shipqora-woocommerce-debugging-box:not(.left) {
 	border-right: none;
 	inset-inline-end: 0;
 	border-top-left-radius: var(--round);
 	border-bottom-left-radius: var(--round);
 }
 
-#shipqora-debugging-box ul {
+#shipqora-woocommerce-debugging-box ul {
 	margin: 0;
 	margin-inline-start: 19px;
 }
 
-#shipqora-debugging-box ul>li+li {
+#shipqora-woocommerce-debugging-box ul>li+li {
 	margin-top: 4px;
 }
 
-#shipqora-debugging-box p:last-child {
+#shipqora-woocommerce-debugging-box p:last-child {
 	margin-bottom: 0;
 }
 
-#shipqora-debugging-box .title-bar {
+#shipqora-woocommerce-debugging-box .title-bar {
 	color: #fff;
 	inset-inline: 0;
 	padding: 15px 8px;
@@ -56,49 +56,49 @@
 	writing-mode: sideways-lr;
 }
 
-#shipqora-debugging-box .shipqora-box-body {
+#shipqora-woocommerce-debugging-box .shipqora-woocommerce-box-body {
 	display: flex;
 	flex-direction: column;
 }
 
-#shipqora-debugging-box .shipqora-content {
+#shipqora-woocommerce-debugging-box .shipqora-woocommerce-content {
 	overflow-y: auto;
 	padding-inline: 15px;
 	margin-block: 15px 10px;
 }
 
-#shipqora-debugging-box .store-manager-notice {
+#shipqora-woocommerce-debugging-box .store-manager-notice {
 	padding: 3px 10px;
 	margin-bottom: 10px;
 	border: 1px solid #f98b8b;
 	background-color: #ffd6d6;
 }
 
-#shipqora-debugging-box .store-manager-notice:last-child {
+#shipqora-woocommerce-debugging-box .store-manager-notice:last-child {
 	margin-bottom: 0;
 }
 
-#shipqora-debugging-box h4 {
+#shipqora-woocommerce-debugging-box h4 {
 	font-weight: bold;
 	font-size: 18px;
 	margin-block: 0 5px;
 	letter-spacing: -0.2px;
 }
 
-#shipqora-debugging-box p {
+#shipqora-woocommerce-debugging-box p {
 	margin-bottom: 8px;
 }
 
-#shipqora-debugging-box p+p {
+#shipqora-woocommerce-debugging-box p+p {
 	margin-top: 5px;
 }
 
-#shipqora-debugging-box .shipqora-footer {
+#shipqora-woocommerce-debugging-box .shipqora-woocommerce-footer {
 	display: flex;
 	margin-top: auto;
 }
 
-#shipqora-debugging-box .shipqora-button {
+#shipqora-woocommerce-debugging-box .shipqora-woocommerce-button {
 	flex: 1;
 	color: #fff;
 	text-align: center;
@@ -113,31 +113,31 @@
 	transition: all 200ms;
 }
 
-#shipqora-debugging-box .shipqora-button:hover {
+#shipqora-woocommerce-debugging-box .shipqora-woocommerce-button:hover {
 	background-color: var(--primaryColorLight);
 }
 
-#shipqora-debugging-box.left .shipqora-position-button .left,
-#shipqora-debugging-box:not(.left) .shipqora-position-button .right {
+#shipqora-woocommerce-debugging-box.left .shipqora-woocommerce-position-button .left,
+#shipqora-woocommerce-debugging-box:not(.left) .shipqora-woocommerce-position-button .right {
 	display: none !important;
 }
 
-#shipqora-debugging-box.left {
+#shipqora-woocommerce-debugging-box.left {
 	border-left: none;
 	inset-inline-start: 0;
 	border-top-right-radius: var(--round);
 	border-bottom-right-radius: var(--round);
 }
 
-#shipqora-debugging-box.left .title-bar {
+#shipqora-woocommerce-debugging-box.left .title-bar {
 	order: 99999;
 	writing-mode: sideways-rl;
 }
 
-#shipqora-debugging-box.collapse {
+#shipqora-woocommerce-debugging-box.collapse {
 	height: auto;
 }
 
-#shipqora-debugging-box.collapse .shipqora-box-body {
+#shipqora-woocommerce-debugging-box.collapse .shipqora-woocommerce-box-body {
 	display: none;
 }
