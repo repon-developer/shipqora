@@ -53,6 +53,10 @@ final class General {
 			}
 
 			foreach ($rules as $rule) {
+				if (!$rule->exists() || !$rule->is_feature_enabled('hide-payment-methods')) {
+					continue;
+				}
+
 				$primary_settings = $rule->get_feature_value($feature_object->get_model_key('primary_settings'));
 				$feature_object->set_hideable_methods($primary_settings);
 
@@ -121,12 +125,10 @@ final class General {
 				$rate_feature_object = clone $feature_object;
 
 				foreach ($shipqora_rules as $rule) {
-					if (!$rule->exists() || !$rule->is_feature_enabled($feature_id)) {
-						continue;
-					}
-
-					if (method_exists($rate_feature_object, 'manage_feature')) {
-						$rate_feature_object->manage_feature($rule);
+					if ($rule->exists() && $rule->is_feature_enabled($feature_id)) {
+						if (method_exists($rate_feature_object, 'manage_feature')) {
+							$rate_feature_object->manage_feature($rule);
+						}
 					}
 				}
 
@@ -155,6 +157,10 @@ final class General {
 		foreach ($rates as $shipping_rate) {
 			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
 			foreach ($shipqora_rules as $rule) {
+				if (!$rule->exists() || !$rule->is_feature_enabled('hide-other-shipping-methods')) {
+					continue;
+				}
+
 				$hideable_shippings = $rule->get_feature_value($model_key);
 				$feature_object->set_line_item($hideable_shippings);
 
