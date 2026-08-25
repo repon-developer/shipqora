@@ -250,7 +250,7 @@ final class General {
 
 		<div class="shipqora-notice-box shipqora-notice-box-left">
 			<h3>💡 Looking for Additional Features?</h3>
-			<div class="description">Missing a key feature for your workflow or any improvements? Reach out directly to <a href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">support@shipqora.com</a> and our team will help build it for you.</div>
+			<div class="description">Missing a key feature, custom shipping rule, or specific condition to optimize your workflow? We build ShipQora around real-world merchant needs—reach out to us directly at <a href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">support@shipqora.com</a> and our development team will gladly help build custom features and improvements tailored to your store setup.</div>
 			<div class="gap-10"></div>
 			<a class="button" href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">Request a Feature</a>
 		</div>
