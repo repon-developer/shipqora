@@ -1,6 +1,0 @@
-Plugin name: ShipQora
-Tagline: All-in-One Shipping Solution
-WordPress.org title: ShipQora – All-in-One Shipping, Conditional Rules & Dynamic Rates for WooCommerce
-Plugin slug: shipqora
-Text domain: shipqora
-Website: ideally shipqora.com if available and cleared
