@@ -35,6 +35,8 @@ final class ShipQora_Rule {
 		return self::$rule_instances[$shipqora_rule_id];
 	}
 
+
+
 	/**
 	 * Hold ShipQora Rules of instance id of shipping rate id
 	 * 
@@ -115,6 +117,22 @@ final class ShipQora_Rule {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Get ShipQora Rules by instance ID of shipping method
+	 * 
+	 * @since 1.0.0
+	 * @param int $instance_id
+	 * @return array
+	 */
+	public static function get_by_instance_id($instance_id) {
+		$shipping_method = \WC_Shipping_Zones::get_shipping_method($instance_id);
+		if (!is_a($shipping_method, 'WC_Shipping_Method')) {
+			return array();
+		}
+
+		return self::get_by_rate_id($shipping_method->id . ':' . $shipping_method->instance_id);
 	}
 
 	/**
