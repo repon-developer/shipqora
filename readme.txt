@@ -1,6 +1,6 @@
-=== ShipQora – All-in-One Shipping Solution for WooCommerce ===
+=== ShipQora – All-in-One Shipping Solution, Table Rate Shipping, Weight Based Shipping & Conditional Checkout Rules for WooCommerce ===
 Contributors: ShipQora
-Tags: shipping, woocommerce shipping, conditional shipping, shipping rates, shipping rules
+Tags: shipping, woocommerce shipping, conditional shipping, shipping rates, table rate shipping
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
@@ -13,40 +13,65 @@ All-in-one WooCommerce shipping: hide methods, calculate dynamic costs, adjust r
 
 == Description ==
 
-ShipQora is an all-in-one shipping solution for WooCommerce. It gives store owners rule-based control over shipping methods, shipping costs, and payment method visibility — without writing custom code.
+**ShipQora** is an all-in-one shipping solution for WooCommerce. It gives store owners rule-based control over shipping methods, shipping costs, and payment method visibility — without writing custom code.
 
-Instead of relying on WooCommerce's built-in shipping settings alone, ShipQora lets you build rules that combine selected shipping methods with configurable conditions. When a rule's conditions are met, ShipQora applies the feature you've configured: hiding a shipping method, adjusting its cost, or restricting payment options.
+Instead of relying on WooCommerce's built-in shipping settings alone, **ShipQora** lets you build rules that combine selected shipping methods with configurable conditions. When a rule's conditions are met, **ShipQora** applies the feature you've configured: hiding a shipping method, adjusting its cost, or restricting payment options.
 
-With ShipQora you can:
+**ShipQora** offers flexible **Table Rates Shipping** rules to fit any store setup. Whether you need **Weight Based Shipping**, **Quantity Based Shipping**, or **Volume Based Shipping**, **ShipQora** gives you full control over how rates are calculated at checkout.
 
+**With ShipQora you can:**
+
+* Set up **Table Rates Shipping** using cart totals, item quantities, weight, or volume
+* Create dynamic **Weight Based Shipping** rates with custom weight brackets
+* Charge **Quantity Based Shipping** fees based on item count
+* Calculate **Volume Based Shipping** costs for bulky or oversized products
 * Hide selected shipping methods when specific conditions are met
-* Ensure priority shipping methods take precedence by hiding other methods when they're available
-* Calculate shipping costs dynamically based on cart total, item count, weight, or volume
+* Ensure priority shipping methods take precedence by hiding other methods when available
 * Apply product-specific shipping costs to selected shipping methods
-* Increase, decrease, or override shipping costs based on your own rules
-* Hide payment methods according to configured conditions
+* Increase, decrease, or override shipping costs based on custom rules
+* Hide payment methods (like Cash on Delivery) according to cart conditions
 
 Each rule follows the same simple structure: select the shipping methods the rule applies to, set the conditions that should trigger it, and choose the feature you want applied. This makes it possible to build precise, store-specific shipping logic without editing theme or plugin code.
 
-ShipQora is built for WooCommerce store owners who need more control over checkout shipping and payment options than WooCommerce's default settings provide — whether that's hiding methods for certain order types, pricing shipping dynamically based on cart contents, or limiting payment options under specific conditions.
+**ShipQora** is built for WooCommerce store owners who need more control over checkout shipping and payment options than WooCommerce's default settings provide — whether that's hiding methods for certain order types, pricing shipping dynamically based on cart contents, or limiting payment options under specific conditions.
 
-== Features ==
 
-= Hide Selected Shipping Methods =
+## 🌟 Key Features
+**1. Advanced Conditional Table Rate Shipping**
+Build precise shipping rate matrices that adjust based on what's in the cart:
+
+* **Weight-Based Shipping:** Set custom weight brackets or per-unit weight fees (e.g., $5 for 0–2 kg, $10 for 2–5 kg).
+* **Quantity-Based Shipping:** Charge tiered delivery fees based on total item count.
+* **Volume-Based Shipping:** Calculate shipping costs based on total package volume for bulky or oversized products.
+* **Cart Subtotal Rates:** Adjust rates automatically depending on total order value.
+
+**2. Hide Unwanted Shipping & Payment Methods**
+
+* **Hide Specific Shipping Methods:** Automatically hide shipping options when specific conditions are met (e.g., hide Flat Rate when Free Shipping is active).
+* **Priority Shipping Override:** Display only your preferred shipping method when available, automatically hiding all secondary options.
+* **Conditional Payment Hiding:** Limit or hide payment methods like **Cash on Delivery (COD)** based on cart weight, total, or specific items.
+
+**3. Conditional Dynamic Cost Adjustments & Fee Overrides**
+
+* **Product-Specific Costs:** Add extra handling or shipping fees when heavy or delicate products are added to the cart.
+* **Fee Rules:** Increase, discount, or override default shipping prices dynamically at checkout.
+
+## Features
+## Hide Selected Shipping Methods
 
 Hide specific shipping methods when your configured conditions are met. This gives you precise control over which delivery options customers see at checkout, so you're not stuck showing shipping methods that don't make sense for a given order.
 
-= Hide Other Shipping Methods =
+## Hide Other Shipping Methods
 
-Select the shipping method(s) that should take precedence. When your selected shipping method(s) are available on the checkout page, ShipQora hides the other available shipping methods.
+Select the shipping method(s) that should take precedence. When your selected shipping method(s) are available on the checkout page, **ShipQora** hides the other available shipping methods.
 
 This is useful when you want a specific shipping method to be the customer's only visible option whenever it's available, without manually disabling every alternative method.
 
 **Example use case:** When a premium or preferred shipping method is available for an order, hide the remaining shipping options so customers only see the one you want to highlight.
 
-= Cart-Based Shipping Cost =
+## Cart-Based Shipping Cost
 
-Calculate shipping costs dynamically based on values from the customer's cart. ShipQora currently supports calculating shipping costs using:
+Calculate shipping costs dynamically based on values from the customer's cart. **ShipQora** currently supports calculating shipping costs using:
 
 * Cart total
 * Item count
@@ -56,55 +81,45 @@ Calculate shipping costs dynamically based on values from the customer's cart. S
 This lets you move beyond flat-rate shipping and price shipping according to what's actually in the cart.
 
 **Example use cases:**
+
 * Calculate shipping cost based on the total weight of items in the cart
 * Calculate shipping cost based on the number of items purchased
 * Calculate shipping cost based on the cart's total volume
 * Calculate shipping cost based on the cart subtotal
 
-= Product-Based Shipping Cost =
+## Product-Based Shipping Cost
 
 Apply product-specific shipping costs to selected shipping methods when your configured conditions are met. This is useful for stores where certain products require different shipping handling than the rest of the catalog.
 
 **Example use case:** Apply a specific shipping cost to a shipping method when a particular product (or set of products) is present in the cart.
 
-= Shipping Cost Adjustment =
+## Shipping Cost Adjustment
 
 Increase, decrease, or override the shipping cost of selected shipping methods based on your configured rules. This gives you fine-grained control over final shipping prices beyond what a shipping method's default rate provides.
 
 **Example use cases:**
+
 * Increase shipping cost under certain conditions
 * Decrease shipping cost under certain conditions
 * Override a shipping method's cost entirely under certain conditions
 
-= Hide Payment Methods =
+## Hide Payment Methods
 
 Control the visibility of WooCommerce payment methods at checkout using configurable rules. Hide specific payment methods when your defined conditions are met, giving you the ability to restrict how customers can pay under certain circumstances.
 
-== How It Works ==
 
-ShipQora is built around a simple rule structure:
+### Table Rates Shipping
+Create flexible, rule-based table rate shipping matrixes. Combine cart subtotals, item quantities, total weight, product volume, and customer locations to set accurate shipping charges for every order type.
 
-**Rule → Selected Methods → Conditions → Feature/Action**
+**Weight Based Shipping**
+Set up weight-based shipping rules using custom weight brackets or per-unit weight calculations. Automatically apply different shipping costs when orders reach specific weight thresholds.
 
-1. Create a rule.
-2. Select the shipping method(s) the rule should apply to.
-3. Choose the feature you want to apply (hide methods, adjust cost, hide payment methods, etc.).
-4. Configure the conditions that determine when the rule should run.
-5. Save the rule. ShipQora applies it automatically at checkout whenever the conditions are met.
+**Quantity Based Shipping**
+Configure quantity-based shipping rates to charge fees based on the exact number of items in the cart or set tiered pricing as cart volume increases.
 
-This structure lets you combine multiple features and conditions to build shipping logic tailored to your store, without custom development.
+**Volume Based Shipping**
+Calculate shipping fees based on total package dimensions and volume, making it easy to cover shipping costs for large or bulky items.
 
-== Installation ==
-
-1. Upload the ShipQora plugin files, or install it directly through the WordPress plugins screen.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Make sure WooCommerce is installed and active, as ShipQora requires WooCommerce to function.
-4. Open ShipQora from your WordPress admin area.
-5. Create a new rule.
-6. Select the shipping method(s) the rule should apply to.
-7. Choose the feature you want the rule to perform.
-8. Configure the conditions for the rule.
-9. Save and test the rule at checkout to confirm it behaves as expected.
 
 == Frequently Asked Questions ==
 
@@ -152,22 +167,14 @@ Yes. Shipping Cost Adjustment lets you increase, decrease, or override the shipp
 
 Yes. You can hide specific WooCommerce payment methods when your configured conditions are met.
 
-== Screenshots ==
+= Can ShipQora set up Table Rates Shipping? =
+Yes. Both Cart-Based and Product-Based features support table rate rules using weight, quantity, volume, and order totals.
 
-1. ShipQora rule editor for configuring shipping rules.
-2. Select shipping methods and configure rule features.
-3. Configure conditional shipping rules.
-4. Configure cart-based shipping costs.
-5. Configure product-based shipping costs.
-6. Configure shipping cost adjustments.
-7. Configure payment method visibility rules.
+= Does ShipQora support Weight Based, Quantity Based, or Volume Based Shipping? =
+Yes. You can calculate dynamic shipping costs based on the total weight, total quantity of items, or total volume of products in the cart.
+
 
 == Changelog ==
 
 = 1.0.0 =
-* Initial release.
-
-== Upgrade Notice ==
-
-= 1.0.0 =
-Initial release of ShipQora.
+* Initial release of ShipQora.
