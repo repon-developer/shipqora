@@ -372,4 +372,4 @@ class Main {
 	}
 }
 
-Main::get_instance()->load_files();
+add_action('init', fn() => Main::get_instance()->load_files());

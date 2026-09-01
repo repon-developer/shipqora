@@ -21,10 +21,26 @@ final class General {
 	 * Constructor.
 	 */
 	public function __construct() {
+		add_action('init', array($this, 'load_files'), 1);
 		add_action('init', array($this, 'add_settings_fields'), 1);
 		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 100, 2);
 		add_filter('woocommerce_package_rates', array($this, 'hide_shipping_methods'), 10000, 2);
 		add_filter('woocommerce_available_payment_gateways', array($this, 'hide_payment_methods'));
+	}
+
+	/**
+	 * Load files
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function load_files() {
+		require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-payment-methods.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-shipping-cost-adjustment.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 	}
 
 	/**
