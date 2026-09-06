@@ -45,8 +45,20 @@ final class Hide_Other_Shipping_Methods extends Feature {
 		if (!is_array($data)) {
 			return;
 		}
+	}
 
-		parent::__construct($data);
+	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array(
+			'name' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
+			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
+			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipqora'),
+		);
 	}
 
 	/**
@@ -61,9 +73,6 @@ final class Hide_Other_Shipping_Methods extends Feature {
 			'standalone' => true,
 			'feature_priority' => 2,
 			'base_model' => 'hide_other_shipping_methods',
-			'name' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
-			'section_title' => esc_html__('Hide Other Shipping Methods', 'shipqora'),
-			'description' => esc_html__('If the selected shipping methods(s) are available on the checkout page, hide the other selected shipping methods.', 'shipqora'),
 		);
 	}
 

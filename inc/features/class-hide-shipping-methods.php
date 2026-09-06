@@ -37,6 +37,20 @@ final class Hide_Shipping_Methods extends Feature {
 	}
 
 	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array(
+			'name' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
+			'section_title' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
+			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipqora'),
+		);
+	}
+
+	/**
 	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
@@ -48,9 +62,6 @@ final class Hide_Shipping_Methods extends Feature {
 			'standalone' => true,
 			'feature_priority' => 1,
 			'base_model' => 'hide_shipping_methods',
-			'name' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
-			'section_title' => esc_html__('Hide Selected Shipping Methods', 'shipqora'),
-			'description' => esc_html__('Hide selected shipping methods when the configured conditions are met.', 'shipqora'),
 		);
 	}
 

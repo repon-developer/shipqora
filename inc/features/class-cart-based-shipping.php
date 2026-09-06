@@ -46,6 +46,20 @@ class Cart_Based_Shipping extends Feature {
 	}
 
 	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array(
+			'name' => esc_html__('Cart-Based Shipping Cost', 'shipqora'),
+			'section_title' => esc_html__('Cart-Based Shipping Cost', 'shipqora'),
+			'description' => esc_html__('Calculate shipping costs dynamically based on cart total, item count, weight, or volume.', 'shipqora'),
+		);
+	}
+
+	/**
 	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
@@ -56,9 +70,6 @@ class Cart_Based_Shipping extends Feature {
 			'priority' => 50,
 			'feature_priority' => 10,
 			'base_model' => 'cart_based_shipping',
-			'name' => esc_html__('Cart-Based Shipping Cost', 'shipqora'),
-			'section_title' => esc_html__('Cart-Based Shipping Cost', 'shipqora'),
-			'description' => esc_html__('Calculate shipping costs dynamically based on cart total, item count, weight, or volume.', 'shipqora'),
 		);
 	}
 

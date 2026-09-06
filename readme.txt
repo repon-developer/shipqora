@@ -1,4 +1,4 @@
-=== ShipQora – All-in-One Shipping Solution, Table Rate Shipping, Weight Based Shipping & Conditional Checkout Rules for WooCommerce ===
+=== ShipQora – All-in-One Shipping Solution - Advanced Conditional Shipping for WooCommerce ===
 Contributors: ShipQora
 Tags: shipping, woocommerce shipping, conditional shipping, shipping rates, table rate shipping
 Requires at least: 6.8
@@ -9,116 +9,96 @@ Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-All-in-one WooCommerce shipping: hide methods, calculate dynamic costs, adjust rates, and control payment methods with rules.
+Advanced conditional shipping for WooCommerce. Easily hide shipping methods, adjust dynamic rates, set table rates, and restrict payments.
 
 == Description ==
 
-**ShipQora** is an all-in-one shipping solution for WooCommerce. It gives store owners rule-based control over shipping methods, shipping costs, and payment method visibility — without writing custom code.
+**ShipQora** is an all-in-one plugin built for **advanced conditional shipping for WooCommerce**. It provides e-commerce store owners with complete, automated control over checkout shipping methods, dynamic rates, custom handling fees, and payment gateway visibility — completely code-free.
 
-Instead of relying on WooCommerce's built-in shipping settings alone, **ShipQora** lets you build rules that combine selected shipping methods with configurable conditions. When a rule's conditions are met, **ShipQora** applies the feature you've configured: hiding a shipping method, adjusting its cost, or restricting payment options.
+Managing complex shipping scenarios in WooCommerce often requires custom PHP snippets or multiple single-purpose plugins. **ShipQora** eliminates that friction by combining flexible conditional logic with dynamic rule triggers. Seamlessly create rules based on cart subtotals, package weight, item quantity, volumetric dimensions, destination locations, or specific product categories.
 
-**ShipQora** offers flexible **Table Rates Shipping** rules to fit any store setup. Whether you need **Weight Based Shipping**, **Quantity Based Shipping**, or **Volume Based Shipping**, **ShipQora** gives you full control over how rates are calculated at checkout.
+When a customer reaches checkout, **ShipQora** instantly evaluates their cart and applies your rules: hiding non-applicable delivery options, adjusting shipping costs on the fly, or restricting specific payment gateways (such as Cash on Delivery) to protect your profit margins.
 
-**With ShipQora you can:**
+---
 
-* Set up **Table Rates Shipping** using cart totals, item quantities, weight, or volume
-* Create dynamic **Weight Based Shipping** rates with custom weight brackets
-* Charge **Quantity Based Shipping** fees based on item count
-* Calculate **Volume Based Shipping** costs for bulky or oversized products
-* Hide selected shipping methods when specific conditions are met
-* Ensure priority shipping methods take precedence by hiding other methods when available
-* Apply product-specific shipping costs to selected shipping methods
-* Increase, decrease, or override shipping costs based on custom rules
-* Hide payment methods (like Cash on Delivery) according to cart conditions
+## Why Choose ShipQora for WooCommerce Shipping?
 
-Each rule follows the same simple structure: select the shipping methods the rule applies to, set the conditions that should trigger it, and choose the feature you want applied. This makes it possible to build precise, store-specific shipping logic without editing theme or plugin code.
+Standard WooCommerce shipping options can be restrictive for growing online stores. **ShipQora** bridges the gap between basic flat rates and complex fulfillment requirements:
 
-**ShipQora** is built for WooCommerce store owners who need more control over checkout shipping and payment options than WooCommerce's default settings provide — whether that's hiding methods for certain order types, pricing shipping dynamically based on cart contents, or limiting payment options under specific conditions.
+- **Boost Conversion Rates:** Avoid confusing buyers at checkout by automatically hiding irrelevant, expensive, or duplicate shipping choices.
+- **Protect Profit Margins:** Pass accurate delivery costs to customers by using precise weight, volume, and cart value conditions.
+- **Prevent Unwanted Payment Methods:** Automatically restrict options like Cash on Delivery (COD) for heavy items or high-value orders to reduce order cancellations and fraud risk.
+- **Zero Coding Required:** Set up complex logical rules in minutes through a clean, beginner-friendly interface.
 
+---
 
-## 🌟 Key Features
-**1. Advanced Conditional Table Rate Shipping**
-Build precise shipping rate matrices that adjust based on what's in the cart:
+## Key Features at a Glance
 
-* **Weight-Based Shipping:** Set custom weight brackets or per-unit weight fees (e.g., $5 for 0–2 kg, $10 for 2–5 kg).
-* **Quantity-Based Shipping:** Charge tiered delivery fees based on total item count.
-* **Volume-Based Shipping:** Calculate shipping costs based on total package volume for bulky or oversized products.
-* **Cart Subtotal Rates:** Adjust rates automatically depending on total order value.
+- **Advanced Conditional Shipping & Table Rates:** Build custom shipping rate matrices using **advanced conditional shipping for WooCommerce** that calculate dynamically at checkout.
+- **Weight-Based Shipping Rules:** Charge tiered delivery fees or per-unit weight surcharges based on total order weight (e.g., $5 for 0–2 kg, $10 for 2–5 kg).
+- **Quantity-Based Shipping:** Set custom rate tiers based on the total number of items in the customer's cart.
+- **Volume & Dimension-Based Shipping:** Calculate precise fees based on overall package volume for bulky, oversized, or dimensional products.
+- **Cart Subtotal Rules:** Offer dynamic rate discounts, extra fees, or special rules based on total order spend.
+- **Hide Specific Shipping Methods:** Conceal specific delivery options when criteria are met (e.g., hide standard Flat Rate when Free Shipping criteria are satisfied).
+- **Priority Shipping Override:** Highlight preferred shipping choices and automatically hide all secondary choices when priority methods become available.
+- **Conditional Payment Gateway Hiding:** Automatically hide or show payment methods like Cash on Delivery (COD), Stripe, or PayPal based on cart contents or total weight.
+- **Product-Specific Handling Fees:** Add specialized surcharges when hazardous, fragile, heavy, or cold-chain products are added to the cart.
+- **Dynamic Fee Rules:** Increase, discount, or override standard WooCommerce shipping prices dynamically during checkout.
 
-**2. Hide Unwanted Shipping & Payment Methods**
+---
 
-* **Hide Specific Shipping Methods:** Automatically hide shipping options when specific conditions are met (e.g., hide Flat Rate when Free Shipping is active).
-* **Priority Shipping Override:** Display only your preferred shipping method when available, automatically hiding all secondary options.
-* **Conditional Payment Hiding:** Limit or hide payment methods like **Cash on Delivery (COD)** based on cart weight, total, or specific items.
+## Detailed Feature Breakdown
 
-**3. Conditional Dynamic Cost Adjustments & Fee Overrides**
+### 1. Smart Shipping Method Visibility
+Take granular control over which delivery methods appear in the cart and checkout. 
 
-* **Product-Specific Costs:** Add extra handling or shipping fees when heavy or delicate products are added to the cart.
-* **Fee Rules:** Increase, discount, or override default shipping prices dynamically at checkout.
+- **Hide Unmatched Options:** Automatically hide express delivery for remote postal codes or restrict heavy freight options for low-weight items.
+- **Priority Method Overrides:** Define primary shipping choices that take precedence. When a priority method is triggered, secondary choices are instantly suppressed to streamline customer decision-making.
 
-## Features
-## Hide Selected Shipping Methods
+### 2. Advanced Dynamic Cost Adjustments
+Modify WooCommerce shipping rates dynamically without changing default shipping zone settings:
 
-Hide specific shipping methods when your configured conditions are met. This gives you precise control over which delivery options customers see at checkout, so you're not stuck showing shipping methods that don't make sense for a given order.
+- **Increase Cost:** Automatically attach extra handling charges, oversized item fees, or hazardous materials surcharges.
+- **Decrease Cost:** Reward high-value customers with dynamic shipping discounts when order values hit designated thresholds.
+- **Override Cost:** Replace existing zone rates with custom flat fees or rule-based rates based on precise cart logic.
 
-## Hide Other Shipping Methods
+### 3. Flexible Table Rate Calculations
+Implement custom matrix pricing based on customer shopping behavior:
 
-Select the shipping method(s) that should take precedence. When your selected shipping method(s) are available on the checkout page, **ShipQora** hides the other available shipping methods.
+- **Tiered Weight Rules:** Charge flat or incremental fees for specific weight ranges.
+- **Item Count Tiers:** Charge tiered rates based on total volume (e.g., $2/item for 1–5 items, $1/item for 6+ items).
+- **Package Dimensions:** Use total volumetric calculations to ensure shipping charges accurately cover actual carrier fees for large items.
 
-This is useful when you want a specific shipping method to be the customer's only visible option whenever it's available, without manually disabling every alternative method.
+### 4. Conditional Payment Gateway Control
+Align payment gateway availability with order risks and delivery methods:
 
-**Example use case:** When a premium or preferred shipping method is available for an order, hide the remaining shipping options so customers only see the one you want to highlight.
+- Restrict **Cash on Delivery (COD)** for orders exceeding maximum total weight or spend thresholds.
+- Limit payment options when specific high-risk or digital products are present in the order.
 
-## Cart-Based Shipping Cost
+---
 
-Calculate shipping costs dynamically based on values from the customer's cart. **ShipQora** currently supports calculating shipping costs using:
+## Real-World Use Cases
 
-* Cart total
-* Item count
-* Weight
-* Volume
+- **Scenario 1: Hide Standard Shipping When Free Shipping Appears**
+  Prevent customer confusion by hiding standard flat-rate shipping options as soon as the cart order total qualifies for free shipping.
+- **Scenario 2: Heavy & Bulky Product Surcharges**
+  Automatically add a $15 handling fee to the checkout rate whenever a product from the "Furniture" or "Heavy Equipment" category is in the cart.
+- **Scenario 3: Restricting Cash on Delivery (COD)**
+  Disable COD for orders weighing over 10 kg or for orders with a cart total over $500 to minimize return risk and shipping fees.
+- **Scenario 4: Tiered Volume Discounts**
+  Offer reduced shipping rates as cart item counts grow, driving higher average order values across your shop.
 
-This lets you move beyond flat-rate shipping and price shipping according to what's actually in the cart.
+---
 
-**Example use cases:**
+## How Advanced Conditional Shipping Works in ShipQora
 
-* Calculate shipping cost based on the total weight of items in the cart
-* Calculate shipping cost based on the number of items purchased
-* Calculate shipping cost based on the cart's total volume
-* Calculate shipping cost based on the cart subtotal
+Creating a custom rule takes just three straightforward steps:
 
-## Product-Based Shipping Cost
+1. **Select Shipping Methods:** Choose which default or custom WooCommerce shipping methods your rule should target.
+2. **Define Trigger Conditions:** Set up one or multiple logical conditions using attributes like cart weight, item quantity, total subtotal, package volume, or specific line items.
+3. **Specify the Action:** Tell ShipQora what action to take when conditions match — hide the shipping method, adjust the shipping rate, or hide specific payment options.
 
-Apply product-specific shipping costs to selected shipping methods when your configured conditions are met. This is useful for stores where certain products require different shipping handling than the rest of the catalog.
-
-**Example use case:** Apply a specific shipping cost to a shipping method when a particular product (or set of products) is present in the cart.
-
-## Shipping Cost Adjustment
-
-Increase, decrease, or override the shipping cost of selected shipping methods based on your configured rules. This gives you fine-grained control over final shipping prices beyond what a shipping method's default rate provides.
-
-**Example use cases:**
-
-* Increase shipping cost under certain conditions
-* Decrease shipping cost under certain conditions
-* Override a shipping method's cost entirely under certain conditions
-
-## Hide Payment Methods
-
-Control the visibility of WooCommerce payment methods at checkout using configurable rules. Hide specific payment methods when your defined conditions are met, giving you the ability to restrict how customers can pay under certain circumstances.
-
-
-### Table Rates Shipping
-Create flexible, rule-based table rate shipping matrixes. Combine cart subtotals, item quantities, total weight, product volume, and customer locations to set accurate shipping charges for every order type.
-
-**Weight Based Shipping**
-Set up weight-based shipping rules using custom weight brackets or per-unit weight calculations. Automatically apply different shipping costs when orders reach specific weight thresholds.
-
-**Quantity Based Shipping**
-Configure quantity-based shipping rates to charge fees based on the exact number of items in the cart or set tiered pricing as cart volume increases.
-
-**Volume Based Shipping**
-Calculate shipping fees based on total package dimensions and volume, making it easy to cover shipping costs for large or bulky items.
+---
 
 
 == Frequently Asked Questions ==

@@ -43,6 +43,20 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	}
 
 	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array(
+			'name' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
+			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
+			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipqora'),
+		);
+	}
+
+	/**
 	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
@@ -53,9 +67,6 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 			'priority' => 60,
 			'feature_priority' => 20,
 			'base_model' => 'product_based_shipping',
-			'name' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
-			'section_title' => esc_html__('Product-Based Shipping Cost', 'shipqora'),
-			'description' => esc_html__('Apply product-specific shipping costs to the selected shipping methods when the conditions are met.', 'shipqora'),
 		);
 	}
 

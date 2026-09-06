@@ -57,8 +57,16 @@ final class Main {
 		require_once SHIPQORA_PATH . 'inc/class-shipqora-rule.php';
 		require_once SHIPQORA_PATH . 'inc/class-settings-fields.php';
 		require_once SHIPQORA_PATH . 'inc/conditions/class-main.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-general.php';
 		require_once SHIPQORA_PATH . 'inc/components/trait-component.php';
+
+		/** Load Features */
+		require_once SHIPQORA_PATH . 'inc/features/class-general.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-payment-methods.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-shipping-cost-adjustment.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 
 		/* Load components */
 		require_once SHIPQORA_PATH . 'inc/components/class-select2.php';

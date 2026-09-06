@@ -119,6 +119,27 @@ class Feature {
 	}
 
 	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array();
+	}
+
+	/**
+	 * Get value of feature label
+	 * 
+	 * @since 1.0.0
+	 * @return mixed
+	 */
+	public function get_label($key) {
+		$labels = $this->get_labels();
+		return isset($labels[$key]) ? $labels[$key] : null;
+	}
+
+	/**
 	 * Get feature configuration
 	 * 
 	 * @since 1.0.0

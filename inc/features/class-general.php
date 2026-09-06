@@ -21,26 +21,10 @@ final class General {
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action('init', array($this, 'load_files'), 1);
 		add_action('init', array($this, 'add_settings_fields'), 1);
 		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 100, 2);
 		add_filter('woocommerce_package_rates', array($this, 'hide_shipping_methods'), 10000, 2);
 		add_filter('woocommerce_available_payment_gateways', array($this, 'hide_payment_methods'));
-	}
-
-	/**
-	 * Load files
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function load_files() {
-		require_once SHIPQORA_PATH . 'inc/features/class-cart-based-shipping.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-hide-payment-methods.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-shipping-cost-adjustment.php';
-		require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 	}
 
 	/**
@@ -214,13 +198,14 @@ final class General {
 			)
 		), 'general');
 
+
 		$registered_features = \ShipQora\Feature::get_features();
 
 		$registered_feature_options = array();
 		foreach ($registered_features as $feature_id => $feature_instance) {
 			$registered_feature_options[$feature_id] = array(
-				'label' => $feature_instance->get_configuration('name'),
-				'description' => $feature_instance->get_configuration('description'),
+				'label' => $feature_instance->get_label('name'),
+				'description' => $feature_instance->get_label('description'),
 			);
 		}
 
@@ -274,7 +259,7 @@ final class General {
 			<h3>💡 Looking for Additional Features?</h3>
 			<div class="description">Missing a key feature, custom shipping rule, or specific condition to optimize your workflow? We build ShipQora around real-world merchant needs—reach out to us directly at <a href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">support@shipqora.com</a> and our development team will gladly help build custom features and improvements tailored to your store setup.</div>
 			<div class="gap-10"></div>
-			<a class="button" href="mailto:support@shipqora.com?subject=ShipQora%20Feature%20Request">Request a Feature</a>
+			<a class="button" href="mailto:support@shipqora.com?subject=Request%20a%20New%20Feature">Request a Feature</a>
 		</div>
 <?php
 		$form_control->output_after_input_options();

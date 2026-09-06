@@ -428,7 +428,7 @@ final class Form_Control {
 	 */
 	public function multiple_options() {
 		$options = $this->get_option('options');
-		if (!is_array($options) || count($options) == 0) {
+		if (!is_array($options)) {
 			throw new \Exception('You need to declare options.');
 		}
 

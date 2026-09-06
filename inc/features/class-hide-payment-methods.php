@@ -51,6 +51,20 @@ final class Hide_Payment_Methods extends Feature {
 	}
 
 	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array(
+			'name' => esc_html__('Hide Payment Methods', 'shipqora'),
+			'section_title' => esc_html__('Hide Payment Methods', 'shipqora'),
+			'description' => esc_html__('If the selected shipping method(s) are chosen on the checkout page, hide the selected payment methods.', 'shipqora'),
+		);
+	}
+
+	/**
 	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
@@ -62,9 +76,6 @@ final class Hide_Payment_Methods extends Feature {
 			'standalone' => true,
 			'feature_priority' => 3,
 			'base_model' => 'hide_payment_methods',
-			'name' => esc_html__('Hide Payment Methods', 'shipqora'),
-			'section_title' => esc_html__('Hide Payment Methods', 'shipqora'),
-			'description' => esc_html__('If the selected shipping method(s) are chosen on the checkout page, hide the selected payment methods.', 'shipqora'),
 		);
 	}
 

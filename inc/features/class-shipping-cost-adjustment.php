@@ -34,6 +34,20 @@ final class Shipping_Cost_Adjustment extends Feature {
 	protected $feature_id = 'shipping-cost-adjustment';
 
 	/**
+	 * Get feature labels
+	 * 
+	 * @since 1.0.0
+	 * @return array
+	 */
+	protected function get_labels() {
+		return array(
+			'name' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
+			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
+			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipqora'),
+		);
+	}
+
+	/**
 	 * Configuration of this feature
 	 * 
 	 * @since 1.0.0
@@ -44,9 +58,6 @@ final class Shipping_Cost_Adjustment extends Feature {
 			'priority' => 40,
 			'feature_priority' => 10000,
 			'base_model' => 'shipping_cost_adjustment',
-			'name' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
-			'section_title' => esc_html__('Shipping Cost Adjustment', 'shipqora'),
-			'description' => esc_html__('Increase, decrease, or override shipping costs based on your configured rules.', 'shipqora'),
 		);
 	}
 
