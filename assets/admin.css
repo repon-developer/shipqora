@@ -1199,3 +1199,30 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 #shipqora table.table-shipqora-table-rate {
 	margin-bottom: 5px;
 }
+
+.shipqora-playground {
+	display: flex;
+	gap: 5px;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-top: 8px;
+}
+
+.shipqora-playground .label {
+	flex: 0 0 100%;
+	font-size: 110%;
+}
+
+.shipqora-playground .playground-input {
+	width: 400px;
+}
+
+.shipqora-playground .result {
+	font-weight: bold;
+	margin-inline-start: 5px;
+}
+
+.shipqora-playground .result span {
+	font-size: 120%;
+	color: rgb(0, 90, 0);
+}

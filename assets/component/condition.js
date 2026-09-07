@@ -1,5 +1,7 @@
 const { __ } = wp.i18n;
 
+const condition_helper_model = wp.hooks.applyFilters('shipqora.condition.helper_models', {})
+
 const Condition = {
 	template: '#shipqora-condition',
 
@@ -25,14 +27,18 @@ const Condition = {
 			id: this.$utils.generate_uuid(),
 			cart_products_operator: 'any_in_list',
 			billing_shipping_operator: 'any_in_list',
+			...condition_helper_model,
 			...shipqora_admin.condition_models,
 			...this.condition
 		}
 	},
 
 	computed: {
+		...wp.hooks.applyFilters('shipqora.condition.computed', {}),
 		condition_data() {
-			return JSON.stringify(this.$data);
+			const data = JSON.parse(JSON.stringify(this.$data));
+			Object.keys(condition_helper_model).forEach((key) => delete data[key]);
+			return data;
 		},
 
 		get_states() {
@@ -52,12 +58,12 @@ const Condition = {
 	},
 
 	created() {
-		this.$parent.conditions[this.number] = JSON.parse(this.condition_data)
+		this.$parent.conditions[this.number] = this.condition_data
 	},
 
 	watch: {
 		condition_data(data) {
-			this.$parent.conditions[this.number] = JSON.parse(data)
+			this.$parent.conditions[this.number] = data
 		}
 	},
 
