@@ -893,6 +893,10 @@ ul.shipqora-repeater {
 	flex-direction: column;
 }
 
+.shipqora-repeater.shipqora-repeater-condition-groups select.condition-types {
+	min-width: 221px;
+}
+
 .shipqora-modal {
 	position: fixed;
 	inset: 0;

@@ -95,7 +95,7 @@ final class Billing_Shipping {
 		));
 
 		$main_object->add_condition_types('shipping_cities', array(
-			'priority' => 200,
+			'priority' => 220,
 			'model_key' => 'shipping_cities',
 			'label' => esc_html__('Shipping Cities', 'shipqora'),
 			'template' => array($this, 'billing_shipping_cities'),
@@ -103,7 +103,7 @@ final class Billing_Shipping {
 		));
 
 		$main_object->add_condition_types('shipping_states', array(
-			'priority' => 210,
+			'priority' => 230,
 			'default_value' => array(),
 			'model_key' => 'shipping_states',
 			'label' => esc_html__('Shipping States', 'shipqora'),
@@ -113,7 +113,7 @@ final class Billing_Shipping {
 		));
 
 		$main_object->add_condition_types('shipping_countries', array(
-			'priority' => 230,
+			'priority' => 240,
 			'default_value' => array(),
 			'model_key' => 'shipping_countries',
 			'template' => array($this, 'billing_shipping_country'),
