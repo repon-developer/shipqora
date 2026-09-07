@@ -9,6 +9,7 @@ import Cart_Based_Shipping from './features/cart-based-shipping.min.js?v=@@VERSI
 import Hide_Payment_Methods from './features/hide-payment-methods.min.js?v=@@VERSION';
 import Product_Based_Shipping from './features/product-based-shipping.min.js?v=@@VERSION';
 import Shipping_Cost_Adjustment from './features/shipping-cost-adjustment.min.js?v=@@VERSION';
+import Additional_Shipping_Charge from './features/additional-shipping-charge.min.js?v=@@VERSION';
 import Hide_Other_Shipping_Methods from './features/hide-other-shipping-methods.min.js?v=@@VERSION';
 
 const $ = jQuery;
@@ -33,6 +34,7 @@ const ShipQora_Rule_Editor = {
 		'feature-hide-payment-methods': Hide_Payment_Methods,
 		'feature-product-based-shipping': Product_Based_Shipping,
 		'feature-shipping-cost-adjustment': Shipping_Cost_Adjustment,
+		'feature-additional-shipping-charge': Additional_Shipping_Charge,
 		'feature-hide-other-shipping-methods': Hide_Other_Shipping_Methods,
 	},
 

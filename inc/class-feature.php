@@ -211,6 +211,17 @@ class Feature {
 		return $items;
 	}
 
+
+	/**
+	 * Clear line items
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function clear_line_items() {
+		$this->line_items = array();
+	}
+
 	/**
 	 * Get wrapper attributes of current section
 	 * 

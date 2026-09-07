@@ -66,6 +66,7 @@ final class Main {
 		require_once SHIPQORA_PATH . 'inc/features/class-hide-shipping-methods.php';
 		require_once SHIPQORA_PATH . 'inc/features/class-product-based-shipping.php';
 		require_once SHIPQORA_PATH . 'inc/features/class-shipping-cost-adjustment.php';
+		require_once SHIPQORA_PATH . 'inc/features/class-additional-shipping-charge.php';
 		require_once SHIPQORA_PATH . 'inc/features/class-hide-other-shipping-methods.php';
 
 		/* Load components */

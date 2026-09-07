@@ -494,27 +494,4 @@ final class ShipQora_Rule {
 
 		return isset($feature_settings[$last_key]) ? $feature_settings[$last_key] : $default;
 	}
-
-	// /**
-	//  * Get feature object of provided feature id
-	//  * 
-	//  * @since 1.0.0
-	//  * @return object
-	//  */
-	// public function get_feature_object($feature_id) {
-	// 	$registered_features = Feature::get_features();
-	// 	if (!isset($registered_features[$feature_id])) {
-	// 		return false;
-	// 	}
-
-	// 	$feature_instance = $registered_features[$feature_id];
-	// 	$base_model = $feature_instance->get_configuration('base_model');
-
-	// 	if (!isset($this->feature_settings[$base_model]) || !is_array($this->feature_settings[$base_model])) {
-	// 		return false;
-	// 	}
-
-	// 	$class_name = get_class($feature_instance);
-	// 	return new $class_name($this->feature_settings[$base_model]);
-	// }
 }

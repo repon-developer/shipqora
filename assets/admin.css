@@ -565,6 +565,20 @@ table.table-shipqora-form .field-note code {
 	user-select: all;
 }
 
+table.table-shipqora-form .field-note ul {
+	list-style: disc;
+	margin-block: 0;
+	padding-inline-start: 16px;
+}
+
+table.table-shipqora-form .field-note ul li {
+	margin: 0;
+}
+
+table.table-shipqora-form .field-note ul li+li {
+	margin-top: 2px;
+}
+
 table.table-shipqora-form .field-note.field-note-warning {
 	color: #ab0000;
 }
@@ -733,8 +747,7 @@ ul.shipqora-repeater {
 	column-gap: 3px;
 	flex-wrap: wrap;
 	position: relative;
-	width: fit-content;
-	align-items: center;
+	align-items: flex-start;
 	display: inline-flex;
 	padding-inline-end: 30px !important;
 }
@@ -802,13 +815,14 @@ ul.shipqora-repeater {
 .shipqora-repeater .repeater-item .tools {
 	position: absolute;
 	top: 11px;
-	right: 2px;
+	right: 10px;
 	z-index: 33;
 	display: flex;
 	opacity: 0;
 	visibility: hidden;
-	justify-content: center;
+	align-self: center;
 	transition: all 200ms;
+	justify-content: center;
 }
 
 .shipqora-repeater .repeater-item:hover .tools {
@@ -872,6 +886,11 @@ ul.shipqora-repeater {
 
 .shipqora-repeater.shipqora-repeater-condition-groups select.condition-types optgroup:empty {
 	display: none;
+}
+
+.shipqora-repeater.shipqora-repeater-condition-groups .restricted-shipping-address-condition {
+	display: flex;
+	flex-direction: column;
 }
 
 .shipqora-modal {

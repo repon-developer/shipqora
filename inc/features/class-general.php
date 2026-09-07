@@ -25,6 +25,7 @@ final class General {
 		add_filter('woocommerce_package_rates', array($this, 'modify_shipping_rates'), 100, 2);
 		add_filter('woocommerce_package_rates', array($this, 'hide_shipping_methods'), 10000, 2);
 		add_filter('woocommerce_available_payment_gateways', array($this, 'hide_payment_methods'));
+		add_action('woocommerce_cart_calculate_fees', array($this, 'apply_additional_shipping_charge'));
 	}
 
 	/**
@@ -224,11 +225,13 @@ final class General {
 		foreach ($registered_features as $feature_id => $feature_object) {
 			if (method_exists($feature_object, 'add_editor_settings_fields')) {
 				$feature_object->add_editor_settings_fields($editor_settings_fields);
+				do_action($feature_object->get_hook('editor-settings-fields'), $editor_settings_fields);
 			}
 
 			if (method_exists($feature_object, 'add_component_settings_fields')) {
 				$component_settings_fields = Settings_Fields::get_instance($feature_id);
 				$feature_object->add_component_settings_fields($component_settings_fields);
+				do_action($feature_object->get_hook('component-settings-fields'), $component_settings_fields);
 			}
 		}
 
@@ -276,6 +279,55 @@ final class General {
 		$form_control->output_control();
 		do_action('shipqora/after_statuses_options');
 		$form_control->output_after_input_options();
+	}
+
+	/**
+	 * Apply additional shipping cost
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function apply_additional_shipping_charge($cart) {
+		if (is_admin() && !defined('DOING_AJAX')) {
+			return;
+		}
+
+		$feature_object = Feature::get_feature('additional-shipping-charge');
+		if (!is_a($feature_object, Feature::class)) {
+			return;
+		}
+
+		global $wpdb;
+		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipqora_rules_table);
+		$prepared_sql .= $wpdb->prepare(" AND JSON_CONTAINS(`active_features`, '%s')", wp_json_encode(array('additional-shipping-charge')));
+
+		if (current_user_can('manage_woocommerce')) {
+			$prepared_sql .= " AND status IN ('active', 'development')";
+		} else {
+			$prepared_sql .= " AND status = 'active'";
+		}
+
+		$shipqora_rules = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		if (!is_array($shipqora_rules) || (is_array($shipqora_rules) && count($shipqora_rules) == 0)) {
+			return;
+		}
+
+		$feature_object->clear_line_items();
+		array_walk($shipqora_rules, function ($shipqora_rule) use ($feature_object) {
+			$rule_object = new ShipQora_Rule($shipqora_rule);
+			if ($rule_object->exists()) {
+				if (method_exists($feature_object, 'manage_feature')) {
+					$feature_object->manage_feature($rule_object);
+				}
+			}
+		});
+
+		$charge_item = $feature_object->get_applicable_charge();
+		if (!is_array($charge_item) || !array_key_exists('calculated_charge', $charge_item)) {
+			return;
+		}
+
+		$cart->add_fee($charge_item['order_summary_label'], $charge_item['calculated_charge'], false);
 	}
 }
 
