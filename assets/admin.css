@@ -1208,21 +1208,17 @@ table.table-shipqora-form td:has(>.table-shipping-cost-range-tier) {
 	margin-top: 8px;
 }
 
-.shipqora-playground .label {
-	flex: 0 0 100%;
-	font-size: 110%;
-}
 
 .shipqora-playground .playground-input {
 	width: 400px;
 }
 
 .shipqora-playground .result {
+	color: #bdbdbd;
 	font-weight: bold;
-	margin-inline-start: 5px;
+	margin-inline-start: 2px;
 }
 
-.shipqora-playground .result span {
-	font-size: 120%;
+.shipqora-playground .result.matched {
 	color: rgb(0, 90, 0);
 }
