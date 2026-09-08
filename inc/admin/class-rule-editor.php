@@ -150,6 +150,7 @@ final class Rule_Editor {
 			<ul class="shipqora-repeater" v-if="shipping_methods?.length" style="margin-bottom: 8px;" v-sortable="{options: {handle: '.button-drag-item'}}" @end="order_change">
 				<li class="repeater-item" v-for="(shipping_method, index) in shipping_methods" :key="shipping_method">
 					<shipping-method-input
+						:id="generate_id"
 						:shipping-method="shipping_method"
 						@delete="delete_shipping_method(index)"
 						:draggable="shipping_methods?.length > 1"

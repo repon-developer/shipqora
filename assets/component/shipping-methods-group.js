@@ -4,6 +4,7 @@ const { __ } = wp.i18n;
 const Shipping_Method_Input = {
 	template: '#shipqora-shipping-method-input-component',
 	props: {
+		id: null,
 		shippingMethod: {
 			type: [String, null],
 			default: null,
@@ -25,7 +26,6 @@ const Shipping_Method_Input = {
 			zone_id: zone_id,
 			instance_id: instance_id,
 			shipping_instances: [],
-			id: this.$utils.generate_uuid(),
 		}
 	},
 	created() {
@@ -47,14 +47,13 @@ const Shipping_Method_Input = {
 
 		has_shipping_instance() {
 			return Object.values(this.shipping_instances)?.length
-		}
+		},
 	},
 
 	watch: {
 		zone_id() {
-			this.instance_id = '';
-			this.load_shipping_instances();
 			this.instance_id = this.$utils.get_cache_data(this.chosen_instance_cache_key);
+			this.load_shipping_instances();
 		},
 
 		instance_id(current_instance_id) {
@@ -156,6 +155,10 @@ const Shipping_Methods_Group = {
 				'button-small': this.shipping_methods?.length > 0,
 				'button-large-dashed': !this.shipping_methods?.length
 			}
+		},
+
+		generate_id() {
+			return this.$utils.generate_uuid()
 		}
 	},
 
