@@ -223,6 +223,16 @@ class Feature {
 	}
 
 	/**
+	 * Add line item
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function add_line_item($line_data) {
+		$this->line_items[] = $line_data;
+	}
+
+	/**
 	 * Get wrapper attributes of current section
 	 * 
 	 * @since 1.0.0

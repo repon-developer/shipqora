@@ -125,8 +125,7 @@ final class Additional_Shipping_Charge extends Feature {
 	public function manage_feature($shipqora_rule) {
 		$primary_charge = $shipqora_rule->get_feature_value($this->get_model_key('primary_charge'));
 		$primary_charge['rule_id'] = $shipqora_rule->get_id();
-
-		$this->line_items[] = $primary_charge;
+		$this->add_line_item($primary_charge);
 
 		do_action(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
