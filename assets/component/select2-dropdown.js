@@ -75,16 +75,6 @@ const Select2_Dropdown = {
 				return Object.entries(shipqora_admin.select2.options[this.type]).map(([id, name]) => ({ id, name }))
 			}
 
-			if ('shipping_instances' == this.type && typeof this.options == 'object') {
-				return this.options.map((item) => {
-					if (item?.instances && typeof item?.instances === 'object') {
-						item.sub_options = Object.entries(item.instances).map(([id, name]) => ({ id, name }))
-					}
-
-					return item;
-				})
-			}
-
 			if (Array.isArray(this.options)) {
 				return this.options;
 			}

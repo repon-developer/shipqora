@@ -813,9 +813,7 @@ ul.shipqora-repeater {
 }
 
 .shipqora-repeater .repeater-item .tools {
-	position: absolute;
-	top: 11px;
-	right: 10px;
+	position: relative;
 	z-index: 33;
 	display: flex;
 	opacity: 0;
@@ -823,6 +821,8 @@ ul.shipqora-repeater {
 	align-self: center;
 	transition: all 200ms;
 	justify-content: center;
+	align-self: flex-start;
+	top: 10px;
 }
 
 .shipqora-repeater .repeater-item:hover .tools {

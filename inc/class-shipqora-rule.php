@@ -164,7 +164,7 @@ final class ShipQora_Rule {
 	 * 
 	 * @var array
 	 */
-	private $shipping_methods = [];
+	public $shipping_methods = [];
 
 	/**
 	 * Hold all active features
@@ -255,6 +255,10 @@ final class ShipQora_Rule {
 			} else {
 				$this->{$key} = $value;
 			}
+		}
+
+		if (!is_array($this->shipping_methods)) {
+			$this->shipping_methods = array();
 		}
 
 		if (!is_array($this->active_features)) {
@@ -409,7 +413,7 @@ final class ShipQora_Rule {
 	 * @since 1.0.0
 	 * @return array
 	 */
-	public function get_shipping_methods() {
+	public function get_zones_shipping_methods() {
 		if (empty($this->shipping_methods)) {
 			return array();
 		}

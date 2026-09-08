@@ -19,12 +19,8 @@ class Core {
 	public function __construct() {
 		global $wpdb;
 		$wpdb->shipqora_rules_table = $wpdb->prefix . 'shipqora_rules';
-
-		if (is_multisite()) {
-			add_action('admin_init', array($this, 'activation_callback'));
-		}
-
 		register_activation_hook(SHIPQORA_FILE, array($this, 'activation_callback'));
+		add_action('upgrader_process_complete', array($this, 'upgrade_callback'), 10, 2);
 	}
 
 	/**
@@ -49,6 +45,73 @@ class Core {
 			PRIMARY KEY (`id`),
 			KEY idx_main (status)
 		) {$wpdb->get_charset_collate()};");
+
+		$this->handle_activation_or_upgrade();
+	}
+
+
+	/**
+	 * Cacth upgration hook
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function upgrade_callback($upgrader_object, $options) {
+		if ($options['action'] !== 'update' || $options['type'] !== 'plugin') {
+			return;
+		}
+
+		if (!in_array(SHIPQORA_BASENAME, $options['plugins'], true)) {
+			return;
+		}
+
+		$this->handle_activation_or_upgrade();
+	}
+
+	/**
+	 * Manage after upgrade or activation
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function handle_activation_or_upgrade() {
+		global $wpdb;
+		$old_version = get_option('shipqora_version');
+
+		if (version_compare($old_version, '1.0.2', '<')) {
+			$rules = $wpdb->get_results($wpdb->prepare("Select * FROM %i", $wpdb->shipqora_rules_table), ARRAY_A);
+
+			array_walk($rules, function ($rule_data) {
+				$rule = new ShipQora_Rule($rule_data);
+
+				$shipping_methods = array_map(function ($shipping_method) {
+					list($method_id, $zone_id, $instance_id) = array_pad(preg_split('/[:\-]/', $shipping_method), 3, null);
+					if (is_numeric($method_id)) {
+						return $shipping_method;
+					}
+
+					if ('pickup_location' == $method_id) {
+						$instance_id = $zone_id;
+						$zone_id = 'pickup_location';
+					}
+
+					if (empty($method_id) || is_null($zone_id) || ($zone_id && strlen($zone_id) == 0)) {
+						return false;
+					}
+
+					if (empty($instance_id)) {
+						$instance_id = 0;
+					}
+
+					return $zone_id . ':' . $instance_id;
+				}, $rule->shipping_methods);
+
+				$rule->shipping_methods = array_values(array_filter($shipping_methods));
+				$rule->save();
+			});
+		}
+
+		update_option('shipqora_version', Utils::get_plugin_version());
 	}
 }
 

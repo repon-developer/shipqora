@@ -166,18 +166,12 @@ final class Rule_Editor {
 		<template id="shipqora-shipping-method-input-component">
 			<span class="button-drag-item dashicons dashicons-menu-alt2" v-if="!loading && draggable"></span>
 
-			<?php
-			$shipping_method_options = array();
-			foreach (WC()->shipping()->get_shipping_methods() as $shipping_id => $shipping_method) {
-				$shipping_method_options[$shipping_id] = $shipping_method->get_method_title();
-			}
-
-			unset($shipping_method_options['local_pickup']); ?>
-
-			<select v-model="method_id">
-				<option value=""><?php esc_html_e('Choose a shipping method', 'shipqora') ?></option>
-				<?php foreach ($shipping_method_options as $method_id => $method_title) {
-					printf('<option value="%s">%s</option>', esc_attr($method_id), esc_html($method_title));
+			<select v-model="zone_id">
+				<option value=""><?php esc_html_e('Choose a shipping zone', 'shipqora') ?></option>
+				<option value="pickup_location"><?php esc_html_e('Pickup Location', 'shipqora') ?></option>
+				<option value="-" disabled>-----------------------</option>
+				<?php foreach (Utils::get_shipping_zones() as $zone) {
+					printf('<option value="%s">%s</option>', esc_attr($zone->get_id()), esc_html($zone->get_zone_name()));
 				} ?>
 			</select>
 
@@ -189,7 +183,7 @@ final class Rule_Editor {
 				:options="shipping_instances"
 				v-if="loading || has_shipping_instance"
 				@update="(value) => instance_id = value"
-				:placeholder="'pickup_location' == method_id ? '<?php esc_html_e('All locations', 'shipqora') ?>' : '<?php esc_html_e('All shipping rates', 'shipqora') ?>'">
+				:placeholder="'pickup_location' == zone_id ? '<?php esc_html_e('All locations', 'shipqora') ?>' : '<?php esc_html_e('All shipping methods', 'shipqora') ?>'">
 			</select2-dropdown>
 
 			<div class="tools" v-if="!loading">

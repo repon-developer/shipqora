@@ -144,7 +144,7 @@ class Rule_List_Table extends \WP_List_Table {
 	 * @return void
 	 */
 	public function column_shipping_methods($shipqora_rule) {
-		$shipping_methods = $shipqora_rule->get_shipping_methods();
+		$shipping_methods = $shipqora_rule->get_zones_shipping_methods();
 
 		$html_lists = array();
 

@@ -186,14 +186,13 @@ final class Select2 {
 	 * @return array
 	 */
 	public function get_shipping_instances($meta_data) {
-		$allow_shipping_method = false;
-		if (isset($meta_data['shipping_method'])) {
-			$allow_shipping_method = sanitize_text_field($meta_data['shipping_method']);
+		if (!isset($meta_data['zone_id'])) {
+			return array();
 		}
 
-		if ('pickup_location' == $meta_data['shipping_method']) {
+		$zone_id = sanitize_text_field($meta_data['zone_id']);
+		if ('pickup_location' == $zone_id) {
 			$pickup_locations = get_option('pickup_location_pickup_locations');
-
 			if (is_array($pickup_locations)) {
 				$locations = array_map(function ($location, $location_index) {
 					return array('id' => $location_index, 'name' => $location['name']);
@@ -201,35 +200,21 @@ final class Select2 {
 
 				return $locations;
 			}
+
+			return array();
 		}
 
-		$shipping_zones = Utils::get_shipping_zones();
+		$current_zone = \WC_Shipping_Zones::get_zone($zone_id);
+		if (!is_a($current_zone, 'WC_Shipping_Zone')) {
+			return array();
+		}
 
 		$shipping_instances = array();
-		foreach ($shipping_zones as $zone) {
-			$zone_id = $zone->get_id();
-
-			$zone_instances = array(
-				$zone_id . '-0' => esc_html__('All rates', 'shipqora')
+		foreach ($current_zone->get_shipping_methods() as $shipping_method) {
+			$shipping_instances[] = array(
+				'id' => $shipping_method->instance_id,
+				'name' => $shipping_method->get_title(),
 			);
-
-			$shipping_methods = $zone->get_shipping_methods();
-			foreach ($shipping_methods as $shipping_method) {
-				if ($allow_shipping_method && $shipping_method->id !== $allow_shipping_method) {
-					continue;
-				}
-
-				$option_slug = $zone_id . '-' . $shipping_method->instance_id;
-				$zone_instances[$option_slug] = $shipping_method->get_title();
-			}
-
-			if (count($zone_instances) > 1) {
-				$shipping_instances[] = array(
-					'id' => $zone_id,
-					'name' => $zone->get_zone_name(),
-					'instances' => $zone_instances
-				);
-			}
 		}
 
 		return $shipping_instances;

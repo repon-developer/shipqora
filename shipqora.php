@@ -3,7 +3,7 @@
 /**
  * Plugin Name: ShipQora – All-in-One Shipping Solution for WooCommerce
  * Description: All-in-One Shipping Solution for WooCommerce with conditional rules, dynamic rates, shipping cost adjustments, and advanced shipping controls.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: ShipQora
  * Author URI: https://shipqora.com
  * Text Domain: shipqora
