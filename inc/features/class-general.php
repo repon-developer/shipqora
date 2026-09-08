@@ -163,11 +163,11 @@ final class General {
 				}
 
 				$hideable_shippings = $rule->get_feature_value($model_key);
-				$feature_object->set_line_item($hideable_shippings);
+				$feature_object->add_line_item($hideable_shippings);
 
 				do_action(
 					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
-					$feature_object->get_hook('set-line-item'),
+					$feature_object->get_hook('add-line-item'),
 					$rule,
 					$feature_object
 				);

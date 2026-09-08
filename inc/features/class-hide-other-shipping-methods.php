@@ -107,7 +107,7 @@ final class Hide_Other_Shipping_Methods extends Feature {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function set_line_item($line_item) {
+	public function add_line_item($line_item) {
 		if (!isset($line_item['shipping_methods']) || !is_array($line_item['shipping_methods'])) {
 			return;
 		}

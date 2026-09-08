@@ -62,17 +62,6 @@ final class Shipping_Cost_Adjustment extends Feature {
 	}
 
 	/**
-	 * Set feature line item
-	 * 
-	 * @since 1.0.0
-	 * @return void
-	 */
-	public function set_line_item($line_data, $rule) {
-		$line_data['rule_id'] = $rule->get_id();
-		$this->line_items[] = $line_data;
-	}
-
-	/**
 	 * Manage feature data
 	 * 
 	 * @since 1.0.0
@@ -80,7 +69,7 @@ final class Shipping_Cost_Adjustment extends Feature {
 	 */
 	public function manage_feature($shipqora_rule) {
 		$primary_settings = $shipqora_rule->get_feature_value($this->get_model_key('primary_shipping_cost'));
-		$this->set_line_item($primary_settings, $shipqora_rule);
+		$this->add_line_item($primary_settings, $shipqora_rule);
 
 		do_action(
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
