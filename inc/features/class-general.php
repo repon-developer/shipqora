@@ -297,8 +297,42 @@ final class General {
 		}
 
 		global $wpdb;
+
+		$shipping_methods_sql = array();
+
+		$packages = WC()->shipping()->get_packages();
+		foreach ($packages as $package) {
+			if (is_array($package['rates']) && count($package['rates'])) {
+				foreach ($package['rates'] as $rate_id => $rate) {
+					if ('pickup_location' == $rate->get_method_id()) {
+						$zone_id = 'pickup_location';
+						$method_slug = $rate->get_id();
+					} else {
+						$current_zone = \WC_Shipping_Zones::get_zone_by('instance_id', $rate->get_instance_id());
+						$zone_id = (string) $current_zone->get_id();
+						$method_slug = $zone_id . ':' . $rate->get_instance_id();
+					}
+
+					$shipping_methods_sql[$zone_id] = $wpdb->prepare(
+						'JSON_CONTAINS(shipping_methods, %s)',
+						wp_json_encode($zone_id)
+					);
+
+					$shipping_methods_sql[$method_slug] = $wpdb->prepare(
+						'JSON_CONTAINS(shipping_methods, %s)',
+						wp_json_encode($method_slug)
+					);
+				}
+			}
+		}
+
+		if (empty($shipping_methods_sql)) {
+			return;
+		}
+
 		$prepared_sql = $wpdb->prepare("SELECT * FROM %i WHERE 1 = 1", $wpdb->shipqora_rules_table);
 		$prepared_sql .= $wpdb->prepare(" AND JSON_CONTAINS(`active_features`, '%s')", wp_json_encode(array('additional-shipping-charge')));
+		$prepared_sql .= " AND (" . implode(' OR ', $shipping_methods_sql) . ")";
 
 		if (current_user_can('manage_woocommerce')) {
 			$prepared_sql .= " AND status IN ('active', 'development')";
