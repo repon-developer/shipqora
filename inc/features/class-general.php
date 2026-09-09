@@ -47,7 +47,6 @@ final class General {
 			}
 
 			$chosen_shipping_method = end($shipping_methods);
-
 			$rules = ShipQora_Rule::get_by_rate_id($chosen_shipping_method);
 			if (count($rules) == 0) {
 				return $gateways;
@@ -91,7 +90,7 @@ final class General {
 		}
 
 		return array_filter($rates, function ($shipping_rate) use ($feature_object) {
-			$shipqora_rules = ShipQora_Rule::get_by_rate_id($shipping_rate->get_id());
+			$shipqora_rules = ShipQora_Rule::get_by_instance_id($shipping_rate->get_instance_id());
 
 			$hide_shipping_methos = array();
 			foreach ($shipqora_rules as $key => $rule) {
@@ -120,7 +119,7 @@ final class General {
 		uasort($features, fn($a, $b) => $a->get_feature_priority() <=> $b->get_feature_priority());
 
 		array_walk($rates, function (&$shipping_rate) use ($features) {
-			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = ShipQora_Rule::get_by_instance_id($shipping_rate->get_instance_id());
 
 			foreach ($features as $feature_id => $feature_object) {
 				$rate_feature_object = clone $feature_object;
@@ -156,7 +155,7 @@ final class General {
 
 		$model_key = $feature_object->get_model_key('primary_hideable_shipping');
 		foreach ($rates as $shipping_rate) {
-			$shipqora_rules = ShipQora_Rule::get_by_shipping_rate($shipping_rate);
+			$shipqora_rules = ShipQora_Rule::get_by_instance_id($shipping_rate->get_instance_id());
 			foreach ($shipqora_rules as $rule) {
 				if (!$rule->exists() || !$rule->is_feature_enabled('hide-other-shipping-methods')) {
 					continue;

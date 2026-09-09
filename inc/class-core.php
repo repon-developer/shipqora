@@ -99,11 +99,12 @@ class Core {
 						return false;
 					}
 
+					$method_slug = $zone_id;
 					if (empty($instance_id)) {
-						$instance_id = 0;
+						$method_slug .= ':' . $instance_id;
 					}
 
-					return $zone_id . ':' . $instance_id;
+					return $method_slug;
 				}, $rule->shipping_methods);
 
 				$rule->shipping_methods = array_values(array_filter($shipping_methods));

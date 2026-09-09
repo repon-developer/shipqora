@@ -38,57 +38,44 @@ final class ShipQora_Rule {
 
 
 	/**
-	 * Hold ShipQora Rules of instance id of shipping rate id
+	 * Hold ShipQora Rules of instance id
 	 * 
 	 * @since 1.0.0
 	 * @var array
 	 */
-	private static $shipping_rates = array();
+	private static $shipping_instances = array();
 
 	/**
 	 * Get ShipQora Rules by instance ID of shipping method
 	 * 
 	 * @since 1.0.0
-	 * @param int $rate_id - free_shipping:14
+	 * @param int $instance_id
 	 * @return array
 	 */
-	public static function get_by_rate_id($rate_id) {
-		if (isset(self::$shipping_rates[$rate_id])) {
-			return self::$shipping_rates[$rate_id];
+	public static function get_by_instance_id($instance_id, $pickup_location = false) {
+		$instance_key_id = $instance_id;
+		if ($pickup_location) {
+			$instance_key_id = 'pickup_location_' . $instance_id;
 		}
 
-		$rate_id_data = explode(':', $rate_id);
-		if (empty($rate_id_data[1])) {
-			$rate_id_data[1] = 0;
+		if (isset(self::$shipping_instances[$instance_key_id])) {
+			return self::$shipping_instances[$instance_key_id];
 		}
 
-		$method_id = $rate_id_data[0];
-		$instance_id = $rate_id_data[1];
+		$json_search_data = array('pickup_location', 'pickup_location:' . $instance_id);
 
-		$json_search_data = null;
-		if ('pickup_location' == $method_id) {
-			$json_search_data = array('pickup_location', $rate_id);
-		}
-
-		if ('pickup_location' !== $method_id && $instance_id > 0) {
+		if (false === $pickup_location) {
 			$shipping_method = \WC_Shipping_Zones::get_shipping_method($instance_id);
 			if (!is_a($shipping_method, 'WC_Shipping_Method')) {
 				return array();
 			}
 
 			$current_zone = \WC_Shipping_Zones::get_zone_by('instance_id', $instance_id);
-			if ($current_zone) {
-				$zone_id = $current_zone->get_id();
-				$json_search_data = array(
-					$shipping_method->id,
-					$shipping_method->id . ':' . $zone_id . '-0',
-					$shipping_method->id . ':' . $zone_id . '-' . $instance_id,
-				);
-			}
-		}
 
-		if (empty($json_search_data)) {
-			return array();
+			$json_search_data = array(
+				$current_zone->get_id(),
+				$current_zone->get_id() . ':' . $instance_id,
+			);
 		}
 
 		global $wpdb;
@@ -109,41 +96,27 @@ final class ShipQora_Rule {
 
 		$results = $wpdb->get_results($prepared_sql, ARRAY_A); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		foreach ($results as $rule_data) {
-			self::$shipping_rates[$rate_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
+			self::$shipping_instances[$instance_key_id][$rule_data['id']] = new ShipQora_Rule($rule_data);
 		}
 
-		if (isset(self::$shipping_rates[$rate_id])) {
-			return self::$shipping_rates[$rate_id];
+		if (isset(self::$shipping_instances[$instance_key_id])) {
+			return self::$shipping_instances[$instance_key_id];
 		}
 
 		return array();
 	}
 
 	/**
-	 * Get ShipQora Rules by instance ID of shipping method
+	 * Get ShipQora Rules by shipping rate id
 	 * 
 	 * @since 1.0.0
-	 * @param int $instance_id
 	 * @return array
 	 */
-	public static function get_by_instance_id($instance_id) {
-		$shipping_method = \WC_Shipping_Zones::get_shipping_method($instance_id);
-		if (!is_a($shipping_method, 'WC_Shipping_Method')) {
-			return array();
-		}
-
-		return self::get_by_rate_id($shipping_method->id . ':' . $shipping_method->instance_id);
+	public static function get_by_rate_id($rate_id) {
+		list($method_id, $instance_id) = array_pad(preg_split('/[:]/', $rate_id), 2, null);
+		return self::get_by_instance_id($instance_id, 'pickup_location' == $method_id);
 	}
 
-	/**
-	 * Get rule by shipping rate
-	 * 
-	 * @since 1.0.0
-	 * @return ShipQora_Rule
-	 */
-	public static function get_by_shipping_rate($shipping_rate) {
-		return self::get_by_rate_id($shipping_rate->get_id());
-	}
 
 	/**
 	 * ID of current item
