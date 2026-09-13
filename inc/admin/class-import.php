@@ -87,9 +87,15 @@ final class Import {
 	 * @return array
 	 */
 	public function migrate_condition($condition) {
-		error_log(print_r($condition, true));
 		if (!isset($condition['type'])) {
 			$condition['type'] = '';
+		}
+
+		$condition = apply_filters(Utils::get_hook_name('migrate-condition'), $condition);
+
+		$not_supported_types = array('cart_products:products', 'shipping:zipcode', 'user:roles');
+		if (in_array($condition['type'], $not_supported_types)) {
+			return false;
 		}
 
 		$product_taxonomies = Utils::get_product_taxonomies();
@@ -113,7 +119,6 @@ final class Import {
 			$condition['type'] = str_replace($key, $value, $condition['type']);
 		}
 
-
 		$condition['type'] = str_replace('date:', 'datetime_', $condition['type']);
 		$condition['type'] = str_replace(':', '_', $condition['type']);
 
@@ -123,7 +128,8 @@ final class Import {
 				'cart_total_quantity' => 'cart_operator',
 				'cart_total_weight' => 'cart_operator',
 				'cart_total_volume' => 'cart_operator',
-				'cart_products_product_cat' => 'date_operator',
+				'datetime_time' => 'date_operator',
+				'datetime_date' => 'date_operator',
 				'weekly_days' => 'weekly_days_operator',
 				'billing_cities' => 'billing_shipping_operator',
 				'billing_postal_codes' => 'billing_shipping_operator',
@@ -157,15 +163,12 @@ final class Import {
 			);
 
 			foreach ($product_taxonomies as $tax_slug => $taxonomy) {
-				$model_key = 'cart_products_' . $tax_slug;
+				$model_key = 'cart_' . $tax_slug;
 
-				if ( isset($condition[$model_key]) && is_array($condition[$model_key])) {
+				if (isset($condition[$model_key]) && is_array($condition[$model_key])) {
 					$condition['cart_cart_option'][$taxonomy['model']] = $condition[$model_key];
 				}
 			}
-
-
-			error_log(print_r($based_on, true));
 		}
 
 
@@ -182,13 +185,6 @@ final class Import {
 		foreach ($replace_models as $key => $value) {
 			$condition[$value] = $condition[$key];
 			unset($condition[$key]);
-		}
-
-		$condition = apply_filters(Utils::get_hook_name('migrate-condition'), $condition);
-
-		$not_supported_types = array('user:roles');
-		if (in_array($condition['type'], $not_supported_types)) {
-			return false;
 		}
 
 		return $condition;
