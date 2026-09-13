@@ -292,7 +292,7 @@ class Cart_Based_Shipping extends Feature {
 		$settings_fields = Settings_Fields::get_instance($this->get_id()); ?>
 		<?php $this->output_heading_row(esc_html__('Shipping Cost Configuration #{{layerNo}}', 'shipqora'), array($this->get_id())) ?>
 		<template v-if="!collapse">
-			<?php $settings_fields->output_fields('general') ?>
+			<?php $settings_fields->output_fields('layer') ?>
 		</template>
 	<?php
 	}
@@ -304,30 +304,8 @@ class Cart_Based_Shipping extends Feature {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$settings_fields->add_setting('target_products', array(
-			'priority' => 10,
-			'default_value' => (object) array(),
-			'model_key' => 'target_products',
-			'label' => esc_html__('Target Cart Items', 'shipqora'),
-			'callback' => array($this, 'target_products_setting_field'),
-			'label_note' => esc_html__('Select which cart items this rule applies to. You can target all items or filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
-			'option_note' => esc_html__('Shipping cost calculations will apply to the combined total (subtotal, quantity, weight, or volume) of all matching items found in the cart.', 'shipqora'),
-		), 'general');
-
-		$settings_fields->add_setting('exclude_products', array(
-			'priority' => 10.10,
-			'conditions' => array('layerNo == 1'),
-			'row_attributes' => array('class' => 'shipqora-notice-row'),
-			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
-			'notice_content' => array(
-				'title' => '🚀 Want to Exclude Specific Products?',
-				'utm_source' => 'exclude+products',
-				'description' => 'Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Cart Items"</strong> and create more precise shipping cost with greater control over product eligibility.',
-			)
-		), 'general');
-
 		$settings_fields->add_setting('priority', array(
-			'priority' => 30,
+			'priority' => 10,
 			'default_value' => '',
 			'placeholder' => '10',
 			'model_key' => 'priority',
@@ -336,19 +314,42 @@ class Cart_Based_Shipping extends Feature {
 			'attributes' => array('min' => '0', 'step' => '1'),
 			'label_note' => esc_html__('Determines which rule wins when rules target the same shipping method. Highest priority number applies; ties go to the latest rule.', 'shipqora'),
 			'option_note' => esc_html__('Defines the execution priority when multiple rules share the same shipping method selected in "Apply to Shipping Methods". If multiple rules match, only the rule with the highest priority number will be applied. If priorities are equal, the latest created rule (highest Rule ID) takes precedence.', 'shipqora'),
-		), 'general');
+		), 'layer');
 
+		$settings_fields->add_setting('target_products', array(
+			'priority' => 20,
+			'default_value' => (object) array(),
+			'model_key' => 'target_products',
+			'label' => esc_html__('Target Cart Items', 'shipqora'),
+			'callback' => array($this, 'target_products_setting_field'),
+			'label_note' => esc_html__('Select which cart items this rule applies to. You can target all items or filter by specific categories, tags, shipping classes, or taxonomies.', 'shipqora'),
+			'option_note' => esc_html__('Shipping cost calculations will apply to the combined total (subtotal, quantity, weight, or volume) of all matching items found in the cart.', 'shipqora'),
+		), 'layer');
+
+		$settings_fields->add_setting('exclude_products', array(
+			'priority' => 20.10,
+			'conditions' => array('layerNo == 1'),
+			'row_attributes' => array('class' => 'shipqora-notice-row'),
+			'callback' => array(Global_Settings_Fields::class, 'notice_setting_field'),
+			'notice_content' => array(
+				'title' => '🚀 Want to Exclude Specific Products?',
+				'utm_source' => 'exclude+products',
+				'description' => 'Upgrade to the <strong>Pro version</strong> to exclude selected products from the <strong>"Target Cart Items"</strong> and create more precise shipping cost with greater control over product eligibility.',
+			)
+		), 'layer');
+
+		
 		$settings_fields->add_setting('shipping_method_title', array(
-			'priority' => 40,
+			'priority' => 30,
 			'type' => Form_Control::TEXTBOX,
 			'model_key' => 'shipping_method_title',
 			'label' => esc_html__('Shipping Method Title', 'shipqora'),
 			'label_note' => esc_html__('Enter a custom title to replace the original shipping method name on the cart and checkout pages.', 'shipqora'),
 			'option_note' => esc_html__('Leave blank to keep the original shipping method name.', 'shipqora'),
-		), 'general');
+		), 'layer');
 
 		$settings_fields->add_setting('shipping_cost_calculation', array(
-			'priority' => 50,
+			'priority' => 40,
 			'label' => esc_html__('Calculate Cost By', 'shipqora'),
 			'callback' => array($this, 'shipping_cost_setting_field'),
 			'label_note' => esc_html__('Choose how the shipping cost is determined based on cart subtotal, item quantity, total weight, or total volume.', 'shipqora'),
@@ -359,11 +360,12 @@ class Cart_Based_Shipping extends Feature {
 				'calculation_value' => '',
 				'calculate_basis' => 'fixed_amount',
 				'calculation_type' => 'per_unit_or_percentage',
+				'extra_charge' => '',
 			)
-		), 'general');
+		), 'layer');
 
 		$settings_fields->add_setting('primary_table_rate_settings', array(
-			'priority' => 60,
+			'priority' => 50,
 			'label' => esc_html__('Table Rates', 'shipqora'),
 			'label_note' => esc_html__('Configure volume, weight, subtotal, or quantity thresholds and fee calculations for each tier range. Use condition groups to control which rates apply.', 'shipqora'),
 			'conditions' => array('calculate_basis !== "fixed_amount" && calculation_type == "table_rates"'),
@@ -381,14 +383,27 @@ class Cart_Based_Shipping extends Feature {
 					'callback' => array($this, 'new_table_rates_notice'),
 				)
 			)
-		), 'general');
+		), 'layer');
+
+		$settings_fields->add_setting('shipping_cost_limit', array(
+			'priority' => 70,
+			'label' => esc_html__('Cost Limits', 'shipqora'),
+			'callback' => array($this, 'shipping_cost_limit_setting_field'),
+			'conditions' => array('!["free_shipping", "fixed_amount"].includes(calculate_basis)'),
+			'label_note' => esc_html__('Set the minimum and maximum allowed shipping cost after calculated the shipping cost.', 'shipqora'),
+			'option_note' => esc_html__('Leave blank for no limit.', 'shipqora'),
+			'related_models' => array(
+				'min_cost' => '',
+				'max_cost' => '',
+			)
+		), 'layer');
 
 		$settings_fields->add_setting('condition_groups', array(
 			'priority' => 1000,
 			'default_value' => array(),
 			'model_key' => 'condition_groups',
 			'callback' => array(Global_Settings_Fields::class, 'condition_group_setting_field'),
-		), 'general');
+		), 'layer');
 	}
 
 	/**
@@ -426,20 +441,29 @@ class Cart_Based_Shipping extends Feature {
 		<div class="field-row">
 			<select v-model="calculate_basis">
 				<option value="fixed_amount"><?php esc_html_e('Fixed Amount', 'shipqora') ?></option>
+				<option value="free_shipping"><?php esc_html_e('Free Shipping', 'shipqora') ?></option>
+				<option value="--" disabled>--------------------</option>
 				<option v-for="(metric, value) in calculation_metrics" :value="value" :key="value">{{metric.long_title}}</option>
 			</select>
 
-			<select v-model="calculation_type" v-if="calculate_basis !== 'fixed_amount'">
-				<option value="per_unit_or_percentage">
-					<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipqora') ?></template>
-					<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
-				</option>
-				<option value="table_rates"><?php esc_html_e('Table Rates', 'shipqora') ?></option>
-			</select>
+			<template v-if="calculate_basis !== 'free_shipping'">
+				<select v-model="calculation_type" v-if="calculate_basis !== 'fixed_amount'">
+					<option value="per_unit_or_percentage">
+						<template v-if="'subtotal' == calculate_basis"><?php esc_html_e('Percentage', 'shipqora') ?></template>
+						<template v-if="'subtotal' != calculate_basis">{{calculation_type_label}}</template>
+					</option>
+					<option value="table_rates"><?php esc_html_e('Table Rates', 'shipqora') ?></option>
+				</select>
 
-			<template v-if="show_calculation_value">
-				<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
-				<span v-if="calculate_basis == 'subtotal'">%</span>
+				<template v-if="show_calculation_value">
+					<input v-model="calculation_value" type="number" min="0" placeholder="0.00">
+					<span v-if="calculate_basis == 'subtotal'">%</span>
+
+					<div v-if="calculate_basis !== 'fixed_amount'" style="margin-inline-start: 6px;">
+						<span style="margin-inline-end: 4px;">+</span>
+						<input v-model="extra_charge" type="number" min="0" style="min-width: 115px;" placeholder="<?php esc_html_e('Extra charge', 'shipqora') ?>">
+					</div>
+				</template>
 			</template>
 		</div>
 
@@ -481,6 +505,22 @@ class Cart_Based_Shipping extends Feature {
 			<?php $this->output_component_attrs('primary-table-rate', array(':hide-heading' => 'false', ':hide-actions' => array('duplicate', 'delete'))) ?>>
 		</table-rate>
 	<?php
+	}
+
+	/**
+	 * Setting field for min/max shipping cost
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function shipping_cost_limit_setting_field(Form_Control $form_control) {
+		$form_control->output_before_input_options(); ?>
+		<div class="field-row">
+			<input type="number" v-model="min_cost" placeholder="<?php esc_html_e('Min', 'shipqora') ?>">
+			<input type="number" v-model="max_cost" placeholder="<?php esc_html_e('Max', 'shipqora') ?>">
+		</div>
+<?php
+		$form_control->output_after_input_options();
 	}
 
 	/**

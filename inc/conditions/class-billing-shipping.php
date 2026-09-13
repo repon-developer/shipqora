@@ -249,7 +249,7 @@ final class Billing_Shipping {
 	 */
 	public function postal_code_template($condition) { ?>
 		<template v-if="type == '<?php echo esc_attr($condition->get_id()) ?>'">
-			<select>
+			<select v-model="billing_shipping_operator">
 				<?php Utils::get_operators_options(array('any_in_list', 'not_in_list')); ?>
 			</select>
 

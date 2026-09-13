@@ -282,7 +282,7 @@ final class Product_Based_Shipping extends Cart_Based_Shipping {
 	 * @return void
 	 */
 	public function add_component_settings_fields(Settings_Fields $settings_fields) {
-		$cart_based_settings_fields = Settings_Fields::get_instance('cart-based-shipping')->get_settings_fields('general');
+		$cart_based_settings_fields = Settings_Fields::get_instance('cart-based-shipping')->get_settings_fields('layer');
 		unset($cart_based_settings_fields['shipping_method_title']);
 
 		$cart_based_settings_fields['target_products'] = wp_parse_args(array(

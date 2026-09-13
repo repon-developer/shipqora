@@ -72,6 +72,7 @@ final class Admin {
 	 * @return void
 	 */
 	public function load_files() {
+		require_once SHIPQORA_PATH . 'inc/admin/class-import.php';
 		require_once SHIPQORA_PATH . 'inc/admin/class-rule-list.php';
 		require_once SHIPQORA_PATH . 'inc/admin/class-rule-editor.php';
 		require_once SHIPQORA_PATH . 'inc/admin/class-shipping-editor.php';
@@ -238,6 +239,7 @@ final class Admin {
 		echo '<form method="post">';
 		$rule_list_table->display();
 		echo '</form>';
+		Import::get_instance()->output();
 		echo '</div>';
 	}
 }

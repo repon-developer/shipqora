@@ -381,6 +381,44 @@ final class ShipQora_Rule {
 	}
 
 	/**
+	 * Set active features of current rule
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function set_active_features($feature_id) {
+		if (!in_array($feature_id, $this->active_features)) {
+			$this->active_features[] = $feature_id;
+		}
+	}
+
+	/**
+	 * Update feature data of this rule
+	 * 
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function update_feature_data($feature_data, $deep_model_keys) {
+		$model_key_chain = Utils::get_deep_model_split_keys($deep_model_keys);
+		if (false === $model_key_chain) {
+			return;
+		}
+
+		$feature_settings = &$this->feature_settings;
+
+		foreach ($model_key_chain['deep_keys'] as $deep_key) {
+			if (!isset($feature_settings[$deep_key]) || !is_array($feature_settings[$deep_key])) {
+				$feature_settings[$deep_key] = [];
+			}
+
+			$feature_settings = &$feature_settings[$deep_key];
+		}
+
+
+		$feature_settings[$model_key_chain['last_key']] = $feature_data;
+	}
+
+	/**
 	 * Get added shipping methods
 	 * 
 	 * @since 1.0.0

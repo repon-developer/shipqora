@@ -176,8 +176,9 @@ class Feature {
 	 * @since 1.0.0
 	 * @return string
 	 */
-	public function get_model_key($model_key) {
-		return $this->get_configuration('base_model') . '.' . $model_key;
+	public function get_model_key(...$model_keys) {
+		array_unshift($model_keys, $this->get_configuration('base_model'));
+		return implode('.', $model_keys);
 	}
 
 	/**
