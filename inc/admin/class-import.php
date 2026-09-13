@@ -284,13 +284,26 @@ final class Import {
 					}
 				}
 
+				$based_on = $layer['calculate_in'] ?? '';
+				if ($based_on == 'in_cart') {
+					$based_on = '';
+				}
+
+				$based_on = str_replace('in_', 'taxonomy:', $based_on);
+
+				$target_products = array('based_on' => $based_on, 'operator' => 'any_in_list');
+
+				foreach (Utils::get_product_taxonomies() as $tax_slug => $taxonomy) {
+					$model_key = 'calculate_in_' . $taxonomy['model'];
+					if (isset($layer[$model_key]) && is_array($layer[$model_key])) {
+						$target_products[$taxonomy['model']] = $layer[$model_key];
+					}
+				}
+
 				$shipqora_data = array(
 					'priority' => $priority,
 					'calculate_basis' => $calculate_basis,
-					'target_products' => array(
-						'based_on' => '',
-						'operator' => 'any_in_list'
-					),
+					'target_products' => $target_products,
 					'collapse' => $layer['collapse'] ?? false,
 					'calculation_type' => 'per_unit_or_percentage',
 					'shipping_method_title' => $layer['title'] ?? '',
@@ -320,6 +333,8 @@ final class Import {
 
 				return $shipqora_data;
 			}, $layers);
+
+			$layers = array_filter($layers);
 
 			$shipqora_rule = ShipQora_Rule::get(5);
 			$shipqora_rule->title = $rule_item->title;
